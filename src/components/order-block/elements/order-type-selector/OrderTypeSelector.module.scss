@@ -2,7 +2,7 @@
 
 .root {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   gap: $d8x-spacing * 8;
   margin-top: $d8x-spacing * 2;
   margin-bottom: $d8x-spacing * 4;
@@ -15,7 +15,6 @@
 }
 
 .selected {
-  text-decoration: underline;
-  text-underline-offset: $d8x-spacing * 2;
   color: var(--d8x-color-purple);
+  background-color: var(--d8x-color-purple-50);
 }

@@ -16,10 +16,10 @@
     font-size: 16px;
     line-height: 24px;
     font-weight: 600;
-    background-color: var(--d8x-background-inactive-tab);
-    border: solid var(--d8x-color-white);
+    background-color: var(--d8x-color-white-30);
     border-width: 1px 1px 0 0;
     margin-bottom: -1px;
+    color: var(--d8x-color-black-400);
 
     &:first-of-type {
       border-left-width: 1px;
@@ -36,7 +36,8 @@
     }
 
     &.selected {
-      background-color: var(--d8x-background-card-details);
+      background-color: var(--d8x-color-purple-100);
+      color: var(--d8x-color-purple);
     }
   }
 }

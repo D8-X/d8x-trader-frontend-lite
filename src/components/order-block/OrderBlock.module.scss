@@ -2,9 +2,8 @@
 
 .root {
   width: 100%;
-  border-radius: $d8x-border-radius;
+}
 
-  &:global(.MuiPaper-root) {
-    background-color: transparent;
-  }
+.card {
+  background-color: var(--d8x-background);
 }
