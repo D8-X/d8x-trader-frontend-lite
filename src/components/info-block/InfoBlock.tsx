@@ -8,7 +8,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import styles from './InfoBlock.module.scss';
 
 interface InfoBlockPropsI {
-  title: string;
+  title: string | JSX.Element;
   content: string | JSX.Element;
 }
 

@@ -13,7 +13,7 @@
   flex: 1;
   padding-right: $d8x-spacing * 2;
   padding-left: $d8x-spacing * 2;
-  text-align: center;
+  text-align: left;
 
   & + & {
     border-left: 1px solid var(--d8x-side-border-color);
@@ -30,6 +30,7 @@
   display: block;
   color: var(--d8x-color-purple);
   white-space: nowrap;
+  font-weight: 600;
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {

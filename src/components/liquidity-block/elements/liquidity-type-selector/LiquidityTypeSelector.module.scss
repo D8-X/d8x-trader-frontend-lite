@@ -10,12 +10,12 @@
   button {
     min-width: 30px;
     font-size: 16px;
+    font-weight: 500;
   }
 }
 
 .selected {
   text-decoration: underline;
   text-underline-offset: $d8x-spacing * 2;
-  font-weight: semi-bold;
   color: var(--d8x-color-purple);
 }

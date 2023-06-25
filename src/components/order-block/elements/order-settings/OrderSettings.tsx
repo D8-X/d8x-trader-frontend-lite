@@ -129,8 +129,8 @@ export const OrderSettings = memo(() => {
         <Box className={styles.settings}>
           {orderType === OrderTypeE.Market && (
             <>
-              <Typography variant="body2">Slippage settings</Typography>
               <SettingsIcon className={styles.settingsIcon} onClick={openSettingsModal} />
+              <Typography variant="bodyTiny">Slippage settings</Typography>
             </>
           )}
           {orderType !== OrderTypeE.Market && (

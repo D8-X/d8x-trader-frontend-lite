@@ -6,10 +6,16 @@
   gap: $d8x-spacing * 8;
   margin-top: $d8x-spacing * 2;
   margin-bottom: $d8x-spacing * 4;
+
+  button {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
 }
 
 .selected {
   text-decoration: underline;
   text-underline-offset: $d8x-spacing * 2;
-  font-weight: bold;
+  color: var(--d8x-color-purple);
 }
