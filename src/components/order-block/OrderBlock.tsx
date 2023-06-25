@@ -24,7 +24,6 @@ export const OrderBlock = memo(() => {
       <OrderSelector />
       <CardContent>
         <OrderTypeSelector />
-        <Separator />
         <OrderSize />
         <TriggerPrice />
         <LimitPrice />

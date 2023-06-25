@@ -296,7 +296,15 @@ export const theme = createTheme({
         {
           props: { variant: 'outlined' },
           style: {
-            padding: '2px',
+            borderRadius: '8px',
+            borderWidth: '1px',
+            padding: '8px',
+            color: 'var(--d8x-color-black-maintext)',
+            borderColor: 'var(--d8x-color-black-opac)',
+            '&:hover': {
+              backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+              border: '0',
+            },
           },
         },
         {
@@ -332,7 +340,6 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '8px',
-          backgroundColor: 'var(--d8x-background-purple)',
           border: 'none',
           width: '180px',
           ':hover': {
@@ -349,7 +356,9 @@ export const theme = createTheme({
           padding: '8px 10px',
           width: 'auto',
           border: 'none',
-          fontSize: '18px',
+          fontSize: '16px',
+          fontWeight: '500',
+          color: 'var(--d8x-color-black-maintext)',
         },
       },
     },
@@ -407,11 +416,15 @@ export const theme = createTheme({
         rail: {
           color: 'var(--d8x-color-purple)',
         },
+        markLabel: {
+          fontSize: '12px',
+        },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
+          color: 'var(--d8x-color-black-maintext)',
           boxShadow: 'none',
         },
       },
@@ -561,9 +574,9 @@ theme.typography.bodyTiny = {
 };
 
 theme.typography.adornment = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 400,
-  lineHeight: '18px',
+  lineHeight: '16px',
 };
 
 theme.typography.cellSmall = {
