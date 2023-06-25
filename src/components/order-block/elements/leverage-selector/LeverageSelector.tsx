@@ -10,6 +10,7 @@ import { InfoBlock } from 'components/info-block/InfoBlock';
 import { leverageAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { MarkI } from 'types/types';
+import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
 
 import styles from './LeverageSelector.module.scss';
 
@@ -70,67 +71,72 @@ export const LeverageSelector = memo(() => {
 
   return (
     <Box className={styles.root}>
-      <Box className={styles.label}>
-        <InfoBlock
-          title="Leverage"
-          content={
-            <>
-              <Typography>Specifies the leverage of your order.</Typography>
-              <Typography>
-                If your order is reducing an existing position ("partial closure"), the leverage you select has no
-                impact.
-              </Typography>
-            </>
-          }
-        />
+      <Box className={styles.rowOne}>
+        <Box className={styles.label}>
+          <InfoBlock
+            title="Leverage"
+            content={
+              <>
+                <Typography>Specifies the leverage of your order.</Typography>
+                <Typography>
+                  If your order is reducing an existing position ("partial closure"), the leverage you select has no
+                  impact.
+                </Typography>
+              </>
+            }
+          />
+        </Box>
+        <OrderSettings />
       </Box>
-      <Box className={styles.sliderHolder}>
-        <Slider
-          aria-label="Leverage values"
-          value={leverage}
-          min={1}
-          max={maxLeverage}
-          step={leverageStep}
-          getAriaValueText={valueLabelFormat}
-          valueLabelFormat={valueLabelFormat}
-          valueLabelDisplay="auto"
-          marks={marks}
-          onChange={handleLeverageChange}
-        />
-      </Box>
-      <Box className={styles.inputHolder}>
-        <Button
-          key="decrease-leverage"
-          variant="outlined"
-          size="small"
-          className={styles.decreaseButton}
-          onClick={handleDecreaseLeverage}
-          disabled={leverage === 1}
-        >
-          <DecreaseIcon />
-        </Button>
-        <OutlinedInput
-          id="leverage"
-          type="number"
-          inputProps={{ min: 1, max: maxLeverage }}
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">X</Typography>
-            </InputAdornment>
-          }
-          onChange={handleInputChange}
-          value={leverage}
-        />
-        <Button
-          key="increase-leverage"
-          variant="outlined"
-          size="small"
-          className={styles.increaseButton}
-          onClick={handleIncreaseLeverage}
-          disabled={leverage >= maxLeverage}
-        >
-          <IncreaseIcon />
-        </Button>
+      <Box className={styles.rowTwo}>
+        <Box className={styles.sliderHolder}>
+          <Slider
+            aria-label="Leverage values"
+            value={leverage}
+            min={1}
+            max={maxLeverage}
+            step={leverageStep}
+            getAriaValueText={valueLabelFormat}
+            valueLabelFormat={valueLabelFormat}
+            valueLabelDisplay="auto"
+            marks={marks}
+            onChange={handleLeverageChange}
+          />
+        </Box>
+        <Box className={styles.inputHolder}>
+          <Button
+            key="decrease-leverage"
+            variant="outlined"
+            size="small"
+            className={styles.decreaseButton}
+            onClick={handleDecreaseLeverage}
+            disabled={leverage === 1}
+          >
+            <DecreaseIcon />
+          </Button>
+          <OutlinedInput
+            id="leverage"
+            type="number"
+            inputProps={{ min: 1, max: maxLeverage }}
+            endAdornment={
+              <InputAdornment position="end">
+                <Typography variant="adornment">X</Typography>
+              </InputAdornment>
+            }
+            onChange={handleInputChange}
+            value={leverage}
+          />
+          <Button
+            key="increase-leverage"
+            variant="outlined"
+            size="small"
+            className={styles.increaseButton}
+            onClick={handleIncreaseLeverage}
+            disabled={leverage >= maxLeverage}
+          >
+            <IncreaseIcon />
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

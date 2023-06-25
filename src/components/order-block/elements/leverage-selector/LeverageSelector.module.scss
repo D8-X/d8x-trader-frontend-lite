@@ -1,28 +1,44 @@
 @import 'styles/theme/theme';
 
 .root {
+  width: 100%;
   display: flex;
-  margin-top: $d8x-spacing;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.rowOne {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin-top: 0;
+  justify-content: space-between;
+}
+
+.rowTwo {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  margin-top: 3 * $d8x-spacing;
+  justify-content: space-between;
 }
 
 .label {
-  display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
 }
 
 .sliderHolder {
-  flex: 1;
-  margin-right: 6 * $d8x-spacing;
-  margin-left: 6 * $d8x-spacing;
+  width: 100%;
+  margin-left: 9px;
+  margin-right: 8 * $d8x-spacing;
 }
 
 .inputHolder {
 
   :global(.MuiInputBase-root) {
-    width: 100px;
+    width: 116px;
     padding-right: 0;
 
     input {
