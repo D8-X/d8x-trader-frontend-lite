@@ -344,12 +344,16 @@ export const theme = createTheme({
           width: '180px',
           ':hover': {
             backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--d8x-color-black-opac)',
+            },
           },
-          ':focus': {
+          ':focus-within': {
             backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
-          },
-          ':active': {
-            backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--d8x-color-black-opac)',
+              borderWidth: '1px',
+            },
           },
         },
         input: {
@@ -359,6 +363,9 @@ export const theme = createTheme({
           fontSize: '16px',
           fontWeight: '500',
           color: 'var(--d8x-color-black-maintext)',
+        },
+        notchedOutline: {
+          borderColor: 'var(--d8x-color-black-opac)',
         },
       },
     },
