@@ -252,6 +252,7 @@ export const theme = createTheme({
             ...MuiButtonSharedStyle,
             backgroundColor: 'rgba(var(--d8x-background-buy-rgb), 1)',
             color: 'var(--d8x-color-white)',
+            fontWeight: '600',
             ':hover': {
               backgroundColor: 'rgba(var(--d8x-background-buy-rgb), 0.9)',
               color: 'var(--d8x-color-white)',
@@ -268,6 +269,7 @@ export const theme = createTheme({
             ...MuiButtonSharedStyle,
             backgroundColor: 'rgba(var(--d8x-background-sell-rgb), 1)',
             color: 'var(--d8x-color-white)',
+            fontWeight: '600',
             ':hover': {
               backgroundColor: 'rgba(var(--d8x-background-sell-rgb), 0.9)',
               color: 'var(--d8x-color-white)',
