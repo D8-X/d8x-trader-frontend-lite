@@ -23,6 +23,7 @@ declare module '@mui/material/styles' {
     bodyLarge: CSSProperties;
     bodyMedium: CSSProperties;
     bodySmall: CSSProperties;
+    bodySmallSB: CSSProperties;
     bodyTiny: CSSProperties;
     adornment: CSSProperties;
     cellSmall: CSSProperties;
@@ -34,6 +35,7 @@ declare module '@mui/material/styles' {
     bodyLarge?: CSSProperties;
     bodyMedium?: CSSProperties;
     bodySmall?: CSSProperties;
+    bodySmallSB?: CSSProperties;
     bodyTiny?: CSSProperties;
     adornment?: CSSProperties;
     cellSmall?: CSSProperties;
@@ -47,6 +49,7 @@ declare module '@mui/material/Typography' {
     bodyLarge: true;
     bodyMedium: true;
     bodySmall: true;
+    bodySmallSB: true;
     bodyTiny: true;
     adornment: true;
     cellSmall: true;
@@ -331,6 +334,11 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           padding: '0 8px',
+          color: 'var(--d8x-color-purple)',
+
+          '.MuiSvgIcon-root': {
+            width: '15px',
+          },
         },
       },
     },
@@ -406,7 +414,8 @@ export const theme = createTheme({
     MuiFormControlLabel: {
       styleOverrides: {
         label: {
-          fontSize: '14px',
+          fontSize: '12px',
+          lineHeight: '16px',
         },
       },
     },
@@ -569,6 +578,12 @@ theme.typography.bodyMedium = {
 theme.typography.bodySmall = {
   fontSize: 14,
   fontWeight: 400,
+  lineHeight: '20px',
+};
+
+theme.typography.bodySmallSB = {
+  fontSize: 14,
+  fontWeight: 600,
   lineHeight: '20px',
 };
 

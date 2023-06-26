@@ -23,11 +23,11 @@
 
     &:first-of-type {
       border-left-width: 1px;
-      border-top-left-radius: $d8x-spacing * 2;
+      border-top-left-radius: $d8x-border-radius;
     }
 
     &:last-of-type {
-      border-top-right-radius: $d8x-spacing * 2;
+      border-top-right-radius: $d8x-border-radius;
     }
 
     &:hover,

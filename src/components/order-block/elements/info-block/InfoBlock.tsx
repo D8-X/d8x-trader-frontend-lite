@@ -27,12 +27,12 @@ export const InfoBlock = memo(() => {
   return (
     <Box className={styles.root}>
       <Box className={styles.row}>
-        <Typography variant="body2">Order size</Typography>
-        <Typography variant="body2">{formatToCurrency(orderSize, selectedPerpetual?.baseCurrency)}</Typography>
+        <Typography variant="bodySmall">Order size</Typography>
+        <Typography variant="bodySmallSB">{formatToCurrency(orderSize, selectedPerpetual?.baseCurrency)}</Typography>
       </Box>
       <Box className={styles.row}>
-        <Typography variant="body2">Fees</Typography>
-        <Typography variant="body2">
+        <Typography variant="bodySmall">Fees</Typography>
+        <Typography variant="bodySmallSB">
           {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
           {formatToCurrency(orderInfo?.tradingFee, 'bps', 1)}
           {')'}

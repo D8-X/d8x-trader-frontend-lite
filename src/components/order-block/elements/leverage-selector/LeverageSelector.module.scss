@@ -12,6 +12,7 @@
   width: 100%;
   flex-direction: row;
   margin-top: 0;
+  align-items: flex-end;
   justify-content: space-between;
 }
 
@@ -24,6 +25,7 @@
 }
 
 .label {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
