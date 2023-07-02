@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useSigner } from 'wagmi';
+import { Separator } from 'components/separator/Separator';
 
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -377,55 +378,95 @@ export const ActionBlock = memo(() => {
       {orderInfo && (
         <Dialog open={showReviewOrderModal} className={styles.dialog}>
           <DialogTitle>Review order</DialogTitle>
+          <Box className={styles.emphasis}>
+            <SidesRow
+              leftSide={
+                <Typography variant="bodyLarge" className={styles.semibold}>
+                  {orderInfo.leverage > 0 ? `${formatNumber(orderInfo.leverage)}x` : ''} {orderInfo.orderType}{' '}
+                  {orderBlockMap[orderInfo.orderBlock]}
+                </Typography>
+              }
+              rightSide={
+                <Typography variant="bodyLarge" className={styles.semibold}>
+                  {orderInfo.size} {orderInfo.baseCurrency} @ {atPrice}
+                </Typography>
+              }
+            />
+          </Box>
           <DialogContent>
-            <Box>
-              <Typography variant="bodyMedium" className={styles.centered}>
-                {orderInfo.leverage > 0 ? `${formatNumber(orderInfo.leverage)}x` : ''} {orderInfo.orderType}{' '}
-                {orderBlockMap[orderInfo.orderBlock]}
-              </Typography>
-              <Typography variant="bodySmall" className={styles.centered}>
-                {orderInfo.size} {orderInfo.baseCurrency} @ {atPrice}
-              </Typography>
-            </Box>
             <Box className={styles.orderDetails}>
               <SidesRow
-                leftSide="Trading fee:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Trading fee:{' '}
+                  </Typography>
+                }
                 rightSide={orderInfo.tradingFee ? formatToCurrency(orderInfo.tradingFee, 'bps', 1) : '-'}
               />
               <SidesRow
-                leftSide="Deposit from wallet:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Deposit from wallet:{' '}
+                  </Typography>
+                }
                 rightSide={
                   isOrderValid && collateralDeposit >= 0 ? formatToCurrency(collateralDeposit, orderInfo.poolName) : '-'
                 }
               />
               {orderInfo.maxMinEntryPrice !== null && (
                 <SidesRow
-                  leftSide={`${orderInfo.orderBlock === OrderBlockE.Long ? 'Max' : 'Min'} entry price:`}
+                  leftSide={
+                    <Typography variant="bodySmall" className={styles.left}>
+                      {orderInfo.orderBlock === OrderBlockE.Long ? 'Max' : 'Min'} entry price:
+                    </Typography>
+                  }
                   rightSide={formatToCurrency(orderInfo.maxMinEntryPrice, orderInfo.quoteCurrency)}
                 />
               )}
               {orderInfo.triggerPrice !== null && (
                 <SidesRow
-                  leftSide="Trigger price:"
+                  leftSide={
+                    <Typography variant="bodySmall" className={styles.left}>
+                      {' '}
+                      Trigger price:{' '}
+                    </Typography>
+                  }
                   rightSide={formatToCurrency(orderInfo.triggerPrice, orderInfo.quoteCurrency)}
                 />
               )}
               {orderInfo.limitPrice !== null && (
                 <SidesRow
-                  leftSide="Limit price:"
+                  leftSide={
+                    <Typography variant="bodySmall" className={styles.left}>
+                      {' '}
+                      Limit price:{' '}
+                    </Typography>
+                  }
                   rightSide={
                     orderInfo.limitPrice > -1 ? formatToCurrency(orderInfo.limitPrice, orderInfo.quoteCurrency) : '-'
                   }
                 />
               )}
               <SidesRow
-                leftSide="Stop-loss:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Stop-loss:{' '}
+                  </Typography>
+                }
                 rightSide={
                   !orderInfo.stopLossPrice ? '-' : formatToCurrency(orderInfo.stopLossPrice, orderInfo.quoteCurrency)
                 }
               />
               <SidesRow
-                leftSide="Take-profit:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Take-profit:{' '}
+                  </Typography>
+                }
                 rightSide={
                   !orderInfo.takeProfitPrice
                     ? '-'
@@ -433,14 +474,22 @@ export const ActionBlock = memo(() => {
                 }
               />
             </Box>
+          </DialogContent>
+          <Separator />
+          <DialogContent>
             <Box className={styles.newPositionHeader}>
-              <Typography variant="bodyMedium" className={styles.centered}>
+              <Typography variant="bodyMedium" className={styles.bold}>
                 New position details
               </Typography>
             </Box>
             <Box className={styles.newPositionDetails}>
               <SidesRow
-                leftSide="Position size:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Position size:{' '}
+                  </Typography>
+                }
                 rightSide={
                   isOrderValid && newPositionRisk
                     ? formatToCurrency(newPositionRisk.positionNotionalBaseCCY, orderInfo.baseCurrency)
@@ -448,7 +497,12 @@ export const ActionBlock = memo(() => {
                 }
               />
               <SidesRow
-                leftSide="Margin:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Margin:{' '}
+                  </Typography>
+                }
                 rightSide={
                   isOrderValid && newPositionRisk && newPositionRisk.collateralCC >= 0
                     ? formatToCurrency(newPositionRisk.collateralCC, orderInfo.poolName)
@@ -456,7 +510,12 @@ export const ActionBlock = memo(() => {
                 }
               />
               <SidesRow
-                leftSide="Leverage:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Leverage:{' '}
+                  </Typography>
+                }
                 rightSide={
                   isOrderValid && newPositionRisk && newPositionRisk.positionNotionalBaseCCY !== 0
                     ? `${formatNumber(newPositionRisk?.leverage)}x`
@@ -464,7 +523,12 @@ export const ActionBlock = memo(() => {
                 }
               />
               <SidesRow
-                leftSide="Liquidation price:"
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Liquidation price:{' '}
+                  </Typography>
+                }
                 rightSide={
                   !isOrderValid || !newPositionRisk || newPositionRisk.liquidationPrice[0] <= 0
                     ? '-'
@@ -472,13 +536,32 @@ export const ActionBlock = memo(() => {
                 }
               />
             </Box>
-            <Box className={styles.validityMessages}>
-              <Typography variant="bodyMedium" className={styles.centered}>
-                Validity checks
-              </Typography>
-            </Box>
+          </DialogContent>
+          <Box className={styles.emphasis}>
+            <SidesRow
+              leftSide={
+                <Typography variant="bodyMedium" className={styles.semibold}>
+                  Validity checks
+                </Typography>
+              }
+              rightSide={
+                <Typography
+                  variant="bodyMedium"
+                  className={styles.bold}
+                  style={{ color: validityCheckText === 'Good to go' ? 'green' : 'red' }}
+                >
+                  {validityCheckText === 'Good to go' ? 'Passed' : validityCheckText === '-' ? '-' : 'Failed'}
+                </Typography>
+              }
+            />
+          </Box>
+          <DialogContent>
             <Box className={styles.goMessage}>
-              <Typography variant="bodyMedium" className={styles.centered}>
+              <Typography
+                variant="bodySmall"
+                className={styles.centered}
+                style={{ color: validityCheckText === 'Good to go' ? 'green' : 'red' }}
+              >
                 {validityCheckText}
               </Typography>
             </Box>
