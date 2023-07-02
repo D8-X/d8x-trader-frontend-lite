@@ -4,7 +4,7 @@ import { memo, SyntheticEvent } from 'react';
 import { Box, Paper } from '@mui/material';
 import { PaperProps } from '@mui/material/Paper/Paper';
 
-import { liquidityPoolsAtom, selectedLiquidityPoolAtom } from 'store/liquidity-pools.store';
+import { liquidityPoolsAtom, selectedLiquidityPoolAtom } from 'store/vault-pools.store';
 import { PoolI } from 'types/types';
 
 import { HeaderSelect } from '../header-select/HeaderSelect';

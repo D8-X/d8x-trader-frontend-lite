@@ -16,7 +16,7 @@ import {
   selectedLiquidityPoolAtom,
   withdrawalsAtom,
   loadStatsAtom,
-} from 'store/liquidity-pools.store';
+} from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './InitiateAction.module.scss';

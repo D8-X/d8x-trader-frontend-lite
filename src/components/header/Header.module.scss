@@ -32,9 +32,11 @@
 
 .navItem {
   font-weight: 500;
+  text-decoration: none;
 
   &.inactive {
     position: relative;
+    color: var(--d8x-color-black-maintext);
 
     &:hover {
       color: var(--d8x-color-purple);

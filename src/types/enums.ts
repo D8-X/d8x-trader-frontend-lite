@@ -84,3 +84,9 @@ export enum TableTypeE {
   TRADE_HISTORY,
   FUNDING,
 }
+
+export enum PageE {
+  Trade = '/',
+  Refer = '/refer',
+  Vault = '/vault',
+}

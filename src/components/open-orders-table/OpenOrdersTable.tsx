@@ -39,7 +39,7 @@ import { OrderWithIdI, TableHeaderI } from 'types/types';
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
-import { sdkConnectedAtom } from 'store/liquidity-pools.store';
+import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './OpenOrdersTable.module.scss';

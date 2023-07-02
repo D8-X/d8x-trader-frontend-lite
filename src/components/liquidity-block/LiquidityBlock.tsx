@@ -3,7 +3,7 @@ import { memo } from 'react';
 
 import { Box, Typography } from '@mui/material';
 
-import { liquidityTypeAtom, selectedLiquidityPoolAtom } from 'store/liquidity-pools.store';
+import { liquidityTypeAtom, selectedLiquidityPoolAtom } from 'store/vault-pools.store';
 import { LiquidityTypeE } from 'types/enums';
 
 import { AddAction } from './elements/add-action/AddAction';

@@ -1,10 +1,10 @@
+import { SmartContractOrder } from '@d8x/perpetuals-sdk';
+import { BigNumberish } from '@ethersproject/bignumber';
 import { BytesLike } from '@ethersproject/bytes';
 import { Time } from 'lightweight-charts';
 import type { ReactNode } from 'react';
 
-import { AlignE, ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from './enums';
-import { SmartContractOrder } from '@d8x/perpetuals-sdk';
-import { BigNumberish } from '@ethersproject/bignumber';
+import { AlignE, ExpiryE, OrderBlockE, OrderTypeE, PageE, StopLossE, TakeProfitE } from './enums';
 
 export interface AppDimensionsI {
   width?: number;
@@ -257,4 +257,10 @@ export interface OpenWithdrawalI {
 
 export interface OpenWithdrawalsI {
   withdrawals: OpenWithdrawalI[];
+}
+
+export interface PageI {
+  id: string;
+  path: PageE | string;
+  title: string;
 }

@@ -67,7 +67,7 @@ import {
 } from 'store/pools.store';
 import { AlignE, OrderTypeE, TableTypeE } from 'types/enums';
 import type { MarginAccountI, OrderI, TableHeaderI } from 'types/types';
-import { sdkConnectedAtom } from 'store/liquidity-pools.store';
+import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './PositionsTable.module.scss';
@@ -75,7 +75,6 @@ import styles from './PositionsTable.module.scss';
 import { Separator } from 'components/separator/Separator';
 
 import { toUtf8String } from '@ethersproject/strings';
-
 
 const MIN_WIDTH_FOR_TABLE = 900;
 

@@ -1,13 +1,15 @@
 import { useAtom } from 'jotai';
 import type { PropsWithChildren } from 'react';
 import { memo, useCallback, useEffect, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
 
 import { Box, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { createSymbol } from 'helpers/createSymbol';
+import { pages } from 'navigation/pages';
 import { getExchangeInfo } from 'network/network';
-import { liquidityPoolsAtom } from 'store/liquidity-pools.store';
+import { liquidityPoolsAtom } from 'store/vault-pools.store';
 import {
   oracleFactoryAddrAtom,
   poolTokenBalanceAtom,
@@ -18,6 +20,7 @@ import {
   traderAPIAtom,
   chainIdAtom,
 } from 'store/pools.store';
+import { ExchangeInfoI, PerpetualDataI } from 'types/types';
 
 import { Container } from '../container/Container';
 import { InteractiveLogo } from '../interactive-logo/InteractiveLogo';
@@ -25,7 +28,6 @@ import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButto
 
 import { PageAppBar } from './Header.styles';
 import styles from './Header.module.scss';
-import { ExchangeInfoI, PerpetualDataI } from '../../types/types';
 
 export const Header = memo(({ children }: PropsWithChildren) => {
   const theme = useTheme();
@@ -136,15 +138,15 @@ export const Header = memo(({ children }: PropsWithChildren) => {
               </Typography>
               {!isSmallScreen && (
                 <nav className={styles.navWrapper}>
-                  <Typography variant="bodyMedium" className={`${styles.navItem} ${styles.active}`}>
-                    Trade
-                  </Typography>
-                  <Typography variant="bodyMedium" className={`${styles.navItem} ${styles.inactive}`}>
-                    Refer
-                  </Typography>
-                  <Typography variant="bodyMedium" className={`${styles.navItem} ${styles.inactive}`}>
-                    Vault
-                  </Typography>
+                  {pages.map((page) => (
+                    <NavLink
+                      key={page.id}
+                      to={page.path}
+                      className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : styles.inactive}`}
+                    >
+                      {page.title}
+                    </NavLink>
+                  ))}
                 </nav>
               )}
             </Box>

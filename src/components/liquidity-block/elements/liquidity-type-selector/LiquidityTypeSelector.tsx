@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import { Box, Button } from '@mui/material';
 
-import { liquidityTypeAtom } from 'store/liquidity-pools.store';
+import { liquidityTypeAtom } from 'store/vault-pools.store';
 import { LiquidityTypeE } from 'types/enums';
 
 import styles from './LiquidityTypeSelector.module.scss';

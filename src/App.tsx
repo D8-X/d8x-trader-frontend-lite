@@ -8,12 +8,13 @@ import { Box } from '@mui/material';
 
 import { StaticBackground } from 'components/static-background/StaticBackground';
 import { TraderPage } from 'pages/trader-page/TraderPage';
+import { VaultPage } from 'pages/vault-page/VaultPage';
 import { appDimensionsAtom } from 'store/app.store';
+import { PageE } from 'types/enums';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
 import styles from './App.module.scss';
-import { LiquidityPage } from './pages/liquidity-page/LiquidityPage';
 
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
@@ -29,7 +30,7 @@ export const App = memo(() => {
       <Box className={styles.content}>
         <StaticBackground />
         <Routes>
-          <Route key="liquidity-page" path="/liquidity" element={<LiquidityPage />} />
+          <Route key="vault-page" path={PageE.Vault} element={<VaultPage />} />
           <Route key="trader-page" path="*" element={<TraderPage />} />
         </Routes>
         <ToastContainer position="top-left" autoClose={10_000} />

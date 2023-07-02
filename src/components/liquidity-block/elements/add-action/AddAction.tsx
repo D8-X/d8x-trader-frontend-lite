@@ -15,7 +15,7 @@ import {
   loadStatsAtom,
   sdkConnectedAtom,
   selectedLiquidityPoolAtom,
-} from 'store/liquidity-pools.store';
+} from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { proxyAddrAtom } from 'store/pools.store';
 import { toUtf8String } from '@ethersproject/strings';

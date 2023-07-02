@@ -1,4 +1,6 @@
 import { LiquidityProviderTool, PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { Signer } from '@ethersproject/abstract-signer';
+import { Provider } from '@ethersproject/abstract-provider';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
@@ -11,13 +13,11 @@ import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
 import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTraderLoyalty } from 'network/network';
-import { liqProvToolAtom, sdkConnectedAtom } from 'store/liquidity-pools.store';
+import { liqProvToolAtom, sdkConnectedAtom } from 'store/vault-pools.store';
 import { loyaltyScoreAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { cutAddressName } from 'utils/cutAddressName';
 
 import styles from './WalletConnectButton.module.scss';
-import { Signer } from '@ethersproject/abstract-signer';
-import { Provider } from '@ethersproject/abstract-provider';
 
 const loyaltyMap: Record<number, string> = {
   1: 'Diamond',

@@ -12,11 +12,11 @@ import { GlobalStats } from 'components/global-stats/GlobalStats';
 import { LiquidityBlock } from 'components/liquidity-block/LiquidityBlock';
 import { PersonalStats } from 'components/personal-stats/PersonalStats';
 import { getOpenWithdrawals } from 'network/history';
-import { selectedLiquidityPoolAtom, withdrawalsAtom } from 'store/liquidity-pools.store';
+import { selectedLiquidityPoolAtom, withdrawalsAtom } from 'store/vault-pools.store';
 
-import styles from './LiquidityPage.module.scss';
+import styles from './VaultPage.module.scss';
 
-export const LiquidityPage = memo(() => {
+export const VaultPage = memo(() => {
   const chainId = useChainId();
   const { address } = useAccount();
 

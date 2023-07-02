@@ -13,7 +13,7 @@ import {
   selectedLiquidityPoolAtom,
   loadStatsAtom,
   sdkConnectedAtom,
-} from 'store/liquidity-pools.store';
+} from 'store/vault-pools.store';
 import { traderAPIAtom } from 'store/pools.store';
 
 import styles from './GlobalStats.module.scss';
