@@ -76,7 +76,6 @@ import { Separator } from 'components/separator/Separator';
 
 import { toUtf8String } from '@ethersproject/strings';
 
-
 const MIN_WIDTH_FOR_TABLE = 900;
 
 export const PositionsTable = memo(() => {
@@ -693,7 +692,7 @@ export const PositionsTable = memo(() => {
         <DialogTitle>Modify Position</DialogTitle>
         <DialogContent>
           <ModifyTypeSelector modifyType={modifyType} setModifyType={setModifyType} />
-          <Box className={styles.newPositionHeader}>
+          <Box className={styles.inputBlock}>
             {modifyType === ModifyTypeE.Close && (
               <FormControlLabel
                 id="confirm-close"
@@ -702,7 +701,8 @@ export const PositionsTable = memo(() => {
                 onChange={(_event, checked) => setClosePositionChecked(checked)}
                 control={closePositionChecked ? <Checkbox checked={true} /> : <Checkbox checked={false} />}
                 label="Close position"
-                labelPlacement="start"
+                labelPlacement="end"
+                className={styles.formControlLabel}
               />
             )}
             {modifyType === ModifyTypeE.Add && (
@@ -725,30 +725,37 @@ export const PositionsTable = memo(() => {
               />
             )}
             {modifyType === ModifyTypeE.Remove && (
-              <SidesRow
-                leftSide="Remove collateral"
-                rightSide={
-                  <FormControl variant="outlined">
-                    <OutlinedInput
-                      id="remove-collateral"
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
-                        </InputAdornment>
-                      }
-                      type="number"
-                      inputProps={{ step: 0.1, min: 0, max: maxCollateral }}
-                      value={removeCollateral}
-                      onChange={handleRemoveCollateralCapture}
-                    />
-                    {maxCollateral && (
-                      <Typography className={styles.helperText} variant="bodySmall">
+              <Box>
+                <SidesRow
+                  leftSide={'Remove collateral'}
+                  rightSide={
+                    <FormControl variant="outlined">
+                      <OutlinedInput
+                        id="remove-collateral"
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
+                          </InputAdornment>
+                        }
+                        type="number"
+                        inputProps={{ step: 0.1, min: 0, max: maxCollateral }}
+                        value={removeCollateral}
+                        onChange={handleRemoveCollateralCapture}
+                      />
+                    </FormControl>
+                  }
+                />
+                <SidesRow
+                  leftSide=" "
+                  rightSide={
+                    maxCollateral && (
+                      <Typography className={styles.helperText} variant="bodyTiny">
                         Max: <Link onClick={handleMaxCollateral}>{formatNumber(maxCollateral)}</Link>
                       </Typography>
-                    )}
-                  </FormControl>
-                }
-              />
+                    )
+                  }
+                />
+              </Box>
             )}
           </Box>
         </DialogContent>

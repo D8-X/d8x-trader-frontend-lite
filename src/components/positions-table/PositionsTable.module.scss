@@ -54,12 +54,25 @@
 
 .centered {
   display: block;
-  text-align: center;
+  font-weight: 600;
+  text-align: left;
 }
 
 .newPositionHeader {
+  margin: 20px 0;
+}
+
+.inputBlock {
+  justify-content: left;
   margin-top: $d8x-spacing * 3;
   margin-bottom: $d8x-spacing * 3;
+}
+
+.formControlLabel {
+
+  :global(.MuiFormControlLabel-label) {
+    font-size: 14px;
+  }
 }
 
 .newPositionDetails {
