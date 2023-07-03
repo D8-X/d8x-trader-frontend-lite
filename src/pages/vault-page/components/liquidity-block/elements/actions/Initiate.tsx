@@ -1,7 +1,9 @@
+import { toUtf8String } from '@ethersproject/strings';
 import { format } from 'date-fns';
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useSigner } from 'wagmi';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
@@ -19,11 +21,9 @@ import {
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import styles from './InitiateAction.module.scss';
-import { useSigner } from 'wagmi';
-import { toUtf8String } from '@ethersproject/strings';
+import styles from './Action.module.scss';
 
-export const InitiateAction = memo(() => {
+export const Initiate = memo(() => {
   const [selectedLiquidityPool] = useAtom(selectedLiquidityPoolAtom);
   const [liqProvTool] = useAtom(liqProvToolAtom);
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
@@ -140,61 +140,73 @@ export const InitiateAction = memo(() => {
 
   return (
     <div className={styles.root}>
-      <Separator />
-      <Box className={styles.inputLine}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title="Amount"
-            content={
-              <>
-                <Typography>
-                  Specify the amount of d{selectedLiquidityPool?.poolSymbol} you want to exchange for{' '}
-                  {selectedLiquidityPool?.poolSymbol}.
-                </Typography>
-                <Typography>
-                  After 48 hours, this amount can be converted to {selectedLiquidityPool?.poolSymbol} and can be
-                  withdrawn from the pool.
-                </Typography>
-              </>
+      <Box className={styles.infoBlock}>
+        <Typography variant="h5">Initiate withdrawal</Typography>
+        <Typography variant="body2" className={styles.text}>
+          Are you looking to withdraw your {selectedLiquidityPool?.poolSymbol} from the liquidity pool? If so, you can
+          initiate a withdrawal request.
+        </Typography>
+        <Typography variant="body2" className={styles.text}>
+          Keep in mind that it takes 48 hours to process your request and you can only have one withdrawal request at a
+          time.
+        </Typography>
+      </Box>
+      <Box className={styles.contentBlock}>
+        <Box className={styles.inputLine}>
+          <Box className={styles.label}>
+            <InfoBlock
+              title="Amount"
+              content={
+                <>
+                  <Typography>
+                    Specify the amount of d{selectedLiquidityPool?.poolSymbol} you want to exchange for{' '}
+                    {selectedLiquidityPool?.poolSymbol}.
+                  </Typography>
+                  <Typography>
+                    After 48 hours, this amount can be converted to {selectedLiquidityPool?.poolSymbol} and can be
+                    withdrawn from the pool.
+                  </Typography>
+                </>
+              }
+            />
+          </Box>
+          <OutlinedInput
+            id="initiate-amount-size"
+            endAdornment={
+              <InputAdornment position="end">
+                <Typography variant="adornment">{`d${selectedLiquidityPool?.poolSymbol}`}</Typography>
+              </InputAdornment>
             }
+            type="number"
+            inputProps={{ step: 1, min: 0 }}
+            value={inputValue}
+            onChange={handleInputCapture}
           />
         </Box>
-        <OutlinedInput
-          id="initiate-amount-size"
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">{`d${selectedLiquidityPool?.poolSymbol}`}</Typography>
-            </InputAdornment>
-          }
-          type="number"
-          inputProps={{ step: 1, min: 0 }}
-          value={inputValue}
-          onChange={handleInputCapture}
-        />
-      </Box>
-      <Separator />
-      <Box className={styles.infoBlock}>
-        <Box className={styles.row}>
-          <Typography variant="body2">Amount</Typography>
-          <Typography variant="body2">
-            {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
-          </Typography>
+        <Separator />
+        <Box className={styles.summaryBlock}>
+          <Box className={styles.row}>
+            <Typography variant="body2">Amount</Typography>
+            <Typography variant="body2">
+              {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
+            </Typography>
+          </Box>
+          <Box className={styles.row}>
+            <Typography variant="body2">Can be withdrawn on:</Typography>
+            <Typography variant="body2">
+              {format(new Date(Date.now() + PERIOD_OF_2_DAYS), 'MMMM d yyyy HH:mm')}
+            </Typography>
+          </Box>
         </Box>
-        <Box className={styles.row}>
-          <Typography variant="body2">Can be withdrawn on:</Typography>
-          <Typography variant="body2">
-            {format(new Date(Date.now() + PERIOD_OF_2_DAYS), 'MMMM d yyyy HH:mm')}
-          </Typography>
-        </Box>
+        <Button
+          variant="primary"
+          disabled={isButtonDisabled}
+          onClick={handleInitiateLiquidity}
+          className={styles.actionButton}
+        >
+          Initiate withdrawal
+        </Button>
       </Box>
-      <Button
-        variant="primary"
-        disabled={isButtonDisabled}
-        onClick={handleInitiateLiquidity}
-        className={styles.actionButton}
-      >
-        Initiate withdrawal
-      </Button>
     </div>
   );
 });

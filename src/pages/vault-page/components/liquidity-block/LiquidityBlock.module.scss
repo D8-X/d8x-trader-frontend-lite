@@ -10,14 +10,18 @@
 
 .infoBlock {
   background-color: var(--d8x-background-grey);
-  padding: $d8x-spacing * 8;
-  width: 400px;
+  padding: $d8x-spacing * 10;
+  width: 274px;
 }
 
 .actionBlock {
   flex: 1;
   background-color: var(--d8x-background-white);
   padding: $d8x-spacing * 4;
+}
+
+.separator {
+  margin-bottom: 0;
 }
 
 .text {
@@ -27,7 +31,18 @@
 
 @media screen and ($d8x-breakpoint-max-sm) {
 
+  .root {
+    display: block;
+  }
+
   .infoBlock {
-    display: none;
+    background-color: var(--d8x-background-white);
+    border-radius: $d8x-border-radius;
+    margin-bottom: $d8x-spacing * 4;
+    width: auto;
+  }
+
+  .actionBlock {
+    border-radius: $d8x-border-radius;
   }
 }

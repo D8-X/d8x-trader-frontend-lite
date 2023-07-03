@@ -1,3 +1,4 @@
+import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
@@ -18,10 +19,10 @@ import {
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { proxyAddrAtom } from 'store/pools.store';
-import { toUtf8String } from '@ethersproject/strings';
-import styles from './AddAction.module.scss';
 
-export const AddAction = memo(() => {
+import styles from './Action.module.scss';
+
+export const Add = memo(() => {
   const { address } = useAccount();
 
   const { data: signer } = useSigner({
@@ -142,50 +143,63 @@ export const AddAction = memo(() => {
 
   return (
     <div className={styles.root}>
-      <Separator />
-      <Box className={styles.inputLine}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title="Amount"
-            content={
-              <>
-                <Typography>
-                  Specify the amount of {selectedLiquidityPool?.poolSymbol} you want to add to the pool.
-                </Typography>
-              </>
+      <Box className={styles.infoBlock}>
+        <Typography variant="h5">Add Liquidity</Typography>
+        <Typography variant="body2" className={styles.text}>
+          Add liquidity to the {selectedLiquidityPool?.poolSymbol} pool and receive d{selectedLiquidityPool?.poolSymbol}
+          , an ERC-20 token that represents your ownership in the liquidity pool.
+        </Typography>
+        <Typography variant="body2" className={styles.text}>
+          As a liquidity provider, you'll earn trading fees and funding rate payments on all trades collateralized in{' '}
+          {selectedLiquidityPool?.poolSymbol}. You'll also participate in the PnL of the pool. d
+          {selectedLiquidityPool?.poolSymbol} accumulates fees, funding rate payments and PnL in real-time.
+        </Typography>
+      </Box>
+      <Box className={styles.contentBlock}>
+        <Box className={styles.inputLine}>
+          <Box className={styles.label}>
+            <InfoBlock
+              title="Amount"
+              content={
+                <>
+                  <Typography>
+                    Specify the amount of {selectedLiquidityPool?.poolSymbol} you want to add to the pool.
+                  </Typography>
+                </>
+              }
+            />
+          </Box>
+          <OutlinedInput
+            id="initiate-amount-size"
+            endAdornment={
+              <InputAdornment position="end">
+                <Typography variant="adornment">{selectedLiquidityPool?.poolSymbol}</Typography>
+              </InputAdornment>
             }
+            type="number"
+            inputProps={{ step: 1, min: 0 }}
+            value={inputValue}
+            onChange={handleInputCapture}
           />
         </Box>
-        <OutlinedInput
-          id="initiate-amount-size"
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">{selectedLiquidityPool?.poolSymbol}</Typography>
-            </InputAdornment>
-          }
-          type="number"
-          inputProps={{ step: 1, min: 0 }}
-          value={inputValue}
-          onChange={handleInputCapture}
-        />
-      </Box>
-      <Separator />
-      <Box className={styles.infoBlock}>
-        <Box className={styles.row}>
-          <Typography variant="body2">You receive:</Typography>
-          <Typography variant="body2">
-            {formatToCurrency(predictedAmount, `d${selectedLiquidityPool?.poolSymbol}`)}
-          </Typography>
+        <Separator />
+        <Box className={styles.summaryBlock}>
+          <Box className={styles.row}>
+            <Typography variant="body2">You receive:</Typography>
+            <Typography variant="body2">
+              {formatToCurrency(predictedAmount, `d${selectedLiquidityPool?.poolSymbol}`)}
+            </Typography>
+          </Box>
         </Box>
+        <Button
+          variant="primary"
+          disabled={!addAmount || requestSent || !isSDKConnected}
+          onClick={handleAddLiquidity}
+          className={styles.actionButton}
+        >
+          Add
+        </Button>
       </Box>
-      <Button
-        variant="primary"
-        disabled={!addAmount || requestSent || !isSDKConnected}
-        onClick={handleAddLiquidity}
-        className={styles.actionButton}
-      >
-        Add
-      </Button>
     </div>
   );
 });

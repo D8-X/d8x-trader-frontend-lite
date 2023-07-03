@@ -2,9 +2,9 @@ import { useAtom } from 'jotai';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
-import { Box, Typography } from '@mui/material';
-
 import { PERIOD_OF_7_DAYS } from 'app-constants';
+import type { StatDataI } from 'components/stats-line/types';
+import { StatsLine } from 'components/stats-line/StatsLine';
 import { getWeeklyAPI } from 'network/history';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import {
@@ -15,8 +15,6 @@ import {
   sdkConnectedAtom,
 } from 'store/vault-pools.store';
 import { traderAPIAtom } from 'store/pools.store';
-
-import styles from './GlobalStats.module.scss';
 
 export const GlobalStats = () => {
   const chainId = useChainId();
@@ -88,40 +86,31 @@ export const GlobalStats = () => {
     return '--';
   }, [selectedLiquidityPool, dCurrencyPrice, tvl]);
 
-  return (
-    <Box className={styles.root}>
-      <Box key="midPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Weekly APY
-        </Typography>
-        <Typography variant="bodyLarge" className={styles.statValue}>
-          {weeklyAPI !== undefined ? formatToCurrency(weeklyAPI, '%') : '--'}
-        </Typography>
-      </Box>
-      <Box key="markPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          TVL
-        </Typography>
-        <Typography variant="bodyLarge" className={styles.statValue}>
-          {selectedLiquidityPool && tvl != null ? formatToCurrency(tvl, selectedLiquidityPool.poolSymbol) : '--'}
-        </Typography>
-      </Box>
-      <Box key="indexPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          d{selectedLiquidityPool?.poolSymbol} Price
-        </Typography>
-        <Typography variant="bodyLarge" className={styles.statValue}>
-          {dCurrencyPrice != null ? formatToCurrency(dCurrencyPrice, selectedLiquidityPool?.poolSymbol) : '--'}
-        </Typography>
-      </Box>
-      <Box key="fundingRate" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          d{selectedLiquidityPool?.poolSymbol} Supply
-        </Typography>
-        <Typography variant="bodyLarge" className={styles.statValue}>
-          {dSupply}
-        </Typography>
-      </Box>
-    </Box>
+  const items: StatDataI[] = useMemo(
+    () => [
+      {
+        id: 'weeklyAPY',
+        label: 'Weekly APY',
+        value: weeklyAPI !== undefined ? formatToCurrency(weeklyAPI, '%') : '--',
+      },
+      {
+        id: 'tvl',
+        label: 'TVL',
+        value: selectedLiquidityPool && tvl != null ? formatToCurrency(tvl, selectedLiquidityPool.poolSymbol) : '--',
+      },
+      {
+        id: 'dSymbolPrice',
+        label: `d${selectedLiquidityPool?.poolSymbol} Price`,
+        value: dCurrencyPrice != null ? formatToCurrency(dCurrencyPrice, selectedLiquidityPool?.poolSymbol) : '--',
+      },
+      {
+        id: 'dSymbolSupply',
+        label: `d${selectedLiquidityPool?.poolSymbol} Supply`,
+        value: dSupply,
+      },
+    ],
+    [weeklyAPI, selectedLiquidityPool, tvl, dCurrencyPrice, dSupply]
   );
+
+  return <StatsLine items={items} />;
 };

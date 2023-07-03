@@ -1,6 +1,8 @@
+import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useSigner } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -18,11 +20,9 @@ import {
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import styles from './WithdrawAction.module.scss';
-import { useSigner } from 'wagmi';
-import { toUtf8String } from '@ethersproject/strings';
+import styles from './Action.module.scss';
 
-export const WithdrawAction = memo(() => {
+export const Withdraw = memo(() => {
   const [selectedLiquidityPool] = useAtom(selectedLiquidityPoolAtom);
   const [liqProvTool] = useAtom(liqProvToolAtom);
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
@@ -132,60 +132,72 @@ export const WithdrawAction = memo(() => {
 
   return (
     <div className={styles.root}>
-      <Separator />
-      <Box className={styles.inputLine}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title="Withdrawable amount"
-            content={
-              <>
-                <Typography>
-                  This amount can be converted to {selectedLiquidityPool?.poolSymbol}, which can be withdrawn from the
-                  pool.
-                </Typography>
-              </>
-            }
-          />
-        </Box>
-        <Typography variant="body1" className={styles.value}>
-          {formatToCurrency(shareAmount, `d${selectedLiquidityPool?.poolSymbol}`)}
-        </Typography>
-      </Box>
-      <Box className={styles.inputLine}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title="dMATIC price"
-            content={
-              <>
-                <Typography>
-                  This is the price at which you can convert d{selectedLiquidityPool?.poolSymbol} to{' '}
-                  {selectedLiquidityPool?.poolSymbol}.
-                </Typography>
-              </>
-            }
-          />
-        </Box>
-        <Typography variant="body1" className={styles.value}>
-          {formatToCurrency(dCurrencyPrice, selectedLiquidityPool?.poolSymbol)}
-        </Typography>
-      </Box>
-      <Separator />
       <Box className={styles.infoBlock}>
-        <Box className={styles.row}>
-          <Typography variant="body2">You receive:</Typography>
-          <Typography variant="body2">
-            {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
+        <Typography variant="h5">Withdraw liquidity</Typography>
+        <Typography variant="body2" className={styles.text}>
+          Withdraw {selectedLiquidityPool?.poolSymbol} from the pool.
+        </Typography>
+        <Typography variant="body2" className={styles.text}>
+          Keep in mind that you need to initiate a withdrawal request before you can withdraw your funds. Once done, a
+          withdrawable amount of d{selectedLiquidityPool?.poolSymbol} can be exchanged for{' '}
+          {selectedLiquidityPool?.poolSymbol} at d{selectedLiquidityPool?.poolSymbol} price.
+        </Typography>
+      </Box>
+      <Box className={styles.contentBlock}>
+        <Box className={styles.inputLine}>
+          <Box className={styles.label}>
+            <InfoBlock
+              title="Withdrawable amount"
+              content={
+                <>
+                  <Typography>
+                    This amount can be converted to {selectedLiquidityPool?.poolSymbol}, which can be withdrawn from the
+                    pool.
+                  </Typography>
+                </>
+              }
+            />
+          </Box>
+          <Typography variant="body1" className={styles.value}>
+            {formatToCurrency(shareAmount, `d${selectedLiquidityPool?.poolSymbol}`)}
           </Typography>
         </Box>
+        <Box className={styles.inputLine}>
+          <Box className={styles.label}>
+            <InfoBlock
+              title="dMATIC price"
+              content={
+                <>
+                  <Typography>
+                    This is the price at which you can convert d{selectedLiquidityPool?.poolSymbol} to{' '}
+                    {selectedLiquidityPool?.poolSymbol}.
+                  </Typography>
+                </>
+              }
+            />
+          </Box>
+          <Typography variant="body1" className={styles.value}>
+            {formatToCurrency(dCurrencyPrice, selectedLiquidityPool?.poolSymbol)}
+          </Typography>
+        </Box>
+        <Separator />
+        <Box className={styles.summaryBlock}>
+          <Box className={styles.row}>
+            <Typography variant="body2">You receive:</Typography>
+            <Typography variant="body2">
+              {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
+            </Typography>
+          </Box>
+        </Box>
+        <Button
+          variant="primary"
+          onClick={handleWithdrawLiquidity}
+          className={styles.actionButton}
+          disabled={isButtonDisabled}
+        >
+          Withdraw
+        </Button>
       </Box>
-      <Button
-        variant="primary"
-        onClick={handleWithdrawLiquidity}
-        className={styles.actionButton}
-        disabled={isButtonDisabled}
-      >
-        Withdraw
-      </Button>
     </div>
   );
 });

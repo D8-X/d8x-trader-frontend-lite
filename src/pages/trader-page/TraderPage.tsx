@@ -3,19 +3,19 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { Container } from 'components/container/Container';
+import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
+import { PerpetualsSelect } from 'components/header/elements/perpetuals-select/PerpetualsSelect';
 import { Header } from 'components/header/Header';
 import { Footer } from 'components/footer/Footer';
+import { FundingTable } from 'components/funding-table/FundingTable';
 import { OpenOrdersTable } from 'components/open-orders-table/OpenOrdersTable';
 import { OrderBlock } from 'components/order-block/OrderBlock';
-import { PerpetualStats } from 'components/perpetual-stats/PerpetualStats';
 import { PositionsTable } from 'components/positions-table/PositionsTable';
-import { FundingTable } from 'components/funding-table/FundingTable';
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
 import { SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
 import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
 import { TradingViewChart } from 'components/trading-view-chart/TradingViewChart';
-import { CollateralsSelect } from '../../components/header/elements/collaterals-select/CollateralsSelect';
-import { PerpetualsSelect } from '../../components/header/elements/perpetuals-select/PerpetualsSelect';
+import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
 
 import { TableTypeE } from 'types/enums';
 

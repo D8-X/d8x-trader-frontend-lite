@@ -3,19 +3,19 @@
 .root {
   display: flex;
   justify-content: flex-start;
-  gap: $d8x-spacing * 8;
+  gap: $d8x-spacing * 4;
   margin-top: $d8x-spacing * 2;
   margin-bottom: $d8x-spacing * 4;
 
   button {
     min-width: 30px;
-    font-size: 16px;
+    font-size: 14px;
+    line-height: 20px;
     font-weight: 500;
   }
 }
 
 .selected {
-  text-decoration: underline;
-  text-underline-offset: $d8x-spacing * 2;
   color: var(--d8x-color-purple);
+  background-color: var(--d8x-color-purple-50);
 }

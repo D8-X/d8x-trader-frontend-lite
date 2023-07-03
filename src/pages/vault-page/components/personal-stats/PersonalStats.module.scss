@@ -1,0 +1,27 @@
+@import 'styles/theme/theme';
+
+.root {
+  display: block;
+}
+
+.heading {
+  padding-bottom: $d8x-spacing * 2;
+}
+
+.statContainer {
+  margin-top: $d8x-spacing * 8;
+  text-align: left;
+}
+
+.statLabel {
+  display: block;
+  color: var(--d8x-color-black-400);
+  white-space: nowrap;
+  margin-bottom: $d8x-spacing * 0.5;
+}
+
+.statValue {
+  display: block;
+  color: var(--d8x-color-purple);
+  white-space: nowrap;
+}
