@@ -13,9 +13,27 @@
 .dialog {
 
   :global(.MuiPaper-root) {
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
+    border-radius: $d8x-border-radius;
   }
+}
+
+.emphasis {
+  background-color: var(--d8x-color-black-50);
+  padding: $d8x-spacing * 5 $d8x-spacing * 8;
+}
+
+.semibold {
+  font-weight: 500;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.left {
+  color: var(--d8x-color-black-400);
 }
 
 .centered {

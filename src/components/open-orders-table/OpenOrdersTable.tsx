@@ -43,6 +43,7 @@ import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './OpenOrdersTable.module.scss';
+import { toUtf8String } from '@ethersproject/strings';
 
 const MIN_WIDTH_FOR_TABLE = 900;
 
@@ -67,7 +68,7 @@ export const OpenOrdersTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const traderAPIRef = useRef(traderAPI);
-  const openOrdersRefreshedRef = useRef(false);
+  // const openOrdersRefreshedRef = useRef(false);
   const isAPIBusyRef = useRef(isAPIBusy);
 
   useEffect(() => {
@@ -112,6 +113,35 @@ export const OpenOrdersTable = memo(() => {
                   setRequestSent(false);
                   console.log(`cancelOrder tx hash: ${tx.hash}`);
                   toast.success(<ToastContent title="Cancel order processed" bodyLines={[]} />);
+                  tx.wait()
+                    .then((receipt) => {
+                      if (receipt.status !== 1) {
+                        toast.error(<ToastContent title="Transaction failed" bodyLines={[]} />);
+                      }
+                    })
+                    .catch(async (err) => {
+                      console.error(err);
+                      const response = await signer.call(
+                        {
+                          to: tx.to,
+                          from: tx.from,
+                          nonce: tx.nonce,
+                          gasLimit: tx.gasLimit,
+                          gasPrice: tx.gasPrice,
+                          data: tx.data,
+                          value: tx.value,
+                          chainId: tx.chainId,
+                          type: tx.type ?? undefined,
+                          accessList: tx.accessList,
+                        },
+                        tx.blockNumber
+                      );
+                      const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
+                      setRequestSent(false);
+                      toast.error(
+                        <ToastContent title="Error cancelling order" bodyLines={[{ label: 'Reason', value: reason }]} />
+                      );
+                    });
                 })
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .catch((error: any) => {
@@ -169,12 +199,12 @@ export const OpenOrdersTable = memo(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.OPEN_ORDERS]: refreshOpenOrders }));
   }, [refreshOpenOrders, setTableRefreshHandlers]);
 
-  useEffect(() => {
-    if (!openOrdersRefreshedRef.current) {
-      openOrdersRefreshedRef.current = true;
-      refreshOpenOrders();
-    }
-  });
+  // useEffect(() => {
+  //   if (!openOrdersRefreshedRef.current) {
+  //     openOrdersRefreshedRef.current = true;
+  //     refreshOpenOrders();
+  //   }
+  // });
 
   const openOrdersHeaders: TableHeaderI[] = useMemo(
     () => [
