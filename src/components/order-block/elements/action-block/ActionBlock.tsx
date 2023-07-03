@@ -336,10 +336,10 @@ export const ActionBlock = memo(() => {
     if (isOrderTooSmall) {
       return 'Order will fail: order size is too small';
     }
-    const isPositonTooSmall =
+    const isPositionTooSmall =
       (!positionToModify || positionToModify.positionNotionalBaseCCY === 0) &&
       orderInfo.size < 10 * selectedPerpetualStaticInfo.lotSizeBC;
-    if (isPositonTooSmall && orderInfo.orderType === OrderTypeE.Market) {
+    if (isPositionTooSmall && orderInfo.orderType === OrderTypeE.Market) {
       return 'Order will fail: resulting position too small';
     } else if (
       orderInfo.size < 10 * selectedPerpetualStaticInfo.lotSizeBC &&
@@ -377,6 +377,17 @@ export const ActionBlock = memo(() => {
   const isConfirmButtonDisabled = useMemo(() => {
     return !isOrderValid || requestSentRef.current || requestSent;
   }, [isOrderValid, requestSent]);
+
+  const validityColor = useMemo(() => (validityCheckText === 'Good to go' ? 'green' : 'red'), [validityCheckText]);
+
+  const validityResult = useMemo(() => {
+    if (validityCheckText === 'Good to go') {
+      return 'Passed';
+    } else if (validityCheckText === '-') {
+      return '-';
+    }
+    return 'Failed';
+  }, [validityCheckText]);
 
   return (
     <Box className={styles.root}>
@@ -559,23 +570,15 @@ export const ActionBlock = memo(() => {
                 </Typography>
               }
               rightSide={
-                <Typography
-                  variant="bodyMedium"
-                  className={styles.bold}
-                  style={{ color: validityCheckText === 'Good to go' ? 'green' : 'red' }}
-                >
-                  {validityCheckText === 'Good to go' ? 'Passed' : validityCheckText === '-' ? '-' : 'Failed'}
+                <Typography variant="bodyMedium" className={styles.bold} style={{ color: validityColor }}>
+                  {validityResult}
                 </Typography>
               }
             />
           </Box>
           <DialogContent>
             <Box className={styles.goMessage}>
-              <Typography
-                variant="bodySmall"
-                className={styles.centered}
-                style={{ color: validityCheckText === 'Good to go' ? 'green' : 'red' }}
-              >
+              <Typography variant="bodySmall" className={styles.centered} style={{ color: validityColor }}>
                 {validityCheckText}
               </Typography>
             </Box>

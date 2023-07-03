@@ -1,14 +1,15 @@
 import { toUtf8String } from '@ethersproject/strings';
 import { format } from 'date-fns';
 import { useAtom } from 'jotai';
-import { ChangeEvent, memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useSigner } from 'wagmi';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import { PERIOD_OF_2_DAYS } from 'app-constants';
 import { InfoBlock } from 'components/info-block/InfoBlock';
+import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { Separator } from 'components/separator/Separator';
 import {
@@ -41,11 +42,10 @@ export const Initiate = memo(() => {
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
 
-  const handleInputCapture = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const targetValue = event.target.value;
-    if (targetValue) {
-      setInitiateAmount(+targetValue);
-      setInputValue(targetValue);
+  const handleInputCapture = useCallback((orderSizeValue: string) => {
+    if (orderSizeValue) {
+      setInitiateAmount(+orderSizeValue);
+      setInputValue(orderSizeValue);
     } else {
       setInitiateAmount(0);
       setInputValue('');
@@ -155,7 +155,11 @@ export const Initiate = memo(() => {
         <Box className={styles.inputLine}>
           <Box className={styles.label}>
             <InfoBlock
-              title="Amount"
+              title={
+                <>
+                  Amount of <strong>{selectedLiquidityPool?.poolSymbol}</strong>
+                </>
+              }
               content={
                 <>
                   <Typography>
@@ -170,20 +174,17 @@ export const Initiate = memo(() => {
               }
             />
           </Box>
-          <OutlinedInput
+          <ResponsiveInput
             id="initiate-amount-size"
-            endAdornment={
-              <InputAdornment position="end">
-                <Typography variant="adornment">{`d${selectedLiquidityPool?.poolSymbol}`}</Typography>
-              </InputAdornment>
-            }
-            type="number"
-            inputProps={{ step: 1, min: 0 }}
-            value={inputValue}
-            onChange={handleInputCapture}
+            className={styles.inputHolder}
+            inputValue={inputValue}
+            setInputValue={handleInputCapture}
+            currency={`d${selectedLiquidityPool?.poolSymbol}`}
+            step="1"
+            min={0}
           />
         </Box>
-        <Separator />
+
         <Box className={styles.summaryBlock}>
           <Box className={styles.row}>
             <Typography variant="body2">Amount</Typography>
@@ -191,6 +192,7 @@ export const Initiate = memo(() => {
               {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
             </Typography>
           </Box>
+          <Separator />
           <Box className={styles.row}>
             <Typography variant="body2">Can be withdrawn on:</Typography>
             <Typography variant="body2">

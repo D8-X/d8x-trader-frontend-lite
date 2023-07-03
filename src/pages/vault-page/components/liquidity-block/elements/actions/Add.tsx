@@ -1,14 +1,15 @@
 import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
-import { ChangeEvent, memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useSigner } from 'wagmi';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
+import { ReactComponent as SwitchIcon } from 'assets/icons/switchSeparator.svg';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { InfoBlock } from 'components/info-block/InfoBlock';
-import { Separator } from 'components/separator/Separator';
+import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import {
   dCurrencyPriceAtom,
@@ -46,11 +47,10 @@ export const Add = memo(() => {
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
 
-  const handleInputCapture = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const targetValue = event.target.value;
-    if (targetValue) {
-      setAddAmount(+targetValue);
-      setInputValue(targetValue);
+  const handleInputCapture = useCallback((orderSizeValue: string) => {
+    if (orderSizeValue) {
+      setAddAmount(+orderSizeValue);
+      setInputValue(orderSizeValue);
     } else {
       setAddAmount(0);
       setInputValue('');
@@ -159,7 +159,11 @@ export const Add = memo(() => {
         <Box className={styles.inputLine}>
           <Box className={styles.label}>
             <InfoBlock
-              title="Amount"
+              title={
+                <>
+                  Amount of <strong>{selectedLiquidityPool?.poolSymbol}</strong>
+                </>
+              }
               content={
                 <>
                   <Typography>
@@ -169,26 +173,35 @@ export const Add = memo(() => {
               }
             />
           </Box>
-          <OutlinedInput
-            id="initiate-amount-size"
-            endAdornment={
-              <InputAdornment position="end">
-                <Typography variant="adornment">{selectedLiquidityPool?.poolSymbol}</Typography>
-              </InputAdornment>
-            }
-            type="number"
-            inputProps={{ step: 1, min: 0 }}
-            value={inputValue}
-            onChange={handleInputCapture}
+          <ResponsiveInput
+            id="add-amount-size"
+            className={styles.inputHolder}
+            inputValue={inputValue}
+            setInputValue={handleInputCapture}
+            currency={selectedLiquidityPool?.poolSymbol}
+            step="1"
+            min={0}
           />
         </Box>
-        <Separator />
-        <Box className={styles.summaryBlock}>
-          <Box className={styles.row}>
-            <Typography variant="body2">You receive:</Typography>
-            <Typography variant="body2">
-              {formatToCurrency(predictedAmount, `d${selectedLiquidityPool?.poolSymbol}`)}
-            </Typography>
+        <Box className={styles.iconSeparator}>
+          <SwitchIcon />
+        </Box>
+        <Box className={styles.inputLine}>
+          <Box className={styles.label}>
+            You receive <strong>d{selectedLiquidityPool?.poolSymbol}</strong>
+          </Box>
+          <Box className={styles.inputHolder}>
+            <OutlinedInput
+              id="expected-amount"
+              endAdornment={
+                <InputAdornment position="end">
+                  <Typography variant="adornment">d{selectedLiquidityPool?.poolSymbol}</Typography>
+                </InputAdornment>
+              }
+              type="text"
+              value={formatToCurrency(predictedAmount, '')}
+              disabled
+            />
           </Box>
         </Box>
         <Button

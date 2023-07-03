@@ -1,16 +1,14 @@
 import { useAtom } from 'jotai';
-import type { ChangeEvent } from 'react';
 import { memo, useCallback, useMemo } from 'react';
 
-import { Box, Button, InputAdornment, OutlinedInput, Slider, Typography } from '@mui/material';
+import { Box, Slider, Typography } from '@mui/material';
 
-import { ReactComponent as DecreaseIcon } from 'assets/icons/decreaseIcon.svg';
-import { ReactComponent as IncreaseIcon } from 'assets/icons/increaseIcon.svg';
 import { InfoBlock } from 'components/info-block/InfoBlock';
+import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
+import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { leverageAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { MarkI } from 'types/types';
-import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
 
 import styles from './LeverageSelector.module.scss';
 
@@ -52,22 +50,14 @@ export const LeverageSelector = memo(() => {
     [setLeverage]
   );
 
-  const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
-
-  const handleInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setLeverage(+event.target.value);
+  const handleLeverageInputChange = useCallback(
+    (targetValue: string) => {
+      setLeverage(+targetValue);
     },
     [setLeverage]
   );
 
-  const handleDecreaseLeverage = useCallback(() => {
-    setLeverage(Math.max(1, leverage - leverageStep));
-  }, [setLeverage, leverageStep, leverage]);
-
-  const handleIncreaseLeverage = useCallback(() => {
-    setLeverage(Math.min(maxLeverage, leverage + leverageStep));
-  }, [setLeverage, leverageStep, leverage, maxLeverage]);
+  const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
 
   return (
     <Box className={styles.root}>
@@ -103,40 +93,16 @@ export const LeverageSelector = memo(() => {
             onChange={handleLeverageChange}
           />
         </Box>
-        <Box className={styles.inputHolder}>
-          <Button
-            key="decrease-leverage"
-            variant="outlined"
-            size="small"
-            className={styles.decreaseButton}
-            onClick={handleDecreaseLeverage}
-            disabled={leverage === 1}
-          >
-            <DecreaseIcon />
-          </Button>
-          <OutlinedInput
-            id="leverage"
-            type="number"
-            inputProps={{ min: 1, max: maxLeverage }}
-            endAdornment={
-              <InputAdornment position="end">
-                <Typography variant="adornment">X</Typography>
-              </InputAdornment>
-            }
-            onChange={handleInputChange}
-            value={leverage}
-          />
-          <Button
-            key="increase-leverage"
-            variant="outlined"
-            size="small"
-            className={styles.increaseButton}
-            onClick={handleIncreaseLeverage}
-            disabled={leverage >= maxLeverage}
-          >
-            <IncreaseIcon />
-          </Button>
-        </Box>
+        <ResponsiveInput
+          id="leverage"
+          className={styles.inputHolder}
+          inputValue={leverage}
+          setInputValue={handleLeverageInputChange}
+          currency="X"
+          step={`${leverageStep}`}
+          min={1}
+          max={maxLeverage}
+        />
       </Box>
     </Box>
   );

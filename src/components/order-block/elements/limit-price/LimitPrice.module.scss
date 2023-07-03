@@ -15,12 +15,6 @@
   }
 }
 
-.decreaseButton,
-.increaseButton {
-  display: none;
-  color: var(--d8x-color-purple);
-}
-
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .root {
@@ -31,66 +25,5 @@
   .label {
     justify-content: flex-start !important;
     margin-bottom: 3 * $d8x-spacing;
-  }
-
-  .inputHolder {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-
-    :global(.MuiInputBase-root) {
-      flex: 1;
-      padding-right: 0;
-
-      input {
-        width: 45%;
-        text-align: right;
-      }
-
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
-        display: none;
-      }
-
-      input[type='number'] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-      }
-
-      input[type='number']:hover,
-      input[type='number']:focus {
-        -moz-appearance: textfield;
-        appearance: textfield;
-      }
-
-      :global(.MuiInputAdornment-root) {
-        margin-left: 0;
-      }
-    }
-
-    .decreaseButton,
-    .increaseButton {
-      display: inline-block;
-      padding: 0;
-      border: none;
-      min-width: auto;
-      line-height: 0.5;
-      background: none !important;
-      transition: opacity 0.3s linear;
-
-      &:hover {
-        opacity: 0.7;
-      }
-
-      > svg {
-        width: 30px;
-        height: 30px;
-      }
-
-      > :global(.MuiTouchRipple-root) {
-        display: none;
-      }
-    }
   }
 }

@@ -1,13 +1,11 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { useAtom } from 'jotai';
-import type { ChangeEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { InfoBlock } from 'components/info-block/InfoBlock';
-import { ReactComponent as DecreaseIcon } from 'assets/icons/decreaseIcon.svg';
-import { ReactComponent as IncreaseIcon } from 'assets/icons/increaseIcon.svg';
+import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 
 import { orderSizeAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom } from 'store/pools.store';
@@ -23,12 +21,11 @@ export const OrderSize = memo(() => {
 
   const inputValueChangedRef = useRef(false);
 
-  const handleInputCapture = useCallback(
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const targetValue = event.target.value;
-      if (targetValue) {
-        setOrderSize(+targetValue);
-        setInputValue(targetValue);
+  const handleOrderSizeChange = useCallback(
+    (orderSizeValue: string) => {
+      if (orderSizeValue) {
+        setOrderSize(+orderSizeValue);
+        setInputValue(orderSizeValue);
       } else {
         setOrderSize(0);
         setInputValue('');
@@ -57,41 +54,15 @@ export const OrderSize = memo(() => {
     if (perpetualStaticInfo) {
       return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
     }
-    return 0.1;
+    return '0.1';
   }, [perpetualStaticInfo]);
 
   const minPositionString = useMemo(() => {
     if (perpetualStaticInfo) {
       return roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
     }
-    return 0.1;
+    return '0.1';
   }, [perpetualStaticInfo]);
-
-  const handleDecreaseOrderSize = () => {
-    const parts = orderSizeStep.toString().split('.');
-    let decimalPlaces;
-    if (parts.length === 2) {
-      decimalPlaces = parts[1].length;
-    } else {
-      decimalPlaces = 0;
-    }
-    const rounded = Math.round((orderSize - +orderSizeStep) / +orderSizeStep) * +orderSizeStep;
-    const limited = rounded.toFixed(decimalPlaces);
-    setOrderSize(parseFloat(limited));
-  };
-
-  const handleIncreaseOrderSize = () => {
-    const parts = orderSizeStep.toString().split('.');
-    let decimalPlaces;
-    if (parts.length === 2) {
-      decimalPlaces = parts[1].length;
-    } else {
-      decimalPlaces = 0;
-    }
-    const rounded = Math.round((orderSize + +orderSizeStep) / +orderSizeStep) * +orderSizeStep;
-    const limited = rounded.toFixed(decimalPlaces);
-    setOrderSize(parseFloat(limited));
-  };
 
   return (
     <Box className={styles.root}>
@@ -109,40 +80,15 @@ export const OrderSize = memo(() => {
           }
         />
       </Box>
-      <Box className={styles.inputHolder}>
-        <Button
-          key="decrease-order-size"
-          variant="outlined"
-          size="small"
-          className={styles.decreaseButton}
-          onClick={handleDecreaseOrderSize}
-          disabled={orderSize === 0}
-        >
-          <DecreaseIcon />
-        </Button>
-        <OutlinedInput
-          id="order-size"
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">{selectedPerpetual?.baseCurrency}</Typography>
-            </InputAdornment>
-          }
-          type="number"
-          inputProps={{ step: orderSizeStep, min: 0 }}
-          value={inputValue}
-          onChange={handleInputCapture}
-          onBlur={handleInputBlur}
-        />
-        <Button
-          key="increase-order-size"
-          variant="outlined"
-          size="small"
-          className={styles.increaseButton}
-          onClick={handleIncreaseOrderSize}
-        >
-          <IncreaseIcon />
-        </Button>
-      </Box>
+      <ResponsiveInput
+        id="order-size"
+        inputValue={inputValue}
+        setInputValue={handleOrderSizeChange}
+        handleInputBlur={handleInputBlur}
+        currency={selectedPerpetual?.baseCurrency}
+        step={orderSizeStep}
+        min={0}
+      />
     </Box>
   );
 });
