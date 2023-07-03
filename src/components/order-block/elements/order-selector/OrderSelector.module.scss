@@ -15,10 +15,10 @@
     font-size: 16px;
     line-height: 24px;
     font-weight: 600;
-    background-color: var(--d8x-color-white-30);
+    background-color: var(--d8x-color-black-150);
     border-width: 1px 1px 0 0;
     margin-bottom: -1px;
-    color: var(--d8x-color-black-400);
+    color: var(--d8x-color-black-300);
 
     &:first-of-type {
       border-left-width: 1px;
@@ -35,8 +35,8 @@
     }
 
     &.selected {
-      background-color: var(--d8x-color-purple-100);
-      color: var(--d8x-color-purple);
+      background-color: var(--d8x-color-purple);
+      color: var(--d8x-color-white);
     }
   }
 }
