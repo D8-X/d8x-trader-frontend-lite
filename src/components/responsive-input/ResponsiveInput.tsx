@@ -105,7 +105,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         placeholder={placeholder}
         onChange={handleValueChange}
         onBlur={handleInputBlur}
-        value={inputNumeric === null ? '' : inputNumeric}
+        value={inputNumeric === null ? '' : inputValue}
       />
       <Button
         key="increase-input-value"
