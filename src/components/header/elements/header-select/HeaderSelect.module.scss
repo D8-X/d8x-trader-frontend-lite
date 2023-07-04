@@ -1,7 +1,23 @@
 @import 'styles/theme/theme';
+@import 'styles/theme/utils';
 
 .root {
   width: 100%;
+}
+
+.holderRoot {
+  display: flex;
+  align-items: center;
+  gap: 0.5 * $d8x-spacing;
+}
+
+.iconWrapper {
+  @include flex-center;
+
+  height: 45px;
+  min-width: 45px;
+  border-radius: 50%;
+  background-color: var(--d8x-color-white);
 }
 
 .autocomplete {

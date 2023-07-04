@@ -25,7 +25,6 @@ import { PerpetualI } from 'types/types';
 import { HeaderSelect } from '../header-select/HeaderSelect';
 
 import styles from '../header-select/HeaderSelect.module.scss';
-import perpetualStyles from './PerpetualsSelect.module.scss';
 
 const CustomPaper = ({ children, ...props }: PaperProps) => {
   return (
@@ -119,8 +118,8 @@ export const PerpetualsSelect = memo(() => {
   };
 
   return (
-    <Box className={perpetualStyles.root}>
-      <Box className={perpetualStyles.iconWrapper}>
+    <Box className={styles.holderRoot}>
+      <Box className={styles.iconWrapper}>
         <PerpetualIcon />
       </Box>
       <HeaderSelect<PerpetualI>

@@ -25,7 +25,6 @@ import { PoolI } from 'types/types';
 import { HeaderSelect } from '../header-select/HeaderSelect';
 
 import styles from '../header-select/HeaderSelect.module.scss';
-import collateralStyles from './CollateralSelect.module.scss';
 
 const CustomPaper = ({ children, ...props }: PaperProps) => {
   return (
@@ -117,8 +116,8 @@ export const CollateralsSelect = memo(() => {
   };
 
   return (
-    <Box className={collateralStyles.root}>
-      <Box className={collateralStyles.iconWrapper}>
+    <Box className={styles.holderRoot}>
+      <Box className={styles.iconWrapper}>
         <CollateralIcon />
       </Box>
       <HeaderSelect<PoolI>
