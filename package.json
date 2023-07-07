@@ -67,7 +67,7 @@
     "@ethersproject/units": "5.7.0",
     "@mui/icons-material": "5.13.7",
     "@mui/material": "5.11.16",
-    "@rainbow-me/rainbowkit": "0.12.9",
+    "@rainbow-me/rainbowkit": "0.12.17",
     "classnames": "2.3.2",
     "date-fns": "2.29.3",
     "jotai": "2.0.4",
@@ -82,7 +82,7 @@
     "react-scripts": "5.0.1",
     "react-toastify": "9.1.2",
     "util": "0.12.5",
-    "wagmi": "0.12.12"
+    "wagmi": "0.12.18"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",

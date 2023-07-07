@@ -18,13 +18,15 @@ const defaultChains: Chain[] = [
 
 const { chains, provider } = configureChains(defaultChains, [publicProvider()]);
 
+const projectId = 'eaff775af64a83b1564223ce858cb56c';
+
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
     wallets: [
       injectedWallet({ chains }),
-      metaMaskWallet({ chains }),
-      walletConnectWallet({ chains }),
+      metaMaskWallet({ projectId, chains }),
+      walletConnectWallet({ projectId, chains }),
       coinbaseWallet({ chains, appName: 'D8X App' }),
     ],
   },
