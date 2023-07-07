@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useAccount, useChainId, useSigner } from 'wagmi';
 import { Separator } from 'components/separator/Separator';
 
-import { Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
@@ -94,6 +94,7 @@ export const ActionBlock = memo(() => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
   const [, clearInputsData] = useAtom(clearInputsDataAtom);
+  const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
 
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
@@ -134,6 +135,7 @@ export const ActionBlock = memo(() => {
 
   const closeReviewOrderModal = useCallback(() => {
     setShowReviewOrderModal(false);
+    setIsValidityCheckDone(false);
   }, []);
 
   const isBuySellButtonActive = useMemo(() => {
@@ -209,6 +211,7 @@ export const ActionBlock = memo(() => {
       return;
     }
     setRequestSent(true);
+    setIsValidityCheckDone(false);
     requestSentRef.current = true;
     await orderDigest(chainId, parsedOrders, address)
       .then((data) => {
@@ -379,10 +382,13 @@ export const ActionBlock = memo(() => {
 
   const validityResult = useMemo(() => {
     if (validityCheckText === 'Good to go') {
+      setIsValidityCheckDone(true);
       return 'Passed';
     } else if (validityCheckText === '-') {
+      setIsValidityCheckDone(false);
       return '-';
     }
+    setIsValidityCheckDone(true);
     return 'Failed';
   }, [validityCheckText]);
 
@@ -567,9 +573,15 @@ export const ActionBlock = memo(() => {
                 </Typography>
               }
               rightSide={
-                <Typography variant="bodyMedium" className={styles.bold} style={{ color: validityColor }}>
-                  {validityResult}
-                </Typography>
+                !isValidityCheckDone ? (
+                  <Box className={styles.loaderHolder}>
+                    <CircularProgress color="primary" />
+                  </Box>
+                ) : (
+                  <Typography variant="bodyMedium" className={styles.bold} style={{ color: validityColor }}>
+                    {validityResult}
+                  </Typography>
+                )
               }
             />
           </Box>
