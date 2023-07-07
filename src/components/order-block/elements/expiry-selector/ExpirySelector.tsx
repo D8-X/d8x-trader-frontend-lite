@@ -2,9 +2,8 @@ import classNames from 'classnames';
 import { useAtom } from 'jotai';
 import { memo } from 'react';
 
-import { Box, Button, ButtonGroup, Typography } from '@mui/material';
+import { Box, Button, ButtonGroup } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
 import { expireDaysAtom, orderTypeAtom } from 'store/order-block.store';
 import { ExpiryE, OrderTypeE } from 'types/enums';
 
@@ -20,20 +19,6 @@ export const ExpirySelector = memo(() => {
 
   return (
     <Box className={styles.root}>
-      <Box className={styles.label}>
-        <InfoBlock
-          title="Expiry"
-          content={
-            <>
-              <Typography>Number of days after which your main order will expire.</Typography>
-              <Typography>
-                Expiry of Take-Profit or Stop-Loss orders is not affected by this selection and is set by default 5
-                years into the future.
-              </Typography>
-            </>
-          }
-        />
-      </Box>
       <Box className={styles.expiryOptions}>
         <ButtonGroup variant="outlined" aria-label="button group">
           {Object.values(ExpiryE).map((key) => (

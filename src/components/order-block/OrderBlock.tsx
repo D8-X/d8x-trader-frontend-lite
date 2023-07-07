@@ -4,7 +4,6 @@ import { Card, CardContent } from '@mui/material';
 
 import { Separator } from '../separator/Separator';
 import { ActionBlock } from './elements/action-block/ActionBlock';
-import { ExpirySelector } from './elements/expiry-selector/ExpirySelector';
 import { InfoBlock } from './elements/info-block/InfoBlock';
 import { LeverageSelector } from './elements/leverage-selector/LeverageSelector';
 import { LimitPrice } from './elements/limit-price/LimitPrice';
@@ -33,7 +32,6 @@ export const OrderBlock = memo(() => {
       </CardContent>
       <Separator />
       <CardContent>
-        <ExpirySelector />
         <StopLossSelector />
         <TakeProfitSelector />
       </CardContent>

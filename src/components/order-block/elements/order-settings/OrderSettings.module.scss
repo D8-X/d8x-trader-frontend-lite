@@ -14,6 +14,8 @@
 .dialog {
 
   :global(.MuiPaper-root) {
+    min-width: 350px;
+    max-width: 450px;
     border-radius: $d8x-border-radius;
   }
 }
@@ -23,16 +25,25 @@
   flex-direction: column;
   align-items: center;
   padding-bottom: 6 * $d8x-spacing !important;
-  min-width: 350px;
 
   :global(.MuiFormControlLabel-root) {
     flex: 1;
   }
 }
 
+.dialogAction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .slippageBox {
   padding-bottom: 24px;
   padding-top: 24px;
+}
+
+.expiryBox {
+  padding: 24px;
 }
 
 .sliderHolder {
@@ -43,6 +54,7 @@
 .keepPosLeverage,
 .settings {
   display: flex;
+  align-items: center;
 
   :global(.MuiFormControlLabel-root) {
     margin-left: 0;
@@ -54,6 +66,7 @@
   cursor: pointer;
   transition: opacity 0.3s linear;
   margin-right: 4px;
+  margin-left: 12px;
 
   &:hover {
     opacity: 0.7;
@@ -68,7 +81,6 @@
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .dialogContent {
-    min-width: 250px;
     padding-top: 2 * $d8x-spacing !important;
   }
 }

@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 
 import {
   Box,
@@ -76,15 +77,21 @@ export const OrderSettings = memo(() => {
 
   const [updatedSlippage, setUpdatedSlippage] = useState(2);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showExpiryModal, setShowExpiryModal] = useState(false);
   const [inputValue, setInputValue] = useState(`${updatedSlippage}`);
   const inputValueChangedRef = useRef(false);
 
   const openSettingsModal = useCallback(() => setShowSettingsModal(true), []);
+  const openExpiryModal = useCallback(() => setShowExpiryModal(true), []);
 
   const closeSettingsModal = useCallback(() => {
     setUpdatedSlippage(slippage);
     setShowSettingsModal(false);
   }, [slippage]);
+
+  const closeExpiryModal = useCallback(() => {
+    setShowExpiryModal(false);
+  }, []);
 
   const handleSettingsConfirm = useCallback(() => {
     setShowSettingsModal(false);
@@ -164,15 +171,19 @@ export const OrderSettings = memo(() => {
             </>
           )}
           {orderType !== OrderTypeE.Market && (
-            <FormControlLabel
-              id="reduce-only"
-              value="true"
-              defaultChecked={reduceOnly}
-              onChange={(_event, checked) => setReduceOnly(checked)}
-              control={reduceOnly ? <Checkbox checked={true} /> : <Checkbox checked={false} />}
-              label="Reduce only"
-              labelPlacement="end"
-            />
+            <Box className={styles.settings}>
+              <FormControlLabel
+                id="reduce-only"
+                value="true"
+                defaultChecked={reduceOnly}
+                onChange={(_event, checked) => setReduceOnly(checked)}
+                control={reduceOnly ? <Checkbox checked={true} /> : <Checkbox checked={false} />}
+                label="Reduce only"
+                labelPlacement="end"
+              />
+              <SettingsIcon className={styles.settingsIcon} onClick={openExpiryModal} />
+              <Typography variant="bodyTiny">Expiry settings</Typography>
+            </Box>
           )}
         </Box>
       </Box>
@@ -220,6 +231,24 @@ export const OrderSettings = memo(() => {
           </Button>
           <Button onClick={handleSettingsConfirm} variant="primary" size="small">
             Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showExpiryModal} className={styles.dialog}>
+        <DialogTitle>Expiry settings</DialogTitle>
+        <DialogContent className={styles.dialogContent}>
+          <Typography variant="bodyMedium">
+            Set the number of days after, which your main order will expire (this setting does not affect your
+            take-profit and stop-loss orders).
+          </Typography>
+        </DialogContent>
+        <Box className={styles.expiryBox}>
+          <ExpirySelector />
+        </Box>
+        <Separator />
+        <DialogActions className={styles.dialogAction}>
+          <Button onClick={closeExpiryModal} variant="secondary" size="small">
+            Confirm expiry
           </Button>
         </DialogActions>
       </Dialog>
