@@ -102,6 +102,7 @@ export const ActionBlock = memo(() => {
 
   const requestSentRef = useRef(false);
   const traderAPIRef = useRef(traderAPI);
+  const validityCheckRef = useRef(false);
 
   useEffect(() => {
     traderAPIRef.current = traderAPI;
@@ -111,7 +112,7 @@ export const ActionBlock = memo(() => {
     if (!orderInfo || !address) {
       return;
     }
-
+    validityCheckRef.current = true;
     setShowReviewOrderModal(true);
     setNewPositionRisk(null);
 
@@ -130,6 +131,7 @@ export const ActionBlock = memo(() => {
     setMaxOrderSize(undefined);
     await getMaxOrderSizeForTrader(chainId, traderAPIRef.current, mainOrder, address, Date.now()).then((data) => {
       setMaxOrderSize(data.data);
+      validityCheckRef.current = false;
     });
   }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit]);
 
@@ -320,7 +322,13 @@ export const ActionBlock = memo(() => {
   );
 
   const validityCheckText = useMemo(() => {
-    if (!maxOrderSize || !orderInfo?.orderBlock || !selectedPerpetualStaticInfo) {
+    if (
+      !showReviewOrderModal ||
+      validityCheckRef.current ||
+      !maxOrderSize ||
+      !orderInfo?.orderBlock ||
+      !selectedPerpetualStaticInfo
+    ) {
       return '-';
     }
     if (isMarketClosed) {
@@ -364,6 +372,7 @@ export const ActionBlock = memo(() => {
     isMarketClosed,
     collateralDeposit,
     positionToModify,
+    showReviewOrderModal,
   ]);
 
   const isOrderValid = useMemo(() => {
@@ -382,14 +391,23 @@ export const ActionBlock = memo(() => {
 
   const validityResult = useMemo(() => {
     if (validityCheckText === 'Good to go') {
-      setIsValidityCheckDone(true);
       return 'Passed';
     } else if (validityCheckText === '-') {
+      return ' ';
+    }
+    return 'Failed';
+  }, [validityCheckText]);
+
+  useEffect(() => {
+    if (validityCheckText === 'Good to go') {
+      setIsValidityCheckDone(true);
+      return;
+    } else if (validityCheckText === '-') {
       setIsValidityCheckDone(false);
-      return '-';
+      return;
     }
     setIsValidityCheckDone(true);
-    return 'Failed';
+    return;
   }, [validityCheckText]);
 
   return (

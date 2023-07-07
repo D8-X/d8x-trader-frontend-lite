@@ -7,11 +7,12 @@ export const pages: PageI[] = [
     path: PageE.Trade,
     title: 'Trade',
   },
-  {
-    id: 'refer',
+  /* {
+   id: 'refer',
     path: PageE.Refer,
     title: 'Refer',
   },
+  */
   {
     id: 'vault',
     path: PageE.Vault,
