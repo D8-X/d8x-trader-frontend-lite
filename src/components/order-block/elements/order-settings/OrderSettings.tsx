@@ -1,6 +1,5 @@
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 
 import {
   Box,
@@ -18,6 +17,7 @@ import {
 
 import { ReactComponent as SettingsIcon } from 'assets/icons/settingsIcon.svg';
 import { Dialog } from 'components/dialog/Dialog';
+import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 // import { createSymbol } from 'helpers/createSymbol';
 import {
   // keepPositionLeverageAtom,
@@ -248,7 +248,7 @@ export const OrderSettings = memo(() => {
         <Separator />
         <DialogActions className={styles.dialogAction}>
           <Button onClick={closeExpiryModal} variant="secondary" size="small">
-            Confirm expiry
+            Close
           </Button>
         </DialogActions>
       </Dialog>
