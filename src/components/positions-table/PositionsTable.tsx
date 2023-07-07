@@ -1,5 +1,4 @@
 import { HashZero } from '@ethersproject/constants';
-import classnames from 'classnames';
 import { useAtom } from 'jotai';
 import type { ChangeEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,7 +28,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import { ReactComponent as RefreshIcon } from 'assets/icons/refreshIcon.svg';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { deposit } from 'blockchain-api/contract-interactions/deposit';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
@@ -605,22 +603,6 @@ export const PositionsTable = memo(() => {
     setPage(0);
   }, []);
 
-  const isRefreshActive = useMemo(() => {
-    if (!selectedPosition || !address || modifyType === ModifyTypeE.Close) {
-      return false;
-    }
-
-    if (newPositionRisk) {
-      return false;
-    }
-
-    if (modifyType === ModifyTypeE.Add && addCollateral > 0) {
-      return true;
-    }
-
-    return modifyType === ModifyTypeE.Remove && removeCollateral > 0;
-  }, [selectedPosition, address, modifyType, addCollateral, removeCollateral, newPositionRisk]);
-
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
@@ -766,14 +748,6 @@ export const PositionsTable = memo(() => {
               New position details
             </Typography>
           </Box>
-          {modifyType !== ModifyTypeE.Close && (
-            <Box className={styles.refreshHolder}>
-              <RefreshIcon
-                onClick={handleRefreshPositionRisk}
-                className={classnames(styles.actionIcon, { [styles.disabled]: !isRefreshActive })}
-              />
-            </Box>
-          )}
           <Box className={styles.newPositionDetails}>
             <SidesRow leftSide="Position size:" rightSide={calculatedPositionSize} />
             <SidesRow leftSide="Margin:" rightSide={calculatedMargin} />
