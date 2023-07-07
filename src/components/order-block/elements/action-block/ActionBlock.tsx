@@ -586,11 +586,15 @@ export const ActionBlock = memo(() => {
             />
           </Box>
           <DialogContent>
-            <Box className={styles.goMessage}>
-              <Typography variant="bodySmall" className={styles.centered} style={{ color: validityColor }}>
-                {validityCheckText}
-              </Typography>
-            </Box>
+            {isValidityCheckDone ? (
+              <Box className={styles.goMessage}>
+                <Typography variant="bodySmall" className={styles.centered} style={{ color: validityColor }}>
+                  {validityCheckText}
+                </Typography>
+              </Box>
+            ) : (
+              ''
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={closeReviewOrderModal} variant="secondary" size="small">
