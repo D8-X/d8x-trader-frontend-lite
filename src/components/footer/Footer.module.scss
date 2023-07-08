@@ -22,13 +22,13 @@
 }
 
 .footerSocialLogo {
-  color: var(--d8x-social-icon-color);
+  color: var(--d8x-color-black-400);
   transition: color 300ms linear;
   text-decoration: none;
   margin: 1rem 0;
 
   &:hover {
-    color: var(--d8x-social-icon-color-hover);
+    color: var(--d8x-color-black-800);
     text-decoration: none;
   }
 
