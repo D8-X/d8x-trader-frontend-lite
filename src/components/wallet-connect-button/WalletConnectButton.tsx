@@ -6,10 +6,11 @@ import { memo, useCallback, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useConnect, useProvider } from 'wagmi';
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
 import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
+import { ReactComponent as WalletIcon } from 'assets/icons/walletIcon.svg';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTraderLoyalty } from 'network/network';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
@@ -27,6 +28,8 @@ const loyaltyMap: Record<number, string> = {
 };
 
 export const WalletConnectButton = memo(() => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const [, setTraderAPI] = useAtom(traderAPIAtom);
   const [loyaltyScore, setLoyaltyScore] = useAtom(loyaltyScoreAtom);
   const [, setSDKConnected] = useAtom(sdkConnectedAtom);
@@ -150,15 +153,17 @@ export const WalletConnectButton = memo(() => {
                   <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                     <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                   </Button>
-
                   <Button onClick={openAccountModal} variant="primary" className={styles.addressButton}>
-                    <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore]}>
-                      {loyaltyScore < 5 ? <FilledStar /> : <EmptyStar />}
-                      {loyaltyScore < 4 ? <FilledStar /> : <EmptyStar />}
-                      {loyaltyScore < 3 ? <FilledStar /> : <EmptyStar />}
-                      {loyaltyScore < 2 ? <FilledStar /> : <EmptyStar />}
-                    </Box>
-                    {cutAddressName(account.address)}
+                    {!isSmallScreen && (
+                      <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore]}>
+                        {loyaltyScore < 5 ? <FilledStar /> : <EmptyStar />}
+                        {loyaltyScore < 4 ? <FilledStar /> : <EmptyStar />}
+                        {loyaltyScore < 3 ? <FilledStar /> : <EmptyStar />}
+                        {loyaltyScore < 2 ? <FilledStar /> : <EmptyStar />}
+                      </Box>
+                    )}
+                    {!isSmallScreen && cutAddressName(account.address)}
+                    {isSmallScreen && <WalletIcon />}
                   </Button>
                 </div>
               );
