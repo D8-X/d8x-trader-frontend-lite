@@ -7,6 +7,7 @@ import { ReactComponent as GithubLogo } from 'assets/social/github.svg';
 import { ReactComponent as MediumLogo } from 'assets/social/medium.svg';
 import { ReactComponent as TwitterLogo } from 'assets/social/twitter.svg';
 import { ReactComponent as DiscordLogo } from 'assets/social/discord.svg';
+import { ReactComponent as GitbookLogo } from 'assets/social/gitbook.svg';
 
 import { Container } from '../container/Container';
 
@@ -40,7 +41,7 @@ export const Footer = memo(() => {
               <MediumLogo />
             </Link>
             <Link
-              href="https://discord.gg/JdJ8EXqCVE"
+              href="https://discord.gg/kUEZ5cvzKn"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.footerSocialLogo}
@@ -54,6 +55,14 @@ export const Footer = memo(() => {
               className={styles.footerSocialLogo}
             >
               <TwitterLogo />
+            </Link>
+            <Link
+              href="https://d8x.gitbook.io/d8x"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.footerSocialLogo}
+            >
+              <GitbookLogo />
             </Link>
           </Box>
           <Link
