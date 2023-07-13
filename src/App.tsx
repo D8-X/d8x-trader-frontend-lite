@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import { Box } from '@mui/material';
 
 import { StaticBackground } from 'components/static-background/StaticBackground';
+import { WelcomeModal } from 'components/welcome-modal/WelcomeModal';
 import { TraderPage } from 'pages/trader-page/TraderPage';
 import { VaultPage } from 'pages/vault-page/VaultPage';
 import { appDimensionsAtom } from 'store/app.store';
@@ -33,6 +34,7 @@ export const App = memo(() => {
           <Route key="vault-page" path={PageE.Vault} element={<VaultPage />} />
           <Route key="trader-page" path="*" element={<TraderPage />} />
         </Routes>
+        <WelcomeModal />
         <ToastContainer position="top-left" autoClose={10_000} />
       </Box>
     </Box>

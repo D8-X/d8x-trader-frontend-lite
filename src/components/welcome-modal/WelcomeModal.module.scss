@@ -1,0 +1,29 @@
+@import 'styles/theme/theme';
+
+.dialog {
+
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 1200px;
+    border-radius: $d8x-border-radius;
+  }
+}
+
+.dialogContent {
+  font-size: 16px;
+  line-height: 24px;
+
+  p {
+    margin-top: $d8x-spacing * 6;
+  }
+}
+
+.dialogAction {
+  justify-content: center;
+}
+
+.dialogTitle {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
