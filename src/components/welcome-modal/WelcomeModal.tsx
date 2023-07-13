@@ -20,58 +20,78 @@ export const WelcomeModal = () => {
 
   return (
     <Dialog open={showModal} className={styles.dialog}>
-      <DialogTitle>Lorem Ipsum</DialogTitle>
+      <DialogTitle>Join the D8X UX Challenge!</DialogTitle>
       <DialogContent className={styles.dialogContent}>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ut sem sit amet lectus commodo facilisis.
-          Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut vulputate
-          venenatis leo. Vestibulum aliquet efficitur nisl eu elementum. Aenean sit amet placerat est, ut imperdiet
-          elit. Curabitur cursus eu erat sed ultrices. Proin nec mauris vel erat iaculis bibendum. Nulla malesuada nisl
-          vel eleifend mollis. Aliquam ultrices, mauris eget congue venenatis, metus tortor lacinia urna, eu tristique
-          nibh justo a quam. Nullam mollis metus eu lorem efficitur, semper scelerisque nibh auctor. In auctor eu libero
-          nec semper.
+          Join us in shaping the future of D8X by participating in our D8X UX Challenge on zkEVM and Polygon PoS every
+          Saturday. Provide detailed and constructive feedback on our UI-kit and earn rewards - every week! More details
+          in{' '}
+          <a href="https://discord.com/invite/kUEZ5cvzKn" target="_blank" rel="noreferrer">
+            Discord
+          </a>
+          .
+        </p>
+
+        <br />
+
+        <p>
+          <strong> Get your test tokens for Polygon Pos: </strong>
         </p>
 
         <p>
-          My link to any resource:{' '}
-          <a href="https://www.lipsum.com/" target="_blank" rel="noreferrer">
-            Lorem Ipsum
+          1. Get official testMATIC from any faucet, for example using{' '}
+          <a href="https://faucet.polygon.technology/" target="_blank" rel="noreferrer">
+            Polygon's official faucet
           </a>
           .
         </p>
 
         <p>
-          Vestibulum viverra nibh et tortor viverra eleifend. Nunc eget magna vitae augue facilisis tincidunt. Aenean
-          vitae mi vestibulum, hendrerit ipsum eu, commodo neque. Donec egestas suscipit faucibus. Fusce finibus
-          consequat nunc quis scelerisque. Aliquam quis magna posuere, consequat mauris et, cursus augue. Etiam posuere
-          felis et odio fringilla, non varius felis scelerisque. Mauris placerat libero sagittis magna laoreet
-          tristique. Nam molestie enim sed ornare cursus.
+          2. Get pragMATIC from our swap contract,{' '}
+          <a
+            href="https://mumbai.polygonscan.com/address/0xfF638C960b91BAeA0064a870f4A0CD73bD30Dc83#writeContract#F3"
+            target="_blank"
+            rel="noreferrer"
+          >
+            by swapping testMATIC for pragMATIC
+          </a>
+          .
         </p>
 
         <p>
-          Cras at finibus enim, vel feugiat turpis. Vestibulum vitae nisi commodo, malesuada justo vel, venenatis eros.
-          Phasellus hendrerit et mauris facilisis sollicitudin. Donec ac pharetra velit. Sed id volutpat risus. Nam in
-          quam nec arcu imperdiet vulputate a sed nibh. Curabitur id hendrerit diam. Phasellus turpis lectus, hendrerit
-          sed ultrices sit amet, suscipit a ipsum. Sed ultricies porttitor leo, vitae malesuada lacus maximus non. Nam
-          auctor erat elementum venenatis viverra. Sed dictum orci a orci pellentesque, quis ullamcorper nulla
-          vestibulum. Sed non purus lorem. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+          3. Get mockUSD from our swap contract,{' '}
+          <a
+            href="https://mumbai.polygonscan.com/address/0x44d1c80e21d0923204ec32bb2c3f427f51facfbf#writeContract#F3"
+            target="_blank"
+            rel="noreferrer"
+          >
+            by swapping testMATIC for mockUSD
+          </a>
+          .
         </p>
 
         <p>
-          Proin congue nec turpis eu vestibulum. Nam faucibus magna sit amet bibendum accumsan. Nunc vitae consectetur
-          mauris. Mauris ultricies nulla at ante tincidunt, ut imperdiet nunc gravida. Curabitur accumsan hendrerit
-          nisi, vitae cursus ligula ultrices nec. Donec at tortor sed nisl lacinia lacinia. Donec faucibus tellus a est
-          pellentesque sodales. Maecenas ac mattis ipsum. Praesent diam risus, blandit ut tincidunt id, laoreet vitae
-          nisl. Quisque tortor sapien, porttitor sed justo sed, auctor vulputate ipsum. Pellentesque at purus ac nibh
-          dictum rhoncus. Praesent tempor varius ex sed rhoncus. Integer et eros ac metus tincidunt pulvinar.
+          <strong> Get your test tokens for zkEVM:</strong>
         </p>
 
         <p>
-          Quisque cursus purus vitae gravida porta. Integer porttitor turpis metus, nec dapibus libero vehicula eget.
-          Maecenas id tristique lacus. Donec vitae sapien lacinia, venenatis elit ac, tincidunt metus. Duis ultricies
-          sit amet ex sit amet blandit. Sed in dignissim magna, maximus tempus justo. Donec gravida tincidunt eros non
-          tempus. Praesent molestie ut leo nec luctus. Nam vel erat lectus. Cras commodo feugiat nulla. Cras iaculis,
-          nisl vel cursus pretium, neque leo maximus enim, ut egestas quam ligula non justo.
+          1. Get zkEVM ETH, for example from{' '}
+          <a href="https://faucet.polygon.technology/" target="_blank" rel="noreferrer">
+            Polygon's official faucet
+          </a>
+          .
+        </p>
+
+        <p>
+          2. Get mockUSD from our swap contract,{' '}
+          <a
+            href="https://testnet-zkevm.polygonscan.com/address/0x9ac73fc87cfac3d01e69e46abe9f42b43eb7b72a#writeContract"
+            target="_blank"
+            rel="noreferrer"
+          >
+            by swapping zkEVM ETH for mockUSD
+          </a>
+          .
         </p>
       </DialogContent>
       <DialogActions className={styles.dialogAction}>
