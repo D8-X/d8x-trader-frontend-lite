@@ -53,7 +53,7 @@ export const WelcomeModal = () => {
             target="_blank"
             rel="noreferrer"
           >
-            by swapping testMATIC for pragMATIC
+            swap 0.05 testMATIC for a lot of pragMATIC
           </a>
           .
         </p>
@@ -65,7 +65,7 @@ export const WelcomeModal = () => {
             target="_blank"
             rel="noreferrer"
           >
-            by swapping testMATIC for mockUSD
+            swap 0.05 testMATIC for a lot of mockUSD
           </a>
           .
         </p>
