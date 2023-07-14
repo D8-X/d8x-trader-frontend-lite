@@ -188,7 +188,7 @@ export const Initiate = memo(() => {
         <Box className={styles.summaryBlock}>
           <Separator />
           <Box className={styles.row}>
-            <Typography variant="body2">Amount you will get:</Typography>
+            <Typography variant="body2">Amount you will get: </Typography>
             <Typography variant="body2">
               {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
             </Typography>
