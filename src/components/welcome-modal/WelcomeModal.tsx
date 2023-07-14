@@ -49,7 +49,7 @@ export const WelcomeModal = () => {
         <p>
           2. Get pragMATIC from our swap contract,{' '}
           <a
-            href="https://mumbai.polygonscan.com/address/0xfF638C960b91BAeA0064a870f4A0CD73bD30Dc83#writeContract#F3"
+            href="https://mumbai.polygonscan.com/address/0x16a827aff251929c8009392A05162a8ec134283F#writeContract"
             target="_blank"
             rel="noreferrer"
           >
@@ -61,7 +61,7 @@ export const WelcomeModal = () => {
         <p>
           3. Get mockUSD from our swap contract,{' '}
           <a
-            href="https://mumbai.polygonscan.com/address/0x44d1c80e21d0923204ec32bb2c3f427f51facfbf#writeContract#F3"
+            href="https://mumbai.polygonscan.com/address/0x2c0157BbCBAAD9B6226a49BD0Ec7925Df3cA8087#writeContract"
             target="_blank"
             rel="noreferrer"
           >
