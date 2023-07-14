@@ -44,10 +44,11 @@
   display: flex;
   padding: 12px;
   align-items: center;
-  gap: $d8x-spacing * 4;
+  gap: $d8x-spacing * 12;
 
   .leftLabel {
     flex: 1;
+    margin-right: 4px;
   }
 
   .rightLabel {
