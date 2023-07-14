@@ -56,6 +56,7 @@ import {
   positionRiskOnCollateralAction,
 } from 'network/network';
 import {
+  poolTokenDecimalsAtom,
   positionsAtom,
   proxyAddrAtom,
   removePositionAtom,
@@ -85,6 +86,7 @@ export const PositionsTable = memo(() => {
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
   const [, setTableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
+  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
 
   const traderAPIRef = useRef(traderAPI);
   const isAPIBusyRef = useRef(isAPIBusy);
@@ -121,7 +123,7 @@ export const PositionsTable = memo(() => {
   }, []);
 
   const handleModifyPositionConfirm = useCallback(async () => {
-    if (!selectedPosition || !address || !selectedPool || !proxyAddr || !signer) {
+    if (!selectedPosition || !address || !selectedPool || !proxyAddr || !signer || !poolTokenDecimals) {
       return;
     }
 
@@ -145,7 +147,7 @@ export const PositionsTable = memo(() => {
       await orderDigest(chainId, [closeOrder], address)
         .then((data) => {
           if (data.data.digests.length > 0) {
-            approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, 0)
+            approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, 0, poolTokenDecimals)
               .then((res) => {
                 if (res?.hash) {
                   console.log(res.hash);
@@ -212,7 +214,7 @@ export const PositionsTable = memo(() => {
       setRequestSent(true);
       getAddCollateral(chainId, traderAPIRef.current, selectedPosition.symbol, addCollateral)
         .then(({ data }) => {
-          approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, addCollateral)
+          approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, addCollateral, poolTokenDecimals)
             .then((res) => {
               if (res?.hash) {
                 console.log(res.hash);
@@ -341,6 +343,7 @@ export const PositionsTable = memo(() => {
     removeCollateral,
     maxCollateral,
     signer,
+    poolTokenDecimals,
   ]);
 
   const clearPositions = useCallback(() => {

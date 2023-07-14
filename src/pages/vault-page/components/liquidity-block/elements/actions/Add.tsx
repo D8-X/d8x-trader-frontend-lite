@@ -18,7 +18,7 @@ import {
   selectedLiquidityPoolAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { poolTokenDecimalsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 
 import styles from './Action.module.scss';
 
@@ -37,6 +37,7 @@ export const Add = memo(() => {
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const [, setLoadStats] = useAtom(loadStatsAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
+  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
@@ -69,7 +70,14 @@ export const Add = memo(() => {
       return;
     }
 
-    if (!liqProvTool || !isSDKConnected || !selectedLiquidityPool || !addAmount || addAmount < 0) {
+    if (
+      !liqProvTool ||
+      !isSDKConnected ||
+      !selectedLiquidityPool ||
+      !addAmount ||
+      addAmount < 0 ||
+      !poolTokenDecimals
+    ) {
       return;
     }
 
@@ -79,7 +87,7 @@ export const Add = memo(() => {
 
     requestSentRef.current = true;
     setRequestSent(true);
-    await approveMarginToken(signer, selectedLiquidityPool.marginTokenAddr, proxyAddr, addAmount)
+    await approveMarginToken(signer, selectedLiquidityPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then((res) => {
         if (res?.hash) {
           console.log(res.hash);
@@ -133,7 +141,17 @@ export const Add = memo(() => {
         setRequestSent(false);
         toast.error(<ToastContent title="Error adding liquidity" bodyLines={[]} />);
       });
-  }, [addAmount, liqProvTool, selectedLiquidityPool, address, proxyAddr, signer, isSDKConnected, setLoadStats]);
+  }, [
+    addAmount,
+    liqProvTool,
+    selectedLiquidityPool,
+    address,
+    proxyAddr,
+    signer,
+    isSDKConnected,
+    poolTokenDecimals,
+    setLoadStats,
+  ]);
 
   const predictedAmount = useMemo(() => {
     if (addAmount > 0 && dCurrencyPrice != null) {

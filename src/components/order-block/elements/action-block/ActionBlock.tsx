@@ -18,6 +18,7 @@ import {
   newPositionRiskAtom,
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
+  poolTokenDecimalsAtom,
   positionsAtom,
   proxyAddrAtom,
   selectedPerpetualAtom,
@@ -93,6 +94,7 @@ export const ActionBlock = memo(() => {
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
+  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const [, clearInputsData] = useAtom(clearInputsDataAtom);
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
 
@@ -209,7 +211,7 @@ export const ActionBlock = memo(() => {
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
   const handleOrderConfirm = useCallback(async () => {
-    if (!address || !signer || !parsedOrders || !selectedPool || !proxyAddr) {
+    if (!address || !signer || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
       return;
     }
     setRequestSent(true);
@@ -218,7 +220,7 @@ export const ActionBlock = memo(() => {
     await orderDigest(chainId, parsedOrders, address)
       .then((data) => {
         if (data.data.digests.length > 0) {
-          approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, collateralDeposit)
+          approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, collateralDeposit, poolTokenDecimals)
             .then((res) => {
               if (res?.hash) {
                 console.log(res.hash);
@@ -292,7 +294,17 @@ export const ActionBlock = memo(() => {
         setRequestSent(false);
         console.error(error);
       });
-  }, [parsedOrders, chainId, address, signer, selectedPool, proxyAddr, collateralDeposit, clearInputsData]);
+  }, [
+    parsedOrders,
+    chainId,
+    address,
+    signer,
+    selectedPool,
+    proxyAddr,
+    collateralDeposit,
+    poolTokenDecimals,
+    clearInputsData,
+  ]);
 
   const atPrice = useMemo(() => {
     if (orderInfo) {

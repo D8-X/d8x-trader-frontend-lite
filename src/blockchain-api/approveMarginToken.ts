@@ -6,10 +6,16 @@ import { MaxUint256 } from '@ethersproject/constants';
 
 import { erc20ABI } from 'wagmi';
 
-export function approveMarginToken(signer: Signer, marginTokenAddr: string, proxyAddr: string, minAmount: number) {
+export function approveMarginToken(
+  signer: Signer,
+  marginTokenAddr: string,
+  proxyAddr: string,
+  minAmount: number,
+  decimals: number
+) {
   const marginToken = new Contract(marginTokenAddr, erc20ABI, signer);
   const amount = MaxUint256;
-  const minAmountBN = parseUnits((4 * minAmount).toString(), 18);
+  const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
   return signer.getAddress().then((addr: string) => {
     return marginToken.allowance(addr, proxyAddr).then((allowance: BigNumber) => {
       if (allowance.gt(minAmountBN)) {
