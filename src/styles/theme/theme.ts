@@ -94,7 +94,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: ['Inter', 'sans-serif'].join(','),
+    fontFamily: ['Helvetica', 'sans-serif'].join(','),
     fontSize: 14,
   },
   components: {
