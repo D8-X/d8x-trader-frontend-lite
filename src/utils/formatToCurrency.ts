@@ -1,7 +1,8 @@
 const mapCurrencyToFractionDigits: Record<string, number> = {
   USD: 2,
-  MATIC: 0,
-  dMATIC: 0,
+  USDC: 2,
+  MATIC: 1,
+  dMATIC: 1,
   BTC: 5,
   dBTC: 5,
   ETH: 4,
