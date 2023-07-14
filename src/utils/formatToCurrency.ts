@@ -1,16 +1,17 @@
 const mapCurrencyToFractionDigits: Record<string, number> = {
   USD: 2,
-  MATIC: 3,
-  dMATIC: 3,
+  USDC: 2,
+  MATIC: 1,
+  dMATIC: 1,
   BTC: 5,
   dBTC: 5,
-  ETH: 5,
-  dETH: 5,
+  ETH: 4,
+  dETH: 4,
 };
 
 export function formatToCurrency(
   value: number | undefined | null,
-  currency = 'USD',
+  currency = '',
   keepZeros = false,
   fractionDigits?: number
 ) {

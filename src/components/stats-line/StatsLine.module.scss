@@ -28,6 +28,13 @@
   font-weight: 600;
 }
 
+@media screen and ($d8x-breakpoint-max-lg) {
+
+  .root {
+    overflow-x: auto;
+  }
+}
+
 @media screen and ($d8x-breakpoint-max-sm) {
 
   .root {

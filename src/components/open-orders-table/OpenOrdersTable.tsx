@@ -197,12 +197,11 @@ export const OpenOrdersTable = memo(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.OPEN_ORDERS]: refreshOpenOrders }));
   }, [refreshOpenOrders, setTableRefreshHandlers]);
 
-  // useEffect(() => {
-  //   if (!openOrdersRefreshedRef.current) {
-  //     openOrdersRefreshedRef.current = true;
-  //     refreshOpenOrders();
-  //   }
-  // });
+  useEffect(() => {
+    if (isSDKConnected) {
+      traderAPIRef.current = traderAPI;
+    }
+  }, [traderAPI, isSDKConnected]);
 
   const openOrdersHeaders: TableHeaderI[] = useMemo(
     () => [

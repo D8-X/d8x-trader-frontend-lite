@@ -230,7 +230,7 @@ export const ActionBlock = memo(() => {
                   // success submitting to mempool
                   console.log(`postOrder tx hash: ${tx.hash}`);
                   setShowReviewOrderModal(false);
-                  toast.success(<ToastContent title="Order submit processed" bodyLines={[]} />);
+                  toast.success(<ToastContent title="Order submission processed" bodyLines={[]} />);
                   clearInputsData();
                   // release lock
                   requestSentRef.current = false;
