@@ -157,7 +157,7 @@ export const Initiate = memo(() => {
             <InfoBlock
               title={
                 <>
-                  Amount of <strong>{selectedLiquidityPool?.poolSymbol}</strong>
+                  Amount of <strong>d{selectedLiquidityPool?.poolSymbol}</strong>
                 </>
               }
               content={
@@ -186,13 +186,13 @@ export const Initiate = memo(() => {
         </Box>
 
         <Box className={styles.summaryBlock}>
+          <Separator />
           <Box className={styles.row}>
-            <Typography variant="body2">Amount</Typography>
+            <Typography variant="body2">Amount you will get:</Typography>
             <Typography variant="body2">
               {formatToCurrency(predictedAmount, selectedLiquidityPool?.poolSymbol)}
             </Typography>
           </Box>
-          <Separator />
           <Box className={styles.row}>
             <Typography variant="body2">Can be withdrawn on:</Typography>
             <Typography variant="body2">
