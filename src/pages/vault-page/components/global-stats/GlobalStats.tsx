@@ -1,11 +1,11 @@
 import { useAtom } from 'jotai';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useChainId } from 'wagmi';
+import { useEffect, useMemo /*, useRef, useState*/ } from 'react';
+/*import { useChainId } from 'wagmi';*/
 
-import { PERIOD_OF_7_DAYS } from 'app-constants';
+/*import { PERIOD_OF_7_DAYS } from 'app-constants';*/
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
-import { getWeeklyAPI } from 'network/history';
+/*import { getWeeklyAPI } from 'network/history';*/
 import { formatToCurrency } from 'utils/formatToCurrency';
 import {
   dCurrencyPriceAtom,
@@ -17,7 +17,7 @@ import {
 import { traderAPIAtom } from 'store/pools.store';
 
 export const GlobalStats = () => {
-  const chainId = useChainId();
+  /*const chainId = useChainId();*/
 
   const [selectedLiquidityPool] = useAtom(selectedLiquidityPoolAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -26,7 +26,7 @@ export const GlobalStats = () => {
   const [loadStats] = useAtom(loadStatsAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
 
-  const [weeklyAPI, setWeeklyAPI] = useState<number>();
+  /*const [weeklyAPI, setWeeklyAPI] = useState<number>();
 
   const weeklyApiRequestSentRef = useRef(false);
 
@@ -55,7 +55,7 @@ export const GlobalStats = () => {
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
       });
-  }, [chainId, selectedLiquidityPool, loadStats]);
+  }, [chainId, selectedLiquidityPool, loadStats]);*/
 
   useEffect(() => {
     if (!loadStats) {
@@ -88,11 +88,11 @@ export const GlobalStats = () => {
 
   const items: StatDataI[] = useMemo(
     () => [
-      {
+      /*{
         id: 'weeklyAPY',
         label: 'Weekly APY',
         value: weeklyAPI !== undefined ? formatToCurrency(weeklyAPI, '%', true, 2) : '--',
-      },
+      },*/
       {
         id: 'tvl',
         label: 'TVL',
@@ -111,7 +111,7 @@ export const GlobalStats = () => {
         value: dSupply,
       },
     ],
-    [weeklyAPI, selectedLiquidityPool, tvl, dCurrencyPrice, dSupply]
+    [/*weeklyAPI,*/ selectedLiquidityPool, tvl, dCurrencyPrice, dSupply]
   );
 
   return <StatsLine items={items} />;
