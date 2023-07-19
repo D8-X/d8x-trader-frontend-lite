@@ -18,7 +18,7 @@ import {
   selectedLiquidityPoolAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { poolTokenDecimalsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { poolTokenBalanceAtom, poolTokenDecimalsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 
 import styles from './Action.module.scss';
 
@@ -38,6 +38,7 @@ export const Add = memo(() => {
   const [, setLoadStats] = useAtom(loadStatsAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
@@ -164,11 +165,17 @@ export const Add = memo(() => {
   }, [addAmount, dCurrencyPrice]);
 
   const isButtonDisabled = useMemo(() => {
-    if (!addAmount || requestSent || !isSDKConnected || !selectedLiquidityPool?.brokerCollateralLotSize) {
+    if (
+      !addAmount ||
+      requestSent ||
+      !isSDKConnected ||
+      !selectedLiquidityPool?.brokerCollateralLotSize ||
+      !poolTokenBalance
+    ) {
       return true;
     }
-    return addAmount < selectedLiquidityPool.brokerCollateralLotSize;
-  }, [addAmount, requestSent, isSDKConnected, selectedLiquidityPool]);
+    return addAmount > poolTokenBalance || addAmount < selectedLiquidityPool.brokerCollateralLotSize;
+  }, [addAmount, requestSent, isSDKConnected, selectedLiquidityPool, poolTokenBalance]);
 
   return (
     <div className={styles.root}>
