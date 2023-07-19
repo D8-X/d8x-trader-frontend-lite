@@ -391,12 +391,16 @@ export const ActionBlock = memo(() => {
     if (poolTokenBalance === undefined || poolTokenBalance < 1.1 * collateralDeposit) {
       return `Order will fail: insufficient wallet balance ${poolTokenBalance}`;
     }
+    if (orderInfo.takeProfitPrice !== null && orderInfo.takeProfitPrice <= 0) {
+      return `Order undefined: take profit price is incompatible with leverage`;
+    }
     return 'Good to go';
   }, [
     maxOrderSize,
     orderInfo?.size,
     orderInfo?.orderBlock,
     orderInfo?.orderType,
+    orderInfo?.takeProfitPrice,
     selectedPerpetualStaticInfo,
     poolTokenBalance,
     isMarketClosed,
@@ -440,6 +444,14 @@ export const ActionBlock = memo(() => {
     return;
   }, [validityCheckText]);
 
+  const feePct = useMemo(() => {
+    if (orderInfo?.tradingFee) {
+      return (
+        (orderInfo.tradingFee * 0.01) / (1 + (orderInfo.stopLossPrice ? 1 : 0) + (orderInfo.takeProfitPrice ? 1 : 0))
+      );
+    }
+  }, [orderInfo]);
+
   return (
     <Box className={styles.root}>
       <Button
@@ -475,15 +487,6 @@ export const ActionBlock = memo(() => {
                 leftSide={
                   <Typography variant="bodySmall" className={styles.left}>
                     {' '}
-                    Trading fee:{' '}
-                  </Typography>
-                }
-                rightSide={orderInfo.tradingFee ? formatToCurrency(orderInfo.tradingFee * 0.01, '%', false, 3) : '-'}
-              />
-              <SidesRow
-                leftSide={
-                  <Typography variant="bodySmall" className={styles.left}>
-                    {' '}
                     Deposit from wallet:{' '}
                   </Typography>
                 }
@@ -491,6 +494,16 @@ export const ActionBlock = memo(() => {
                   isOrderValid && collateralDeposit >= 0 ? formatToCurrency(collateralDeposit, orderInfo.poolName) : '-'
                 }
               />
+              <SidesRow
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
+                    Trading fee:{' '}
+                  </Typography>
+                }
+                rightSide={feePct ? formatToCurrency(feePct, '%', false, 3) : '-'}
+              />
+
               {orderInfo.maxMinEntryPrice !== null && (
                 <SidesRow
                   leftSide={
