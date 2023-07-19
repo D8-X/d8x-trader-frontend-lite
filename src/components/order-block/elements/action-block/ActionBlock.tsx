@@ -521,7 +521,9 @@ export const ActionBlock = memo(() => {
                     </Typography>
                   }
                   rightSide={
-                    orderInfo.limitPrice > -1 ? formatToCurrency(orderInfo.limitPrice, orderInfo.quoteCurrency) : '-'
+                    orderInfo.limitPrice > -1 && orderInfo.limitPrice < Infinity
+                      ? formatToCurrency(orderInfo.limitPrice, orderInfo.quoteCurrency)
+                      : '-'
                   }
                 />
               )}
@@ -593,8 +595,8 @@ export const ActionBlock = memo(() => {
                   </Typography>
                 }
                 rightSide={
-                  isOrderValid && newPositionRisk && newPositionRisk.positionNotionalBaseCCY !== 0
-                    ? `${formatNumber(newPositionRisk?.leverage)}x`
+                  isOrderValid && newPositionRisk && newPositionRisk.leverage > 0 && newPositionRisk.leverage < Infinity
+                    ? `${formatNumber(newPositionRisk.leverage)}x`
                     : '-'
                 }
               />
@@ -606,9 +608,12 @@ export const ActionBlock = memo(() => {
                   </Typography>
                 }
                 rightSide={
-                  !isOrderValid || !newPositionRisk || newPositionRisk.liquidationPrice[0] <= 0
-                    ? '-'
-                    : formatToCurrency(newPositionRisk?.liquidationPrice[0] ?? 0, orderInfo.quoteCurrency)
+                  isOrderValid &&
+                  newPositionRisk &&
+                  newPositionRisk.liquidationPrice[0] > 0 &&
+                  newPositionRisk.liquidationPrice[0] < Infinity
+                    ? formatToCurrency(newPositionRisk.liquidationPrice[0] ?? 0, orderInfo.quoteCurrency)
+                    : '-'
                 }
               />
             </Box>
