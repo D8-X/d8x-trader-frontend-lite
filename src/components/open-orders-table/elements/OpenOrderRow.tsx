@@ -36,7 +36,9 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {order.limitPrice ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency) : 'N/A'}
+          {order.limitPrice && order.limitPrice < Infinity
+            ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency)
+            : 'N/A'}
         </Typography>
       </TableCell>
       <TableCell align="right">
