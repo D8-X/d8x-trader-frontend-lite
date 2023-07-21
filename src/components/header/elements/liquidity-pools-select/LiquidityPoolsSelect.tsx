@@ -30,7 +30,9 @@ export const LiquidityPoolsSelect = memo(() => {
   };
 
   const selectItems: SelectItemI<PoolI>[] = useMemo(() => {
-    return liquidityPools.map((pool) => ({ value: pool.poolSymbol, item: pool }));
+    return liquidityPools
+      .filter((pool) => pool.poolSymbol !== '')
+      .map((pool) => ({ value: pool.poolSymbol, item: pool }));
   }, [liquidityPools]);
 
   return (
