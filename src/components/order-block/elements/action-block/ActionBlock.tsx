@@ -498,6 +498,19 @@ export const ActionBlock = memo(() => {
                 leftSide={
                   <Typography variant="bodySmall" className={styles.left}>
                     {' '}
+                    Wallet bakance:{' '}
+                  </Typography>
+                }
+                rightSide={
+                  isOrderValid && poolTokenBalance && poolTokenBalance >= 0
+                    ? formatToCurrency(poolTokenBalance, orderInfo.poolName)
+                    : '-'
+                }
+              />
+              <SidesRow
+                leftSide={
+                  <Typography variant="bodySmall" className={styles.left}>
+                    {' '}
                     Trading fee:{' '}
                   </Typography>
                 }
