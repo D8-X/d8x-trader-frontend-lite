@@ -544,7 +544,7 @@ export const ActionBlock = memo(() => {
                 leftSide={
                   <Typography variant="bodySmall" className={styles.left}>
                     {' '}
-                    Stop-loss:{' '}
+                    Stop-loss price:{' '}
                   </Typography>
                 }
                 rightSide={
@@ -557,7 +557,7 @@ export const ActionBlock = memo(() => {
                 leftSide={
                   <Typography variant="bodySmall" className={styles.left}>
                     {' '}
-                    Take-profit:{' '}
+                    Take-profit price:{' '}
                   </Typography>
                 }
                 rightSide={
