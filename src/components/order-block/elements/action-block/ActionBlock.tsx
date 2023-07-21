@@ -498,7 +498,7 @@ export const ActionBlock = memo(() => {
                 leftSide={
                   <Typography variant="bodySmall" className={styles.left}>
                     {' '}
-                    Wallet bakance:{' '}
+                    Wallet balance:{' '}
                   </Typography>
                 }
                 rightSide={
