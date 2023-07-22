@@ -244,6 +244,8 @@ export interface WeeklyApiI {
   startPrice: number;
   endPrice: number;
   apy: number;
+  rawReturn: number;
+  allTimeAPY: number;
 }
 
 export interface EarningsI {

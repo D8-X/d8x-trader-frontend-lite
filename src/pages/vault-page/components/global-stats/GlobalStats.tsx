@@ -42,7 +42,7 @@ export const GlobalStats = () => {
     weeklyApiRequestSentRef.current = true;
     getWeeklyAPI(chainId, selectedLiquidityPool.poolSymbol)
       .then((data) => {
-        setWeeklyAPI(data.apy * 100);
+        setWeeklyAPI(data.allTimeAPY * 100);
       })
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
@@ -76,7 +76,7 @@ export const GlobalStats = () => {
     () => [
       {
         id: 'weeklyAPY',
-        label: 'Weekly APY',
+        label: 'All Time APY',
         value: weeklyAPI !== undefined ? formatToCurrency(weeklyAPI, '%', true, 2) : '--',
       },
       {
