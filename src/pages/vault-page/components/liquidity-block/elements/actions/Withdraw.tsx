@@ -170,7 +170,7 @@ export const Withdraw = memo(() => {
         <Box className={styles.inputLine}>
           <Box className={styles.label}>
             <InfoBlock
-              title="dMATIC price"
+              title={`d${selectedLiquidityPool?.poolSymbol}`}
               content={
                 <>
                   <Typography>

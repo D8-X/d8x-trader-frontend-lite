@@ -122,7 +122,7 @@ export const PersonalStats = memo(() => {
         </Typography>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {withdrawals && withdrawals.length > 0
-            ? formatToCurrency(withdrawals[withdrawals.length - 1].shareAmount, 'dMATIC')
+            ? formatToCurrency(withdrawals[withdrawals.length - 1].shareAmount, `d${selectedLiquidityPool?.poolSymbol}`)
             : 'na'}
         </Typography>
       </Box>
