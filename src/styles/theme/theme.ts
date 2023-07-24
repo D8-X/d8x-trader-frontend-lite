@@ -270,7 +270,7 @@ export const theme = createTheme({
               color: 'var(--d8x-color-white)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-background-buy-rgb), 0.5)',
+              backgroundColor: 'rgba(var(--d8x-background-buy-inactive-rgb), 0.5)',
               color: 'var(--d8x-color-white)',
             },
           },
@@ -287,7 +287,7 @@ export const theme = createTheme({
               color: 'var(--d8x-color-white)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-background-sell-rgb), 0.5)',
+              backgroundColor: 'rgba(var(--d8x-background-buy-inactive-rgb), 0.5)',
               color: 'var(--d8x-color-white)',
             },
           },
