@@ -40,6 +40,7 @@ export const VaultPage = memo(() => {
 
     getOpenWithdrawals(chainId, address, selectedLiquidityPool.poolSymbol)
       .then(({ withdrawals }) => setWithdrawals(withdrawals))
+      .catch(console.error)
       .finally(() => {
         withdrawalsRequestSentRef.current = false;
       });

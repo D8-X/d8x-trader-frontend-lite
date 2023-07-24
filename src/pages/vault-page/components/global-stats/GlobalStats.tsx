@@ -44,6 +44,7 @@ export const GlobalStats = () => {
       .then((data) => {
         setWeeklyAPI(data.allTimeAPY * 100);
       })
+      .catch(console.error)
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
       });

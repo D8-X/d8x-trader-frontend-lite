@@ -57,6 +57,7 @@ export const PersonalStats = memo(() => {
 
     getEarnings(chainId, address, selectedLiquidityPool.poolSymbol)
       .then(({ earnings }) => setEstimatedEarnings(earnings))
+      .catch(console.error)
       .finally(() => {
         earningsRequestSentRef.current = false;
       });

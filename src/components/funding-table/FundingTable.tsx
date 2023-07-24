@@ -54,8 +54,9 @@ export const FundingTable = memo(() => {
     updateTradesHistoryRef.current = true;
     getFundingRatePayments(chainId, address)
       .then((data) => {
-        setFundingList(data);
+        setFundingList(data.length > 0 ? data : []);
       })
+      .catch(console.error)
       .finally(() => {
         updateTradesHistoryRef.current = false;
       });

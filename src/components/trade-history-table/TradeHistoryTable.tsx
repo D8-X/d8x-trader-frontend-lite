@@ -54,8 +54,9 @@ export const TradeHistoryTable = memo(() => {
     updateTradesHistoryRef.current = true;
     getTradesHistory(chainId, address)
       .then((data) => {
-        setTradesHistory(data);
+        setTradesHistory(data.length > 0 ? data : []);
       })
+      .catch(console.error)
       .finally(() => {
         updateTradesHistoryRef.current = false;
       });
