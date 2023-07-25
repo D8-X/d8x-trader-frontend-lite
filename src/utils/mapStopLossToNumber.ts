@@ -6,7 +6,6 @@ const mapStopLoss: Record<StopLossE, number> = {
   [StopLossE['25%']]: -0.25,
   [StopLossE['50%']]: -0.5,
   [StopLossE['75%']]: -0.75,
-  [StopLossE['90%']]: -0.9,
 };
 
 export function mapStopLossToNumber(stopLoss: StopLossE) {

@@ -15,7 +15,7 @@ export const leverageAtom = atom(1);
 export const slippageSliderAtom = atom(4);
 export const keepPositionLeverageAtom = atom(false);
 export const reduceOnlyAtom = atom(false);
-export const expireDaysAtom = atom(ExpiryE['60D']);
+export const expireDaysAtom = atom(ExpiryE['90D']);
 export const stopLossAtom = atom<StopLossE | null>(StopLossE.None);
 export const stopLossPriceAtom = atom<number | null>(null);
 export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
@@ -217,7 +217,7 @@ export const clearInputsDataAtom = atom(null, (get, set) => {
   set(slippageSliderAtom, 4);
   set(keepPositionLeverageAtom, false);
   set(reduceOnlyAtom, false);
-  set(expireDaysAtom, ExpiryE['60D']);
+  set(expireDaysAtom, ExpiryE['90D']);
   set(stopLossAtom, StopLossE.None);
   set(takeProfitAtom, TakeProfitE.None);
 });
