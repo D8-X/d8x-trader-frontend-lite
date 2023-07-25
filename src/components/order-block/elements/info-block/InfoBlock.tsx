@@ -35,11 +35,11 @@ export const InfoBlock = memo(() => {
   return (
     <Box className={styles.root}>
       <Box className={styles.row}>
-        <Typography variant="bodySmall">Order size</Typography>
+        <Typography variant="bodySmallPopup">Order size</Typography>
         <Typography variant="bodySmallSB">{formatToCurrency(orderSize, selectedPerpetual?.baseCurrency)}</Typography>
       </Box>
       <Box className={styles.row}>
-        <Typography variant="bodySmall">Fees</Typography>
+        <Typography variant="bodySmallPopup">Fees</Typography>
         <Typography variant="bodySmallSB">
           {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
           {formatToCurrency(feePct, '%', false, 3)}

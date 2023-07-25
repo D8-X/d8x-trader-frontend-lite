@@ -8,3 +8,15 @@
 .bottomCard {
   background-color: var(--d8x-background);
 }
+
+@media screen and ($d8x-breakpoint-max-xs) {
+
+  .bottomCard {
+    padding-top: 8px;
+  }
+
+  .card {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}

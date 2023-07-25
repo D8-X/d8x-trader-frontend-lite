@@ -299,6 +299,7 @@ export const theme = createTheme({
             padding: '9px 8px 7px',
             fontWeight: 'normal',
             minWidth: '71px',
+            maxHeight: '36px',
             border: 0,
             borderRadius: '8px',
             backgroundColor: 'transparent',
@@ -646,6 +647,10 @@ theme.typography.bodySmallSB = {
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '20px',
+  [theme.breakpoints.down('sm')]: {
+    fontSize: 10,
+    lineHeight: '12px',
+  },
 };
 
 theme.typography.bodyTiny = {

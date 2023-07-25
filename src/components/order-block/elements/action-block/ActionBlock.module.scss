@@ -68,6 +68,10 @@
 
 @media screen and ($d8x-breakpoint-max-sm) {
 
+  .root {
+    margin-top: $d8x-spacing * 2;
+  }
+
   .emphasis {
     padding: $d8x-spacing * 3 $d8x-spacing * 8;
   }

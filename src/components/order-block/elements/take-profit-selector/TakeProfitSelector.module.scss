@@ -53,10 +53,15 @@
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .takeProfitOptions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: $d8x-spacing;
+    flex-wrap: wrap;
 
     :global(.MuiButtonBase-root) {
-      min-width: 64px;
-      max-width: 64px;
+      min-width: 48px;
+      max-height: 35px;
     }
   }
 }
