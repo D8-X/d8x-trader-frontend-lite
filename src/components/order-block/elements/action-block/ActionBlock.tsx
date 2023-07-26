@@ -127,18 +127,17 @@ export const ActionBlock = memo(() => {
       mainOrder,
       address,
       positions?.find((pos) => pos.symbol === orderInfo.symbol)
-    ).then((data) => {
-      setNewPositionRisk(data.data.newPositionRisk);
-      setCollateralDeposit(data.data.orderCost);
-      setMaxOrderSize({ maxBuy: data.data.maxLongTrade, maxSell: data.data.maxShortTrade });
-      validityCheckRef.current = false;
-    });
-
-    // setMaxOrderSize(undefined);
-    // await getMaxOrderSizeForTrader(chainId, traderAPIRef.current, mainOrder, address, Date.now()).then((data) => {
-    //   setMaxOrderSize(data.data);
-    //   validityCheckRef.current = false;
-    // });
+    )
+      .then((data) => {
+        setNewPositionRisk(data.data.newPositionRisk);
+        setCollateralDeposit(data.data.orderCost);
+        setMaxOrderSize({ maxBuy: data.data.maxLongTrade, maxSell: data.data.maxShortTrade });
+        validityCheckRef.current = false;
+      })
+      .catch((error) => {
+        console.error(error);
+        validityCheckRef.current = false;
+      });
   }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit]);
 
   const closeReviewOrderModal = useCallback(() => {

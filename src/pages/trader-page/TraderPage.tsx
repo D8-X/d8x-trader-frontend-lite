@@ -100,11 +100,14 @@ export const TraderPage = memo(() => {
     [traderAPI, isSDKConnected, setOpenOrders]
   );
 
-  useEffect(() => {
-    if (selectedPool?.poolSymbol && address && !fetchFeeRef.current) {
+  const fetchFee = useCallback(
+    async (_chainId: number, _poolSymbol: string, _address: string) => {
+      if (fetchFeeRef.current) {
+        return;
+      }
       fetchFeeRef.current = true;
       setPoolFee(undefined);
-      getTradingFee(chainId, selectedPool?.poolSymbol, address)
+      getTradingFee(_chainId, _poolSymbol, _address)
         .then(({ data }) => {
           setPoolFee(data);
           fetchFeeRef.current = false;
@@ -113,10 +116,9 @@ export const TraderPage = memo(() => {
           console.error(error);
           fetchFeeRef.current = false;
         });
-    } else if (!address) {
-      setPoolFee(undefined);
-    }
-  }, [selectedPool?.poolSymbol, setPoolFee, chainId, address]);
+    },
+    [setPoolFee]
+  );
 
   useEffect(() => {
     if (!chainId || !selectedPool?.poolSymbol || !address) {
@@ -124,7 +126,8 @@ export const TraderPage = memo(() => {
     }
     fetchPositions(chainId, selectedPool.poolSymbol, address);
     fetchOrders(chainId, selectedPool?.poolSymbol, address);
-  }, [chainId, selectedPool, address, fetchPositions, fetchOrders]);
+    fetchFee(chainId, selectedPool.poolSymbol, address);
+  }, [chainId, selectedPool, address, fetchPositions, fetchOrders, fetchFee]);
 
   useEffect(() => {
     fetchOrdersRef.current = selectedPool?.poolSymbol === undefined;
