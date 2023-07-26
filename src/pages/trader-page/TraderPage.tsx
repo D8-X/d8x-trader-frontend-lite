@@ -18,7 +18,14 @@ import { SelectorItemI, TableSelector } from 'components/table-selector/TableSel
 import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
 import { TradingViewChart } from 'components/trading-view-chart/TradingViewChart';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
-import { openOrdersAtom, perpetualStatisticsAtom, poolFeeAtom, positionsAtom, traderAPIAtom } from 'store/pools.store';
+import {
+  openOrdersAtom,
+  perpetualStatisticsAtom,
+  poolFeeAtom,
+  positionsAtom,
+  selectedPoolAtom,
+  traderAPIAtom,
+} from 'store/pools.store';
 import { TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -41,6 +48,7 @@ export const TraderPage = memo(() => {
   const fetchFeeRef = useRef(false);
 
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
+  const [selectedPool] = useAtom(selectedPoolAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [, setPositions] = useAtom(positionsAtom);
@@ -91,10 +99,10 @@ export const TraderPage = memo(() => {
   );
 
   useEffect(() => {
-    if (perpetualStatistics?.poolName && address && !fetchFeeRef.current) {
+    if (selectedPool?.poolSymbol && address && !fetchFeeRef.current) {
       fetchFeeRef.current = true;
       setPoolFee(undefined);
-      getTradingFee(chainId, perpetualStatistics?.poolName, address)
+      getTradingFee(chainId, selectedPool?.poolSymbol, address)
         .then(({ data }) => {
           setPoolFee(data);
         })
@@ -104,15 +112,15 @@ export const TraderPage = memo(() => {
     } else if (!address) {
       setPoolFee(undefined);
     }
-  }, [perpetualStatistics?.poolName, setPoolFee, chainId, address]);
+  }, [selectedPool?.poolSymbol, setPoolFee, chainId, address]);
 
   useEffect(() => {
-    if (!chainId || !perpetualStatistics?.poolName || !address) {
+    if (!chainId || !selectedPool?.poolSymbol || !address) {
       return;
     }
-    fetchPositions(chainId, perpetualStatistics?.poolName, address);
-    fetchOrders(chainId, perpetualStatistics?.poolName, address);
-  }, [chainId, perpetualStatistics?.poolName, address, fetchPositions, fetchOrders]);
+    fetchPositions(chainId, selectedPool?.poolSymbol, address);
+    fetchOrders(chainId, selectedPool?.poolSymbol, address);
+  }, [chainId, selectedPool?.poolSymbol, address, fetchPositions, fetchOrders]);
 
   const positionItems: SelectorItemI[] = useMemo(
     () => [
