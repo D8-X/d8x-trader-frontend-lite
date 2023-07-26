@@ -69,6 +69,7 @@ export const TraderPage = memo(() => {
           if (data && data.length > 0) {
             data.map((p) => setPositions(p));
           }
+          fetchFeeRef.current = false;
         })
         .catch((err) => {
           console.error(err);
@@ -79,16 +80,17 @@ export const TraderPage = memo(() => {
   );
 
   const fetchOrders = useCallback(
-    (_chainId: number, _poolSymbol: string, _address: `0x${string}`) => {
+    async (_chainId: number, _poolSymbol: string, _address: `0x${string}`) => {
       if (!traderAPI || traderAPI.chainId !== _chainId || !isSDKConnected || fetchOrdersRef.current) {
         return;
       }
       fetchOrdersRef.current = true;
-      getOpenOrders(_chainId, traderAPI, _poolSymbol, _address)
+      await getOpenOrders(_chainId, traderAPI, _poolSymbol, _address)
         .then(({ data }) => {
           if (data && data.length > 0) {
             data.map((orders) => setOpenOrders(orders));
           }
+          fetchFeeRef.current = false;
         })
         .catch((err) => {
           console.error(err);
@@ -118,9 +120,15 @@ export const TraderPage = memo(() => {
     if (!chainId || !selectedPool?.poolSymbol || !address) {
       return;
     }
-    fetchPositions(chainId, selectedPool?.poolSymbol, address);
+    fetchPositions(chainId, selectedPool.poolSymbol, address);
     fetchOrders(chainId, selectedPool?.poolSymbol, address);
-  }, [chainId, selectedPool?.poolSymbol, address, fetchPositions, fetchOrders]);
+  }, [chainId, selectedPool, address, fetchPositions, fetchOrders]);
+
+  useEffect(() => {
+    fetchOrdersRef.current = selectedPool?.poolSymbol === undefined;
+    fetchPositionsRef.current = selectedPool?.poolSymbol === undefined;
+    fetchFeeRef.current = selectedPool?.poolSymbol === undefined;
+  }, [selectedPool?.poolSymbol]);
 
   const positionItems: SelectorItemI[] = useMemo(
     () => [
