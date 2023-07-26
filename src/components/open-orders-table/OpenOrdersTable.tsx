@@ -233,7 +233,7 @@ export const OpenOrdersTable = memo(() => {
           return -1;
         }
         if (!order1.executionTimestamp) {
-          return -1;
+          return 1;
         }
         return order2.executionTimestamp - order1.executionTimestamp;
       }),
