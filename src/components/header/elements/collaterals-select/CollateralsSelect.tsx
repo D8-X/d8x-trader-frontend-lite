@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId } from 'wagmi';
 
-import { Box, MenuItem } from '@mui/material';
+import { Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as CollateralIcon } from 'assets/icons/collateralIcon.svg';
 import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketContext';
@@ -45,6 +45,12 @@ export const CollateralsSelect = memo(({ label }: CollateralsSelectPropsI) => {
   const { address } = useAccount();
   const chainId = useChainId();
 
+  const theme = useTheme();
+  const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const { isConnected, send } = useWebSocketContext();
 
   const [pools] = useAtom(poolsAtom);
@@ -58,9 +64,6 @@ export const CollateralsSelect = memo(({ label }: CollateralsSelectPropsI) => {
   const [traderAPI] = useAtom(traderAPIAtom);
 
   const loadingTradingFeeRef = useRef(false);
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     if (location.hash) {
@@ -187,20 +190,27 @@ export const CollateralsSelect = memo(({ label }: CollateralsSelectPropsI) => {
       <HeaderSelect<PoolI>
         id="collaterals-select"
         label={label ? label : 'Collateral'}
+        native={isMobileScreen}
         items={selectItems}
         width="100%"
         value={selectedPool?.poolSymbol}
         handleChange={handleChange}
         OptionsHeader={OptionsHeader}
         renderLabel={(value) => value.poolSymbol}
-        renderOption={(option) => (
-          <MenuItem key={option.value} value={option.value} selected={option.value === selectedPool?.poolSymbol}>
-            <Box className={styles.optionHolder}>
-              <Box className={styles.label}>{option.item.poolSymbol}</Box>
-              <Box className={styles.value}>{option.item.perpetuals.length}</Box>
-            </Box>
-          </MenuItem>
-        )}
+        renderOption={(option) =>
+          isMobileScreen ? (
+            <option key={option.value} value={option.value}>
+              {option.item.poolSymbol}
+            </option>
+          ) : (
+            <MenuItem key={option.value} value={option.value} selected={option.value === selectedPool?.poolSymbol}>
+              <Box className={styles.optionHolder}>
+                <Box className={styles.label}>{option.item.poolSymbol}</Box>
+                <Box className={styles.value}>{option.item.perpetuals.length}</Box>
+              </Box>
+            </MenuItem>
+          )
+        }
       />
     </Box>
   );

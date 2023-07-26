@@ -12,6 +12,7 @@ import styles from './HeaderSelect.module.scss';
 interface HeaderSelectI<T> {
   id: string;
   label: string;
+  native?: boolean;
   items: SelectItemI<T>[];
   width?: string | number;
   OptionsHeader?: JSXElementConstructor<HTMLAttributes<HTMLElement>>;
@@ -22,7 +23,18 @@ interface HeaderSelectI<T> {
 }
 
 function HeaderSelectComponent<T>(props: HeaderSelectI<T>) {
-  const { OptionsHeader, items, renderOption, renderLabel, label, id, value, width, handleChange } = props;
+  const {
+    OptionsHeader,
+    items,
+    renderOption,
+    renderLabel,
+    label,
+    native = false,
+    id,
+    value,
+    width,
+    handleChange,
+  } = props;
 
   const children = useMemo(() => {
     return items.map((item) => renderOption(item));
@@ -60,8 +72,15 @@ function HeaderSelectComponent<T>(props: HeaderSelectI<T>) {
     <Box className={styles.root}>
       <FormControl fullWidth variant="filled" className={styles.autocomplete}>
         <InputLabel id={`${id}-label`}>{label}:</InputLabel>
-        <Select id={id} sx={{ width: width ?? 300 }} value={value} onChange={onChange} renderValue={renderValue}>
-          {OptionsHeader && <OptionsHeader />}
+        <Select
+          id={id}
+          sx={{ width: width ?? 300 }}
+          value={value}
+          onChange={onChange}
+          renderValue={renderValue}
+          native={native}
+        >
+          {!native && OptionsHeader && <OptionsHeader />}
           {children}
         </Select>
       </FormControl>
