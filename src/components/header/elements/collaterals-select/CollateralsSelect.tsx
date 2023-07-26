@@ -95,8 +95,14 @@ export const CollateralsSelect = memo(({ label }: CollateralsSelectPropsI) => {
   }, [selectedPool, location.hash, location.pathname, navigate]);
 
   const handleChange = (newItem: PoolI) => {
+    let poolId: number | undefined = undefined;
+    try {
+      poolId = traderAPI?.getPoolIdFromSymbol(pools[0].poolSymbol);
+    } catch (error) {
+      console.error(error);
+    }
     setSelectedPool(newItem.poolSymbol);
-    setSelectedPoolId(traderAPI?.getPoolIdFromSymbol(newItem.poolSymbol) ?? null);
+    setSelectedPoolId(poolId ?? null);
     setSelectedPerpetual(newItem.perpetuals[0].id);
     navigate(
       `${location.pathname}#${newItem.perpetuals[0].baseCurrency}-${newItem.perpetuals[0].quoteCurrency}-${newItem.poolSymbol}`
