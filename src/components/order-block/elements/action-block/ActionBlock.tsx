@@ -243,16 +243,16 @@ export const ActionBlock = memo(() => {
                 await tx
                   .wait()
                   .then((receipt) => {
+                    getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
+                      ({ data: d }) => {
+                        if (d) {
+                          d.map((o) => setOpenOrders(o));
+                        }
+                      }
+                    );
                     if (receipt.status === 1) {
                       requestSentRef.current = false;
                       setRequestSent(false);
-                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
-                        ({ data: d }) => {
-                          if (d) {
-                            d.map((o) => setOpenOrders(o));
-                          }
-                        }
-                      );
                       toast.success(
                         <ToastContent
                           title="Order Submitted"
@@ -286,6 +286,13 @@ export const ActionBlock = memo(() => {
                         <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
                       );
                     } else {
+                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
+                        ({ data: d }) => {
+                          if (d) {
+                            d.map((o) => setOpenOrders(o));
+                          }
+                        }
+                      );
                       // false positive, probably just metamask
                       toast.success(
                         <ToastContent
