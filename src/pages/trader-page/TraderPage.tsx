@@ -107,8 +107,10 @@ export const TraderPage = memo(() => {
       getTradingFee(chainId, selectedPool?.poolSymbol, address)
         .then(({ data }) => {
           setPoolFee(data);
+          fetchFeeRef.current = false;
         })
-        .finally(() => {
+        .catch((error) => {
+          console.error(error);
           fetchFeeRef.current = false;
         });
     } else if (!address) {
@@ -128,7 +130,7 @@ export const TraderPage = memo(() => {
     fetchOrdersRef.current = selectedPool?.poolSymbol === undefined;
     fetchPositionsRef.current = selectedPool?.poolSymbol === undefined;
     fetchFeeRef.current = selectedPool?.poolSymbol === undefined;
-  }, [selectedPool?.poolSymbol]);
+  });
 
   const positionItems: SelectorItemI[] = useMemo(
     () => [
