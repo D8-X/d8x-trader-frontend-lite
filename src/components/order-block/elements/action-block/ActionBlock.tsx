@@ -221,10 +221,16 @@ export const ActionBlock = memo(() => {
     setRequestSent(true);
     setIsValidityCheckDone(false);
     requestSentRef.current = true;
-    await orderDigest(chainId, parsedOrders, address).then((data) => {
-      if (data.data.digests.length > 0) {
-        approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, collateralDeposit, poolTokenDecimals).then(
-          (res) => {
+    await orderDigest(chainId, parsedOrders, address)
+      .then((data) => {
+        if (data.data.digests.length > 0) {
+          approveMarginToken(
+            signer,
+            selectedPool.marginTokenAddr,
+            proxyAddr,
+            collateralDeposit,
+            poolTokenDecimals
+          ).then((res) => {
             if (res?.hash) {
               console.log(res.hash);
             }
@@ -243,14 +249,14 @@ export const ActionBlock = memo(() => {
                 await tx
                   .wait()
                   .then((receipt) => {
-                    getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
-                      ({ data: d }) => {
-                        if (d) {
-                          d.map((o) => setOpenOrders(o));
-                        }
-                      }
-                    );
                     if (receipt.status === 1) {
+                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
+                        ({ data: d }) => {
+                          if (d) {
+                            d.map((o) => setOpenOrders(o));
+                          }
+                        }
+                      );
                       requestSentRef.current = false;
                       setRequestSent(false);
                       toast.success(
@@ -313,10 +319,16 @@ export const ActionBlock = memo(() => {
                   <ToastContent title="Error Processing Transaction" bodyLines={[{ label: 'Reason', value: msg }]} />
                 );
               });
+          });
+        }
+      })
+      .then(() => {
+        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
+          if (d) {
+            d.map((o) => setOpenOrders(o));
           }
-        );
-      }
-    });
+        });
+      });
   }, [
     parsedOrders,
     chainId,
