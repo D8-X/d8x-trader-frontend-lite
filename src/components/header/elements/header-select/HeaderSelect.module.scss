@@ -110,7 +110,19 @@
     max-width: 100%;
   }
 
+  .autocomplete {
+
+    :global(.MuiInputBase-root) {
+      min-width: initial;
+    }
+  }
+
   .holderRoot {
+    flex: 1;
     padding: $d8x-spacing;
+  }
+
+  .iconWrapper {
+    display: none;
   }
 }

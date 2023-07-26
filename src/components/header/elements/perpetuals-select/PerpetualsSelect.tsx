@@ -3,7 +3,7 @@ import { memo, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useChainId, useNetwork } from 'wagmi';
 
-import { Box, MenuItem } from '@mui/material';
+import { Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as PerpetualIcon } from 'assets/icons/perpetualIcon.svg';
 import { useCandlesWebSocketContext } from 'context/websocket-context/candles/useCandlesWebSocketContext';
@@ -36,6 +36,17 @@ const OptionsHeader = () => {
 };
 
 export const PerpetualsSelect = memo(() => {
+  const { chain } = useNetwork();
+  const chainId = useChainId();
+
+  const theme = useTheme();
+  const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { isConnected, send } = useCandlesWebSocketContext();
+
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
@@ -47,15 +58,7 @@ export const PerpetualsSelect = memo(() => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const [, clearInputsData] = useAtom(clearInputsDataAtom);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const { chain } = useNetwork();
-  const chainId = useChainId();
-
   const traderAPIRef = useRef(traderAPI);
-
-  const { isConnected, send } = useCandlesWebSocketContext();
 
   useEffect(() => {
     if (!location.hash || !selectedPool || !selectedPerpetual) {
@@ -151,22 +154,29 @@ export const PerpetualsSelect = memo(() => {
       <HeaderSelect<PerpetualI>
         id="perpetuals-select"
         label="Perpetual"
+        native={isMobileScreen}
         items={selectItems}
         width="100%"
         value={`${selectedPerpetual?.id}`}
         handleChange={handleChange}
         OptionsHeader={OptionsHeader}
         renderLabel={(value) => `${value.baseCurrency}/${value.quoteCurrency}`}
-        renderOption={(option) => (
-          <MenuItem key={option.value} value={option.value} selected={option.value === `${selectedPerpetual?.id}`}>
-            <Box className={styles.optionHolder}>
-              <Box className={styles.label}>
-                {option.item.baseCurrency}/{option.item.quoteCurrency}
+        renderOption={(option) =>
+          isMobileScreen ? (
+            <option key={option.value} value={option.value}>
+              {option.item.baseCurrency}/{option.item.quoteCurrency}
+            </option>
+          ) : (
+            <MenuItem key={option.value} value={option.value} selected={option.value === `${selectedPerpetual?.id}`}>
+              <Box className={styles.optionHolder}>
+                <Box className={styles.label}>
+                  {option.item.baseCurrency}/{option.item.quoteCurrency}
+                </Box>
+                <Box className={styles.value}>{option.item.isMarketClosed ? 'CLOSED' : 'OPEN'}</Box>
               </Box>
-              <Box className={styles.value}>{option.item.isMarketClosed ? 'CLOSED' : 'OPEN'}</Box>
-            </Box>
-          </MenuItem>
-        )}
+            </MenuItem>
+          )
+        }
       />
     </Box>
   );
