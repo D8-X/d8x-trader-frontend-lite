@@ -32,6 +32,7 @@ export const OrderSize = memo(() => {
 
   const inputValueChangedRef = useRef(false);
   const traderAPIRef = useRef(traderAPI);
+  const fetchedMaxSizes = useRef(false);
 
   const handleOrderSizeChange = useCallback(
     (orderSizeValue: string) => {
@@ -78,12 +79,16 @@ export const OrderSize = memo(() => {
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
-      if (traderAPI) {
+      if (traderAPI && !fetchedMaxSizes.current) {
         const symbol = traderAPI.getSymbolFromPerpId(_perpId);
         if (!symbol) {
           return;
         }
-        const data = await getMaxOrderSizeForTrader(_chainId, traderAPI, _address, symbol).catch(console.error);
+        fetchedMaxSizes.current = true;
+        const data = await getMaxOrderSizeForTrader(_chainId, traderAPI, _address, symbol).catch((err) => {
+          console.error(err);
+          fetchedMaxSizes.current = false;
+        });
         let maxAmount: number | undefined;
         if (_isLong) {
           maxAmount = data?.data?.buy;

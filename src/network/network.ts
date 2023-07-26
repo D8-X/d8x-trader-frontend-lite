@@ -207,6 +207,7 @@ export function getTradingFee(
   poolSymbol: string,
   traderAddr?: string
 ): Promise<ValidatedResponseI<number>> {
+  console.log('fetch fee');
   return fetch(
     `${getApiUrlByChainId(chainId)}/trading-fee?poolSymbol=${poolSymbol}&traderAddr=${traderAddr}`,
     getRequestOptions()

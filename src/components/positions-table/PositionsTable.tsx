@@ -452,11 +452,6 @@ export const PositionsTable = memo(() => {
   const refreshPositions = useCallback(async () => {
     if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
       if (isAPIBusyRef.current || chainId !== traderAPIRef.current?.chainId) {
-        console.log('here');
-        console.log('isAPIBusyRef.current ', isAPIBusyRef.current);
-        console.log('chainId', chainId);
-        console.log('traderAPIRef.current?.chainId ', traderAPIRef.current?.chainId);
-        console.log('traderAPIRef.current == null', traderAPIRef.current === undefined);
         return;
       }
       setAPIBusy(true);
