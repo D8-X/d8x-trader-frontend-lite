@@ -86,6 +86,27 @@ export const OpenOrdersTable = memo(() => {
     setSelectedOrder(null);
   }, []);
 
+  const refreshOpenOrders = useCallback(async () => {
+    if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
+      if (isAPIBusyRef.current || chainId !== traderAPIRef.current?.chainId) {
+        return;
+      }
+      setAPIBusy(true);
+      await getOpenOrders(chainId, traderAPIRef.current, selectedPool.poolSymbol, address, Date.now())
+        .then(({ data }) => {
+          setAPIBusy(false);
+          clearOpenOrders();
+          if (data && data.length > 0) {
+            data.map((o) => setOpenOrders(o));
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setAPIBusy(false);
+        });
+    }
+  }, [chainId, address, selectedPool, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders]);
+
   const handleCancelOrderConfirm = useCallback(async () => {
     if (!selectedOrder) {
       return;
@@ -113,6 +134,7 @@ export const OpenOrdersTable = memo(() => {
               await tx
                 .wait()
                 .then((receipt) => {
+                  refreshOpenOrders();
                   if (receipt.status === 1) {
                     toast.success(
                       <ToastContent
@@ -159,6 +181,7 @@ export const OpenOrdersTable = memo(() => {
             .catch((error) => {
               console.error(error);
               setRequestSent(false);
+              refreshOpenOrders();
               let msg = (error?.message ?? error) as string;
               msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
               toast.error(
@@ -168,7 +191,7 @@ export const OpenOrdersTable = memo(() => {
         });
       }
     });
-  }, [selectedOrder, requestSent, isDisconnected, signer, chainId]);
+  }, [selectedOrder, requestSent, isDisconnected, signer, chainId, refreshOpenOrders]);
 
   const handleChangePage = useCallback((event: unknown, newPage: number) => {
     setPage(newPage);
@@ -178,27 +201,6 @@ export const OpenOrdersTable = memo(() => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   }, []);
-
-  const refreshOpenOrders = useCallback(async () => {
-    if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== traderAPIRef.current?.chainId) {
-        return;
-      }
-      setAPIBusy(true);
-      await getOpenOrders(chainId, traderAPIRef.current, selectedPool.poolSymbol, address, Date.now())
-        .then(({ data }) => {
-          setAPIBusy(false);
-          clearOpenOrders();
-          if (data && data.length > 0) {
-            data.map((o) => setOpenOrders(o));
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          setAPIBusy(false);
-        });
-    }
-  }, [chainId, address, selectedPool, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders]);
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.OPEN_ORDERS]: refreshOpenOrders }));
