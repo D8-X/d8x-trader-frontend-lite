@@ -227,13 +227,13 @@ export const OpenOrdersTable = memo(() => {
   const sortedOpenOrders = useMemo(
     () =>
       openOrders.sort((order1, order2) => {
-        if (!order2.submittedTimestamp) {
+        if (!order2.executionTimestamp) {
           return -1;
         }
-        if (!order1.submittedTimestamp) {
+        if (!order1.executionTimestamp) {
           return -1;
         }
-        return order2.submittedTimestamp - order1.submittedTimestamp;
+        return order2.executionTimestamp - order1.executionTimestamp;
       }),
     [openOrders]
   );
