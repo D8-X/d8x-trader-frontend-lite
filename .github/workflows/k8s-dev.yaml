@@ -3,108 +3,100 @@ name: K8s AWS Dev Deployment
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ dev ]
+    branches: [dev]
     types: [closed]
 
-
 jobs:
-   
   build:
-    
     name: Build Image
     runs-on: ubuntu-latest
-    
+
     steps:
-    
-    - name: Check out code
-      uses: actions/checkout@v2
-      with:
-        ref: dev
-        
-    # render variables that exist on the secrets of the repository
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-central-1
-        
-    #Login on ecr 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-      
-    #Building and pushing images
-    - name: Build, tag, and push image to Amazon ECR
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: frontend
-        IMAGE_TAG: d8x-frontend-${{ github.sha }}
-        # test:
-        REACT_APP_API_URL: 137::https://api.dev.quantena.tech;80001::https://api.dev.quantena.tech;1442::https://api.zktest.quantena.tech;default::https://api.dev.quantena.tech
-        REACT_APP_HISTORY_URL: default::https://history.dev.quantena.tech
-        REACT_APP_REFERRAL_URL: default::https://referral.dev.quantena.tech
-        REACT_APP_WEBSOCKET_URL: 137::wss://ws.dev.quantena.tech/;80001::wss://ws.dev.quantena.tech/;1442::wss://ws.zktest.quantena.tech/;default::wss://ws.dev.quantena.tech/
-        REACT_APP_CANDLES_WEBSOCKET_URL: default::wss://candles.testnet.quantena.tech/
-      run: |
-        docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  --build-arg REACT_APP_API_URL=$REACT_APP_API_URL --build-arg REACT_APP_HISTORY_URL=$REACT_APP_HISTORY_URL --build-arg REACT_APP_REFERRAL_URL=$REACT_APP_REFERRAL_URL --build-arg REACT_APP_CANDLES_WEBSOCKET_URL=$REACT_APP_CANDLES_WEBSOCKET_URL --build-arg REACT_APP_WEBSOCKET_URL=$REACT_APP_WEBSOCKET_URL .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          ref: dev
+
+      # render variables that exist on the secrets of the repository
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      #Login on ecr
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      #Building and pushing images
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: frontend
+          IMAGE_TAG: d8x-frontend-${{ github.sha }}
+          # test:
+          REACT_APP_API_URL: 80001::https://api.quantena.tech;1442::https://api.dev.quantena.tech;default::https://api.dev.quantena.tech
+          REACT_APP_HISTORY_URL: default::https://history.dev.quantena.tech;80001::https://history.api.quantena.tech;1442::https://history.dev.quantena.tech
+          REACT_APP_REFERRAL_URL: default::https://referral.dev.quantena.tech;80001::https://referral.api.quantena.tech;1442::https://referral.dev.quantena.tech
+          REACT_APP_WEBSOCKET_URL: 80001::wss://ws.api.quantena.tech/;1442::wss://ws.dev.quantena.tech/;default::wss://ws.dev.quantena.tech/
+          REACT_APP_CANDLES_WEBSOCKET_URL: default::wss://candles.testnet.quantena.tech/
+        run: |
+          docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  --build-arg REACT_APP_API_URL=$REACT_APP_API_URL --build-arg REACT_APP_HISTORY_URL=$REACT_APP_HISTORY_URL --build-arg REACT_APP_REFERRAL_URL=$REACT_APP_REFERRAL_URL --build-arg REACT_APP_CANDLES_WEBSOCKET_URL=$REACT_APP_CANDLES_WEBSOCKET_URL --build-arg REACT_APP_WEBSOCKET_URL=$REACT_APP_WEBSOCKET_URL .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   Version:
-
-    needs: build 
+    needs: build
 
     name: Bump Version
     runs-on: ubuntu-latest
-      
+
     steps:
+      - name: Checkout ${{ github.sha }}
+        uses: actions/checkout@v3
+        with:
+          ref: dev
 
-    - name: Checkout ${{ github.sha }}
-      uses: actions/checkout@v3
-      with:
-        ref: dev
-
-    # Set up Nodejs
-    - name: Set up Node.js and Bump version
-      uses: actions/setup-node@master
-      with:
+      # Set up Nodejs
+      - name: Set up Node.js and Bump version
+        uses: actions/setup-node@master
+        with:
           node-version: 18.x
           registry-url: 'https://npm.pkg.github.com'
-          
-    # Configuring git to push on the repo and bump the version that tags the commit
-    - name: Tag commit and Push with skip CI 
-      if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'feature/') 
-      run: |
-        git config --global push.followTags true
-        git config --global user.email ""
-        git config --global user.name "GITHUB CI"
-        npm version minor  --no-git-tag-version > TAG_VERSION
-        TAG=$(cat TAG_VERSION)
-        git tag $TAG
-        git commit -am "Update ${{ github.sha }} [ci skip]"
-        git push origin dev --tags
 
-    - name: Tag commit and Push with skip CI 
-      if:  github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'bugfix/') 
-      run: |
-        git config --global push.followTags true
-        git config --global user.email ""
-        git config --global user.name "GITHUB CI"
-        npm version patch --no-git-tag-version > TAG_VERSION
-        TAG=$(cat TAG_VERSION)
-        git tag $TAG
-        git commit -am "Update ${{ github.sha }} [ci skip]"
-        git push origin dev --tags
+      # Configuring git to push on the repo and bump the version that tags the commit
+      - name: Tag commit and Push with skip CI
+        if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'feature/')
+        run: |
+          git config --global push.followTags true
+          git config --global user.email ""
+          git config --global user.name "GITHUB CI"
+          npm version minor  --no-git-tag-version > TAG_VERSION
+          TAG=$(cat TAG_VERSION)
+          git tag $TAG
+          git commit -am "Update ${{ github.sha }} [ci skip]"
+          git push origin dev --tags
+
+      - name: Tag commit and Push with skip CI
+        if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'bugfix/')
+        run: |
+          git config --global push.followTags true
+          git config --global user.email ""
+          git config --global user.name "GITHUB CI"
+          npm version patch --no-git-tag-version > TAG_VERSION
+          TAG=$(cat TAG_VERSION)
+          git tag $TAG
+          git commit -am "Update ${{ github.sha }} [ci skip]"
+          git push origin dev --tags
 
   deploy:
-
     needs: Version
     name: Deploy app to Kubernetes
     runs-on: ubuntu-latest
     steps:
-
       - name: checkout and pull tag version
-        uses: actions/checkout@v2  
+        uses: actions/checkout@v2
         with:
           ref: dev
       #does not yet work here
@@ -119,7 +111,7 @@ jobs:
         with:
           repository: D8-X/devops
           token: ${{ secrets.PAT_TOKEN }}
-          
+
       #Substitute the values on the service app
       - name: Render Deployment YAML
         uses: nowactions/envsubst@v1
@@ -130,8 +122,8 @@ jobs:
           IMAGE_VERSION: d8x-frontend-${{ github.sha }}
           RELEASE_VERSION: ${{ env.TAG_VERSION }}
 
-      - name: Push 
-        run:  |
+      - name: Push
+        run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
