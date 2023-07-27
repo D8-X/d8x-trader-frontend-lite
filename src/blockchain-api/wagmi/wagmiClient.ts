@@ -13,8 +13,8 @@ import { config } from 'config';
 
 const defaultChains: Chain[] = [
   // { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
-  { ...polygonMumbai, iconUrl: polygonTestIcon, iconBackground: 'transparent' },
   { ...polygonZkEvmTestnet, iconUrl: zkTestIcon, iconBackground: 'transparent' },
+  { ...polygonMumbai, iconUrl: polygonTestIcon, iconBackground: 'transparent' },
 ];
 
 const { chains, provider } = configureChains(
