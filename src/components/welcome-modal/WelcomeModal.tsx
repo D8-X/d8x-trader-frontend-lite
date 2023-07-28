@@ -31,11 +31,48 @@ export const WelcomeModal = () => {
           </a>
           .
         </p>
-
-        <br />
+        <p>
+          <strong> Get your test tokens for zkEVM:</strong>
+        </p>
 
         <p>
-          <strong> Get your test tokens for Polygon Pos: </strong>
+          1. Get test ETH, for example from{' '}
+          <a href="https://faucet.polygon.technology/" target="_blank" rel="noreferrer">
+            Polygon's official faucet
+          </a>{' '}
+          or from{' '}
+          <a href="https://faucet.quicknode.com/polygon/zkevm-goerli" target="_blank" rel="noreferrer">
+            Quicknode's faucet
+          </a>
+          .
+        </p>
+
+        <p>
+          2. Get mockUSD from our swap contract,{' '}
+          <a
+            href="https://testnet-zkevm.polygonscan.com/address/0x89ec28cad509bfabea210b4900d62b90690f212e#writeContract#F3"
+            target="_blank"
+            rel="noreferrer"
+          >
+            swap 0.00015 zkEVM ETH for mockUSD
+          </a>
+          .
+        </p>
+
+        <p>
+          3. Get pragMATIC from our swap contract,{' '}
+          <a
+            href="https://testnet-zkevm.polygonscan.com/address/0xE610117b32fb1dECC19808468A9B1F1890ECd988#writeContract#F3"
+            target="_blank"
+            rel="noreferrer"
+          >
+            swap 0.00015 zkEVM ETH for pragMATIC
+          </a>
+          .
+        </p>
+
+        <p>
+          <strong> Get your test tokens for Polygon POS: </strong>
         </p>
 
         <p>
@@ -66,30 +103,6 @@ export const WelcomeModal = () => {
             rel="noreferrer"
           >
             swap 0.00015 testMATIC for a lot of mockUSD
-          </a>
-          .
-        </p>
-
-        <p>
-          <strong> Get your test tokens for zkEVM:</strong>
-        </p>
-
-        <p>
-          1. Get zkEVM ETH, for example from{' '}
-          <a href="https://faucet.polygon.technology/" target="_blank" rel="noreferrer">
-            Polygon's official faucet
-          </a>
-          .
-        </p>
-
-        <p>
-          2. Get mockUSD from our swap contract,{' '}
-          <a
-            href="https://testnet-zkevm.polygonscan.com/address/0x9ac73fc87cfac3d01e69e46abe9f42b43eb7b72a#writeContract#F3"
-            target="_blank"
-            rel="noreferrer"
-          >
-            by swapping zkEVM ETH for mockUSD
           </a>
           .
         </p>
