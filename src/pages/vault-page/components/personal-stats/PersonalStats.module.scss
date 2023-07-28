@@ -18,10 +18,18 @@
   color: var(--d8x-color-black-400);
   white-space: nowrap;
   margin-bottom: $d8x-spacing * 0.5;
+  font-size: 12px;
 }
 
 .statValue {
   display: block;
   color: var(--d8x-color-purple);
   white-space: nowrap;
+}
+
+.actionIcon {
+  cursor: pointer;
+  position: relative;
+  top: 1.5px;
+  height: 13px;
 }

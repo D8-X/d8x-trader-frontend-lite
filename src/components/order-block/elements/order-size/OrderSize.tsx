@@ -135,6 +135,7 @@ export const OrderSize = memo(() => {
               </Typography>
             </>
           }
+          classname={styles.actionIcon}
         />
       </Box>
       <ResponsiveInput

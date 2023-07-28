@@ -72,6 +72,7 @@ export const LimitPrice = memo(() => {
               </Typography>
             </>
           }
+          classname={styles.actionIcon}
         />
       </Box>
       <ResponsiveInput

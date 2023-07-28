@@ -138,6 +138,7 @@ export const TakeProfitSelector = memo(() => {
                 </Typography>
               </>
             }
+            classname={styles.actionIcon}
           />
         </Box>
         <OutlinedInput

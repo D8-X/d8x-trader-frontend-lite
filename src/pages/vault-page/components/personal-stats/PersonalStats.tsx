@@ -5,6 +5,7 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
+import { InfoBlock } from 'components/info-block/InfoBlock';
 import { PERIOD_OF_2_DAYS, PERIOD_OF_4_DAYS } from 'app-constants';
 import { getEarnings } from 'network/history';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -81,17 +82,37 @@ export const PersonalStats = memo(() => {
         Your stats
       </Typography>
       <Box key="amount" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Amount
-        </Typography>
+        <Box className={styles.statLabel}>
+          <InfoBlock
+            title={'Amount'}
+            content={
+              <>
+                <Typography> Amount of pool tokens you own. </Typography>
+              </>
+            }
+            classname={styles.actionIcon}
+          />
+        </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {userAmount !== undefined ? formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`) : '--'}
         </Typography>
       </Box>
-      <Box key="midPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Estimated earnings
-        </Typography>
+      <Box key="estimatedEarnings" className={styles.statContainer}>
+        <Box className={styles.statLabel}>
+          <InfoBlock
+            title={'Estimated earnings'}
+            content={
+              <>
+                <Typography> Estimated earnings are an approximation of how much you've earned. </Typography>
+                <Typography>
+                  Estimated earnings = d{selectedPool?.poolSymbol} balance at market value + total{' '}
+                  {selectedPool?.poolSymbol} withdrawn - total {selectedPool?.poolSymbol} deposited
+                </Typography>
+              </>
+            }
+            classname={styles.actionIcon}
+          />
+        </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {estimatedEarnings !== undefined
             ? formatToCurrency(
@@ -103,28 +124,63 @@ export const PersonalStats = memo(() => {
             : '--'}
         </Typography>
       </Box>
-      <Box key="markPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Withdrawal initiated?
-        </Typography>
+      <Box key="withdrawalInitiated" className={styles.statContainer}>
+        <Box className={styles.statLabel}>
+          <InfoBlock
+            title={'Withdrawal initiated?'}
+            content={
+              <>
+                <Typography>
+                  {' '}
+                  Indicates if you have initated a withdrawal request for the {selectedPool?.poolSymbol} pool.
+                </Typography>
+              </>
+            }
+            classname={styles.actionIcon}
+          />
+        </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {withdrawals && withdrawals.length > 0 ? 'Yes' : 'No'}
         </Typography>
       </Box>
-      <Box key="indexPrice" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Withdrawal Amount
-        </Typography>
+      <Box key="withdrawalAmount" className={styles.statContainer}>
+        <Box className={styles.statLabel}>
+          <InfoBlock
+            title={'Withdrawal amount'}
+            content={
+              <>
+                <Typography> The amount of d{selectedPool?.poolSymbol} you initiated to withdraw. </Typography>
+                <Typography>
+                  Your liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw.
+                </Typography>
+              </>
+            }
+            classname={styles.actionIcon}
+          />
+        </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {withdrawals && withdrawals.length > 0
             ? formatToCurrency(withdrawals[withdrawals.length - 1].shareAmount, `d${selectedPool?.poolSymbol}`)
             : 'na'}
         </Typography>
       </Box>
-      <Box key="fundingRate" className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          Can be withdrawn on
-        </Typography>
+      <Box key="withdrawalDate" className={styles.statContainer}>
+        <Box className={styles.statLabel}>
+          <InfoBlock
+            title={'Can be withdrawn on'}
+            content={
+              <>
+                <Typography> You can withdraw your liquidity two days after initializing withdrawal. </Typography>
+                <Typography>
+                  If you do not withdraw your funds within four days after they are ready to be withdrawn, anyone can
+                  execute the withdrawal on your behalf. In this case the funds are sent to your address, and the
+                  executor will earn a small fee paid out of your funds.
+                </Typography>
+              </>
+            }
+            classname={styles.actionIcon}
+          />
+        </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
           {withdrawnOn}
         </Typography>

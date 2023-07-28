@@ -74,6 +74,7 @@ export const LeverageSelector = memo(() => {
                 </Typography>
               </>
             }
+            classname={styles.actionIcon}
           />
         </Box>
         <OrderSettings />

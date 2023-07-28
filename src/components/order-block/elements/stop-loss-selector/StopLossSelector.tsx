@@ -141,6 +141,7 @@ export const StopLossSelector = memo(() => {
                 </Typography>
               </>
             }
+            classname={styles.actionIcon}
           />
         </Box>
         <OutlinedInput

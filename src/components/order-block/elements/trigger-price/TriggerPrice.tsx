@@ -69,6 +69,7 @@ export const TriggerPrice = memo(() => {
               </Typography>
             </>
           }
+          classname={styles.actionIcon}
         />
       </Box>
       <ResponsiveInput
