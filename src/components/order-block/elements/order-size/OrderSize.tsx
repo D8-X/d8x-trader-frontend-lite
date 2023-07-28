@@ -1,20 +1,20 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAccount, useChainId } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
-
+import { getMaxOrderSizeForTrader } from 'network/network';
 import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, traderAPIAtom } from 'store/pools.store';
-
-import styles from './OrderSize.module.scss';
-import { useAccount, useChainId } from 'wagmi';
-import { getMaxOrderSizeForTrader } from 'network/network';
-import { OrderBlockE } from 'types/enums';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
+import { OrderBlockE } from 'types/enums';
+
+import commonStyles from '../../OrderBlock.module.scss';
+import styles from './OrderSize.module.scss';
 
 export const OrderSize = memo(() => {
   const [orderSize, setOrderSize] = useAtom(orderSizeAtom);
@@ -135,7 +135,7 @@ export const OrderSize = memo(() => {
               </Typography>
             </>
           }
-          classname={styles.actionIcon}
+          classname={commonStyles.actionIcon}
         />
       </Box>
       <ResponsiveInput

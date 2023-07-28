@@ -9,6 +9,7 @@ import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom, perpetualStatisticsAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
+import commonStyles from '../../OrderBlock.module.scss';
 import styles from './LimitPrice.module.scss';
 
 export const LimitPrice = memo(() => {
@@ -72,7 +73,7 @@ export const LimitPrice = memo(() => {
               </Typography>
             </>
           }
-          classname={styles.actionIcon}
+          classname={commonStyles.actionIcon}
         />
       </Box>
       <ResponsiveInput

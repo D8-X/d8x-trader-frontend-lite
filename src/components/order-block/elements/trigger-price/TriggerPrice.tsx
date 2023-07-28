@@ -9,6 +9,7 @@ import { orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom, perpetualStatisticsAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
+import commonStyles from '../../OrderBlock.module.scss';
 import styles from './TriggerPrice.module.scss';
 
 export const TriggerPrice = memo(() => {
@@ -69,7 +70,7 @@ export const TriggerPrice = memo(() => {
               </Typography>
             </>
           }
-          classname={styles.actionIcon}
+          classname={commonStyles.actionIcon}
         />
       </Box>
       <ResponsiveInput

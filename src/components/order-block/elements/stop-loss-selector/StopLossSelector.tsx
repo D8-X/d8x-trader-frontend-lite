@@ -10,6 +10,7 @@ import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, StopLossE } from 'types/enums';
 import { mapCurrencyToFractionDigits } from 'utils/formatToCurrency';
 
+import commonStyles from '../../OrderBlock.module.scss';
 import styles from './StopLossSelector.module.scss';
 
 export const StopLossSelector = memo(() => {
@@ -141,7 +142,7 @@ export const StopLossSelector = memo(() => {
                 </Typography>
               </>
             }
-            classname={styles.actionIcon}
+            classname={commonStyles.actionIcon}
           />
         </Box>
         <OutlinedInput

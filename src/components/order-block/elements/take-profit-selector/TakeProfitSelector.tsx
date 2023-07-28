@@ -10,6 +10,7 @@ import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, TakeProfitE } from 'types/enums';
 import { mapCurrencyToFractionDigits } from 'utils/formatToCurrency';
 
+import commonStyles from '../../OrderBlock.module.scss';
 import styles from './TakeProfitSelector.module.scss';
 
 export const TakeProfitSelector = memo(() => {
@@ -138,7 +139,7 @@ export const TakeProfitSelector = memo(() => {
                 </Typography>
               </>
             }
-            classname={styles.actionIcon}
+            classname={commonStyles.actionIcon}
           />
         </Box>
         <OutlinedInput

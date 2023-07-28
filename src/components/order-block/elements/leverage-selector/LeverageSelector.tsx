@@ -10,6 +10,7 @@ import { leverageAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { MarkI } from 'types/types';
 
+import commonStyles from '../../OrderBlock.module.scss';
 import styles from './LeverageSelector.module.scss';
 
 const multipliers = [0.25, 0.5, 0.75, 1];
@@ -74,7 +75,7 @@ export const LeverageSelector = memo(() => {
                 </Typography>
               </>
             }
-            classname={styles.actionIcon}
+            classname={commonStyles.actionIcon}
           />
         </Box>
         <OrderSettings />

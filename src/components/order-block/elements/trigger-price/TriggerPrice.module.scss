@@ -21,12 +21,6 @@
   color: var(--d8x-color-purple);
 }
 
-.actionIcon {
-  cursor: pointer;
-  position: relative;
-  bottom: 2px;
-}
-
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .root {
