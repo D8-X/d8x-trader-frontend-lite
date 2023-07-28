@@ -39,6 +39,13 @@
 @media screen and ($d8x-breakpoint-max-lg) {
 
   .root {
+    margin-top: 12px;
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-md) {
+
+  .root {
     overflow-x: auto;
   }
 }
