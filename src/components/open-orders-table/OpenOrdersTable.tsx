@@ -217,11 +217,11 @@ export const OpenOrdersTable = memo(() => {
       { label: 'Symbol', align: AlignE.Left },
       { label: 'Side', align: AlignE.Left },
       { label: 'Type', align: AlignE.Left },
-      { label: 'Position Size', align: AlignE.Right },
+      { label: 'Order Size', align: AlignE.Right },
       { label: 'Limit Price', align: AlignE.Right },
       { label: 'Stop Price', align: AlignE.Right },
       { label: 'Leverage', align: AlignE.Right },
-      { label: 'Good until', align: AlignE.Left },
+      { label: 'Good Until', align: AlignE.Left },
     ],
     []
   );

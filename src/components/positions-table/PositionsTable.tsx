@@ -545,10 +545,10 @@ export const PositionsTable = memo(() => {
   const positionsHeaders: TableHeaderI[] = useMemo(
     () => [
       { label: 'Symbol', align: AlignE.Left },
-      { label: 'Pos. size', align: AlignE.Right },
+      { label: 'Pos. Size', align: AlignE.Right },
       { label: 'Side', align: AlignE.Left },
       { label: 'Entry Price', align: AlignE.Right },
-      { label: 'Liq. price', align: AlignE.Right },
+      { label: 'Liq. Price', align: AlignE.Right },
       { label: `Margin (${selectedPool?.poolSymbol})`, align: AlignE.Right },
       { label: 'Unr. PnL', align: AlignE.Right },
     ],
