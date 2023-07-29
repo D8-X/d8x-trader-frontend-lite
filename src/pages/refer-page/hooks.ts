@@ -18,7 +18,12 @@ export const useRebateRate = (chainId: number, address: string | undefined, refe
         referrerRole === ReferrerRoleE.NORMAL
           ? await getReferralRebate(chainId, address)
           : await getAgencyRebate(chainId);
-      return baseRebateResponse.data.percentageCut;
+
+      if (baseRebateResponse.type === 'error') {
+        return 0;
+      } else {
+        return baseRebateResponse.data.percentageCut;
+      }
     }
 
     return 0;

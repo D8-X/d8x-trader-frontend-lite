@@ -93,7 +93,7 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
   const handleChange = (newItem: PoolI) => {
     let poolId: number | undefined = undefined;
     try {
-      poolId = traderAPI?.getPoolIdFromSymbol(pools[0].poolSymbol);
+      poolId = traderAPI?.getPoolIdFromSymbol(newItem.poolSymbol);
     } catch (error) {
       console.error(error);
     }
