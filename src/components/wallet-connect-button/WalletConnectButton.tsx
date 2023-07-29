@@ -18,6 +18,7 @@ import { loyaltyScoreAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.
 import { cutAddressName } from 'utils/cutAddressName';
 
 import styles from './WalletConnectButton.module.scss';
+import { config } from 'config';
 
 const loyaltyMap: Record<number, string> = {
   1: 'Diamond',
@@ -56,7 +57,11 @@ export const WalletConnectButton = memo(() => {
       setSDKConnected(false);
       setAPIBusy(true);
       console.log(`loading SDK on chainId ${_chainId}`);
-      const newTraderAPI = new TraderInterface(PerpetualDataHandler.readSDKConfig(_chainId));
+      const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
+      if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
+        configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoint: config.priceFeedEndpoint[_chainId] }];
+      }
+      const newTraderAPI = new TraderInterface(configSDK);
       await newTraderAPI
         .createProxyInstance(_provider)
         .then(() => {

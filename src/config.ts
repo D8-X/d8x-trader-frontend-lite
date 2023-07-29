@@ -5,6 +5,7 @@ const {
   REACT_APP_REFERRAL_URL: referralUrls = '',
   REACT_APP_WEBSOCKET_URL: wsUrls = '',
   REACT_APP_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
+  REACT_APP_PRICE_FEEDS: priceFeedEndpoints = '',
 } = process.env;
 
 const URLS_SEPARATOR = ';';
@@ -29,4 +30,5 @@ export const config = {
   referralUrl: parseUrls(referralUrls),
   wsUrl: parseUrls(wsUrls),
   candlesWsUrl: parseUrls(candlesWsUrls),
+  priceFeedEndpoint: parseUrls(priceFeedEndpoints),
 };
