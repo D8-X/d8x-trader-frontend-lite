@@ -248,22 +248,10 @@ export const ActionBlock = memo(() => {
                 await tx
                   .wait()
                   .then((receipt) => {
-                    if (receipt.status === 1) {
-                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
-                        .then(({ data: d }) => {
-                          if (d) {
-                            d.map((o) => setOpenOrders(o));
-                          }
-                        })
-                        .catch(console.error);
+                    if (receipt.status !== 1) {
+                      toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
                       requestSentRef.current = false;
                       setRequestSent(false);
-                      toast.success(
-                        <ToastContent
-                          title="Order Submitted"
-                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                        />
-                      );
                     }
                   })
                   .catch(async (err) => {
@@ -308,25 +296,34 @@ export const ActionBlock = memo(() => {
                     }
                   });
               })
+              .then(() => {
+                getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
+                  if (d && d.length > 0) {
+                    d.map((o) => setOpenOrders(o));
+                    if (d.some((o) => o.orderIds.some((id) => id === data.data.orderIds[0]))) {
+                      const toastTitle = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
+                      toast.success(
+                        <ToastContent
+                          title={toastTitle}
+                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                        />
+                      );
+                    }
+                  }
+                });
+              })
               .catch(async (error) => {
                 requestSentRef.current = false;
                 setRequestSent(false);
                 console.error(error);
-                let msg = (error?.message ?? error) as string;
-                msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
-                toast.error(
-                  <ToastContent title="Error Processing Transaction" bodyLines={[{ label: 'Reason', value: msg }]} />
-                );
+                // let msg = (error?.message ?? error) as string;
+                // msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+                // toast.error(
+                //   <ToastContent title="Error Processing Transaction" bodyLines={[{ label: 'Reason', value: msg }]} />
+                // );
               });
           });
         }
-      })
-      .then(() => {
-        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
-          if (d) {
-            d.map((o) => setOpenOrders(o));
-          }
-        });
       })
       .catch(console.error);
   }, [
