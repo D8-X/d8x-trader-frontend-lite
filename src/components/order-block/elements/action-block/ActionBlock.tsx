@@ -249,13 +249,13 @@ export const ActionBlock = memo(() => {
                   .wait()
                   .then((receipt) => {
                     if (receipt.status === 1) {
-                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
-                        ({ data: d }) => {
+                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
+                        .then(({ data: d }) => {
                           if (d) {
                             d.map((o) => setOpenOrders(o));
                           }
-                        }
-                      );
+                        })
+                        .catch(console.error);
                       requestSentRef.current = false;
                       setRequestSent(false);
                       toast.success(
@@ -322,14 +322,13 @@ export const ActionBlock = memo(() => {
         }
       })
       .then(() => {
-        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
-          .then(({ data: d }) => {
-            if (d) {
-              d.map((o) => setOpenOrders(o));
-            }
-          })
-          .catch(console.error);
-      });
+        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
+          if (d) {
+            d.map((o) => setOpenOrders(o));
+          }
+        });
+      })
+      .catch(console.error);
   }, [
     parsedOrders,
     chainId,
