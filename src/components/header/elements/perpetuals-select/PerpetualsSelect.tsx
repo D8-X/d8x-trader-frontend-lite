@@ -136,9 +136,11 @@ export const PerpetualsSelect = memo(({ withNavigate }: PerpetualsSelectPropsI) 
 
   useEffect(() => {
     if (symbol && chainId && chainId === chain?.id) {
-      getPerpetualStaticInfo(chainId, traderAPIRef.current, symbol).then(({ data }) => {
-        setPerpetualStaticInfo(data);
-      });
+      getPerpetualStaticInfo(chainId, traderAPIRef.current, symbol)
+        .then(({ data }) => {
+          setPerpetualStaticInfo(data);
+        })
+        .catch(console.error);
     }
   }, [chain, chainId, symbol, setPerpetualStaticInfo]);
 

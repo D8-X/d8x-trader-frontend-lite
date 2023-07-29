@@ -25,9 +25,11 @@ export const useRebateRate = (chainId: number, address: string | undefined, refe
   }, [address, chainId, referrerRole]);
 
   useEffect(() => {
-    getBaseRebateAsync().then((percentageCut: number) => {
-      setBaseRebate(percentageCut);
-    });
+    getBaseRebateAsync()
+      .then((percentageCut: number) => {
+        setBaseRebate(percentageCut);
+      })
+      .catch(console.error);
   }, [getBaseRebateAsync, baseRebate]);
 
   return baseRebate;

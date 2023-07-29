@@ -45,6 +45,7 @@ export const ReferrerTab = memo(() => {
         .then(({ data }) => {
           setReferralVolumes(data);
         })
+        .catch(console.error)
         .finally(() => {
           referralVolumeRequestRef.current = false;
         });
@@ -65,6 +66,7 @@ export const ReferrerTab = memo(() => {
         .then(({ data }) => {
           setEarnedRebates(data);
         })
+        .catch(console.error)
         .finally(() => {
           earnedRebateRequestRef.current = false;
         });

@@ -45,6 +45,7 @@ export const ReferPage = memo(() => {
       .then(({ data }) => {
         setReferralCode(data);
       })
+      .catch(console.error)
       .finally(() => {
         referralCodesRequestRef.current = false;
       });
@@ -69,6 +70,7 @@ export const ReferPage = memo(() => {
       .then(({ data }) => {
         setIsAgency(data.isAgency);
       })
+      .catch(console.error)
       .finally(() => {
         isAgencyRequestRef.current = false;
       });

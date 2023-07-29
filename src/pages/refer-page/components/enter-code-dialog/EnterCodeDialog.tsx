@@ -30,9 +30,13 @@ export const EnterCodeDialog = ({ onClose, onCodeApplySuccess }: EnterCodeDialog
     if (!address || !signer) {
       return;
     }
-    await postUseReferralCode(chainId, address, codeInputValue, signer, onClose);
-    toast.success(<ToastContent title="Code applied successfully" bodyLines={[]} />);
-    onCodeApplySuccess();
+    try {
+      await postUseReferralCode(chainId, address, codeInputValue, signer, onClose);
+      toast.success(<ToastContent title="Code applied successfully" bodyLines={[]} />);
+      onCodeApplySuccess();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

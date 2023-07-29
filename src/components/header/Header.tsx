@@ -134,7 +134,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
   });
 
   useEffect(() => {
-    refetch().then();
+    refetch().then().catch(console.error);
   }, [refetch, triggerUserStatsUpdate]);
 
   useEffect(() => {

@@ -57,13 +57,17 @@ export const TraderTab = () => {
   }, [address, chainId, digestResponseData]);
 
   useEffect(() => {
-    getEarnedRebatesAsync().then();
+    getEarnedRebatesAsync().then().catch(console.error);
   }, [getEarnedRebatesAsync]);
 
   const getOpenRewardsAsync = useCallback(async () => {
     if (address) {
-      const openRewardsResponse = await getOpenTraderRebate(chainId, address);
-      digestResponseData(openRewardsResponse.data, 'rewards');
+      try {
+        const openRewardsResponse = await getOpenTraderRebate(chainId, address);
+        digestResponseData(openRewardsResponse.data, 'rewards');
+      } catch (err) {
+        console.error(err);
+      }
     }
   }, [address, chainId, digestResponseData]);
 
@@ -85,7 +89,7 @@ export const TraderTab = () => {
   }, [address, chainId]);
 
   useEffect(() => {
-    getReferralCodesAsync().then();
+    getReferralCodesAsync().then().catch(console.error);
   }, [getReferralCodesAsync]);
 
   const overviewItems: OverviewItemI[] = [

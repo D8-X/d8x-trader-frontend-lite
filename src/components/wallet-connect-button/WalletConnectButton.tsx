@@ -96,6 +96,7 @@ export const WalletConnectButton = memo(() => {
         .then((data) => {
           setLoyaltyScore(data.data);
         })
+        .catch(console.error)
         .finally(() => {
           loadingTraderLoyaltyRef.current = false;
         });
