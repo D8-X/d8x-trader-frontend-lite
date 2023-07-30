@@ -135,7 +135,7 @@ export const PerpetualsSelect = memo(({ withNavigate }: PerpetualsSelectPropsI) 
   }, [selectedPerpetual, selectedPeriod, setCandles, setNewCandles, setCandlesDataReady, isConnected, send]);
 
   useEffect(() => {
-    if (symbol && chainId && chainId === chain?.id) {
+    if (symbol && chainId && chainId === chain?.id && traderAPIRef.current) {
       getPerpetualStaticInfo(chainId, traderAPIRef.current, symbol)
         .then(({ data }) => {
           setPerpetualStaticInfo(data);
