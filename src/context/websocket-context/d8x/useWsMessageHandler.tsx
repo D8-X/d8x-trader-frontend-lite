@@ -80,7 +80,7 @@ export function useWsMessageHandler() {
   const [, setWebSocketReady] = useAtom(webSocketReadyAtom);
   const [, setPerpetualStatistics] = useAtom(perpetualStatisticsAtom);
   const [, setPositions] = useAtom(positionsAtom);
-  const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
+  const [, setOpenOrders] = useAtom(openOrdersAtom);
   const [, removeOpenOrder] = useAtom(removeOpenOrderAtom);
   const [, failOpenOrder] = useAtom(failOrderAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -161,26 +161,14 @@ export function useWsMessageHandler() {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
         }
-        // this may have already been handled directly in ActionBlock, so only do work here if order is not found:
-        if (!openOrders.some((o) => o.id === parsedMessage.data.obj.orderId)) {
-          getOpenOrders(chainId, traderAPIRef.current, parsedMessage.data.obj.symbol, address)
-            .then(({ data }) => {
-              if (data && data.length > 0) {
-                data.map((o) => setOpenOrders(o));
-                if (data.some((o) => o.orderIds.some((id) => id === parsedMessage.data.obj.orderId))) {
-                  // the order is there now, show success toast, ActionBlock must have missed it
-                  toast.success(
-                    <ToastContent
-                      title="Order Submitted"
-                      bodyLines={[{ label: 'Symbol', value: parsedMessage.data.obj.symbol }]}
-                    />
-                  );
-                }
-                // else order was already executed, don't show it
-              }
-            })
-            .catch(console.error);
-        }
+        // refresh open orders
+        getOpenOrders(chainId, traderAPIRef.current, parsedMessage.data.obj.symbol, address)
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              data.map((o) => setOpenOrders(o));
+            }
+          })
+          .catch(console.error);
       } else if (isPerpetualLimitOrderCancelledMessage(parsedMessage)) {
         removeOpenOrder(parsedMessage.data.obj.orderId);
       } else if (isTradeMessage(parsedMessage)) {
@@ -219,7 +207,6 @@ export function useWsMessageHandler() {
       failOpenOrder,
       chainId,
       address,
-      openOrders,
     ]
   );
 }

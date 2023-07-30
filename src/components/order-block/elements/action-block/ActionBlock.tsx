@@ -98,8 +98,8 @@ export const ActionBlock = memo(() => {
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const [, clearInputsData] = useAtom(clearInputsDataAtom);
   const [, setOpenOrders] = useAtom(openOrdersAtom);
-  const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
 
+  const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [maxOrderSize, setMaxOrderSize] = useState<{ maxBuy: number; maxSell: number }>();
@@ -248,10 +248,18 @@ export const ActionBlock = memo(() => {
                 await tx
                   .wait()
                   .then((receipt) => {
-                    if (receipt.status !== 1) {
+                    requestSentRef.current = false;
+                    setRequestSent(false);
+                    if (receipt.status === 1) {
+                      const toastTile = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
+                      toast.success(
+                        <ToastContent
+                          title={toastTile}
+                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                        />
+                      );
+                    } else {
                       toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
-                      requestSentRef.current = false;
-                      setRequestSent(false);
                     }
                   })
                   .catch(async (err) => {
@@ -278,39 +286,17 @@ export const ActionBlock = memo(() => {
                       toast.error(
                         <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
                       );
-                    } else {
-                      getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(
-                        ({ data: d }) => {
-                          if (d) {
-                            d.map((o) => setOpenOrders(o));
-                          }
+                    }
+                  })
+                  .finally(() => {
+                    getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
+                      .then(({ data: d }) => {
+                        if (d && d.length > 0) {
+                          d.map((o) => setOpenOrders(o));
                         }
-                      );
-                      // false positive, probably just metamask
-                      toast.success(
-                        <ToastContent
-                          title="Order Submitted"
-                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                        />
-                      );
-                    }
+                      })
+                      .catch(console.error);
                   });
-              })
-              .then(() => {
-                getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
-                  if (d && d.length > 0) {
-                    d.map((o) => setOpenOrders(o));
-                    if (d.some((o) => o.orderIds.some((id) => id === data.data.orderIds[0]))) {
-                      const toastTitle = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
-                      toast.success(
-                        <ToastContent
-                          title={toastTitle}
-                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                        />
-                      );
-                    }
-                  }
-                });
               })
               .catch(async (error) => {
                 requestSentRef.current = false;
@@ -336,7 +322,6 @@ export const ActionBlock = memo(() => {
     collateralDeposit,
     poolTokenDecimals,
     clearInputsData,
-    // getOpenOrders,
     setOpenOrders,
   ]);
 
