@@ -311,6 +311,13 @@ export const ActionBlock = memo(() => {
           });
         }
       })
+      .then(() => {
+        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
+          if (d) {
+            d.map((o) => setOpenOrders(o));
+          }
+        });
+      })
       .catch(console.error);
   }, [
     parsedOrders,
