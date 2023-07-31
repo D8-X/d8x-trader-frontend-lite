@@ -36,7 +36,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: frontend
           IMAGE_TAG: d8x-frontend-stage-${{ github.sha }}
-          REACT_APP_PROJECT_ID: eaff775af64a83b1564223ce858cb56c
+          REACT_APP_HTTP_RPC: 80001::${{ secrets.HTTP_RPC_MUMBAI }}
+          REACT_APP_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
           REACT_APP_API_URL: default::https://api.quantena.tech;80001::https://api.quantena.tech;1442::https://api.zktest.quantena.tech
           REACT_APP_HISTORY_URL: default::https://history.api.quantena.tech;80001::https://history.api.quantena.tech;1442::https://history.zktest.quantena.tech
           REACT_APP_REFERRAL_URL: default::https://referral.dev.quantena.tech;80001::https://referral.dev.quantena.tech

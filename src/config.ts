@@ -6,6 +6,7 @@ const {
   REACT_APP_WEBSOCKET_URL: wsUrls = '',
   REACT_APP_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
   REACT_APP_PRICE_FEEDS: priceFeedEndpoints = '',
+  REACT_APP_HTTP_RPC: httpRPCs = '',
 } = process.env;
 
 const URLS_SEPARATOR = ';';
@@ -31,4 +32,5 @@ export const config = {
   wsUrl: parseUrls(wsUrls),
   candlesWsUrl: parseUrls(candlesWsUrls),
   priceFeedEndpoint: parseUrls(priceFeedEndpoints),
+  httpRPC: parseUrls(httpRPCs),
 };

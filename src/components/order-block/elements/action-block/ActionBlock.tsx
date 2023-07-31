@@ -137,8 +137,11 @@ export const ActionBlock = memo(() => {
       .catch((error) => {
         console.error(error);
         validityCheckRef.current = false;
+      })
+      .finally(() => {
+        setIsValidityCheckDone(true);
       });
-  }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit]);
+  }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit, setIsValidityCheckDone]);
 
   const closeReviewOrderModal = useCallback(() => {
     setShowReviewOrderModal(false);
