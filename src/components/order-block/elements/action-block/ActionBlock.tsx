@@ -132,16 +132,12 @@ export const ActionBlock = memo(() => {
         setNewPositionRisk(data.data.newPositionRisk);
         setCollateralDeposit(data.data.orderCost);
         setMaxOrderSize({ maxBuy: data.data.maxLongTrade, maxSell: data.data.maxShortTrade });
-        validityCheckRef.current = false;
       })
-      .catch((error) => {
-        console.error(error);
-        validityCheckRef.current = false;
-      })
+      .catch(console.error)
       .finally(() => {
-        setIsValidityCheckDone(true);
+        validityCheckRef.current = false;
       });
-  }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit, setIsValidityCheckDone]);
+  }, [orderInfo, chainId, address, positions, setNewPositionRisk, setCollateralDeposit]);
 
   const closeReviewOrderModal = useCallback(() => {
     setShowReviewOrderModal(false);
@@ -301,7 +297,7 @@ export const ActionBlock = memo(() => {
                       .catch(console.error);
                   });
               })
-              .catch(async (error) => {
+              .catch((error) => {
                 requestSentRef.current = false;
                 setRequestSent(false);
                 console.error(error);
@@ -314,14 +310,11 @@ export const ActionBlock = memo(() => {
           });
         }
       })
-      .then(() => {
-        getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address).then(({ data: d }) => {
-          if (d) {
-            d.map((o) => setOpenOrders(o));
-          }
-        });
-      })
-      .catch(console.error);
+      .catch((error) => {
+        console.error(error);
+        requestSentRef.current = false;
+        setRequestSent(false);
+      });
   }, [
     parsedOrders,
     chainId,
