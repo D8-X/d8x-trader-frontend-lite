@@ -21,19 +21,16 @@ const providers = [
   jsonRpcProvider({
     rpc: (chain) => (chain.id === 80001 ? { http: 'https://gateway.tenderly.co/public/polygon-mumbai' } : null),
     priority: 1,
-    stallTimeout: 5_000,
   }),
   jsonRpcProvider({
     rpc: (chain) => (chain.id === 80001 ? { http: 'https://rpc.ankr.com/polygon_mumbai' } : null),
     priority: 2,
-    stallTimeout: 5_000,
   }),
   jsonRpcProvider({
-    rpc: (chain) => (chain.id === 80001 ? { http: 'https://rpc-mumbai.maticvigil.com	' } : null),
+    rpc: (chain) => (chain.id === 80001 ? { http: 'https://rpc-mumbai.maticvigil.com' } : null),
     priority: 3,
-    stallTimeout: 5_000,
   }),
-  publicProvider({ priority: 4, stallTimeout: 5_000 }),
+  publicProvider({ priority: 4 }),
 ].concat(
   defaultChains.map(({ id: chainId }: Chain) =>
     jsonRpcProvider({
@@ -47,7 +44,7 @@ const providers = [
   )
 );
 
-const { chains, provider } = configureChains(defaultChains, providers, { stallTimeout: 10_000 });
+const { chains, provider } = configureChains(defaultChains, providers, { stallTimeout: 5_000 });
 
 const projectId = config.projectId;
 
