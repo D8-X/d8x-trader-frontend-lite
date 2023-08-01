@@ -212,108 +212,106 @@ export const ActionBlock = memo(() => {
     return orders;
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
-  const handleOrderConfirm = useCallback(async () => {
+  const handleOrderConfirm = useCallback(() => {
     if (!address || !signer || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
       return;
     }
     setRequestSent(true);
     setIsValidityCheckDone(false);
     requestSentRef.current = true;
-    await orderDigest(chainId, parsedOrders, address)
-      .then((data) => {
+    orderDigest(chainId, parsedOrders, address)
+      .then(async (data) => {
         if (data.data.digests.length > 0) {
-          approveMarginToken(
+          // hide modal now that metamask popup shows up
+          setShowReviewOrderModal(false);
+          await approveMarginToken(
             signer,
             selectedPool.marginTokenAddr,
             proxyAddr,
             collateralDeposit,
             poolTokenDecimals
-          ).then((res) => {
+          ).then(async (res) => {
             if (res?.hash) {
               console.log(res.hash);
             }
+            setTimeout(() => setShowReviewOrderModal(false), 5_000);
             // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(signer, signatures, data.data)
-              .then(async (tx) => {
-                // success submitting to mempool
-                console.log(`postOrder tx hash: ${tx.hash}`);
-                setShowReviewOrderModal(false);
-                toast.success(<ToastContent title="Order Submission Processed" bodyLines={[]} />);
-                clearInputsData();
-                // release lock
-                requestSentRef.current = false;
-                setRequestSent(false);
-                await tx
-                  .wait()
-                  .then((receipt) => {
-                    requestSentRef.current = false;
-                    setRequestSent(false);
-                    if (receipt.status === 1) {
-                      const toastTile = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
-                      toast.success(
-                        <ToastContent
-                          title={toastTile}
-                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                        />
-                      );
-                    } else {
-                      toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
-                    }
-                  })
-                  .catch(async (err) => {
-                    console.error(err);
-                    const response = await signer.call(
-                      {
-                        to: tx.to,
-                        from: tx.from,
-                        nonce: tx.nonce,
-                        gasLimit: tx.gasLimit,
-                        gasPrice: tx.gasPrice,
-                        data: tx.data,
-                        value: tx.value,
-                        chainId: tx.chainId,
-                        type: tx.type ?? undefined,
-                        accessList: tx.accessList,
-                      },
-                      tx.blockNumber
+            await postOrder(signer, signatures, data.data).then(async (tx) => {
+              // success submitting order to the node
+              console.log(`postOrder tx hash: ${tx.hash}`);
+              setShowReviewOrderModal(false);
+              // order was sent, release lock and clear - no need to wait for the blockchain
+              requestSentRef.current = false;
+              setRequestSent(false);
+              clearInputsData();
+              toast.success(<ToastContent title="Order Submission Processed" bodyLines={[]} />);
+              await tx
+                .wait()
+                .then((receipt) => {
+                  // txn went through
+                  if (receipt.status === 1) {
+                    const toastTile = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
+                    toast.success(
+                      <ToastContent
+                        title={toastTile}
+                        bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                      />
                     );
-                    const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
-                    requestSentRef.current = false;
-                    setRequestSent(false);
-                    if (reason !== '') {
-                      toast.error(
-                        <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
-                      );
-                    }
-                  })
-                  .finally(() => {
-                    getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
-                      .then(({ data: d }) => {
-                        if (d && d.length > 0) {
-                          d.map((o) => setOpenOrders(o));
-                        }
-                      })
-                      .catch(console.error);
-                  });
-              })
-              .catch((error) => {
-                requestSentRef.current = false;
-                setRequestSent(false);
-                console.error(error);
-                // let msg = (error?.message ?? error) as string;
-                // msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
-                // toast.error(
-                //   <ToastContent title="Error Processing Transaction" bodyLines={[{ label: 'Reason', value: msg }]} />
-                // );
-              });
+                  } else {
+                    // typically unreachable
+                    toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
+                  }
+                })
+                .catch(async (err) => {
+                  // txn failed - get the revert reason
+                  console.error(err);
+                  const response = await signer.call(
+                    {
+                      to: tx.to,
+                      from: tx.from,
+                      nonce: tx.nonce,
+                      gasLimit: tx.gasLimit,
+                      gasPrice: tx.gasPrice,
+                      data: tx.data,
+                      value: tx.value,
+                      chainId: tx.chainId,
+                      type: tx.type ?? undefined,
+                      accessList: tx.accessList,
+                    },
+                    tx.blockNumber
+                  );
+                  const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
+                  if (reason !== '') {
+                    toast.error(
+                      <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
+                    );
+                  }
+                })
+                .finally(() => {
+                  // we go the receipt or failed trying - refresh orders
+                  getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
+                    .then(({ data: d }) => {
+                      if (d && d.length > 0) {
+                        console.log('fetched open orders');
+                        d.map((o) => setOpenOrders(o));
+                      }
+                    })
+                    .catch(console.error);
+                });
+            });
           });
         }
       })
       .catch((error) => {
+        // not a transaction error, but probably metamask or network -> no toast
         console.error(error);
+      })
+      .finally(() => {
+        // ensure we can trade again
         requestSentRef.current = false;
         setRequestSent(false);
+        setShowReviewOrderModal(false);
       });
   }, [
     parsedOrders,
