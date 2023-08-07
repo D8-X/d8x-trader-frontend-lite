@@ -37,15 +37,16 @@ jobs:
           ECR_REPOSITORY: frontend
           IMAGE_TAG: d8x-frontend-${{ github.sha }}
           # test:
-          REACT_APP_HTTP_RPC: 80001::${{ secrets.HTTP_RPC_MUMBAI }}
-          REACT_APP_PROJECT_ID: ${{ secrets.WALLET_CONNECT_DEV_PROJECT_ID }}
-          REACT_APP_API_URL: default::https://api.dev.quantena.tech;80001::https://api.dev.quantena.tech;1442::https://api.zktest.quantena.tech
-          REACT_APP_HISTORY_URL: default::https://history.dev.quantena.tech;80001::https://history.dev.quantena.tech;1442::https://history.zktest.quantena.tech
-          REACT_APP_REFERRAL_URL: default::https://referral.dev.quantena.tech;80001::https://referral.dev.quantena.tech
-          REACT_APP_WEBSOCKET_URL: default::wss://ws.dev.quantena.tech/;80001::wss://ws.dev.quantena.tech/;1442::wss://ws.zktest.quantena.tech/
-          REACT_APP_CANDLES_WEBSOCKET_URL: default::wss://candles.testnet.quantena.tech/
+          VITE_HTTP_RPC: 80001::${{ secrets.HTTP_RPC_MUMBAI }}
+          VITE_PRICE_FEEDS:
+          VITE_PROJECT_ID: ${{ secrets.WALLET_CONNECT_DEV_PROJECT_ID }}
+          VITE_API_URL: default::https://api.dev.quantena.tech;80001::https://api.dev.quantena.tech;1442::https://api.zktest.quantena.tech
+          VITE_HISTORY_URL: default::https://history.dev.quantena.tech;80001::https://history.dev.quantena.tech;1442::https://history.zktest.quantena.tech
+          VITE_REFERRAL_URL: default::https://referral.dev.quantena.tech;80001::https://referral.dev.quantena.tech
+          VITE_WEBSOCKET_URL: default::wss://ws.dev.quantena.tech/;80001::wss://ws.dev.quantena.tech/;1442::wss://ws.zktest.quantena.tech/
+          VITE_CANDLES_WEBSOCKET_URL: default::wss://candles.testnet.quantena.tech/
         run: |
-          docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg REACT_APP_PROJECT_ID=$REACT_APP_PROJECT_ID --build-arg REACT_APP_API_URL=$REACT_APP_API_URL --build-arg REACT_APP_HISTORY_URL=$REACT_APP_HISTORY_URL --build-arg REACT_APP_REFERRAL_URL=$REACT_APP_REFERRAL_URL --build-arg REACT_APP_CANDLES_WEBSOCKET_URL=$REACT_APP_CANDLES_WEBSOCKET_URL --build-arg REACT_APP_WEBSOCKET_URL=$REACT_APP_WEBSOCKET_URL .
+          docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg VITE_PROJECT_ID=$VITE_PROJECT_ID --build-arg VITE_HTTP_RPC=$VITE_HTTP_RPC --build-arg VITE_PRICE_FEEDS=$VITE_PRICE_FEEDS --build-arg VITE_API_URL=$VITE_API_URL --build-arg VITE_HISTORY_URL=$VITE_HISTORY_URL --build-arg VITE_REFERRAL_URL=$VITE_REFERRAL_URL --build-arg VITE_CANDLES_WEBSOCKET_URL=$VITE_CANDLES_WEBSOCKET_URL --build-arg VITE_WEBSOCKET_URL=$VITE_WEBSOCKET_URL .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   Version:
