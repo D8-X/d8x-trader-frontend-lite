@@ -11,11 +11,11 @@ import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import 'polyfills';
 import { chains, wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { Disclaimer } from 'components/disclaimer/disclaimer';
-// import { CandlesWebSocketContextProvider } from 'context/websocket-context/candles/CandlesWebSocketContextProvider';
-// import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
+import { CandlesWebSocketContextProvider } from 'context/websocket-context/candles/CandlesWebSocketContextProvider';
+import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
 import { theme } from 'styles/theme/theme';
 
-import { MyApp } from './MyApp';
+import { App } from './App';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,18 +25,12 @@ import 'wagmi/window';
 
 const container = document.getElementById('root');
 
-console.log('hello', container);
-
 if (container) {
   const root = createRoot(container);
 
   root.render(
     <StrictMode>
       <JotaiProvider>
-        {/*
-          <WebSocketContextProvider>
-            <CandlesWebSocketContextProvider>
-            */}
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider
             chains={chains}
@@ -44,21 +38,21 @@ if (container) {
             appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
             modalSize="compact"
           >
-            <HelmetProvider>
-              <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={theme}>
-                  <BrowserRouter>
-                    <MyApp />
-                  </BrowserRouter>
-                </ThemeProvider>
-              </StyledEngineProvider>
-            </HelmetProvider>
+            <WebSocketContextProvider>
+              <CandlesWebSocketContextProvider>
+                <HelmetProvider>
+                  <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={theme}>
+                      <BrowserRouter>
+                        <App />
+                      </BrowserRouter>
+                    </ThemeProvider>
+                  </StyledEngineProvider>
+                </HelmetProvider>
+              </CandlesWebSocketContextProvider>
+            </WebSocketContextProvider>
           </RainbowKitProvider>
         </WagmiConfig>
-        {/*
-            </CandlesWebSocketContextProvider>
-          </WebSocketContextProvider>
-          */}
       </JotaiProvider>
     </StrictMode>
   );
