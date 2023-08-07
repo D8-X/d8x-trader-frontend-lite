@@ -1,11 +1,14 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { Contract, ContractTransaction } from '@ethersproject/contracts';
-import { OrderDigestI } from 'types/types';
+import { OrderDigestI, AddressT } from 'types/types';
 import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { PublicClient } from 'viem';
+import { WalletClient } from 'wagmi';
 
-export function postOrder(signer: Signer, signatures: string[], data: OrderDigestI): Promise<ContractTransaction> {
-  const abi = typeof data.abi === 'string' ? [data.abi] : data.abi;
-  const contract = new Contract(data.OrderBookAddr, abi, signer);
-  const obOrders = TraderInterface.chainOrders(data.SCOrders, data.orderIds);
-  return contract.postOrders(obOrders, signatures, { gasLimit: 2_000_000 });
+export function postOrder(publicClient: PublicClient, walletClient: WalletClient, signatures: string[], data: OrderDigestI): Promise<{hash: AddressT}> {
+  return publicClient.simulateContract({
+    address: data.OrderBookAddr as AddressT,
+    abi: typeof data.abi === 'string' ? [data.abi] : data.abi,
+    functionName: signatures.length > 1 ? 'postOrders' : 'postOrder',
+    args: [TraderInterface.chainOrders(data.SCOrders, data.orderIds), signatures],
+    gas: BigInt(2_000_000),
+  }).then(({request}) => walletClient.writeContract(request)).then((tx)=> ({hash : tx}));
 }

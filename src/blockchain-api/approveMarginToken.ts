@@ -1,35 +1,31 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { parseUnits } from '@ethersproject/units';
-import { MaxUint256 } from '@ethersproject/constants';
 
 import { erc20ABI } from 'wagmi';
-import { prepareWriteContract, writeContract } from '@wagmi/core';
-import { decNToFloat } from '@d8x/perpetuals-sdk';
+import { MaxUint256 } from '@ethersproject/constants';
 
 import type { AddressT } from 'types/types';
+import { PublicClient, WalletClient, parseUnits } from 'viem';
 
 export function approveMarginToken(
-  signer: Signer,
+  publicClient: PublicClient,
+  walletClient: WalletClient,
   marginTokenAddr: string,
   proxyAddr: string,
   minAmount: number,
   decimals: number,
-  allowance?: bigint // BigNumber => BigInt
+  allowance?: bigint
 ) {
   if (allowance) {
-    const amount = MaxUint256;
     const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
-    console.log('allowance =', decNToFloat(allowance, decimals), 'minAmount =', minAmount);
-    if (allowance.gt(minAmountBN)) {
-      return Promise.resolve(null);
+    if (allowance > minAmountBN) {
+      return Promise.resolve({hash: '0x'});
     } else {
-      return prepareWriteContract({
+      return publicClient.simulateContract({
         address: marginTokenAddr as AddressT,
         abi: erc20ABI,
         functionName: 'approve',
-        args: [proxyAddr as AddressT, amount],
-        signer,
-      }).then((config) => writeContract(config));
+        args: [proxyAddr as AddressT, BigInt(MaxUint256.toString())],
+        gas: BigInt(100_000),
+      }).then(({request}) => walletClient.writeContract(request)).then((tx)=> ({hash : tx}));
     }
   } else {
     return Promise.resolve(null);
