@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@~assets/*": ["assets/*"],
+      "@~blockchain-api/*": ["blockchain-api/*"],
+      "@~components/*": ["components/*"],
+      "@~context/*": ["context/*"],
+      "@~helpers/*": ["helpers/*"],
+      "@~hooks/*": ["hooks/*"],
+      "@~navigation/*": ["navigation/*"],
+      "@~network/*": ["network/*"],
+      "@~pages/*": ["pages/*"],
+      "@~store/*": ["store/*"],
+      "@~styles/*": ["styles/*"],
+      "@~types/*": ["types/*"],
+      "@~utils/*": ["utils/*"],
+      "@~config": ["config.ts"],
+      "@~app-constants": ["app-constants.ts"]
+    }
+  }
+}

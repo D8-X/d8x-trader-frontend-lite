@@ -1,5 +1,4 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { BigNumber } from '@ethersproject/bignumber';
 import { parseUnits } from '@ethersproject/units';
 import { MaxUint256 } from '@ethersproject/constants';
 
@@ -15,7 +14,7 @@ export function approveMarginToken(
   proxyAddr: string,
   minAmount: number,
   decimals: number,
-  allowance?: BigNumber
+  allowance?: bigint // BigNumber => BigInt
 ) {
   if (allowance) {
     const amount = MaxUint256;

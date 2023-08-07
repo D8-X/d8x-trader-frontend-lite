@@ -2,7 +2,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -26,7 +26,7 @@ import styles from './Action.module.scss';
 export const Add = memo(() => {
   const { address } = useAccount();
 
-  const { data: signer } = useSigner({
+  const { data: walletClient } = useWalletClient({
     onError(error) {
       console.log(error);
     },
@@ -76,20 +76,20 @@ export const Add = memo(() => {
       return;
     }
 
-    if (!address || !signer || !proxyAddr) {
+    if (!address || !walletClient || !proxyAddr) {
       return;
     }
 
     requestSentRef.current = true;
     setRequestSent(true);
-    await approveMarginToken(signer, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
+    await approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then(async (res) => {
         if (res?.hash) {
           console.log(`token approval txn: ${res.hash}`);
           await res.wait();
         }
         liqProvTool
-          .addLiquidity(signer, selectedPool.poolSymbol, addAmount, { gasLimit: 2_000_000 })
+          .addLiquidity(walletClient, selectedPool.poolSymbol, addAmount, { gasLimit: 2_000_000 })
           .then(async (tx) => {
             console.log(`addLiquidity tx hash: ${tx.hash}`);
             toast.success(<ToastContent title="Adding Liquidity" bodyLines={[]} />);
@@ -107,7 +107,7 @@ export const Add = memo(() => {
               })
               .catch(async (err) => {
                 console.log(err);
-                const response = await signer.call(
+                const response = await walletClient.call(
                   {
                     to: tx.to,
                     from: tx.from,
@@ -144,7 +144,7 @@ export const Add = memo(() => {
     selectedPool,
     address,
     proxyAddr,
-    signer,
+    walletClient,
     isSDKConnected,
     poolTokenDecimals,
     setTriggerUserStatsUpdate,

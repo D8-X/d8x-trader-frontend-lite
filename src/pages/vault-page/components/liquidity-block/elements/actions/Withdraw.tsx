@@ -2,7 +2,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -38,7 +38,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [, setTriggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
   const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const [requestSent, setRequestSent] = useState(false);
 
@@ -49,7 +49,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
       return;
     }
 
-    if (!liqProvTool || !selectedPool || !signer) {
+    if (!liqProvTool || !selectedPool || !walletClient) {
       return;
     }
 
@@ -57,7 +57,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     setRequestSent(true);
 
     liqProvTool
-      .executeLiquidityWithdrawal(signer, selectedPool.poolSymbol)
+      .executeLiquidityWithdrawal(walletClient, selectedPool.poolSymbol)
       .then(async (tx) => {
         console.log(`executeLiquidityWithdrawal tx hash: ${tx.hash}`);
         toast.success(<ToastContent title="Withdrawing liquidity" bodyLines={[]} />);
@@ -73,7 +73,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
           })
           .catch(async (err) => {
             console.log(err);
-            const response = await signer.call(
+            const response = await walletClient.call(
               {
                 to: tx.to,
                 from: tx.from,
@@ -107,7 +107,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
           <ToastContent title="Error withdrawing liquidity" bodyLines={[{ label: 'Reason', value: err as string }]} />
         );
       });
-  }, [liqProvTool, selectedPool, signer, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate]);
+  }, [liqProvTool, selectedPool, walletClient, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate]);
 
   const shareAmount = useMemo(() => {
     if (!withdrawals) {

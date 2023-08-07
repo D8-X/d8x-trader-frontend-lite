@@ -1,13 +1,13 @@
 const {
-  REACT_APP_PROJECT_ID: projectId = '',
-  REACT_APP_API_URL: apiUrls = '',
-  REACT_APP_HISTORY_URL: historyUrls = '',
-  REACT_APP_REFERRAL_URL: referralUrls = '',
-  REACT_APP_WEBSOCKET_URL: wsUrls = '',
-  REACT_APP_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
-  REACT_APP_PRICE_FEEDS: priceFeedEndpoints = '',
-  REACT_APP_HTTP_RPC: httpRPCs = '',
-} = process.env;
+  VITE_PROJECT_ID: projectId = '',
+  VITE_API_URL: apiUrls = '',
+  VITE_HISTORY_URL: historyUrls = '',
+  VITE_REFERRAL_URL: referralUrls = '',
+  VITE_WEBSOCKET_URL: wsUrls = '',
+  VITE_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
+  VITE_PRICE_FEEDS: priceFeedEndpoints = '',
+  VITE_HTTP_RPC: httpRPCs = '',
+} = import.meta.env;
 
 const URLS_SEPARATOR = ';';
 const KEY_VALUE_SEPARATOR = '::';

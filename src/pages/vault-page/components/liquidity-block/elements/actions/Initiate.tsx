@@ -2,7 +2,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -27,7 +27,7 @@ export const Initiate = memo(() => {
   const [, setTriggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
   const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
@@ -60,7 +60,7 @@ export const Initiate = memo(() => {
       return;
     }
 
-    if (!liqProvTool || !selectedPool || !initiateAmount || initiateAmount < 0 || !signer) {
+    if (!liqProvTool || !selectedPool || !initiateAmount || initiateAmount < 0 || !walletClient) {
       return;
     }
 
@@ -68,7 +68,7 @@ export const Initiate = memo(() => {
     setRequestSent(true);
 
     await liqProvTool
-      .initiateLiquidityWithdrawal(signer, selectedPool.poolSymbol, initiateAmount, { gasLimit: 5_000_000 })
+      .initiateLiquidityWithdrawal(walletClient, selectedPool.poolSymbol, initiateAmount, { gasLimit: 5_000_000 })
       .then(async (tx) => {
         console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
         toast.success(<ToastContent title="Initiating liquidity withdrawal" bodyLines={[]} />);
@@ -86,7 +86,7 @@ export const Initiate = memo(() => {
           })
           .catch(async (err) => {
             console.log(err);
-            const response = await signer.call(
+            const response = await walletClient.call(
               {
                 to: tx.to,
                 from: tx.from,
@@ -118,7 +118,7 @@ export const Initiate = memo(() => {
         setRequestSent(false);
         toast.error(<ToastContent title="Error initiating withdrawal" bodyLines={[]} />);
       });
-  }, [initiateAmount, liqProvTool, signer, selectedPool, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate]);
+  }, [initiateAmount, liqProvTool, walletClient, selectedPool, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate]);
 
   const isButtonDisabled = useMemo(() => {
     if (!withdrawals || withdrawals.length > 0 || !userAmount || !initiateAmount || requestSent) {

@@ -32,7 +32,7 @@ module.exports = {
     'airbnb/hooks',
     'prettier',
   ],
-  plugins: ['jsx-a11y', '@typescript-eslint', 'import', 'react-hooks'],
+  plugins: ['jsx-a11y', '@typescript-eslint', 'import', 'react-hooks', 'prettier'],
   rules: {
     'comma-dangle': [ERROR, 'only-multiline'],
     '@typescript-eslint/comma-dangle': [ERROR, 'only-multiline'],

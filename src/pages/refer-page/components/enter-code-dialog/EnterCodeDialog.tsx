@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useSigner } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Box, Button, OutlinedInput, Typography } from '@mui/material';
 
@@ -18,7 +18,7 @@ interface EnterCodeDialogPropsI {
 }
 
 export const EnterCodeDialog = ({ onClose, onCodeApplySuccess }: EnterCodeDialogPropsI) => {
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -27,11 +27,11 @@ export const EnterCodeDialog = ({ onClose, onCodeApplySuccess }: EnterCodeDialog
   const inputDisabled = codeState !== CodeStateE.CODE_TAKEN;
 
   const handleUseCode = async () => {
-    if (!address || !signer) {
+    if (!address || !walletClient) {
       return;
     }
     try {
-      await postUseReferralCode(chainId, address, codeInputValue, signer, onClose);
+      await postUseReferralCode(chainId, address, codeInputValue, walletClient, onClose);
       toast.success(<ToastContent title="Code applied successfully" bodyLines={[]} />);
       onCodeApplySuccess();
     } catch (err) {

@@ -1,4 +1,4 @@
-@import 'styles/theme/theme';
+@import '~styles/theme/_theme.scss';
 
 .root {
   display: flex;
@@ -20,7 +20,7 @@
 .helperText {
   display: block;
   text-align: right;
-  margin-top: $d8x-spacing / 2;
+  margin-top: calc($d8x-spacing / 2);
 
   a {
     cursor: pointer;
@@ -83,7 +83,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: $d8x-spacing / 2;
+    margin-top: calc($d8x-spacing / 2);
     color: var(--d8x-color-black-maintext);
   }
 }

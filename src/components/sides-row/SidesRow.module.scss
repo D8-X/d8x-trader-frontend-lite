@@ -1,9 +1,9 @@
-@import 'styles/theme/theme';
+@import '~styles/theme/_theme.scss';
 
 .root {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: $d8x-spacing / 2;
+  margin-top: calc($d8x-spacing / 2);
 }

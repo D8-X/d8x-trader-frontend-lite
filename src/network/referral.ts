@@ -3,7 +3,6 @@ import {
   ReferralCodeSigner,
   type APIReferralCodePayload,
 } from '@d8x/perpetuals-sdk';
-import { Signer } from '@ethersproject/abstract-signer';
 
 import { getRequestOptions } from 'helpers/getRequestOptions';
 
@@ -17,6 +16,7 @@ import {
 import { RebateTypeE, RequestMethodE } from '../types/enums';
 
 import { config } from 'config';
+import { WalletClient } from 'wagmi';
 
 function getReferralUrlByChainId(chainId: number) {
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
@@ -30,10 +30,10 @@ export async function postUpsertReferralCode(
   traderRebatePerc: number,
   agencyRebatePerc: number,
   referrerRebatePerc: number,
-  signer: Signer,
+  walletClient: WalletClient,
   onSignatureSuccess: () => void
 ) {
-  const referralCodeSigner = new ReferralCodeSigner(signer, '');
+  const referralCodeSigner = new ReferralCodeSigner(walletClient, '');
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
@@ -69,10 +69,10 @@ export async function postUseReferralCode(
   chainId: number,
   address: string,
   code: string,
-  signer: Signer,
+  walletClient: WalletClient,
   onSignatureSuccess: () => void
 ) {
-  const referralCodeSigner = new ReferralCodeSigner(signer, '');
+  const referralCodeSigner = new ReferralCodeSigner(walletClient, '');
 
   const payload: APIReferralCodeSelectionPayload = {
     code,

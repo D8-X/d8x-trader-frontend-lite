@@ -1,6 +1,7 @@
 import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { coinbaseWallet, injectedWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
-import { configureChains, createClient } from 'wagmi';
+import { createPublicClient, http } from 'viem';
+import { configureChains, createConfig } from 'wagmi';
 // import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet } from 'wagmi/chains';
 import { polygonMumbai, polygonZkEvmTestnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
@@ -44,7 +45,9 @@ const providers = [
   )
 );
 
-const { chains, provider, webSocketProvider } = configureChains(defaultChains, providers, { stallTimeout: 5_000 });
+const { chains, publicClient, webSocketPublicClient } = configureChains(defaultChains, providers, {
+  stallTimeout: 5_000,
+});
 
 const projectId = config.projectId;
 
@@ -60,11 +63,11 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-const wagmiClient = createClient({
+const wagmiClient = createConfig({
   autoConnect: true,
-  connectors,
-  provider,
-  webSocketProvider,
+  // connectors,
+  publicClient,
+  webSocketPublicClient,
 });
 
 export { chains, wagmiClient };

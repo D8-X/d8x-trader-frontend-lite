@@ -11,7 +11,14 @@ import type {
 } from 'types/types';
 import { RequestMethodE } from 'types/enums';
 import { CancelOrderResponseI, CollateralChangeResponseI, MaxOrderSizeResponseI } from 'types/types';
-import { TraderInterface, floatToABK64x64 } from '@d8x/perpetuals-sdk';
+// import { TraderInterface, floatToABK64x64 } from '@d8x/perpetuals-sdk';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TraderInterface = any;
+
+function floatToABK64x64(amount: number) {
+  return amount;
+}
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[`${chainId}`] || config.apiUrl.default;

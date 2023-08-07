@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { erc20ABI, useAccount, useChainId, useContractRead, useSigner } from 'wagmi';
+import { erc20ABI, useAccount, useChainId, useContractRead, useWalletClient } from 'wagmi';
 import { Separator } from 'components/separator/Separator';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
@@ -79,7 +79,7 @@ export const ActionBlock = memo(() => {
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const { data: signer } = useSigner({
+  const { data: walletClient } = useWalletClient({
     onError(error) {
       console.log(error);
     },
@@ -221,7 +221,7 @@ export const ActionBlock = memo(() => {
   });
 
   const handleOrderConfirm = useCallback(() => {
-    if (!address || !signer || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
+    if (!address || !walletClient || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
       return;
     }
     setRequestSent(true);
@@ -233,7 +233,7 @@ export const ActionBlock = memo(() => {
           // hide modal now that metamask popup shows up
           setShowReviewOrderModal(false);
           approveMarginToken(
-            signer,
+            walletClient,
             selectedPool.marginTokenAddr,
             proxyAddr,
             collateralDeposit,
@@ -246,7 +246,7 @@ export const ActionBlock = memo(() => {
               }
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              await postOrder(signer, signatures, data.data).then(async (tx) => {
+              await postOrder(walletClient, signatures, data.data).then(async (tx) => {
                 // success submitting order to the node
                 console.log(`postOrder tx hash: ${tx.hash}`);
                 // order was sent, release lock and clear - no need to wait for the blockchain
@@ -274,7 +274,7 @@ export const ActionBlock = memo(() => {
                   .catch(async (err) => {
                     // txn failed - get the revert reason
                     console.error(err);
-                    const response = await signer.call(
+                    const response = await walletClient.call(
                       {
                         to: tx.to,
                         from: tx.from,
@@ -341,7 +341,7 @@ export const ActionBlock = memo(() => {
     parsedOrders,
     chainId,
     address,
-    signer,
+    walletClient,
     selectedPool,
     proxyAddr,
     collateralDeposit,

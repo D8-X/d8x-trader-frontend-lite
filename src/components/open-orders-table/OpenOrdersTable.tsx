@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useSigner } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import { useResizeDetector } from 'react-resize-detector';
 
 import {
@@ -50,7 +50,7 @@ const MIN_WIDTH_FOR_TABLE = 900;
 export const OpenOrdersTable = memo(() => {
   const { address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { width, ref } = useResizeDetector();
 
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -116,15 +116,15 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !signer) {
+    if (isDisconnected || !walletClient) {
       return;
     }
 
     setRequestSent(true);
     await getCancelOrder(chainId, traderAPIRef.current, selectedOrder.symbol, selectedOrder.id).then((data) => {
       if (data.data.digest) {
-        signMessages(signer, [data.data.digest]).then((signatures) => {
-          cancelOrder(signer, signatures[0], data.data, selectedOrder.id)
+        signMessages(walletClient, [data.data.digest]).then((signatures) => {
+          cancelOrder(walletClient, signatures[0], data.data, selectedOrder.id)
             .then(async (tx) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
@@ -146,7 +146,7 @@ export const OpenOrdersTable = memo(() => {
                 })
                 .catch(async (err) => {
                   console.error(err);
-                  const response = await signer.call(
+                  const response = await walletClient.call(
                     {
                       to: tx.to,
                       from: tx.from,
@@ -191,7 +191,7 @@ export const OpenOrdersTable = memo(() => {
         });
       }
     });
-  }, [selectedOrder, requestSent, isDisconnected, signer, chainId, refreshOpenOrders]);
+  }, [selectedOrder, requestSent, isDisconnected, walletClient, chainId, refreshOpenOrders]);
 
   const handleChangePage = useCallback((event: unknown, newPage: number) => {
     setPage(newPage);

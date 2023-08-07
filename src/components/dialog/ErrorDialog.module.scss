@@ -1,5 +1,5 @@
-@import 'styles/theme/theme';
-@import 'styles/theme/utils';
+@import '~styles/theme/_theme.scss';
+@import '~styles/theme/_utils.scss';
 
 .root {
   @include flex-center;

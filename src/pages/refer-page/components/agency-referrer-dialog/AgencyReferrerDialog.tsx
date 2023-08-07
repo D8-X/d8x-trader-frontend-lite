@@ -1,7 +1,7 @@
 import { type ChangeEvent, useEffect, useMemo, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { useAtom } from 'jotai';
-import { useAccount, useChainId, useSigner } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Box, Button, Checkbox, OutlinedInput, Typography } from '@mui/material';
 
@@ -47,7 +47,7 @@ type UpdatedAgencyReferrerDialogPropsT = NormalReferrerDialogCreatePropsI | Norm
 export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) => {
   const [referralCodesRefetchHandler] = useAtom(referralCodesRefetchHandlerRefAtom);
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -137,7 +137,7 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
   }, [referrerAddressInputValue]);
 
   const handleUpsertCode = async () => {
-    if (!address || !signer) {
+    if (!address || !walletClient) {
       return;
     }
     const { agencyRate, referrerRate, traderRate } = sidesRowValues;
@@ -161,7 +161,7 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
       traderRebatePercent,
       agencyRebatePercent,
       referrerRebatePercent,
-      signer,
+      walletClient,
       props.onClose
     );
     toast.success(

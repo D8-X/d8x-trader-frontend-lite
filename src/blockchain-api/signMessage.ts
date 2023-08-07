@@ -1,11 +1,11 @@
 import { Buffer } from 'buffer';
-import { Signer } from '@ethersproject/abstract-signer';
+import { WalletClient } from 'wagmi';
 
-export function signMessages(signer: Signer, digests: string[]) {
+export function signMessages(walletClient: WalletClient, digests: string[]) {
   const promises = [];
   for (const digest of digests) {
     const digestBuffer = Buffer.from(digest.slice(2), 'hex');
-    promises.push(signer.signMessage(digestBuffer));
+    promises.push(walletClient.signMessage(digestBuffer));
   }
   return Promise.all(promises);
 }

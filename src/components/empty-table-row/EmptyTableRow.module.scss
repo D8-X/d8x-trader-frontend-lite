@@ -1,7 +1,7 @@
-@import 'styles/theme/theme';
+@import '~styles/theme/_theme.scss';
 
 .emptyText {
   display: inline-block;
   font-style: italic;
-  padding: $d8x-spacing / 2;
+  padding: calc($d8x-spacing / 2);
 }
