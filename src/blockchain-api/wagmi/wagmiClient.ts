@@ -1,4 +1,4 @@
-import { Chain } from '@rainbow-me/rainbowkit';
+import { Chain, getDefaultWallets } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig } from 'wagmi';
 // import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet } from 'wagmi/chains';
 import { polygonMumbai, polygonZkEvmTestnet } from 'wagmi/chains';
@@ -9,10 +9,10 @@ import polygonTestIcon from 'assets/networks/polygonTest.svg';
 // import zkMainIcon from 'assets/networks/zkEvmMain.svg';
 import zkTestIcon from 'assets/networks/zkEvmTest.svg';
 import { config } from 'config';
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-import { InjectedConnector } from 'wagmi/connectors/injected';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+// import { InjectedConnector } from 'wagmi/connectors/injected';
+// import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const defaultChains: Chain[] = [
   // { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
@@ -48,24 +48,34 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(defaultC
 
 const projectId = config.projectId;
 
+const { connectors } = getDefaultWallets({
+  appName: 'D8X App',
+  projectId,
+  chains,
+});
+
+/*
+const connectors = [
+  new InjectedConnector({ chains }),
+  new MetaMaskConnector({ chains }),
+  new WalletConnectConnector({
+    chains,
+    options: {
+      projectId,
+    },
+  }),
+  new CoinbaseWalletConnector({
+    chains,
+    options: {
+      appName: 'D8X App',
+    },
+  }),
+];
+*/
+
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [
-    new InjectedConnector({ chains }),
-    new MetaMaskConnector({ chains }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId,
-      },
-    }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: 'D8X App',
-      },
-    }),
-  ],
+  connectors,
   publicClient,
   webSocketPublicClient,
 });

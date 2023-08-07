@@ -8,6 +8,7 @@ import { WagmiConfig } from 'wagmi';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
+import 'polyfills';
 import { chains, wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { Disclaimer } from 'components/disclaimer/disclaimer';
 // import { CandlesWebSocketContextProvider } from 'context/websocket-context/candles/CandlesWebSocketContextProvider';
