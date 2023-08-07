@@ -1,6 +1,4 @@
-import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
-import { coinbaseWallet, injectedWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets';
-import { createPublicClient, http } from 'viem';
+import { Chain } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig } from 'wagmi';
 // import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet } from 'wagmi/chains';
 import { polygonMumbai, polygonZkEvmTestnet } from 'wagmi/chains';
@@ -11,6 +9,10 @@ import polygonTestIcon from 'assets/networks/polygonTest.svg';
 // import zkMainIcon from 'assets/networks/zkEvmMain.svg';
 import zkTestIcon from 'assets/networks/zkEvmTest.svg';
 import { config } from 'config';
+import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+import { InjectedConnector } from 'wagmi/connectors/injected';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
+import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const defaultChains: Chain[] = [
   // { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
@@ -21,17 +23,14 @@ const defaultChains: Chain[] = [
 const providers = [
   jsonRpcProvider({
     rpc: (chain) => (chain.id === 80001 ? { http: 'https://gateway.tenderly.co/public/polygon-mumbai' } : null),
-    priority: 1,
   }),
   jsonRpcProvider({
     rpc: (chain) => (chain.id === 80001 ? { http: 'https://rpc.ankr.com/polygon_mumbai' } : null),
-    priority: 2,
   }),
   jsonRpcProvider({
     rpc: (chain) => (chain.id === 80001 ? { http: 'https://rpc-mumbai.maticvigil.com' } : null),
-    priority: 3,
   }),
-  publicProvider({ priority: 4 }),
+  publicProvider(),
 ].concat(
   defaultChains.map(({ id: chainId }: Chain) =>
     jsonRpcProvider({
@@ -39,8 +38,6 @@ const providers = [
         chain.id === chainId && config.httpRPC[chainId] && config.httpRPC[chainId] !== ''
           ? { http: config.httpRPC[chainId] }
           : null,
-      static: true,
-      priority: 4,
     })
   )
 );
@@ -51,23 +48,26 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(defaultC
 
 const projectId = config.projectId;
 
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Recommended',
-    wallets: [
-      injectedWallet({ chains }),
-      metaMaskWallet({ projectId, chains }),
-      walletConnectWallet({ projectId, chains }),
-      coinbaseWallet({ chains, appName: 'D8X App' }),
-    ],
-  },
-]);
-
-const wagmiClient = createConfig({
+const wagmiConfig = createConfig({
   autoConnect: true,
-  // connectors,
+  connectors: [
+    new InjectedConnector({ chains }),
+    new MetaMaskConnector({ chains }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId,
+      },
+    }),
+    new CoinbaseWalletConnector({
+      chains,
+      options: {
+        appName: 'D8X App',
+      },
+    }),
+  ],
   publicClient,
   webSocketPublicClient,
 });
 
-export { chains, wagmiClient };
+export { chains, wagmiConfig };

@@ -8,7 +8,7 @@ import { WagmiConfig } from 'wagmi';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
-import { chains, wagmiClient } from 'blockchain-api/wagmi/wagmiClient';
+import { chains, wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { Disclaimer } from 'components/disclaimer/disclaimer';
 // import { CandlesWebSocketContextProvider } from 'context/websocket-context/candles/CandlesWebSocketContextProvider';
 // import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
@@ -32,18 +32,18 @@ if (container) {
   root.render(
     <StrictMode>
       <JotaiProvider>
-        <HelmetProvider>
-          {/*
+        {/*
           <WebSocketContextProvider>
             <CandlesWebSocketContextProvider>
             */}
-          <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider
-              chains={chains}
-              initialChain={80001}
-              appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
-              modalSize="compact"
-            >
+        <WagmiConfig config={wagmiConfig}>
+          <RainbowKitProvider
+            chains={chains}
+            initialChain={80001}
+            appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
+            modalSize="compact"
+          >
+            <HelmetProvider>
               <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
                   <BrowserRouter>
@@ -51,13 +51,13 @@ if (container) {
                   </BrowserRouter>
                 </ThemeProvider>
               </StyledEngineProvider>
-            </RainbowKitProvider>
-          </WagmiConfig>
-          {/*
+            </HelmetProvider>
+          </RainbowKitProvider>
+        </WagmiConfig>
+        {/*
             </CandlesWebSocketContextProvider>
           </WebSocketContextProvider>
           */}
-        </HelmetProvider>
       </JotaiProvider>
     </StrictMode>
   );
