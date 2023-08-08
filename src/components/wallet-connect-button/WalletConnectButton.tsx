@@ -172,10 +172,26 @@ export const WalletConnectButton = memo(() => {
                   <Button onClick={openAccountModal} variant="primary" className={styles.addressButton}>
                     {!isMobileScreen && (
                       <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore]}>
-                        {loyaltyScore < 5 ? <FilledStar /> : <EmptyStar />}
-                        {loyaltyScore < 4 ? <FilledStar /> : <EmptyStar />}
-                        {loyaltyScore < 3 ? <FilledStar /> : <EmptyStar />}
-                        {loyaltyScore < 2 ? <FilledStar /> : <EmptyStar />}
+                        {loyaltyScore < 5 ? (
+                          <FilledStar width={12} height={12} />
+                        ) : (
+                          <EmptyStar width={12} height={12} />
+                        )}
+                        {loyaltyScore < 4 ? (
+                          <FilledStar width={12} height={12} />
+                        ) : (
+                          <EmptyStar width={12} height={12} />
+                        )}
+                        {loyaltyScore < 3 ? (
+                          <FilledStar width={12} height={12} />
+                        ) : (
+                          <EmptyStar width={12} height={12} />
+                        )}
+                        {loyaltyScore < 2 ? (
+                          <FilledStar width={12} height={12} />
+                        ) : (
+                          <EmptyStar width={12} height={12} />
+                        )}
                       </Box>
                     )}
                     {!isMobileScreen && cutAddressName(account.address)}
