@@ -1,7 +1,15 @@
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { erc20ABI, useAccount, useChainId, useContractRead, usePublicClient, useTransaction, useWaitForTransaction, useWalletClient } from 'wagmi';
+import {
+  erc20ABI,
+  useAccount,
+  useChainId,
+  useContractRead,
+  usePublicClient,
+  useWaitForTransaction,
+  useWalletClient,
+} from 'wagmi';
 import { Separator } from 'components/separator/Separator';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
@@ -34,7 +42,6 @@ import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
 import styles from './ActionBlock.module.scss';
 import { useDebounce } from 'helpers/useDebounce';
-import { toUtf8String } from '@ethersproject/strings';
 import { HashZero } from '@ethersproject/constants';
 
 const orderBlockMap: Record<OrderBlockE, string> = {
@@ -80,7 +87,7 @@ export const ActionBlock = memo(() => {
   const chainId = useChainId();
 
   const publicClient = usePublicClient({
-    chainId: chainId
+    chainId: chainId,
   });
 
   const { data: walletClient } = useWalletClient({
@@ -228,30 +235,24 @@ export const ActionBlock = memo(() => {
 
   useWaitForTransaction({
     hash: postOrderTx,
-    onSuccess() {      
-      toast.success(
-        <ToastContent
-          title='Order Submitted'
-          bodyLines={[]}
-        />
-      );
+    onSuccess() {
+      toast.success(<ToastContent title="Order Submitted" bodyLines={[]} />);
     },
     onError() {
       toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
     },
     onSettled() {
-      setPostOrderTx(undefined)
+      setPostOrderTx(undefined);
       getOpenOrders(chainId, traderAPIRef.current, orderInfo?.symbol as string, address as AddressT)
-      .then(({ data: d }) => {
-        if (d && d.length > 0) {
-          console.log('fetched open orders');
-          d.map((o) => setOpenOrders(o));
-        }
-      })
-      .catch(console.error);
+        .then(({ data: d }) => {
+          if (d && d.length > 0) {
+            d.map((o) => setOpenOrders(o));
+          }
+        })
+        .catch(console.error);
     },
-    enabled: !!address && !!orderInfo && !!postOrderTx
-  })
+    enabled: !!address && !!orderInfo && !!postOrderTx,
+  });
 
   const handleOrderConfirm = useCallback(() => {
     if (!address || !walletClient || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
@@ -287,61 +288,13 @@ export const ActionBlock = memo(() => {
                 requestSentRef.current = false;
                 setRequestSent(false);
                 clearInputsData();
-                toast.success(<ToastContent title="Order Submission Processed" bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]} />);
+                toast.success(
+                  <ToastContent
+                    title="Order Submission Processed"
+                    bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                  />
+                );
                 setPostOrderTx(tx.hash);
-                // await tx
-                //   .wait()
-                //   .then((receipt) => {
-                //     // txn went through
-                //     if (receipt.status === 1) {
-                //       const toastTile = parsedOrders.length > 1 ? 'Orders Submitted' : 'Order Submitted';
-                //       toast.success(
-                //         <ToastContent
-                //           title={toastTile}
-                //           bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                //         />
-                //       );
-                //     } else {
-                //       // typically unreachable
-                //       toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
-                //     }
-                //   })
-                //   .catch(async (err) => {
-                //     // txn failed - get the revert reason
-                //     console.error(err);
-                //     const response = await walletClient.call(
-                //       {
-                //         to: tx.to,
-                //         from: tx.from,
-                //         nonce: tx.nonce,
-                //         gasLimit: tx.gasLimit,
-                //         gasPrice: tx.gasPrice,
-                //         data: tx.data,
-                //         value: tx.value,
-                //         chainId: tx.chainId,
-                //         type: tx.type ?? undefined,
-                //         accessList: tx.accessList,
-                //       },
-                //       tx.blockNumber
-                //     );
-                //     const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
-                //     if (reason !== '') {
-                //       toast.error(
-                //         <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
-                //       );
-                //     }
-                //   })
-                //   .finally(() => {
-                //     // we go the receipt or failed trying - refresh orders
-                //     getOpenOrders(chainId, traderAPIRef.current, parsedOrders[0].symbol, address)
-                //       .then(({ data: d }) => {
-                //         if (d && d.length > 0) {
-                //           console.log('fetched open orders');
-                //           d.map((o) => setOpenOrders(o));
-                //         }
-                //       })
-                //       .catch(console.error);
-                //   });
               });
 
               // ensure we can trade again

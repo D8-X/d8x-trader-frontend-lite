@@ -1,6 +1,5 @@
-
 import { CancelOrderResponseI, AddressT } from 'types/types';
-import { PublicClient, WalletClient} from 'viem';
+import { PublicClient, WalletClient, parseAbi } from 'viem';
 
 export async function cancelOrder(
   publicClient: PublicClient,
@@ -8,13 +7,17 @@ export async function cancelOrder(
   signature: string,
   data: CancelOrderResponseI,
   orderId: string
-): Promise<{hash: AddressT}> {
-  return publicClient.simulateContract({
+): Promise<{ hash: AddressT }> {
+  const abi = [data.abi];
+  return publicClient
+    .simulateContract({
       address: data.OrderBookAddr as AddressT,
-      abi: [data.abi],
+      abi: parseAbi(abi),
       functionName: 'cancelOrder',
       args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
-      value: BigInt(data.priceUpdate.updateFee)
-    }).then(({request}) => walletClient.writeContract(request)).then((tx)=> ({hash : tx}));
+      value: BigInt(data.priceUpdate.updateFee),
+    })
+    .then(({ request }) => walletClient.writeContract(request))
+    .then((tx) => ({ hash: tx }));
 }

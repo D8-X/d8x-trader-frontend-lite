@@ -30,4 +30,7 @@ export default defineConfig({
   server: {
     open: true,
   },
+  optimizeDeps: {
+    include: ['@d8x/perpetuals-sdk'],
+  },
 });

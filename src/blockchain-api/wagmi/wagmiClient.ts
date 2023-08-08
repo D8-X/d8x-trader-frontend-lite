@@ -50,7 +50,7 @@ const projectId = config.projectId;
 
 const { connectors } = getDefaultWallets({
   appName: 'D8X App',
-  projectId,
+  projectId: projectId,
   chains,
 });
 

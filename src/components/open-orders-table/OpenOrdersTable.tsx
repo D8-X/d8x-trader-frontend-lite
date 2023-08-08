@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
 import { useResizeDetector } from 'react-resize-detector';
 
 import {
@@ -34,7 +34,7 @@ import {
   traderAPIBusyAtom,
 } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
-import { OrderWithIdI, TableHeaderI } from 'types/types';
+import { AddressT, OrderWithIdI, TableHeaderI } from 'types/types';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
@@ -43,14 +43,14 @@ import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './OpenOrdersTable.module.scss';
-import { toUtf8String } from '@ethersproject/strings';
 
 const MIN_WIDTH_FOR_TABLE = 900;
 
 export const OpenOrdersTable = memo(() => {
   const { address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useWalletClient({ chainId: chainId });
+  const publicClient = usePublicClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -66,6 +66,7 @@ export const OpenOrdersTable = memo(() => {
   const [requestSent, setRequestSent] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [modifyTx, setModifyTx] = useState<AddressT | undefined>(undefined);
 
   const traderAPIRef = useRef(traderAPI);
   const isAPIBusyRef = useRef(isAPIBusy);
@@ -107,6 +108,27 @@ export const OpenOrdersTable = memo(() => {
     }
   }, [chainId, address, selectedPool, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders]);
 
+  useWaitForTransaction({
+    hash: modifyTx,
+    onSuccess() {
+      toast.success(<ToastContent title="Order Cancelled" bodyLines={[]} />);
+    },
+    onError() {
+      toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
+    },
+    onSettled() {
+      setModifyTx(undefined);
+      getOpenOrders(chainId, traderAPIRef.current, selectedOrder?.symbol as string, address as AddressT)
+        .then(({ data: d }) => {
+          if (d && d.length > 0) {
+            d.map((o) => setOpenOrders(o));
+          }
+        })
+        .catch(console.error);
+    },
+    enabled: !!address && !!selectedOrder && !!modifyTx,
+  });
+
   const handleCancelOrderConfirm = useCallback(async () => {
     if (!selectedOrder) {
       return;
@@ -124,59 +146,14 @@ export const OpenOrdersTable = memo(() => {
     await getCancelOrder(chainId, traderAPIRef.current, selectedOrder.symbol, selectedOrder.id).then((data) => {
       if (data.data.digest) {
         signMessages(walletClient, [data.data.digest]).then((signatures) => {
-          cancelOrder(walletClient, signatures[0], data.data, selectedOrder.id)
+          cancelOrder(publicClient, walletClient, signatures[0], data.data, selectedOrder.id)
             .then(async (tx) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
               setRequestSent(false);
               console.log(`cancelOrder tx hash: ${tx.hash}`);
               toast.success(<ToastContent title="Cancelling Order" bodyLines={[]} />);
-              await tx
-                .wait()
-                .then((receipt) => {
-                  refreshOpenOrders();
-                  if (receipt.status === 1) {
-                    toast.success(
-                      <ToastContent
-                        title="Order Cancelled"
-                        bodyLines={[{ label: 'Symbol', value: selectedOrder.symbol }]}
-                      />
-                    );
-                  }
-                })
-                .catch(async (err) => {
-                  console.error(err);
-                  const response = await walletClient.call(
-                    {
-                      to: tx.to,
-                      from: tx.from,
-                      nonce: tx.nonce,
-                      gasLimit: tx.gasLimit,
-                      gasPrice: tx.gasPrice,
-                      data: tx.data,
-                      value: tx.value,
-                      chainId: tx.chainId,
-                      type: tx.type ?? undefined,
-                      accessList: tx.accessList,
-                    },
-                    tx.blockNumber
-                  );
-                  const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
-                  setRequestSent(false);
-                  if (reason !== '') {
-                    toast.error(
-                      <ToastContent title="Transaction Failed" bodyLines={[{ label: 'Reason', value: reason }]} />
-                    );
-                  } else {
-                    // false positive, probably just metamask
-                    toast.success(
-                      <ToastContent
-                        title="Order Cancelled"
-                        bodyLines={[{ label: 'Symbol', value: selectedOrder.symbol }]}
-                      />
-                    );
-                  }
-                });
+              setModifyTx(tx.hash);
             })
             .catch((error) => {
               console.error(error);
@@ -193,7 +170,7 @@ export const OpenOrdersTable = memo(() => {
     });
   }, [selectedOrder, requestSent, isDisconnected, walletClient, chainId, refreshOpenOrders]);
 
-  const handleChangePage = useCallback((event: unknown, newPage: number) => {
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
     setPage(newPage);
   }, []);
 
