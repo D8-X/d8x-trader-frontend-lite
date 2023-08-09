@@ -11,14 +11,7 @@ import type {
 } from 'types/types';
 import { RequestMethodE } from 'types/enums';
 import { CancelOrderResponseI, CollateralChangeResponseI, MaxOrderSizeResponseI } from 'types/types';
-// import { TraderInterface, floatToABK64x64 } from '@d8x/perpetuals-sdk';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TraderInterface = any;
-
-function floatToABK64x64(amount: number) {
-  return amount;
-}
+import { TraderInterface, floatToABK64x64 } from '@d8x/perpetuals-sdk';
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[`${chainId}`] || config.apiUrl.default;
@@ -30,7 +23,7 @@ export function getExchangeInfo(
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
   if (traderAPI) {
     // console.log('exchangeInfo via SDK');
-    return traderAPI.exchangeInfo().then((info) => {
+    return traderAPI.exchangeInfo().then((info: ExchangeInfoI) => {
       return { type: 'exchange-info', msg: '', data: info } as ValidatedResponseI<ExchangeInfoI>;
     });
   } else {
@@ -114,7 +107,7 @@ export function getPositionRisk(
 }
 
 export function positionRiskOnTrade(
-  chainId: number,
+  _chainId: number,
   traderAPI: TraderInterface,
   order: OrderI,
   traderAddr: string,
@@ -349,7 +342,7 @@ export function getAddCollateral(
           perpId: perpId,
           proxyAddr: proxyAddr,
           abi: proxyABI,
-          amountHex: amountHex.toString(),
+          amountHex: amountHex.toHexString(),
           priceUpdate: {
             updateData: submission.priceFeedVaas,
             publishTimes: submission.timestamps,
