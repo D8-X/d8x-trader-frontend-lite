@@ -7,25 +7,25 @@
 
 This package is configured entirely via environment variables. You must specify:
 
-- REACT_APP_PROJECT_ID: Head over to [WalletConnect Cloud](https://cloud.walletconnect.com/) to sign in or sign up. Create (or use an existing) project and copy its associated project id.
+- VITE_PROJECT_ID: Head over to [WalletConnect Cloud](https://cloud.walletconnect.com/) to sign in or sign up. Create (or use an existing) project and copy its associated project id.
   - Example:
-    `REACT_APP_PROJECT_ID=yourprojectid`
-- REACT_APP_API_URL: A semicolon separated list of endpoints served by your main REST API service.
+    `VITE_PROJECT_ID=yourprojectid`
+- VITE_API_URL: A semicolon separated list of endpoints served by your main REST API service.
   - For example, you could be hosting two main API services for two different chains, one at `https://api.mybackend.com` for Polygon zkEVM (chain ID 1101) and one at `https://api.test.mybackend.com` for Polygon zkEVM Testnet (chain ID 1442).
   - You must also define a default chain for your frontend, in this example it's mainnet (1101)
   - This entry should then take the form:
-    `REACT_APP_API_URL=1101::https://api.mybackend.com;1442::https://api.test.mybackend.com;default::https://api.mybackend.com`
-- REACT_APP_HISTORY_URL: A semicolon separated list of endpoints served by the History API service.
+    `VITE_API_URL=1101::https://api.mybackend.com;1442::https://api.test.mybackend.com;default::https://api.mybackend.com`
+- VITE_HISTORY_URL: A semicolon separated list of endpoints served by the History API service.
   - In line with the example above, you may be hosting the frontend on two different networks, Polyon zkEVM and Polygon zkEVM Testnet, using URLS `https://history.mybackend.com` and `https://history.test.mybackend.com`, respectively, with mainnet being your default landing page.
   - Then you would define
-    `REACT_APP_HISTORY_URL=1101::https://history.mybackend.com;1442::https://history.test.mybackend.com;default::https://history.mybackend.com`
-- REACT_APP_WEBSOCKET_URL: A semicolon separated list of endpoints served by the price Websocket service.
+    `VITE_HISTORY_URL=1101::https://history.mybackend.com;1442::https://history.test.mybackend.com;default::https://history.mybackend.com`
+- VITE_WEBSOCKET_URL: A semicolon separated list of endpoints served by the price Websocket service.
   - For example, you may be hosting `wss://ws.mybackend.com` for Polygon zkEVM and `wss://ws.test.mybackend.com` for Polygon zkEVM Testnet, again with Mainnet as default.
   - Then you would set this variable as
-    `REACT_APP_WEBSOCKET_URL=1101::wss://ws.mybackend.com/;1442::wss://ws.test.mybackend.com/;default::wss://ws.mybackend.com/`
-- REACT_APP_CANDLES_WEBSOCKET_URL: The URL of the candles service.
+    `VITE_WEBSOCKET_URL=1101::wss://ws.mybackend.com/;1442::wss://ws.test.mybackend.com/;default::wss://ws.mybackend.com/`
+- VITE_CANDLES_WEBSOCKET_URL: The URL of the candles service.
   - This service can be shared by different chains, but it adheres to the same notation as the previous two. If you are hosting this service at `wss://candles.mybackend.com`, then you would set this variable as
-    `REACT_APP_CANDLES_WEBSOCKET_URL=default::wss://candles.mybackend.com/`
+    `VITE_CANDLES_WEBSOCKET_URL=default::wss://candles.mybackend.com/`
 
 ### Setup autoformatting using Prettier
 
