@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -26,7 +26,6 @@ import { AddressT } from 'types/types';
 
 export const Add = memo(() => {
   const { address } = useAccount();
-  const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient({
     onError(error) {
       console.log(error);
@@ -99,14 +98,7 @@ export const Add = memo(() => {
 
     requestSentRef.current = true;
     setRequestSent(true);
-    approveMarginToken(
-      publicClient,
-      walletClient,
-      selectedPool.marginTokenAddr,
-      proxyAddr,
-      addAmount,
-      poolTokenDecimals
-    )
+    approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then(() => {
         addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
           console.log(`addLiquidity tx hash: ${tx.hash}`);
