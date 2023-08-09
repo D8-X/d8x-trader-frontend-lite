@@ -3,7 +3,6 @@ module.exports = {
   plugins: ['stylelint-order'],
   rules: {
     'at-rule-no-unknown': null,
-    'at-import-no-partial-leading-underscore': null,
     'no-empty-source': null,
     'no-descending-specificity': null,
     'property-no-vendor-prefix': null,
@@ -14,7 +13,9 @@ module.exports = {
     'font-family-name-quotes': null,
     'scss/no-global-function-names': null,
     'color-hex-case': 'upper',
+    'block-no-empty': null,
     'scss/at-rule-conditional-no-parentheses': null,
+    'scss/at-import-no-partial-leading-underscore': null,
     'block-opening-brace-space-before': 'always',
     'block-closing-brace-newline-after': [
       'always',
