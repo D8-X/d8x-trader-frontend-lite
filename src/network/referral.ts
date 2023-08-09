@@ -7,6 +7,7 @@ import {
 import { getRequestOptions } from 'helpers/getRequestOptions';
 
 import {
+  AddressT,
   type EarnedRebateI,
   type OpenTraderRebateI,
   type ReferralCodeI,
@@ -33,7 +34,9 @@ export async function postUpsertReferralCode(
   walletClient: WalletClient,
   onSignatureSuccess: () => void
 ) {
-  const referralCodeSigner = new ReferralCodeSigner(walletClient, '');
+  const signingFun = (x: string | Uint8Array) =>
+    walletClient.signMessage({ message: { raw: x as AddressT | Uint8Array } }) as Promise<string>;
+  const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
@@ -72,8 +75,9 @@ export async function postUseReferralCode(
   walletClient: WalletClient,
   onSignatureSuccess: () => void
 ) {
-  const referralCodeSigner = new ReferralCodeSigner(walletClient, '');
-
+  const signingFun = (x: string | Uint8Array) =>
+    walletClient.signMessage({ message: { raw: x as AddressT | Uint8Array } }) as Promise<string>;
+  const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
   const payload: APIReferralCodeSelectionPayload = {
     code,
     traderAddr: address,

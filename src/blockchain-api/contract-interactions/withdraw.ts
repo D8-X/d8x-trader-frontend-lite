@@ -1,5 +1,6 @@
+import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import { CollateralChangeResponseI, AddressT } from 'types/types';
-import { PublicClient, WalletClient, parseAbi } from 'viem';
+import { PublicClient, WalletClient } from 'viem';
 
 export function withdraw(
   publicClient: PublicClient,
@@ -9,7 +10,7 @@ export function withdraw(
   return publicClient
     .simulateContract({
       address: data.proxyAddr as AddressT,
-      abi: [data.abi],
+      abi: PROXY_ABI,
       functionName: 'withdraw',
       args: [data.perpId, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
