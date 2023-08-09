@@ -2,10 +2,11 @@ import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useWalletClient } from 'wagmi';
+import { usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
+import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -18,6 +19,7 @@ import {
 } from 'store/vault-pools.store';
 
 import styles from './Action.module.scss';
+import { AddressT } from 'types/types';
 
 export const Initiate = memo(() => {
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -28,9 +30,11 @@ export const Initiate = memo(() => {
   const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
   const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
+  const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);
 
   const [inputValue, setInputValue] = useState(`${initiateAmount}`);
 
@@ -55,7 +59,22 @@ export const Initiate = memo(() => {
     inputValueChangedRef.current = false;
   }, [initiateAmount]);
 
-  const handleInitiateLiquidity = useCallback(async () => {
+  useWaitForTransaction({
+    hash: txHash,
+    onSuccess() {
+      toast.success(<ToastContent title="Withdrawal Initiated" bodyLines={[]} />);
+    },
+    onError() {
+      toast.error(<ToastContent title="Error Processing Transaction" bodyLines={[]} />);
+    },
+    onSettled() {
+      setTxHash(undefined);
+      setTriggerUserStatsUpdate((prevValue) => !prevValue);
+    },
+    enabled: !!txHash,
+  });
+
+  const handleInitiateLiquidity = useCallback(() => {
     if (requestSentRef.current) {
       return;
     }
@@ -67,56 +86,23 @@ export const Initiate = memo(() => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    await liqProvTool
-      .initiateLiquidityWithdrawal(walletClient, selectedPool.poolSymbol, initiateAmount, { gasLimit: 5_000_000 })
-      .then(async (tx) => {
+    initiateLiquidityWithdrawal(publicClient, walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
+      .then((tx) => {
         console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
-        toast.success(<ToastContent title="Initiating liquidity withdrawal" bodyLines={[]} />);
-        tx.wait()
-          .then((receipt) => {
-            if (receipt.status === 1) {
-              setTriggerUserStatsUpdate((prevValue) => !prevValue);
-              setTriggerWithdrawalsUpdate((prevValue) => !prevValue);
-              setInitiateAmount(0);
-              setInputValue('0');
-              requestSentRef.current = false;
-              setRequestSent(false);
-              toast.success(<ToastContent title="Liquidity withdrawal initiated" bodyLines={[]} />);
-            }
-          })
-          .catch(async (err) => {
-            console.log(err);
-            const response = await walletClient.call(
-              {
-                to: tx.to,
-                from: tx.from,
-                nonce: tx.nonce,
-                gasLimit: tx.gasLimit,
-                gasPrice: tx.gasPrice,
-                data: tx.data,
-                value: tx.value,
-                chainId: tx.chainId,
-                type: tx.type ?? undefined,
-                accessList: tx.accessList,
-              },
-              tx.blockNumber
-            );
-            const reason = toUtf8String('0x' + response.substring(138)).replace(/\0/g, '');
-            setTriggerUserStatsUpdate((prevValue) => !prevValue);
-            setTriggerWithdrawalsUpdate((prevValue) => !prevValue);
-            requestSentRef.current = false;
-            setRequestSent(false);
-            toast.error(
-              <ToastContent title="Error initiating withdrawal" bodyLines={[{ label: 'Reason', value: reason }]} />
-            );
-          });
+        setTxHash(tx.hash);
+        toast.success(<ToastContent title="Initiating Liquidity Withdrawal" bodyLines={[]} />);
       })
-      .catch(async () => {
+      .catch((err) => {
+        console.error(err);
+        toast.error(<ToastContent title="Error Initiating Withdrawal" bodyLines={[{ label: 'Reason', value: '' }]} />);
+      })
+      .finally(() => {
+        setInitiateAmount(0);
+        setInputValue('0');
         setTriggerUserStatsUpdate((prevValue) => !prevValue);
         setTriggerWithdrawalsUpdate((prevValue) => !prevValue);
         requestSentRef.current = false;
         setRequestSent(false);
-        toast.error(<ToastContent title="Error initiating withdrawal" bodyLines={[]} />);
       });
   }, [initiateAmount, liqProvTool, walletClient, selectedPool, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate]);
 

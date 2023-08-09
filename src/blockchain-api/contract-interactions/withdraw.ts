@@ -6,15 +6,15 @@ export function withdraw(
   walletClient: WalletClient,
   data: CollateralChangeResponseI
 ): Promise<{ hash: AddressT }> {
-  const abi = [data.abi];
   return publicClient
     .simulateContract({
       address: data.proxyAddr as AddressT,
-      abi: parseAbi(abi),
+      abi: [data.abi],
       functionName: 'withdraw',
       args: [data.perpId, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
       value: BigInt(data.priceUpdate.updateFee),
+      account: walletClient.account,
     })
     .then(({ request }) => walletClient.writeContract(request))
     .then((tx) => ({ hash: tx }));

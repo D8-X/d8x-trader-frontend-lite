@@ -1,7 +1,7 @@
 import { OrderDigestI, AddressT } from 'types/types';
-import { PublicClient, parseAbi } from 'viem';
+import { PublicClient } from 'viem';
 import { WalletClient } from 'wagmi';
-import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 
 export function postOrder(
   publicClient: PublicClient,
@@ -9,14 +9,17 @@ export function postOrder(
   signatures: string[],
   data: OrderDigestI
 ): Promise<{ hash: AddressT }> {
-  const abi = typeof data.abi === 'string' ? [data.abi] : data.abi;
+  const orders = TraderInterface.chainOrders(data.SCOrders, data.orderIds).map(
+    TraderInterface.fromClientOrderToTypeSafeOrder
+  );
   return publicClient
     .simulateContract({
       address: data.OrderBookAddr as AddressT,
-      abi: parseAbi(abi),
+      abi: LOB_ABI,
       functionName: 'postOrders',
-      args: [TraderInterface.chainOrders(data.SCOrders, data.orderIds), signatures],
+      args: [orders, signatures],
       gas: BigInt(2_000_000),
+      account: walletClient.account,
     })
     .then(({ request }) => walletClient.writeContract(request))
     .then((tx) => ({ hash: tx }));
