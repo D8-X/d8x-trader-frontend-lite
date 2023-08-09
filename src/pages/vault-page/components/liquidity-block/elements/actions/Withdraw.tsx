@@ -75,16 +75,17 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    executeLiquidityWithdrawal(publicClient, walletClient, liqProvTool, selectedPool.poolSymbol)
+    executeLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol)
       .then((tx) => {
         console.log(`executeLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
         toast.success(<ToastContent title="Withdrawing liquidity" bodyLines={[]} />);
       })
       .catch((err) => {
-        toast.error(
-          <ToastContent title="Error withdrawing liquidity" bodyLines={[{ label: 'Reason', value: err as string }]} />
-        );
+        console.error(err);
+        let msg = (err?.message ?? err) as string;
+        msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+        toast.error(<ToastContent title="Error withdrawing liquidity" bodyLines={[{ label: 'Reason', value: msg }]} />);
       })
       .finally(() => {
         setTriggerUserStatsUpdate((prevValue) => !prevValue);

@@ -86,7 +86,7 @@ export const Initiate = memo(() => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    initiateLiquidityWithdrawal(publicClient, walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
+    initiateLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
       .then((tx) => {
         console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
@@ -94,7 +94,9 @@ export const Initiate = memo(() => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error(<ToastContent title="Error Initiating Withdrawal" bodyLines={[{ label: 'Reason', value: '' }]} />);
+        let msg = (err?.message ?? err) as string;
+        msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+        toast.error(<ToastContent title="Error Initiating Withdrawal" bodyLines={[{ label: 'Reason', value: msg }]} />);
       })
       .finally(() => {
         setInitiateAmount(0);

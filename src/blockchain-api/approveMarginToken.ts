@@ -2,11 +2,10 @@ import { erc20ABI } from 'wagmi';
 import { MaxUint256 } from '@ethersproject/constants';
 
 import type { AddressT } from 'types/types';
-import { PublicClient, WalletClient, parseUnits } from 'viem';
+import { WalletClient, parseUnits } from 'viem';
 import { waitForTransaction } from '@wagmi/core';
 
 export function approveMarginToken(
-  publicClient: PublicClient,
   walletClient: WalletClient,
   marginTokenAddr: string,
   proxyAddr: string,
@@ -19,15 +18,20 @@ export function approveMarginToken(
     if (allowance > minAmountBN) {
       return Promise.resolve({ hash: '0x' });
     } else {
-      return publicClient
-        .simulateContract({
+      const account = walletClient.account?.address;
+      if (!account) {
+        throw new Error('account not connected');
+      }
+      return walletClient
+        .writeContract({
+          chain: walletClient.chain,
           address: marginTokenAddr as AddressT,
           abi: erc20ABI,
           functionName: 'approve',
           args: [proxyAddr as AddressT, BigInt(MaxUint256.toString())],
           gas: BigInt(100_000),
+          account: account,
         })
-        .then(({ request }) => walletClient.writeContract(request))
         .then((tx) => {
           waitForTransaction({
             hash: tx,

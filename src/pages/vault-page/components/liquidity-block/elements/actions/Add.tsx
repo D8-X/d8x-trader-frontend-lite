@@ -108,14 +108,17 @@ export const Add = memo(() => {
       poolTokenDecimals
     )
       .then(() => {
-        addLiquidity(publicClient, walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
+        addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
           console.log(`addLiquidity tx hash: ${tx.hash}`);
           setAddTxn(tx.hash);
           toast.success(<ToastContent title="Adding Liquidity" bodyLines={[]} />);
         });
       })
-      .catch(() => {
-        toast.error(<ToastContent title="Error adding liquidity" bodyLines={[]} />);
+      .catch((err) => {
+        console.error(err);
+        let msg = (err?.message ?? err) as string;
+        msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+        toast.error(<ToastContent title="Error adding liquidity" bodyLines={[{ label: 'Reason', value: msg }]} />);
       })
       .finally(() => {
         setAddAmount(0);

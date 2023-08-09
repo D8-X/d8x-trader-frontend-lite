@@ -1,22 +1,22 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import { CollateralChangeResponseI, AddressT } from 'types/types';
-import { PublicClient, WalletClient } from 'viem';
+import { WalletClient } from 'viem';
 
-export function withdraw(
-  publicClient: PublicClient,
-  walletClient: WalletClient,
-  data: CollateralChangeResponseI
-): Promise<{ hash: AddressT }> {
-  return publicClient
-    .simulateContract({
+export function withdraw(walletClient: WalletClient, data: CollateralChangeResponseI): Promise<{ hash: AddressT }> {
+  const account = walletClient.account?.address;
+  if (!account) {
+    throw new Error('account not connected');
+  }
+  return walletClient
+    .writeContract({
+      chain: walletClient.chain,
       address: data.proxyAddr as AddressT,
       abi: PROXY_ABI,
       functionName: 'withdraw',
       args: [data.perpId, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
       value: BigInt(data.priceUpdate.updateFee),
-      account: walletClient.account,
+      account: account,
     })
-    .then(({ request }) => walletClient.writeContract(request))
     .then((tx) => ({ hash: tx }));
 }

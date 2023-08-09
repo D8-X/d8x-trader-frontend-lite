@@ -101,8 +101,8 @@ export const PositionsTable = memo(() => {
 
   const chainId = useChainId();
   const { address, isConnected, isDisconnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient({ chainId: chainId });
+  const publicClient = usePublicClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
   const [modifyType, setModifyType] = useState(ModifyTypeE.Close);
@@ -186,7 +186,6 @@ export const PositionsTable = memo(() => {
         .then((data) => {
           if (data.data.digests.length > 0) {
             approveMarginToken(
-              publicClient,
               walletClient,
               selectedPool.marginTokenAddr,
               proxyAddr,
@@ -195,7 +194,7 @@ export const PositionsTable = memo(() => {
               allowance
             ).then(() => {
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(publicClient, walletClient, signatures, data.data)
+              postOrder(walletClient, signatures, data.data)
                 .then((tx) => {
                   setTxHash(tx.hash);
                   console.log(`closePosition tx hash: ${tx.hash}`);
@@ -226,14 +225,13 @@ export const PositionsTable = memo(() => {
       getAddCollateral(chainId, traderAPIRef.current, selectedPosition.symbol, addCollateral)
         .then(({ data }) => {
           approveMarginToken(
-            publicClient,
             walletClient,
             selectedPool.marginTokenAddr,
             proxyAddr,
             addCollateral,
             poolTokenDecimals
           ).then(() => {
-            deposit(publicClient, walletClient, data)
+            deposit(walletClient, data)
               .then((tx) => {
                 console.log(`addCollateral tx hash: ${tx.hash}`);
                 setTxHash(tx.hash);
@@ -266,7 +264,7 @@ export const PositionsTable = memo(() => {
       setRequestSent(true);
       getRemoveCollateral(chainId, traderAPIRef.current, selectedPosition.symbol, removeCollateral)
         .then(({ data }) => {
-          withdraw(publicClient, walletClient, data)
+          withdraw(walletClient, data)
             .then((tx) => {
               console.log(`removeCollaeral tx hash: ${tx.hash}`);
               setTxHash(tx.hash);

@@ -267,7 +267,6 @@ export const ActionBlock = memo(() => {
           // hide modal now that metamask popup shows up
           setShowReviewOrderModal(false);
           approveMarginToken(
-            publicClient,
             walletClient,
             selectedPool.marginTokenAddr,
             proxyAddr,
@@ -281,7 +280,7 @@ export const ActionBlock = memo(() => {
               }
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              await postOrder(publicClient, walletClient, signatures, data.data).then(async (tx) => {
+              await postOrder(walletClient, signatures, data.data).then(async (tx) => {
                 // success submitting order to the node
                 console.log(`postOrder tx hash: ${tx.hash}`);
                 // order was sent, release lock and clear - no need to wait for the blockchain
