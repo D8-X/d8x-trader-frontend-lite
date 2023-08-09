@@ -322,7 +322,6 @@ export const ActionBlock = memo(() => {
     collateralDeposit,
     poolTokenDecimals,
     clearInputsData,
-    setOpenOrders,
     allowance,
   ]);
 

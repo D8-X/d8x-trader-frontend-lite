@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 import { useResizeDetector } from 'react-resize-detector';
 
 import {
@@ -50,7 +50,6 @@ export const OpenOrdersTable = memo(() => {
   const { address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
-  const publicClient = usePublicClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -146,7 +145,7 @@ export const OpenOrdersTable = memo(() => {
     await getCancelOrder(chainId, traderAPIRef.current, selectedOrder.symbol, selectedOrder.id).then((data) => {
       if (data.data.digest) {
         signMessages(walletClient, [data.data.digest]).then((signatures) => {
-          cancelOrder(publicClient, walletClient, signatures[0], data.data, selectedOrder.id)
+          cancelOrder(walletClient, signatures[0], data.data, selectedOrder.id)
             .then(async (tx) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
