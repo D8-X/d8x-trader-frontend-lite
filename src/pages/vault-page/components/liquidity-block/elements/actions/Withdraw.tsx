@@ -1,13 +1,12 @@
-import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
-import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
 import { PERIOD_OF_2_DAYS } from 'app-constants';
+import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -24,8 +23,8 @@ import {
 
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import styles from './Action.module.scss';
 import { AddressT } from 'types/types';
+import styles from './Action.module.scss';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -41,7 +40,6 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
   const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);

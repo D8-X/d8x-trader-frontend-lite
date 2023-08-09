@@ -4,15 +4,7 @@ import type { ChangeEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
-import {
-  erc20ABI,
-  useAccount,
-  useChainId,
-  useContractRead,
-  usePublicClient,
-  useWaitForTransaction,
-  useWalletClient,
-} from 'wagmi';
+import { erc20ABI, useAccount, useChainId, useContractRead, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
   Box,
@@ -25,8 +17,8 @@ import {
   FormControlLabel,
   InputAdornment,
   Link,
-  OutlinedInput,
   Table as MuiTable,
+  OutlinedInput,
   TableBody,
   TableCell,
   TableContainer,
@@ -72,16 +64,14 @@ import {
   traderAPIAtom,
   traderAPIBusyAtom,
 } from 'store/pools.store';
+import { tableRefreshHandlersAtom } from 'store/tables.store';
+import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, OrderTypeE, TableTypeE } from 'types/enums';
 import type { AddressT, MarginAccountI, OrderI, TableHeaderI } from 'types/types';
-import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './PositionsTable.module.scss';
 
 import { Separator } from 'components/separator/Separator';
-
-import { toUtf8String } from '@ethersproject/strings';
 
 const MIN_WIDTH_FOR_TABLE = 900;
 
@@ -102,7 +92,6 @@ export const PositionsTable = memo(() => {
   const chainId = useChainId();
   const { address, isConnected, isDisconnected } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
-  const publicClient = usePublicClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
   const [modifyType, setModifyType] = useState(ModifyTypeE.Close);
@@ -555,7 +544,7 @@ export const PositionsTable = memo(() => {
     return formatToCurrency(selectedPosition.liquidationPrice[0], parsedSymbol?.quoteCurrency);
   }, [selectedPosition, newPositionRisk, modifyType, closePositionChecked, parsedSymbol]);
 
-  const handleChangePage = useCallback((event: unknown, newPage: number) => {
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
     setPage(newPage);
   }, []);
 

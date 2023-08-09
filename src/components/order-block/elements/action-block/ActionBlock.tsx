@@ -1,16 +1,8 @@
+import { Separator } from 'components/separator/Separator';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import {
-  erc20ABI,
-  useAccount,
-  useChainId,
-  useContractRead,
-  usePublicClient,
-  useWaitForTransaction,
-  useWalletClient,
-} from 'wagmi';
-import { Separator } from 'components/separator/Separator';
+import { erc20ABI, useAccount, useChainId, useContractRead, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -40,9 +32,9 @@ import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
-import styles from './ActionBlock.module.scss';
-import { useDebounce } from 'helpers/useDebounce';
 import { HashZero } from '@ethersproject/constants';
+import { useDebounce } from 'helpers/useDebounce';
+import styles from './ActionBlock.module.scss';
 
 const orderBlockMap: Record<OrderBlockE, string> = {
   [OrderBlockE.Long]: 'Buy',
@@ -85,10 +77,6 @@ function createMainOrder(orderInfo: OrderInfoI) {
 export const ActionBlock = memo(() => {
   const { address } = useAccount();
   const chainId = useChainId();
-
-  const publicClient = usePublicClient({
-    chainId: chainId,
-  });
 
   const { data: walletClient } = useWalletClient({
     chainId: chainId,

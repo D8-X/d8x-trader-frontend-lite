@@ -1,8 +1,7 @@
-import { toUtf8String } from '@ethersproject/strings';
 import { useAtom } from 'jotai';
-import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { usePublicClient, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -12,14 +11,14 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
-  userAmountAtom,
-  withdrawalsAtom,
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
+  userAmountAtom,
+  withdrawalsAtom,
 } from 'store/vault-pools.store';
 
-import styles from './Action.module.scss';
 import { AddressT } from 'types/types';
+import styles from './Action.module.scss';
 
 export const Initiate = memo(() => {
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -30,7 +29,6 @@ export const Initiate = memo(() => {
   const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
   const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
