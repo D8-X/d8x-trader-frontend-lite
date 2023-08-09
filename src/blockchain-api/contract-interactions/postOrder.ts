@@ -1,9 +1,11 @@
-import { OrderDigestI, AddressT } from 'types/types';
-import { WalletClient } from 'viem';
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import type { Account, Transport, WalletClient } from 'viem';
+import type { Chain } from 'wagmi';
+
+import { OrderDigestI, AddressT } from 'types/types';
 
 export function postOrder(
-  walletClient: WalletClient,
+  walletClient: WalletClient<Transport, Chain, Account>,
   signatures: string[],
   data: OrderDigestI
 ): Promise<{ hash: AddressT }> {

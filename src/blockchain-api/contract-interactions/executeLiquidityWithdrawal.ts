@@ -1,9 +1,11 @@
-import { PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import { AddressT } from 'types/types';
-import { WalletClient } from 'viem';
+import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
+import type { Account, Transport, WalletClient } from 'viem';
+import type { Chain } from 'wagmi';
+
+import type { AddressT } from 'types/types';
 
 export async function executeLiquidityWithdrawal(
-  walletClient: WalletClient,
+  walletClient: WalletClient<Transport, Chain, Account>,
   traderAPI: TraderInterface,
   symbol: string
 ): Promise<{ hash: AddressT }> {

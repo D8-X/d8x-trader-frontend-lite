@@ -1,17 +1,18 @@
-import { erc20ABI } from 'wagmi';
 import { MaxUint256 } from '@ethersproject/constants';
+import { waitForTransaction } from '@wagmi/core';
+import { parseUnits } from 'viem';
+import type { WalletClient, Account, Transport } from 'viem';
+import { type Chain, erc20ABI } from 'wagmi';
 
 import type { AddressT } from 'types/types';
-import { WalletClient, parseUnits } from 'viem';
-import { waitForTransaction } from '@wagmi/core';
 
 export function approveMarginToken(
-  walletClient: WalletClient,
+  walletClient: WalletClient<Transport, Chain, Account>,
   marginTokenAddr: string,
   proxyAddr: string,
   minAmount: number,
   decimals: number,
-  allowance?: bigint
+  allowance?: bigint | number | string | undefined | boolean
 ) {
   if (allowance) {
     const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);

@@ -10,7 +10,6 @@ import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { Initiate } from './Initiate';
 
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
@@ -20,10 +19,11 @@ import {
   userAmountAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
-
 import { formatToCurrency } from 'utils/formatToCurrency';
+import type { AddressT } from 'types/types';
 
-import { AddressT } from 'types/types';
+import { Initiate } from './Initiate';
+
 import styles from './Action.module.scss';
 
 interface WithdrawPropsI {

@@ -291,6 +291,7 @@ export const PositionsTable = memo(() => {
     maxCollateral,
     walletClient,
     poolTokenDecimals,
+    allowance,
   ]);
 
   const clearPositions = useCallback(() => {

@@ -39,6 +39,11 @@
 
 .iconSeparator {
   margin: $d8x-spacing * 8 0;
+
+  svg {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .inputLine {
@@ -95,6 +100,8 @@
 .actionIcon {
   margin-bottom: 2px;
 }
+
+.buttonHolder {}
 
 @media screen and ($d8x-breakpoint-max-md) {
 

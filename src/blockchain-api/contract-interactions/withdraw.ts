@@ -1,8 +1,13 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
-import { CollateralChangeResponseI, AddressT } from 'types/types';
-import { WalletClient } from 'viem';
+import type { Account, Transport, WalletClient } from 'viem';
+import type { Chain } from 'wagmi';
 
-export function withdraw(walletClient: WalletClient, data: CollateralChangeResponseI): Promise<{ hash: AddressT }> {
+import type { CollateralChangeResponseI, AddressT } from 'types/types';
+
+export function withdraw(
+  walletClient: WalletClient<Transport, Chain, Account>,
+  data: CollateralChangeResponseI
+): Promise<{ hash: AddressT }> {
   const account = walletClient.account?.address;
   if (!account) {
     throw new Error('account not connected');

@@ -18,6 +18,11 @@
   min-width: 45px;
   border-radius: 50%;
   background-color: var(--d8x-color-white);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .autocomplete {
