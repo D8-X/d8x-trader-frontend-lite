@@ -126,7 +126,7 @@ export const PositionsTable = memo(() => {
     abi: erc20ABI,
     functionName: 'allowance',
     args: [address as AddressT, proxyAddr as AddressT],
-    enabled: !!selectedPool && !!selectedPool.marginTokenAddr,
+    enabled: !!selectedPool && !!selectedPool.marginTokenAddr && !!address && !!proxyAddr,
   });
 
   useWaitForTransaction({
