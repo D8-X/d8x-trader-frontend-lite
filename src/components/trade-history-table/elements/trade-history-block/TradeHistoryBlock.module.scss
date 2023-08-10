@@ -33,3 +33,11 @@
 .dataValue {
   color: var(--d8x-color-purple);
 }
+
+.green {
+  color: rgba(var(--d8x-background-buy-rgb), 1);
+}
+
+.red {
+  color: rgba(var(--d8x-background-sell-rgb), 1);
+}

@@ -14,6 +14,8 @@ interface TradeHistoryRowPropsI {
 export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHistoryRowPropsI) => {
   const perpetual = perpetuals.find(({ id }) => id === tradeHistory.perpetualId);
   const time = format(new Date(tradeHistory.timestamp), 'yyyy-MM-dd HH:mm:ss');
+  const pnlColor =
+    tradeHistory.realizedPnl > 0 ? 'rgba(var(--d8x-background-buy-rgb), 1)' : 'rgba(var(--d8x-background-sell-rgb), 1)';
 
   return (
     <TableRow>
@@ -45,7 +47,7 @@ export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHist
         </Typography>
       </TableCell>
       <TableCell align={headers[6].align}>
-        <Typography variant="cellSmall">
+        <Typography variant="cellSmall" style={{ color: pnlColor }}>
           {perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName) : ''}
         </Typography>
       </TableCell>
