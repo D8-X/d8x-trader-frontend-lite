@@ -1,5 +1,5 @@
 import { MaxUint256 } from '@ethersproject/constants';
-import { waitForTransaction } from '@wagmi/core';
+import { readContract, waitForTransaction } from '@wagmi/core';
 import { parseUnits } from 'viem';
 import type { WalletClient, Account, Transport } from 'viem';
 import { type Chain, erc20ABI } from 'wagmi';
@@ -11,13 +11,17 @@ export function approveMarginToken(
   marginTokenAddr: string,
   proxyAddr: string,
   minAmount: number,
-  decimals: number,
-  allowance?: bigint
+  decimals: number
 ) {
-  if (allowance) {
-    const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
+  const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
+  return readContract({
+    address: marginTokenAddr as AddressT,
+    abi: erc20ABI,
+    functionName: 'allowance',
+    args: [walletClient.account.address, proxyAddr as AddressT],
+  }).then((allowance) => {
     if (allowance > minAmountBN) {
-      return Promise.resolve({ hash: '0x' });
+      return Promise.resolve(null);
     } else {
       const account = walletClient.account?.address;
       if (!account) {
@@ -40,7 +44,5 @@ export function approveMarginToken(
           }).then(() => ({ hash: tx }));
         });
     }
-  } else {
-    return Promise.resolve(null);
-  }
+  });
 }

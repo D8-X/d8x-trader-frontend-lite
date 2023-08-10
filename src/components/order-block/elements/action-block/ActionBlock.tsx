@@ -2,7 +2,7 @@ import { Separator } from 'components/separator/Separator';
 import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { erc20ABI, useAccount, useChainId, useContractRead, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -213,14 +213,6 @@ export const ActionBlock = memo(() => {
     return orders;
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
-  const { data: allowance } = useContractRead({
-    address: (selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr : '') as AddressT,
-    abi: erc20ABI,
-    functionName: 'allowance',
-    args: [address as AddressT, proxyAddr as AddressT],
-    enabled: !!selectedPool && !!selectedPool.marginTokenAddr && !!address && !!proxyAddr,
-  });
-
   useWaitForTransaction({
     hash: postOrderTx,
     onSuccess() {
@@ -259,16 +251,12 @@ export const ActionBlock = memo(() => {
             selectedPool.marginTokenAddr,
             proxyAddr,
             collateralDeposit,
-            poolTokenDecimals,
-            allowance
+            poolTokenDecimals
           )
-            .then(async (res) => {
-              if (res?.hash) {
-                console.log(res.hash);
-              }
+            .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              await postOrder(walletClient, signatures, data.data).then(async (tx) => {
+              postOrder(walletClient, signatures, data.data).then((tx) => {
                 // success submitting order to the node
                 console.log(`postOrder tx hash: ${tx.hash}`);
                 // order was sent, release lock and clear - no need to wait for the blockchain
@@ -322,7 +310,6 @@ export const ActionBlock = memo(() => {
     collateralDeposit,
     poolTokenDecimals,
     clearInputsData,
-    allowance,
   ]);
 
   const atPrice = useMemo(() => {

@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
-import { erc20ABI, useAccount, useChainId, useContractRead, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
   Box,
@@ -121,14 +121,6 @@ export const PositionsTable = memo(() => {
     setSelectedPosition(null);
   }, []);
 
-  const { data: allowance } = useContractRead({
-    address: (selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr : '') as AddressT,
-    abi: erc20ABI,
-    functionName: 'allowance',
-    args: [address as AddressT, proxyAddr as AddressT],
-    enabled: !!selectedPool && !!selectedPool.marginTokenAddr && !!address && !!proxyAddr,
-  });
-
   useWaitForTransaction({
     hash: txHash,
     onSuccess() {
@@ -174,14 +166,7 @@ export const PositionsTable = memo(() => {
       orderDigest(chainId, [closeOrder], address)
         .then((data) => {
           if (data.data.digests.length > 0) {
-            approveMarginToken(
-              walletClient,
-              selectedPool.marginTokenAddr,
-              proxyAddr,
-              0,
-              poolTokenDecimals,
-              allowance
-            ).then(() => {
+            approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
               postOrder(walletClient, signatures, data.data)
                 .then((tx) => {
@@ -291,7 +276,6 @@ export const PositionsTable = memo(() => {
     maxCollateral,
     walletClient,
     poolTokenDecimals,
-    allowance,
   ]);
 
   const clearPositions = useCallback(() => {
