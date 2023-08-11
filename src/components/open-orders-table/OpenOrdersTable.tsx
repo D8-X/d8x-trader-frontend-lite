@@ -298,6 +298,7 @@ export const OpenOrdersTable = memo(() => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>
       )}

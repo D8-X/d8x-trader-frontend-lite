@@ -206,6 +206,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
             <Typography variant="h6" component="div" className={styles.walletConnect}>
               <WalletConnectButton />
             </Typography>
+            <LanguageSwitcher />
             <Button
               onClick={handleDrawerToggle}
               variant="primary"
@@ -214,7 +215,6 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
             >
               <MenuIcon />
             </Button>
-            <LanguageSwitcher />
           </Toolbar>
           {isSmallScreen && <Box className={styles.mobileSelectBoxes}>{children}</Box>}
         </PageAppBar>

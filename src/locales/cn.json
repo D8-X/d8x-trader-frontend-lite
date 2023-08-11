@@ -466,6 +466,9 @@
   "common": {
     "change-language": "改變語言",
     "wallet-connect": "連接",
+    "pagination": {
+      "per-page": "每页"
+    },
     "select": {
       "collateral": {
         "label": "抵押品:",

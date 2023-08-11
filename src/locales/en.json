@@ -466,6 +466,9 @@
   "common": {
     "change-language": "Change Language",
     "wallet-connect": "Connect",
+    "pagination": {
+      "per-page": "Per page"
+    },
     "select": {
       "collateral": {
         "label": "Collateral:",

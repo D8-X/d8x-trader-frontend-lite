@@ -242,6 +242,7 @@ export const PositionsTable = memo(() => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>
       )}

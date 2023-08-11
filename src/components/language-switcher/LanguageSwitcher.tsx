@@ -5,7 +5,7 @@ import { LanguageE } from 'types/enums';
 import type { LanguageMetaI } from 'types/types';
 
 import { LanguageSwitcherMenuItem } from './elements/LanguageSwitcherMenuItem';
-import LanguageIcon from '@mui/icons-material/Language';
+import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
 import { IconButton, Menu, Tooltip } from '@mui/material';
 
 import styles from './LanguageSwitcher.module.scss';
@@ -51,7 +51,7 @@ export const LanguageSwitcher = () => {
           aria-expanded={open ? 'true' : undefined}
           className={styles.iconButton}
         >
-          <LanguageIcon sx={{ width: 40, height: 40 }} />
+          <LanguageIcon />
         </IconButton>
       </Tooltip>
       <Menu

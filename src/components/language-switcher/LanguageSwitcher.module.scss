@@ -3,4 +3,9 @@
 .iconButton {
   margin-left: 2 * $d8x-spacing;
   color: var(--d8x-color-purple);
+
+  svg {
+    height: 48px;
+    width: 48px;
+  }
 }

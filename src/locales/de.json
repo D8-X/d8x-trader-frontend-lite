@@ -49,7 +49,7 @@
             "title": "Neue Position - Details",
             "size": "Positionsgrösse:",
             "margin": "Margin:",
-            "leverage": "Hebelwirkung:",
+            "leverage": "Hebel:",
             "liq-price": "Liq. Preis:"
           },
           "cancel": "Abbrechen",
@@ -98,7 +98,7 @@
           "order-size": "Ordergrösse",
           "limit-price": "Limit Preis",
           "stop-price": "Stop Preis",
-          "leverage": "Hebelwirkung",
+          "leverage": "Hebel",
           "good-until": "Gut bis"
         },
         "table-content": {
@@ -203,8 +203,8 @@
           "body3": "Falls Sie einen Limit Preis zusätzlich zu Ihrem Trigger Preis setzen, spezifizieren Sie eine Stop-Limit Order. Ihre Order wird zum spezifizierten Limit-Preis, oder einem besseren Preis, exekutiert."
         },
         "leverage": {
-          "title": "Hebelwirkung",
-          "body1": "Bestimmt die Hebelwirkung ihrer Order",
+          "title": "Hebel",
+          "body1": "Bestimmt den Hebel ihrer Order",
           "body2": "Diese Einstellung hat keine Auswirkung falls Ihre Order eine existierende Position reduziert ('Teilschliessung')."
         },
         "slippage": {
@@ -271,7 +271,7 @@
           "position-too-small": "Order wird scheitern: Die resultierende Position ist zu klein",
           "below-min-position": "Warning: Ordergrösse ist kleiner als die minimale Positionsgrösse",
           "insufficient-balance": "Order wird scheitern: Das Walletguthaben ist zu klein",
-          "undefined": "Order nicht definiert: Take Profit Einstellungen sind inkompatibel mit der Hebelwirkungseinstellung",
+          "undefined": "Order nicht definiert: Take Profit Einstellungen sind inkompatibel mit der Hebeleinstellung",
           "good-to-go": "Alles bereit",
           "pass": "Bestanden",
           "fail": "Nicht bestanden"
@@ -299,7 +299,7 @@
           "details": "Neue Position - Details",
           "size": "Positionsgrösse",
           "margin": "Margin",
-          "leverage": "Hebelwirkung",
+          "leverage": "Hebel",
           "liq-price": "Liq. Preis",
           "validity-checks": "Gültigkeitsprüfungen",
           "cancel": "stornieren",
@@ -466,6 +466,9 @@
   "common": {
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
+    "pagination": {
+      "per-page": "Pro Seite"
+    },
     "select": {
       "collateral": {
         "label": "Sicherheit:",
