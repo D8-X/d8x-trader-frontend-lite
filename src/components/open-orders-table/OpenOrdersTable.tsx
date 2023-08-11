@@ -156,31 +156,32 @@ export const OpenOrdersTable = memo(() => {
     getCancelOrder(chainId, traderAPIRef.current, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
-          signMessages(walletClient, [data.data.digest]).then((signatures) => {
-            cancelOrder(walletClient, signatures[0], data.data, selectedOrder.id).then((tx) => {
-              setCancelModalOpen(false);
-              console.log(`cancelOrder tx hash: ${tx.hash}`);
-              toast.success(
-                <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
-              );
-              setTxHash(tx.hash);
+          signMessages(walletClient, [data.data.digest])
+            .then((signatures) => {
+              cancelOrder(walletClient, signatures[0], data.data, selectedOrder.id)
+                .then((tx) => {
+                  setCancelModalOpen(false);
+                  setSelectedOrder(null);
+                  setRequestSent(false);
+                  console.log(`cancelOrder tx hash: ${tx.hash}`);
+                  toast.success(
+                    <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
+                  );
+                  setTxHash(tx.hash);
+                })
+                .catch((error) => {
+                  console.error(error);
+                  setRequestSent(false);
+                });
+            })
+            .catch((error) => {
+              console.error(error);
+              setRequestSent(false);
             });
-          });
         }
       })
       .catch((error) => {
         console.error(error);
-        let msg = (error?.message ?? error) as string;
-        msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
-        toast.error(
-          <ToastContent
-            title={t('pages.trade.orders-table.toasts.error-processing.title')}
-            bodyLines={[{ label: t('pages.trade.orders-table.toasts.error-processing.body'), value: msg }]}
-          />
-        );
-      })
-      .finally(() => {
-        setSelectedOrder(null);
         setRequestSent(false);
       });
   }, [selectedOrder, requestSent, isDisconnected, walletClient, chainId, t]);
