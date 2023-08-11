@@ -57,7 +57,7 @@
         },
         "toasts": {
           "submit-close": {
-            "title": "Abschicken der Schliess-Order"
+            "title": "Abschicken der Schliess Order"
           },
           "submitted": {
             "title": "Order abgeschickt",
@@ -86,6 +86,15 @@
             "title": "Sicherheit entfernt",
             "body1": "Symbol",
             "body2": "Menge"
+          },
+          "trade-executed": {
+            "title": "Handel ausgeführt",
+            "body": "Symbol"
+          },
+          "order-failed": {
+            "title": "Order fehlgeschlagen",
+            "body1": "Symbol",
+            "body2": "Grund"
           }
         }
       },
@@ -254,7 +263,8 @@
             "body": "Symbol"
           },
           "order-submitted": {
-            "title": "Order gesendet"
+            "title": "Order gesendet",
+            "body": "Symbol"
           },
           "error": {
             "title": "Fehler bei der Verarbeitung der Transaktion"

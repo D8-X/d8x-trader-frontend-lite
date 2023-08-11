@@ -86,6 +86,15 @@
             "title": "Collateral Removed",
             "body1": "Symbol",
             "body2": "Amount"
+          },
+          "trade-executed": {
+            "title": "Trade executed",
+            "body": "Symbol"
+          },
+          "order-failed": {
+            "title": "Order failed",
+            "body1": "Symbol",
+            "body2": "Reason"
           }
         }
       },
@@ -254,7 +263,8 @@
             "body": "Symbol"
           },
           "order-submitted": {
-            "title": "Order Submitted"
+            "title": "Order Submitted",
+            "body": "Symbol"
           },
           "error": {
             "title": "Error Processing Transaction"

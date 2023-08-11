@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -72,6 +73,7 @@ function isExecutionFailedMessage(message: CommonWsMessageI): message is OnExecu
 }
 
 export function useWsMessageHandler() {
+  const { t } = useTranslation();
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -178,8 +180,13 @@ export function useWsMessageHandler() {
         removeOpenOrder(parsedMessage.data.obj.orderId);
         toast.success(
           <ToastContent
-            title="Trade executed"
-            bodyLines={[{ label: 'Symbol', value: parsedMessage.data.obj.symbol }]}
+            title={t('pages.trade.positions-table.toasts.trade-executed.title')}
+            bodyLines={[
+              {
+                label: t('pages.trade.positions-table.toasts.trade-executed.body'),
+                value: parsedMessage.data.obj.symbol,
+              },
+            ]}
           />
         );
       } else if (isExecutionFailedMessage(parsedMessage)) {
@@ -189,10 +196,16 @@ export function useWsMessageHandler() {
         failOpenOrder(parsedMessage.data.obj.orderId);
         toast.error(
           <ToastContent
-            title="Order failed"
+            title={t('pages.trade.position-table.toasts.order-failed.title')}
             bodyLines={[
-              { label: 'Symbol', value: parsedMessage.data.obj.symbol },
-              { label: 'Reason', value: parsedMessage.data.obj.reason },
+              {
+                label: t('pages.trade.position-table.toasts.order-failed.body1'),
+                value: parsedMessage.data.obj.symbol,
+              },
+              {
+                label: t('pages.trade.position-table.toasts.order-failed.body2'),
+                value: parsedMessage.data.obj.reason,
+              },
             ]}
           />
         );
@@ -207,6 +220,7 @@ export function useWsMessageHandler() {
       failOpenOrder,
       chainId,
       address,
+      t,
     ]
   );
 }

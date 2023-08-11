@@ -238,10 +238,10 @@ export const ActionBlock = memo(() => {
     onSuccess() {
       toast.success(
         <ToastContent
-          title={t('pages.trade.action-block.toasts.orders-submitted.title')}
+          title={t('pages.trade.action-block.toasts.order-submitted.title')}
           bodyLines={[
             {
-              label: t('pages.trade.action-block.toasts.orders-submitted.body'),
+              label: t('pages.trade.action-block.toasts.order-submitted.body'),
               value: orderInfo?.symbol,
             },
           ]}
