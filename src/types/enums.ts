@@ -1,6 +1,6 @@
 export enum LanguageE {
   EN = 'en',
-  CN = 'cn',
+  //CN = 'cn',
   DE = 'de',
 }
 

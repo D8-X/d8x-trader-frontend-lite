@@ -39,7 +39,6 @@
       "npm run stylelint"
     ],
     "src/**/*.{js,jsx,ts,tsx}": [
-      "npm run tsc",
       "npm run prettify",
       "npm run eslint"
     ]

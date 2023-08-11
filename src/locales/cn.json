@@ -427,7 +427,7 @@
         "initiate": {
           "title": "1.贸 Initiate withdrawal of {{poolSymbol}}",
           "info1": "Sp贸ecify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
-          "info2": "Af贸ter 48 hours, this amount can be converted to MATIC and can be withdrawn from the pool.",
+          "info2": "Af贸ter 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
           "button": "I贸nitiate withdrawal"
         },
         "action": {

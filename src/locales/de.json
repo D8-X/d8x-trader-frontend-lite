@@ -1,42 +1,492 @@
 {
   "navigation": {
-    "trade": "Handel",
-    "refer": "Sich beziehen",
-    "vault": "Gewölbe"
+    "trade": "Handeln",
+    "refer": "Empfehlen",
+    "vault": "Liquidität"
   },
   "pages": {
     "trade": {
       "stats": {
-        "mid-price": "Mittlerer Preis",
-        "mark-price": "Preis markieren",
-        "index-price": "Indexpreis",
-        "funding-rate": "Förderquote",
-        "open-interest": "Offenes Interesse"
+        "mid-price": "Mid-Preis",
+        "mark-price": "Mark-Preis",
+        "index-price": "Index-Preis",
+        "funding-rate": "Funding-Rate",
+        "open-interest": "Open Interest"
+      },
+      "positions-table": {
+        "table-title": "Positionen",
+        "table-header": {
+          "symbol": "Symbol",
+          "size": "Pos. Grösse",
+          "side": "Seite",
+          "entry-price": "Einstiegspreis",
+          "liq-price": "Liq. Preis",
+          "margin": "Margin",
+          "pnl": "Unr. GuV"
+        },
+        "table-content": {
+          "buy": "KAUFEN",
+          "sell": "VERKAUFEN",
+          "modify": "Modifizieren",
+          "connect": "Verbinden Sie Ihre Wallet",
+          "no-open": "Keine offenen Positionen"
+        },
+        "position-block-mobile": {
+          "symbol": "Symbol",
+          "modify": "Modifizieren"
+        },
+        "modify-modal": {
+          "title": "Position Modifizieren",
+          "selector": {
+            "close": "Schliessen",
+            "add": "Hinzufügen",
+            "remove": "Entfernen"
+          },
+          "close": "Position schliessen",
+          "add": "Sicherheit hinzufügen",
+          "remove": "Sicherheit entfernen",
+          "pos-details": {
+            "title": "Neue Position - Details",
+            "size": "Positionsgrösse:",
+            "margin": "Margin:",
+            "leverage": "Hebelwirkung:",
+            "liq-price": "Liq. Preis:"
+          },
+          "cancel": "Abbrechen",
+          "confirm": "Bestätigen"
+        },
+        "toasts": {
+          "submit-close": {
+            "title": "Abschicken der Schliess-Order"
+          },
+          "submitted": {
+            "title": "Order abgeschickt",
+            "body": "Symbol"
+          },
+          "tx-failed": {
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
+          },
+          "error-processing": {
+            "title": "Fehler bei der Verarbeitung der Transaktion",
+            "body": "Grund"
+          },
+          "adding-collateral": {
+            "title": "Sicherheit wird hinzugefügt"
+          },
+          "collateral-added": {
+            "title": "Sicherheit hinzugefügt",
+            "body1": "Symbol",
+            "body2": "Menge"
+          },
+          "removing-collateral": {
+            "title": "Sicherheit wird entfernt"
+          },
+          "collateral-removed": {
+            "title": "Sicherheit entfernt",
+            "body1": "Symbol",
+            "body2": "Menge"
+          }
+        }
+      },
+      "orders-table": {
+        "table-title": "Offene Orders",
+        "table-header": {
+          "symbol": "Symbol",
+          "side": "Seite",
+          "type": "Typ",
+          "order-size": "Ordergrösse",
+          "limit-price": "Limit Preis",
+          "stop-price": "Stop Preis",
+          "leverage": "Hebelwirkung",
+          "good-until": "Gut bis"
+        },
+        "table-content": {
+          "buy": "KAUFEN",
+          "sell": "VERKAUFEN",
+          "connect": "Verbinden Sie Ihre Wallet",
+          "no-open": "Keine offenen Orders",
+          "na": "N/A",
+          "cancel": "Schliessen",
+          "limit": "Limit",
+          "market": "Market",
+          "stop": "Stop"
+        },
+        "cancel-modal": {
+          "title": "Offene Order Stornieren",
+          "content": "Sind Sie sicher, dass sie die offene Order stornieren wollen?",
+          "back": "Zurück",
+          "confirm": "Order stornieren"
+        },
+        "order-block-mobile": {
+          "symbol": "Symbol",
+          "cancel": "Schliessen"
+        },
+        "toasts": {
+          "cancel-order": {
+            "title": "Order wird storniert"
+          },
+          "order-cancelled": {
+            "title": "Order storniert",
+            "body": "Symbol"
+          },
+          "tx-failed": {
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
+          },
+          "error-processing": {
+            "title": "Fehler bei der Verarbeitung der Transaktion",
+            "body": "Grund"
+          }
+        }
+      },
+      "history-table": {
+        "table-title": "Handelshistorie",
+        "table-header": {
+          "time": "Zeit",
+          "perpetual": "Perpetual",
+          "side": "Seite",
+          "price": "Preis",
+          "quantity": "Menge",
+          "fee": "Gebühr",
+          "realized-profit": "Realisierter Profit"
+        },
+        "table-content": {
+          "connect": "Verbinden Sie Ihre Wallet",
+          "no-open": "Keine Handelshistorie vorhanden"
+        },
+        "history-block-mobile": {
+          "symbol": "Symbol"
+        }
+      },
+      "funding-table": {
+        "table-title": "Fundinghistorie",
+        "table-header": {
+          "time": "Zeit",
+          "perpetual": "Perpetual",
+          "funding-payment": "Funding Zahlung"
+        },
+        "table-content": {
+          "connect": "Verbinden Sie Ihre Wallet",
+          "no-open": "Keine Fundinghistorie vorhanden"
+        },
+        "funding-block-mobile": {
+          "symbol": "Symbol"
+        }
+      },
+      "order-block": {
+        "selector": {
+          "long": "Long",
+          "short": "Short"
+        },
+        "order-type": {
+          "market": "Market",
+          "limit": "Limit",
+          "stop": "Stop"
+        },
+        "order-size": {
+          "title": "Ordergrösse",
+          "body1": "Bestimmt die Grösse der Order.",
+          "body2": "Ihre maximale Ordergrösse hängt von Ihren offenen Positionen sowie dem Status des Handelsplatzes ab. Die maximale Grösse ist im Moment:",
+          "body3": "Die minimale Positionsgrösse für diesen Perpetual ist:",
+          "body4": "Die 'step size' ist:"
+        },
+        "limit-price": {
+          "title": "Limit Preis",
+          "body1": "Wenn Sie einen Limit Preis festsetzen, dann wird Ihre Order zu diesem, oder einem besseren, Preis exekutiert.",
+          "body2": "Falls Sie eine Stop Order erstellen, können sie optional auch einen Limit Preis setzen. Eine Stop Order mit Limit Preis ist eine Stop-Limit Order. Eine Stop Order ohne Limit Preis ist eine Stop-Market Order."
+        },
+        "trigger-price": {
+          "title": "Trigger Preis",
+          "body1": "Der Trigger Preis ist der Mark-Preis bei welchem die Stop Order ausgelöst wird.",
+          "body2": "Falls Sie keinen Limit Preis zusätzlich zu Ihrem Trigger Preis setzen, spezifizieren Sie eine Stop-Market Order. Sobald Ihre Order ausgelöst wird, wird sie zum besten verfügbaren Preis exekutiert.",
+          "body3": "Falls Sie einen Limit Preis zusätzlich zu Ihrem Trigger Preis setzen, spezifizieren Sie eine Stop-Limit Order. Ihre Order wird zum spezifizierten Limit-Preis, oder einem besseren Preis, exekutiert."
+        },
+        "leverage": {
+          "title": "Hebelwirkung",
+          "body1": "Bestimmt die Hebelwirkung ihrer Order",
+          "body2": "Diese Einstellung hat keine Auswirkung falls Ihre Order eine existierende Position reduziert ('Teilschliessung')."
+        },
+        "slippage": {
+          "title": "Slippage Einstellung",
+          "body": "Wählen Sie Ihre Slippage Toleranz",
+          "max": "Max Einstiegspreis:",
+          "min": "Min Einstiegspreis:",
+          "cancel": "Abbrechen",
+          "confirm": "Bestätigen"
+        },
+        "reduce-only": "Nur reduzieren",
+        "expiry": {
+          "title": "Ablaufeinstellungen",
+          "body": "Bestimmen Sie die Anzahl Tage, nach deren Ihre Hauptorder abläuft (diese Einstellung hat keine Auswirkung auf allfällige Stop-Loss oder Take-Profit Orders).",
+          "close": "Schliessen"
+        },
+        "stop-loss": {
+          "title": "Stop loss",
+          "body1": "Sie können eine Stop-Loss Order zusätzlich zu Ihrer Hauptorder spezifizieren.",
+          "body2": "Wenn Sie zum Beispiel -50% auswählen, dann spezifizieren Sie eine zweite Order, welche ausgelöst wird wenn Ihr Verlust auf der Hauptorder -50% erreicht.",
+          "body3": "Technisch gesehen spezifizieren Sie eine Stop-Market Order. Falls Ihre Hauptorder eine KAUFEN (VERKAUFEN) Order ist, spezifizieren sie eine Stop-Market VERKAUFEN (KAUFEN) Order. Basierend auf dem Mid-Preis, wird der Trigger Preis automatisch so berechnet, dass Ihr Verlust den von Ihnen gewählten Parameter entspricht.",
+          "none": "KEINE"
+        },
+        "take-profit": {
+          "title": "Take profit",
+          "body1": "Sie können eine Take-Profit Order zusätzlich zu Ihrer Hauptorder spezifizieren.",
+          "body2": "Wenn Sie zum Beispiel 100% auswählen, dann spezifizieren Sie eine zweite Order, welche ausgelöst wird wenn Ihr Gewinn auf der Hauptorder 100% erreicht.",
+          "body3": "Technisch gesehen spezifizieren Sie eine Limit Order. Falls Ihre Hauptorder eine KAUFEN (VERKAUFEN) Order ist, spezifizieren sie eine Limit VERKAUFEN (KAUFEN) Order. Basierend auf dem Mid-Preis, wird der Limit Preis automatisch so berechnet, dass Ihr Gewinn den von Ihnen gewählten Parameter entspricht.",
+          "none": "KEINE"
+        },
+        "info": {
+          "balance": "Wallet Guthaben",
+          "order-size": "Ordergrösse",
+          "fees": "Gebühren"
+        },
+        "review": {
+          "title": "Order überprüfen"
+        }
+      },
+      "action-block": {
+        "toasts": {
+          "processed": {
+            "title": "Order wird gesendet"
+          },
+          "orders-submitted": {
+            "title": "Orders gesendet",
+            "body": "Symbol"
+          },
+          "order-submitted": {
+            "title": "Order gesendet"
+          },
+          "error": {
+            "title": "Fehler bei der Verarbeitung der Transaktion"
+          },
+          "tx-failed": {
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
+          }
+        },
+        "validity": {
+          "closed": "Warnung: Der Markt ist geschlossen",
+          "order-too-large": "Order wird scheitern: Ordergrösse ist zu gross",
+          "order-too-small": "Order wird scheitern: Ordergrösse ist zu klein",
+          "position-too-small": "Order wird scheitern: Die resultierende Position ist zu klein",
+          "below-min-position": "Warning: Ordergrösse ist kleiner als die minimale Positionsgrösse",
+          "insufficient-balance": "Order wird scheitern: Das Walletguthaben ist zu klein",
+          "undefined": "Order nicht definiert: Take Profit Einstellungen sind inkompatibel mit der Hebelwirkungseinstellung",
+          "good-to-go": "Alles bereit",
+          "pass": "Bestanden",
+          "fail": "Nicht bestanden"
+        },
+        "order-types": {
+          "market": "Market",
+          "limit": "Limit",
+          "stop": "Stop"
+        },
+        "order-action": {
+          "long": "Kaufen",
+          "short": "Verkaufen"
+        },
+        "review": {
+          "title": "Order überprüfen",
+          "deposit": "Einzahlung aus der Wallet:",
+          "balance": "Wallet Guthaben:",
+          "fee": "Handelsgebühr:",
+          "max": "Max Einstiegspreis:",
+          "min": "Min Einstiegspreis:",
+          "trigger-price": "Trigger Preis",
+          "limit-price": "Limit Preis",
+          "stop-loss": "Stop-loss Preis",
+          "take-profit": "Take-profit Preis",
+          "details": "Neue Position - Details",
+          "size": "Positionsgrösse",
+          "margin": "Margin",
+          "leverage": "Hebelwirkung",
+          "liq-price": "Liq. Preis",
+          "validity-checks": "Gültigkeitsprüfungen",
+          "cancel": "stornieren",
+          "confirm": "bestätigen"
+        }
       }
     },
-    "refer": {},
-    "vault": {}
+    "refer": {
+      "tab-selector": {
+        "referrer": "Als Empfehlungsgeber",
+        "trader": "Als Trader"
+      },
+      "referrer-tab": {
+        "disclaimer-text-block1": "Verdienen Sie Rabatte, indem Sie Händler zum Handeln auf D8X einladen. Rabatte werden wöchentlich per Airdrop auf Ihre Wallet übertragen.",
+        "disclaimer-text-block2": "Schauen Sie sich die Details zum Empfehlungsprogramm an.",
+        "volume": "Gesamtes empfohlenes Handelsvolumen",
+        "rebates": "Insgesamt verdiente Rabatte",
+        "title1": "Empfehlungen",
+        "title2": "Empfehlen & Verdienen",
+        "codes": "Ihre Codes",
+        "create": "Code generieren",
+        "na": "N/A",
+        "referrer-rebate-rate": "Rabattsatz Empfehlungsgeber",
+        "trader-rebate-rate": "Rabattsatz Händler",
+        "agency-rebate-rate": "Rabattsatz Agentur",
+        "modify": "Modifizieren",
+        "no-codes": "Keine Empfehlungscode"
+      },
+      "manage-code": {
+        "title-create": "Empfehlungscode erstellen",
+        "base": "Ihr Basis-Rabattsatz:",
+        "you-receive": "Sie bekommen",
+        "trader-receives": "Händler bekommt",
+        "agency": "Agentur",
+        "referrer": "Empfehlungsgeber",
+        "trader": "Händler",
+        "trader-kickback": "Kickback-Rate des Händlers:",
+        "referrer-kickback": "Kickback-Rate des Empfehlungsgeber:",
+        "referrer-addr": "Addresse des Empfehlungsgeber:",
+        "enter-code": "Code eingeben",
+        "code-taken": "Code bereits vergeben",
+        "create-code": "Code generieren",
+        "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
+        "cancel": "Abbrechen",
+        "enter-addr": "Addresse eingeben",
+        "error": "Bitte geben Sie eine gültige Adresse ein",
+        "title-modify": "Empfehlungscode ändern",
+        "change-addr": "Empfehlungsgeberaddresse ändern?",
+        "your-code": "Ihr Code",
+        "modify": "Modifizieren"
+      },
+      "toast": {
+        "success-create": "Code erfolgreich erstellt",
+        "success-modify": "Code erfolgreich geändert",
+        "success-apply": "Code erfolgreich angewendet"
+      },
+      "trader-tab": {
+        "title1": "Rabatte",
+        "earned-rebates": "Insgesamt verdiente Rabatte",
+        "open-rewards": "Offene Belohnungen",
+        "title2": "Handeln & Verdienen",
+        "disclaimer-text-block1": "Geben Sie einen Empfehlungscode ein, um Rabatte auf Handelsgebühren zu erhalten.",
+        "disclaimer-text-block2": "Die Rabatte werden wöchentlich per Airdrop auf Ihre Wallet übertragen.",
+        "your-rebate-rate": "Ihr Rabattsatz",
+        "your-active-code": "Ihr aktiver Code",
+        "enter-new-code": "Code eingeben",
+        "title3": "Code eingeben",
+        "enter-a-code": "Code eingeben",
+        "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
+        "cancel": "Abbrechen",
+        "enter-code": "Code eingeben",
+        "code-not-found": "Code nicht gefunden",
+        "use-code": "Code verwenden"
+      }
+    },
+    "vault": {
+      "personal-stats": {
+        "title": "Ihre Statistiken",
+        "amount": {
+          "title": "Anzahl",
+          "info": "Anzahl d{{poolSymbol}} die Sie besitzen."
+        },
+        "earnings": {
+          "title": "Geschätzter Verdienst",
+          "info1": "Der geschätzte Verdienst ist ein Näherungswert dafür, wie viel Sie verdient haben.",
+          "info2": "Geschätzter Verdienst = d{{poolSymbol}} Saldo zum Marktwert + Gesammtbetrag an ausbezahlten {{poolSymbol}} - Gesammtbetrag an einbezahlten {{poolSymbol}}"
+        },
+        "initiated": {
+          "title": "Auszahlung eingeleitet?",
+          "info1": "Zeigt an, ob Sie eine Auszahlungsanforderung für den {{poolSymbol}} Pool eingeleitet haben."
+        },
+        "withdrawal-amount": {
+          "title": "Auszahlungsbetrag",
+          "info1": "Der Betrag von d{{poolSymbol}}, für den sie eine Auszahlung eingeleitet haben.",
+          "info2": "Ihre Liquidität partizipiert weiterhin an den PnL- und Gebühreneinnahmen des Pools, bis Sie die Auszahlung abschliessen." 
+        },
+        "date": {
+          "title": "Auszahlungdatum",
+          "info1": "Sie können Ihre Liquidität zwei Tage nach Einleitung der Auszahlung abheben.",
+          "info2": "Wenn Sie Ihr Guthaben nicht innerhalb von vier Tagen, nachdem es zur Abhebung bereit ist, abheben, kann jeder die Abhebung in Ihrem Namen durchführen. In diesem Fall wird das Guthaben an Ihre Adresse gesendet und der Durchführer erhält eine kleine Gebühr, die aus Ihrem Guthaben bezahlt wird."
+        }
+      },
+      "global-stats": {
+        "apy": "Allzeit-APY",
+        "tvl": "TVL",
+        "price": "d{{poolSymbol}} Preis",
+        "supply": "d{{poolSymbol}} Angebot"
+      },
+      "add": {
+        "title": "Liquidität hinzufügen",
+        "info1": "Fügen Sie dem Pool {{poolSymbol}}-Liquidität hinzu und erhalten Sie d{{poolSymbol}}, einen ERC-20-Token, der Ihren Eigentumsanteil am Liquiditätspool darstellt.",
+        "info2": "Als Liquiditätsanbieter erhalten Sie Handelsgebühren und Fundingratezahlungen für alle in der Sicherungswährung besicherten Trades. Sie nehmen auch am Gewinn- und Verlust des Pools teil. d{{poolSymbol}} sammelt Gebühren, Fundingratezahlungen und PnL in Echtzeit.",
+        "amount": {
+          "title": "Menge an {{poolSymbol}}",
+          "info1": "Geben Sie die Menge an {{poolSymbol}} an, die Sie dem Pool hinzufügen möchten."
+        },
+        "receive": "Sie erhalten d{{poolSymbol}}",
+        "max": "Max:",
+        "button": "Hinzufügen"
+      },
+      "withdraw": {
+        "title": "Liquidität abheben",
+        "info1": "Um Liquidität abzuheben, initialisieren Sie zunächst Ihre Auszahlung. Beachten Sie, dass die Initialisierung 48 Stunden dauert und Sie jeweils nur eine offene Initialisierung haben können.",
+        "info2": "Nach 48 Stunden kann ein auszahlbarer Betrag von d{{poolSymbol}} zum d{{poolSymbol}}-Preis gegen {{poolSymbol}} eingetauscht werden.",
+        "initiate": {
+          "title": "1. Auszahlung von {{poolSymbol}} einleiten",
+          "info1": "Geben Sie die Menge an d{{poolSymbol}} an, die Sie gegen {{poolSymbol}} eintauschen möchten.",
+          "info2": "Nach 48 Stunden kann dieser Betrag in {{poolSymbol}} umgewandelt und aus dem Pool abgehoben werden.",
+          "button": "Auszahlung initialisieren"
+        },
+        "action": {
+          "title": "{{poolSymbol}} abheben",
+          "info1": "Dieser Betrag kann in {{poolSymbol}} umgewandelt werden, das aus dem Pool abgehoben werden kann.",
+          "date": "Auszahlungdatum:",
+          "receive": "Sie erhalten:",
+          "button": "Auszahlen"
+        }
+      },
+      "na": "N/A",
+      "overdue": "Überfällig",
+      "now": "Jetzt",
+      "toast": {
+        "adding": "Liquidität wird hinzugefügt",
+        "added": "Liquidität hinzugefügt",
+        "error": {
+          "title": "Fehler beim Liquidität hinzufügen",
+          "body": "Grund"
+        },
+        "withdrawing": "Liquidität wird abgehoben",
+        "withdrawn": "Liquidität abgehoben",
+        "error-withdrawing": {
+          "title": "Fehler beim Liquidität abheben",
+          "body": "Grund"
+        },
+        "initiating": "Liquiditätsentnahme einleiten",
+        "initiated": "Liquiditätsentnahme eingeleitet",
+        "error-initiating": {
+          "title": "Fehler beim der Einleitung der Liquiditätsentnahme",
+          "body": "Grund"
+        }    
+      }
+    }
   },
   "common": {
-    "change-language": "Sprache ändern",
+    "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
     "select": {
       "collateral": {
-        "label": "Kaution:",
-        "label2": "Liquiditätspool:",
+        "label": "Sicherheit:",
+        "label2": "Liquiditäts Pool:",
         "headers": {
-          "collateral": "Kaution",
-          "num-of-perps": "No der Fortg."
+          "collateral": "Sicherheit",
+          "num-of-perps": "Nr. of perps"
         }
       },
       "perpetual": {
-        "label": "Fortwährend:",
+        "label": "Perpetual:",
         "headers": {
           "pair": "Paar",
           "status": "Status"
         }
       }
-    }
+    },
+    "info-modal": {
+      "close": "Schliessen"
+    },
+    "refresh": "Aktualisieren"
   },
   "error": {
     "wrong-network": "Falsches Netzwerk"
