@@ -29,12 +29,13 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
       </TableCell>
       <TableCell align="left">
         <Typography variant="cellSmall">
-          {t(`pages.trade.orders-table.table-content.${order.side.toLowerCase()}`)}
+          {!!order.side && t(`pages.trade.orders-table.table-content.${order.side.toLowerCase()}`)}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="cellSmall">
-          {t(`pages.trade.orders-table.table-content.${typeToLabelMap[order.type].toLowerCase()}`)}
+          {!!typeToLabelMap[order.type] &&
+            t(`pages.trade.orders-table.table-content.${typeToLabelMap[order.type].toLowerCase()}`)}
         </Typography>
       </TableCell>
       <TableCell align="right">
