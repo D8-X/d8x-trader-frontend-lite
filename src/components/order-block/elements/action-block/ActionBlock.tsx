@@ -169,14 +169,14 @@ export const ActionBlock = memo(() => {
     if (!orderInfo || !address) {
       return false;
     }
-    if (!orderInfo.size) {
+    if (!orderInfo.size || !selectedPerpetualStaticInfo || orderInfo.size < selectedPerpetualStaticInfo.lotSizeBC) {
       return false;
     }
     if (orderInfo.orderType === OrderTypeE.Limit && (orderInfo.limitPrice === null || orderInfo.limitPrice <= 0)) {
       return false;
     }
     return !(orderInfo.orderType === OrderTypeE.Stop && (!orderInfo.triggerPrice || orderInfo.triggerPrice <= 0));
-  }, [orderInfo, address]);
+  }, [orderInfo, address, selectedPerpetualStaticInfo]);
 
   const parsedOrders = useMemo(() => {
     if (requestSentRef.current || requestSent) {
