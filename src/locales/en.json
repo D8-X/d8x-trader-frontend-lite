@@ -312,8 +312,8 @@
           "leverage": "Leverage",
           "liq-price": "Liquidation price",
           "validity-checks": "Validity checks",
-          "cancel": "cancel",
-          "confirm": "confirm"
+          "cancel": "Cancel",
+          "confirm": "Confirm"
         }
       }
     },
@@ -404,7 +404,7 @@
         "withdrawal-amount": {
           "title": "Withdrawal amount",
           "info1": "The amount of d{{poolSymbol}} you initiated to withdraw.",
-          "info2": "Your liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw." 
+          "info2": "Your liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw."
         },
         "date": {
           "title": "Can be withdrawn on",
@@ -469,7 +469,7 @@
         "error-initiating": {
           "title": "Error initiating withdrawal",
           "body": "Reason"
-        }    
+        }
       }
     }
   },
