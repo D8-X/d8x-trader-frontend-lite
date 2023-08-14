@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
@@ -21,6 +21,13 @@ export const LimitPrice = memo(() => {
   const [inputValue, setInputValue] = useState(`${limitPrice}`);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
   const inputValueChangedRef = useRef(false);
+
+  const stepSize = useMemo(() => {
+    if (!selectedPerpetual?.indexPrice) {
+      return '1';
+    }
+    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
+  }, [selectedPerpetual?.indexPrice]);
 
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
@@ -79,7 +86,7 @@ export const LimitPrice = memo(() => {
         handleInputBlur={handleInputBlur}
         currency={selectedPerpetual?.quoteCurrency}
         placeholder="-"
-        step="1"
+        step={stepSize}
         min={-1}
       />
     </Box>

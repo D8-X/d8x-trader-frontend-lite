@@ -73,6 +73,13 @@ export const StopLossSelector = memo(() => {
     return 2;
   }, [selectedPerpetual?.quoteCurrency]);
 
+  const stepSize = useMemo(() => {
+    if (!selectedPerpetual?.indexPrice) {
+      return '1';
+    }
+    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
+  }, [selectedPerpetual?.indexPrice]);
+
   const validateStopLossPrice = useCallback(() => {
     if (stopLossInputPrice === null) {
       setStopLossPrice(null);
@@ -160,7 +167,7 @@ export const StopLossSelector = memo(() => {
           placeholder="-"
           onChange={handleStopLossPriceChange}
           onBlur={validateStopLossPrice}
-          inputProps={{ step: 0.01 }}
+          inputProps={{ step: stepSize }}
         />
       </Box>
       <Box className={styles.stopLossOptions}>

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
@@ -22,6 +22,13 @@ export const TriggerPrice = memo(() => {
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
 
   const inputValueChangedRef = useRef(false);
+
+  const stepSize = useMemo(() => {
+    if (!selectedPerpetual?.indexPrice) {
+      return '1';
+    }
+    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
+  }, [selectedPerpetual?.indexPrice]);
 
   const handleTriggerPriceChange = useCallback(
     (targetValue: string) => {
@@ -75,7 +82,7 @@ export const TriggerPrice = memo(() => {
         setInputValue={handleTriggerPriceChange}
         handleInputBlur={handleInputBlur}
         currency={selectedPerpetual?.quoteCurrency}
-        step="1"
+        step={stepSize}
         min={0}
       />
     </Box>

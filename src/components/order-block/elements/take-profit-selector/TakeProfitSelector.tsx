@@ -70,6 +70,13 @@ export const TakeProfitSelector = memo(() => {
     return 2;
   }, [selectedPerpetual?.quoteCurrency]);
 
+  const stepSize = useMemo(() => {
+    if (!selectedPerpetual?.indexPrice) {
+      return '1';
+    }
+    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
+  }, [selectedPerpetual?.indexPrice]);
+
   const validateTakeProfitPrice = useCallback(() => {
     if (takeProfitInputPrice === null) {
       setTakeProfitPrice(null);
@@ -157,7 +164,7 @@ export const TakeProfitSelector = memo(() => {
           placeholder="-"
           onChange={handleTakeProfitPriceChange}
           onBlur={validateTakeProfitPrice}
-          inputProps={{ step: 0.01 }}
+          inputProps={{ step: stepSize }}
         />
       </Box>
       <Box className={styles.takeProfitOptions}>
