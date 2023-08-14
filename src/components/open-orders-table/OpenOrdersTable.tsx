@@ -47,7 +47,6 @@ import { decodeEventLog, encodeEventTopics } from 'viem';
 import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
 
 const MIN_WIDTH_FOR_TABLE = 900;
-
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
 const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'ExecutionFailed' })[0];
 
@@ -116,13 +115,24 @@ export const OpenOrdersTable = memo(() => {
 
   useWaitForTransaction({
     hash: txHash,
-    confirmations: 1,
     onSuccess(receipt) {
-      const containsCancelEvent = receipt.logs.some((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
-      if (containsCancelEvent) {
-        console.log('containsCancelEvent', txHash);
+      const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
+      if (cancelEventIdx >= 0) {
+        const { args } = decodeEventLog({
+          abi: PROXY_ABI,
+          data: receipt.logs[cancelEventIdx].data,
+          topics: receipt.logs[cancelEventIdx].topics,
+        });
         toast.success(
-          <ToastContent title={t('pages.trade.orders-table.toasts.order-cancelled.title')} bodyLines={[]} />
+          <ToastContent
+            title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
+            bodyLines={[
+              {
+                label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
+                value: traderAPI?.getSymbolFromPerpId((args as { perpetualId: number }).perpetualId),
+              },
+            ]}
+          />
         );
       } else {
         const execFailedIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_FAIL);
