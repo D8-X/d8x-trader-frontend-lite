@@ -43,8 +43,13 @@ import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
 import { HashZero } from '@ethersproject/constants';
+import { decodeEventLog, encodeEventTopics } from 'viem';
+import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
 
 const MIN_WIDTH_FOR_TABLE = 900;
+
+const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
+const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'ExecutionFailed' })[0];
 
 export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
@@ -111,18 +116,33 @@ export const OpenOrdersTable = memo(() => {
 
   useWaitForTransaction({
     hash: txHash,
-    onSuccess() {
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
-              value: selectedOrder?.symbol,
-            },
-          ]}
-        />
-      );
+    confirmations: 1,
+    onSuccess(receipt) {
+      const containsCancelEvent = receipt.logs.some((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
+      if (containsCancelEvent) {
+        console.log('containsCancelEvent', txHash);
+        toast.success(
+          <ToastContent title={t('pages.trade.orders-table.toasts.order-cancelled.title')} bodyLines={[]} />
+        );
+      } else {
+        const execFailedIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_FAIL);
+        const { args } = decodeEventLog({
+          abi: LOB_ABI,
+          data: receipt.logs[execFailedIdx].data,
+          topics: receipt.logs[execFailedIdx].topics,
+        });
+        toast.error(
+          <ToastContent
+            title={t('pages.trade.orders-table.toasts.tx-failed.title')}
+            bodyLines={[
+              {
+                label: t('pages.trade.orders-table.toasts.tx-failed.body'),
+                value: (args as { reason: string }).reason,
+              },
+            ]}
+          />
+        );
+      }
     },
     onError(reason) {
       toast.error(
@@ -136,7 +156,7 @@ export const OpenOrdersTable = memo(() => {
       setTxHash(undefined);
       refreshOpenOrders();
     },
-    enabled: !!address && !!selectedOrder && !!txHash,
+    enabled: !!address && !!txHash,
   });
 
   const handleCancelOrderConfirm = useCallback(() => {
