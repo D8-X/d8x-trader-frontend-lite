@@ -19,7 +19,7 @@ import {
 
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { getTradesHistory } from 'network/history';
-import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
+import { openOrdersAtom, perpetualsAtom, selectedPoolAtom, tradesHistoryAtom } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
@@ -38,6 +38,7 @@ export const TradeHistoryTable = memo(() => {
   const [perpetuals] = useAtom(perpetualsAtom);
   const [openOrders] = useAtom(openOrdersAtom);
   const [, setTableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
+  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
 
@@ -111,6 +112,7 @@ export const TradeHistoryTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 tradesHistory
+                  .filter((h) => selectedPool?.perpetuals.some(({ id }) => id === h.perpetualId))
                   .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((tradeHistory) => (
