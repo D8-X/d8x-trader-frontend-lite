@@ -169,14 +169,18 @@ export const ActionBlock = memo(() => {
     if (!orderInfo || !address) {
       return false;
     }
-    if (!orderInfo.size || !selectedPerpetualStaticInfo || orderInfo.size < selectedPerpetualStaticInfo.lotSizeBC) {
+    if (
+      !orderInfo.size ||
+      !selectedPerpetualStaticInfo?.lotSizeBC ||
+      orderInfo.size < selectedPerpetualStaticInfo.lotSizeBC
+    ) {
       return false;
     }
     if (orderInfo.orderType === OrderTypeE.Limit && (orderInfo.limitPrice === null || orderInfo.limitPrice <= 0)) {
       return false;
     }
     return !(orderInfo.orderType === OrderTypeE.Stop && (!orderInfo.triggerPrice || orderInfo.triggerPrice <= 0));
-  }, [orderInfo, address, selectedPerpetualStaticInfo]);
+  }, [orderInfo, address, selectedPerpetualStaticInfo?.lotSizeBC]);
 
   const parsedOrders = useMemo(() => {
     if (requestSentRef.current || requestSent) {
@@ -375,7 +379,7 @@ export const ActionBlock = memo(() => {
       validityCheckRef.current ||
       !maxOrderSize ||
       !orderInfo?.orderBlock ||
-      !selectedPerpetualStaticInfo
+      !selectedPerpetualStaticInfo?.lotSizeBC
     ) {
       return ValidityCheckE.Empty;
     }
@@ -420,7 +424,7 @@ export const ActionBlock = memo(() => {
     orderInfo?.orderBlock,
     orderInfo?.orderType,
     orderInfo?.takeProfitPrice,
-    selectedPerpetualStaticInfo,
+    selectedPerpetualStaticInfo?.lotSizeBC,
     poolTokenBalance,
     isMarketClosed,
     collateralDeposit,
