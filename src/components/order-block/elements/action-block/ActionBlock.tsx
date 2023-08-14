@@ -275,7 +275,6 @@ export const ActionBlock = memo(() => {
       .then((data) => {
         if (data.data.digests.length > 0) {
           // hide modal now that metamask popup shows up
-          setShowReviewOrderModal(false);
           approveMarginToken(
             walletClient,
             selectedPool.marginTokenAddr,
@@ -286,26 +285,26 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(walletClient, signatures, data.data).then((tx) => {
-                // success submitting order to the node
-                console.log(`postOrder tx hash: ${tx.hash}`);
-                // order was sent, release lock and clear - no need to wait for the blockchain
-                requestSentRef.current = false;
-                setRequestSent(false);
-                clearInputsData();
-                toast.success(
-                  <ToastContent
-                    title={t('pages.trade.action-block.toasts.processed.title')}
-                    bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                  />
-                );
-                setTxHash(tx.hash);
-              });
-
-              // ensure we can trade again
-              requestSentRef.current = false;
-              setRequestSent(false);
-              setShowReviewOrderModal(false);
+              postOrder(walletClient, signatures, data.data)
+                .then((tx) => {
+                  setShowReviewOrderModal(false);
+                  // success submitting order to the node
+                  console.log(`postOrder tx hash: ${tx.hash}`);
+                  // order was sent
+                  clearInputsData();
+                  toast.success(
+                    <ToastContent
+                      title={t('pages.trade.action-block.toasts.processed.title')}
+                      bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                    />
+                  );
+                  setTxHash(tx.hash);
+                })
+                .finally(() => {
+                  // ensure we can trade again - but modal is left open if user rejects txn
+                  requestSentRef.current = false;
+                  setRequestSent(false);
+                });
             })
             .catch((error) => {
               // not a transaction error, but probably metamask or network -> no toast
