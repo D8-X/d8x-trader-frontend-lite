@@ -9,6 +9,13 @@ export const mapCurrencyToFractionDigits: Record<string, number> = {
   dETH: 4,
 };
 
+export function valueToFractionDigits(value: number | undefined) {
+  if (!value) {
+    return 1;
+  }
+  return !value ? 1 : Math.max(1, Math.ceil(2.5 - Math.log10(Math.abs(value))));
+}
+
 export function formatToCurrency(
   value: number | undefined | null,
   currency = '',
@@ -22,12 +29,12 @@ export function formatToCurrency(
 
   if (justNumber) {
     return `${new Intl.NumberFormat('en-US', {
-      maximumFractionDigits: fractionDigits || mapCurrencyToFractionDigits[currency],
-      minimumFractionDigits: keepZeros ? fractionDigits || mapCurrencyToFractionDigits[currency] : undefined,
+      maximumFractionDigits: fractionDigits || valueToFractionDigits(value),
+      minimumFractionDigits: keepZeros ? fractionDigits || valueToFractionDigits(value) : undefined,
     }).format(value)}`;
   }
   return `${new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: fractionDigits || mapCurrencyToFractionDigits[currency],
-    minimumFractionDigits: keepZeros ? fractionDigits || mapCurrencyToFractionDigits[currency] : undefined,
+    maximumFractionDigits: fractionDigits || valueToFractionDigits(value),
+    minimumFractionDigits: keepZeros ? fractionDigits || valueToFractionDigits(value) : undefined,
   }).format(value)} ${currency}`;
 }
