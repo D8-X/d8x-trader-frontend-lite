@@ -1,497 +1,507 @@
 {
   "navigation": {
-    "trade": "贸易",
-    "refer": "请参阅",
+    "trade": "交易",
+    "refer": "邀请",
     "vault": "金库"
   },
   "pages": {
     "trade": {
       "stats": {
-        "mid-price": "中等价格",
-        "mark-price": "马克普莱斯",
+        "mid-price": "中间价",
+        "mark-price": "标记价格",
         "index-price": "指数价格",
-        "funding-rate": "资助比率",
-        "open-interest": "公开兴趣"
+        "funding-rate": "资金费率",
+        "open-interest": "持仓量"
       },
       "positions-table": {
-        "table-title": "待完成1",
+        "table-title": "持仓",
         "table-header": {
-          "symbol": "待完成",
-          "size": "待完成3",
-          "side": "待完成4",
-          "entry-price": "待完成5",
-          "liq-price": "待完成6",
-          "margin": "待完成7",
-          "pnl": "待完成8"
+          "symbol": "币对",
+          "size": "仓位大小",
+          "side": "涨跌",
+          "entry-price": "开仓价",
+          "liq-price": "强平价",
+          "margin": "本金",
+          "pnl": "未实现盈亏"
         },
         "table-content": {
-          "buy": "待完成9",
-          "sell": "待完成10",
-          "modify": "待完成11",
-          "connect": "待完成12",
-          "no-open": "待完成13"
+          "buy": "买入",
+          "sell": "卖出",
+          "modify": "调整",
+          "connect": "请连接钱包",
+          "no-open": "无持仓"
         },
         "position-block-mobile": {
-          "symbol": "待完成14",
-          "modify": "待完成15"
+          "symbol": "币对",
+          "modify": "调整"
         },
         "modify-modal": {
-          "title": "待完成15",
+          "title": "调整仓位",
           "selector": {
-            "close": "待完成16",
-            "add": "待完成17",
-            "remove": "待完成18"
+            "close": "关闭",
+            "add": "增加",
+            "remove": "减少"
           },
-          "close": "待完成19",
-          "add": "待完成21",
-          "remove": "待完成22",
+          "close": "关闭仓位",
+          "add": "增加抵押品",
+          "remove": "减少抵押品",
           "pos-details": {
-            "title": "待完成23",
-            "size": "待完成24:",
-            "margin": "待完成25:",
-            "leverage": "待完成26:",
-            "liq-price": "待完成27:"
+            "title": "新仓位详情",
+            "size": "仓位大小",
+            "margin": "本金",
+            "leverage": "杠杆",
+            "liq-price": "强平价"
           },
-          "cancel": "待完成28",
-          "confirm": "待完成29"
+          "cancel": "取消",
+          "confirm": "确认"
         },
         "toasts": {
           "submit-close": {
-            "title": "待完成31"
+            "title": "确认平仓"
           },
           "submitted": {
-            "title": "待完成32",
-            "body": "待完成33"
+            "title": "订单已提交",
+            "body": "币对"
           },
           "tx-failed": {
-            "title": "待完成34",
-            "body": "待完成35"
+            "title": "交易失败",
+            "body": "原因"
           },
           "error-processing": {
-            "title": "待完成36",
-            "body": "待完成37"
+            "title": "处理交易时发生错误",
+            "body": "原因"
           },
           "adding-collateral": {
-            "title": "待完成38"
+            "title": "增加抵押品"
           },
           "collateral-added": {
-            "title": "待完成39",
-            "body1": "待完成41",
-            "body2": "待完成42"
+            "title": "抵押品已增加",
+            "body1": "币对",
+            "body2": "数量"
           },
           "removing-collateral": {
-            "title": "待完成43"
+            "title": "减少抵押品"
           },
           "collateral-removed": {
-            "title": "待完成44",
-            "body1": "待完成45",
-            "body2": "待完成46"
+            "title": "抵押品已减少",
+            "body1": "币对",
+            "body2": "数量"
+          },
+          "trade-executed": {
+            "title": "交易已执行",
+            "body": "币对"
+          },
+          "order-failed": {
+            "title": "订单失败",
+            "body1": "币对",
+            "body2": "原因"
           }
         }
       },
       "orders-table": {
-        "table-title": "待完成",
+        "table-title": "当前持仓",
         "table-header": {
-          "symbol": "待完成48",
-          "side": "待完成49",
-          "type": "待完成51",
-          "order-size": "待完成52",
-          "limit-price": "待完成53",
-          "stop-price": "待完成54",
-          "leverage": "待完成55",
-          "good-until": "待完成56"
+          "symbol": "币对",
+          "side": "涨跌",
+          "type": "方式",
+          "order-size": "仓位大小",
+          "limit-price": "限价",
+          "stop-price": "止盈止损价",
+          "leverage": "杠杆",
+          "good-until": "截至"
         },
         "table-content": {
-          "buy": "待完成57",
-          "sell": "待完成58",
-          "connect": "待完成59",
-          "no-open": "待完成61",
-          "na": "待完成62",
-          "cancel": "待完成63",
-          "limit": "待完成64",
-          "market": "待完成65",
-          "stop": "待完成66"
+          "buy": "买入",
+          "sell": "卖出",
+          "connect": "请连接钱包",
+          "no-open": "未开仓订单",
+          "na": "无",
+          "cancel": "取消",
+          "limit": "限价",
+          "market": "市价",
+          "stop": "止盈止损"
         },
         "cancel-modal": {
-          "title": "待完成",
-          "content": "待完成",
-          "back": "待完成",
-          "confirm": "待完成"
+          "title": "取消订单",
+          "content": "确定取消此订单？",
+          "back": "返回",
+          "confirm": "确认取消"
         },
         "order-block-mobile": {
-          "symbol": "待完成",
-          "cancel": "待完成"
+          "symbol": "币对",
+          "cancel": "取消"
         },
         "toasts": {
           "cancel-order": {
             "title": "待完成"
           },
           "order-cancelled": {
-            "title": "待完成",
-            "body": "待完成"
+            "title": "订单已取消",
+            "body": "币对"
           },
           "tx-failed": {
-            "title": "待完成",
-            "body": "待完成"
+            "title": "交易失败",
+            "body": "原因"
           },
           "error-processing": {
-            "title": "待完成",
-            "body": "待完成"
+            "title": "处理交易时发生错误",
+            "body": "原因"
           }
         }
       },
       "history-table": {
-        "table-title": "待完1成",
+        "table-title": "交易历史",
         "table-header": {
-          "time": "待完成2",
-          "perpetual": "待完成3",
-          "side": "待完成4",
-          "price": "待完成5",
-          "quantity": "待完成6",
-          "fee": "待完成7",
-          "realized-profit": "待完成8"
+          "time": "时间",
+          "perpetual": "永续",
+          "side": "涨跌",
+          "price": "价格",
+          "quantity": "数量",
+          "fee": "手续费",
+          "realized-profit": "未实现盈亏"
         },
         "table-content": {
-          "connect": "待完成9",
-          "no-open": "待完成10"
+          "connect": "请连接钱包",
+          "no-open": "无交易历史"
         },
         "history-block-mobile": {
-          "symbol": "待完成11"
+          "symbol": "币对"
         }
       },
       "funding-table": {
-        "table-title": "待完成2",
+        "table-title": "资金费率",
         "table-header": {
-          "time": "待2完成",
-          "perpetual": "3待完成",
-          "funding-payment": "4待完成"
+          "time": "时间",
+          "perpetual": "永续",
+          "funding-payment": "资金费率"
         },
         "table-content": {
-          "connect": "5待完成",
-          "no-open": "6待完成"
+          "connect": "请连接钱包",
+          "no-open": "无资金费率数据"
         },
         "funding-block-mobile": {
-          "symbol": "7待完成"
+          "symbol": "币对"
         }
       },
       "order-block": {
         "selector": {
-          "long": "f待f",
-          "short": "dd待d"
+          "long": "开多",
+          "short": "开空"
         },
         "order-type": {
-          "market": "Mar待ket",
-          "limit": "L待imit",
-          "stop": "Sto待p"
+          "market": "市价单",
+          "limit": "限价单",
+          "stop": "止盈止损单"
         },
         "order-size": {
-          "title": "Ord待er size",
-          "body1": "Sets待 the size of your order.",
-          "body2": "Y待our maximal order size, based on your open positions and the state of the exchange, is:",
-          "body3": "Th待e minimal position size for this perpetual is:",
-          "body4": "Th待e step size is:"
+          "title": "仓位大小",
+          "body1": "设置订单仓位",
+          "body2": "根据您的持仓情况和交易所的状态，您的最大仓位为：",
+          "body3": "永续的最小仓位为：",
+          "body4": "最小数量为"
         },
         "limit-price": {
-          "title": "Lim待it price",
-          "body1": "If待 you specify a limit price your order will be executed at the predetermined limit price or a better price.",
-          "body2": "Fo待r a stop order, setting a limit price is optional. A stop order with specified limit price is a stop-limit order, a stop order without specified limit price is a stop-market order."
+          "title": "限价",
+          "body1": "如果您设置限价，订单将以预设限价或更优价格执行。",
+          "body2": "对于止盈止损单，您可以选择设置限价。设置限价的止盈止损单为限价止盈止损单（即限价单），未设置限价的止盈止损单为市价止盈止损单（即市价单）。"
         },
         "trigger-price": {
-          "title": "Tr待igger price",
-          "body1": "Th待e trigger price is the mark price at which your stop order is triggered.",
-          "body2": "If待 you do not select a limit price in addition to your trigger price, you would be placing a stop-market order. Your order will be executed at the best available price once triggered.",
-          "body3": "If 待you specify a limit price in addition to your trigger price, you would be placing a stop-limit order. Your order will be executed at the predetermined limit price or a better price."
+          "title": "触发价",
+          "body1": "触发价是触发止盈止损单的标记价格。",
+          "body2": "如果除了触发价您未设置限价，您将下达止盈止损单。触发该价格后，订单将以当前最佳价格执行。",
+          "body3": "如果除了触发价您还设置了限价，您将下达限价止盈止损单。订单将以预设限价或更优价格执行。"
         },
         "leverage": {
-          "title": "Levera待ge",
-          "body1": "Speci待fies the leverage of your order.",
-          "body2": "If 待your order is reducing an existing position ('partial closure'), the leverage you select has no impact."
+          "title": "杠杆",
+          "body1": "设置订单杠杆。",
+          "body2": "如果您的订单减少仓位（“部分平仓”），设置的杠杆不受影响。"
         },
         "slippage": {
-          "title": "Slip待page settings",
-          "body": "Choos待e slippage tolerance",
-          "max": "Max e待ntry price:",
-          "min": "Min e待ntry price:",
-          "cancel": "Ca待ncel",
-          "confirm": "Co待nfirm"
+          "title": "滑点设置",
+          "body": "选择滑点上限",
+          "max": "最高开仓价：",
+          "min": "最低开仓价：",
+          "cancel": "取消",
+          "confirm": "确认"
         },
-        "reduce-only": "R待educe only",
+        "reduce-only": "仅减少",
         "expiry": {
-          "title": "Exp待iry settings",
-          "body": "Set the待 number of days after, which your main order will expire (this setting does not affect your take-profit and stop-loss orders).",
-          "close": "Clo待se"
+          "title": "过期设置",
+          "body": "设置主订单到期后的天数（此设置不会影响您的止盈和止损订单）",
+          "close": "关闭"
         },
         "stop-loss": {
-          "title": "S待top loss",
-          "body1": "Yo待u can specify a stop loss order to go along with your main order.",
-          "body2": "If待 you select e.g. -50%, you create a second order, that will be triggered if your loss on your main order reaches -50%.",
-          "body3": "Te待chnically, you are specifying a stop-market order, of the opposing side (if your main order is a BUY order, you are specifying a stop-market SELL order). The trigger price is automatically calculated such that your overall loss is as per your selection, assuming you entered at the worst price your slippage settings allow.",
-          "none": "NO待NE"
+          "title": "止损",
+          "body1": "您可以为您的主订单设置止损单。",
+          "body2": "如果您设置-50%，您将创建第二个订单，当您的主订单损失达到-50%时，该订单将被触发。",
+          "body3": "从技术上讲，您设置的是反向止损市价订单（如果您的主订单是买入订单，则您设置的是止损市价卖出订单）。 触发价是自动计算的，假设您以滑点设置允许的最差价格输入，您的总体损失将根据您的选择进行计算。",
+          "none": "无"
         },
         "take-profit": {
-          "title": "Take待 profit",
-          "body1": "You 待can specify a take profit order to go along with your main order.",
-          "body2": "If yo待u select e.g., 100%, you create a second order, that will be triggered if your profit on your main order reaches 100%.",
-          "body3": "Techni待cally, you are specifying a limit order of the opposing side (if your main order is a BUY order, you are specifying a limit SELL order). The limit price is automatically calculated such that your overall profit is as per your selection, assuming you entered at the worst price your slippage settings allow.",
-          "none": "NO待NE"
+          "title": "止盈",
+          "body1": "您可以为您的主订单设置止损单。",
+          "body2": "如果您设置100%，您将创建第二个订单，当您的主订单利润达到100%时，该订单将被触发。",
+          "body3": "从技术上讲，您设置的是反向限价单（如果您的主订单是买入订单，则您设置的是限价卖出订单）。 限价是自动计算的，假设您以滑点设置允许的最差价格输入，您的总体利润将根据您的选择进行计算。",
+          "none": "无"
         },
         "info": {
-          "balance": "Wal待let balance",
-          "order-size": "O待rder size",
-          "fees": "Fe待es"
+          "balance": "钱包余额",
+          "order-size": "仓位大小",
+          "fees": "手续费"
         },
         "review": {
-          "title": "Revi待ew order"
+          "title": "查看订单"
         }
       },
       "action-block": {
         "toasts": {
           "processed": {
-            "title": "待Order Submission Processed"
+            "title": "订单提交已处理"
           },
           "orders-submitted": {
-            "title": "O待rders Submitted",
-            "body": "S待ymbol"
+            "title": "订单已提交",
+            "body": "币对"
           },
           "order-submitted": {
-            "title": "Or待der Submitted"
+            "title": "订单已提交",
+            "body": "币对"
           },
           "error": {
-            "title": "Er待ror Processing Transaction"
+            "title": "处理交易的时候出现错误"
           },
           "tx-failed": {
-            "title": "Tr待ansaction Failed",
-            "body": "Rea待son"
+            "title": "交易失败",
+            "body": "原因"
           }
         },
         "validity": {
-          "closed": "W待arning: Market is closed",
-          "order-too-large": "Order 待will fail: order size is too large",
-          "order-too-small": "Ord待er will fail: order size is too small",
-          "position-too-small": "Or待der will fail: resulting position too small",
-          "below-min-position": "War待ning: order size below minimal position size",
-          "insufficient-balance": "Or待der will fail: insufficient wallet balance",
-          "undefined": "Order undef待ined: take profit is incompatible with leverage",
-          "good-to-go": "Good待 to go",
-          "pass": "Pass待ed",
-          "fail": "Fai待led"
+          "closed": "请注意：当前为休市状态",
+          "order-too-large": "订单过大，导致订单失败",
+          "order-too-small": "订单过小，导致订单失败",
+          "position-too-small": "仓位过小，导致订单失败",
+          "below-min-position": "警告：订单小于仓位",
+          "insufficient-balance": "钱包余额不足，导致订单失败",
+          "undefined": "止盈与杠杆不兼容，订单未执行",
+          "good-to-go": "准备就绪",
+          "pass": "通过",
+          "fail": "失败"
         },
         "order-types": {
-          "market": "ma待rket",
-          "limit": "li待mit",
-          "stop": "st待op"
+          "market": "市价单",
+          "limit": "限价单",
+          "stop": "止盈止损单"
         },
         "order-action": {
-          "long": "B待y",
-          "short": "Se待ll"
+          "long": "开多",
+          "short": "开空"
         },
         "review": {
-          "title": "Re待view order",
-          "deposit": "De待posit from wallet:",
-          "balance": "W待allet balance:",
-          "fee": "Tra待ding fee:",
-          "max": "M待ax entry price:",
-          "min": "M待in entry price:",
-          "trigger-price": "T待rigger price",
-          "limit-price": "L待imit price",
-          "stop-loss": "St待op-loss price",
-          "take-profit": "待Take-profit price",
-          "details": "待New position details",
-          "size": "Pos待ition size",
-          "margin": "Ma待rgin",
-          "leverage": "Le待verage",
-          "liq-price": "Liq待uidation price",
-          "validity-checks": "Vali待dity checks",
-          "cancel": "canc待el",
-          "confirm": "conf待irm"
+          "title": "查看订单",
+          "deposit": "从钱包充值：",
+          "balance": "钱包余额：",
+          "fee": "手续费：",
+          "max": "最高开仓价：",
+          "min": "最低开仓价：",
+          "trigger-price": "触发价",
+          "limit-price": "限价",
+          "stop-loss": "止损价",
+          "take-profit": "止盈价",
+          "details": "新仓位详情",
+          "size": "仓位大小",
+          "margin": "本金",
+          "leverage": "杠杆",
+          "liq-price": "强平价",
+          "validity-checks": "有效性检查",
+          "cancel": "取消",
+          "confirm": "确认"
         }
       }
     },
     "refer": {
       "tab-selector": {
-        "referrer": "贸As Referrer",
-        "trader": "贸As Trader"
+        "referrer": "作为邀请人",
+        "trader": "作为交易员"
       },
       "referrer-tab": {
-        "disclaimer-text-block1": "E贸arn rebates by inviting traders to trade on D8X. Rebates are airdropped to your wallet weekly.",
-        "disclaimer-text-block2": "Ch贸eck out details on the D8X referral program.",
-        "volume": "Total referre贸d trading volume",
-        "rebates": "Total earne贸d rebates",
-        "title1": "Your r贸eferrals",
-        "title2": "Ref贸er & Earn",
-        "codes": "You贸r codes",
-        "create": "Cr贸eate code",
-        "na": "贸N/A",
-        "referrer-rebate-rate": "Ref贸errer rebate rate",
-        "trader-rebate-rate": "Trad贸er rebate rate",
-        "agency-rebate-rate": "Age贸ncy rebate rate",
-        "modify": "Mo贸ify",
-        "no-codes": "No贸 rebate codes"
+        "disclaimer-text-block1": "通过邀请交易员在D8X上交易赚取返佣。返佣将每周结算一次，自动到账。",
+        "disclaimer-text-block2": "从D8X邀请计划查看详情",
+        "volume": "总交易量",
+        "rebates": "总返佣",
+        "title1": "邀请人数",
+        "title2": "邀请 & 赚取",
+        "codes": "专属码",
+        "create": "创建专属码",
+        "na": "无",
+        "referrer-rebate-rate": "邀请人返佣比例",
+        "trader-rebate-rate": "交易员返佣比例",
+        "agency-rebate-rate": "代理返佣比例",
+        "modify": "调整",
+        "no-codes": "无返佣码"
       },
       "manage-code": {
-        "title-create": "贸Create Referral Code",
-        "base": "贸Your Base Rebate Rate:",
-        "you-receive": "Y贸ou receive",
-        "trader-receives": "T贸rader receives",
-        "agency": "A贸gency",
-        "referrer": "Re贸ferrer",
-        "trader": "Tr贸ader",
-        "trader-kickback": "S贸et Trader's Kickback Rate:",
-        "referrer-kickback": "S贸et Referrer's Kickback Rate:",
-        "referrer-addr": "E贸nter Referrer Address:",
-        "enter-code": "En贸ter a code",
-        "code-taken": "Co贸de already taken",
-        "create-code": "Cre贸ate code",
-        "instructions": "O贸nly UPPERCASE characters, numbers, underscores (_) and hyphens (-) are allowed.",
-        "cancel": "Can贸cel",
-        "enter-addr": "En贸ter an address",
-        "error": "Pl贸ease enter a valid address",
-        "title-modify": "M贸odify Referral Code",
-        "change-addr": "C贸hange Referrer Address?",
-        "your-code": "Yo贸ur code",
-        "modify": "M贸odify"
+        "title-create": "创建邀请码",
+        "base": "基础返佣比例：",
+        "you-receive": "您将收到",
+        "trader-receives": "交易员将收到",
+        "agency": "代理",
+        "referrer": "邀请人",
+        "trader": "交易员",
+        "trader-kickback": "设置交易员返佣比例：",
+        "referrer-kickback": "设置推荐人返佣比例：",
+        "referrer-addr": "输入邀请人地址：:",
+        "enter-code": "输入专属码",
+        "code-taken": "专属码已被使用",
+        "create-code": "创建专属码",
+        "instructions": "仅允许使用大写字符、数字、下划线(_) 和连字符 (-) 。",
+        "cancel": "取消",
+        "enter-addr": "输入地址",
+        "error": "请输入有效地址",
+        "title-modify": "修改邀请码",
+        "change-addr": "更改邀请人地址？",
+        "your-code": "您的专属码",
+        "modify": "修改"
       },
       "toast": {
-        "success-create": "贸ode created successfully",
-        "success-modify": "C贸ode modified successfully",
-        "success-apply": "C贸ode applied successfully"
+        "success-create": "专属码创建成功",
+        "success-modify": "专属码修改成功",
+        "success-apply": "专属码申请成功"
       },
       "trader-tab": {
-        "title1": "Y贸our discounts",
-        "earned-rebates": "T贸otal earned rebates",
-        "open-rewards": "O贸pen rewards",
-        "title2": "Tr贸ade & Earn",
-        "disclaimer-text-block1": "En贸ter a referral code to receive discounts on trading fees.",
-        "disclaimer-text-block2": "T贸he discounts are airdropped weekly to your wallet.",
-        "your-rebate-rate": "Yo贸ur rebate rate",
-        "your-active-code": "Yo贸ur active code",
-        "enter-new-code": "En贸ter new code",
-        "title3": "En贸ter Referral Code",
-        "enter-a-code": "E贸nter a code",
-        "instructions": "On贸ly UPPERCASE characters, numbers, underscores (_) and hyphens (-) are allowed.",
-        "cancel": "Can贸el",
-        "enter-code": "E贸nter a code",
-        "code-not-found": "C贸ode not found",
-        "use-code": "Us贸e code"
+        "title1": "您的折扣",
+        "earned-rebates": "总返佣",
+        "open-rewards": "打开奖励",
+        "title2": "交易 & 赚取",
+        "disclaimer-text-block1": "输入邀请码以获取手续费折扣。",
+        "disclaimer-text-block2": "折扣每周结算，自动到账。",
+        "your-rebate-rate": "您的返佣比例",
+        "your-active-code": "有效专属码",
+        "enter-new-code": "输入新的专属码",
+        "title3": "输入邀请码",
+        "enter-a-code": "输入专属码",
+        "instructions": "仅允许使用大写字符、数字、下划线(_) 和连字符 (-) 。",
+        "cancel": "取消",
+        "enter-code": "输入专属码",
+        "code-not-found": "无法找到此专属码",
+        "use-code": "使用专属码"
       }
     },
     "vault": {
       "personal-stats": {
-        "title": "Yo贸ur stats",
+        "title": "数据统计",
         "amount": {
-          "title": "A贸mount",
-          "info": "Am贸ount of d{{poolSymbol}} you own."
+          "title": "数量",
+          "info": "您拥有的d{{poolSymbol}}数量。"
         },
         "earnings": {
-          "title": "E贸stimated earnings",
-          "info1": "E贸stimated earnings are an approximation of how much you've earned.",
-          "info2": "E贸stimated earnings = d{{poolSymbol}} balance at market value + total {{poolSymbol}} withdrawn - total {{poolSymbol}} deposited"
+          "title": "预估收益",
+          "info1": "预估收入约为您的收入。",
+          "info2": "预估收益 = d{{poolSymbol}}余额（按市场价计算）+ {{poolSymbol}}总提现量 - {{poolSymbol}}总充值量"
         },
         "initiated": {
-          "title": "W贸ithdrawal initiated?",
-          "info1": "In贸dicates if you have initated a withdrawal request for the {{poolSymbol}} pool."
+          "title": "发起提现？",
+          "info1": "指示您是否已向{{poolSymbol}}池发起提现请求。"
         },
         "withdrawal-amount": {
-          "title": "Wi贸thdrawal amount",
-          "info1": "Th贸e amount of d{{poolSymbol}} you initiated to withdraw.",
-          "info2": "Yo贸ur liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw." 
+          "title": "提现数量",
+          "info1": "发起提现的d{{poolSymbol}}数量。",
+          "info2": "您的流动性将继续参与资金池的盈亏和费用收入，直到您提现为止。" 
         },
         "date": {
-          "title": "C贸an be withdrawn on",
-          "info1": "Yo贸u can withdraw your liquidity two days after initializing withdrawal.",
-          "info2": "If贸 you do not withdraw your funds within four days after they are ready to be withdrawn, anyone can execute the withdrawal on your behalf. In this case the funds are sent to your address, and the executor will earn a small fee paid out of your funds."
+          "title": "可以提现",
+          "info1": "您可以在发起提现的2天后提取流动性。",
+          "info2": "如果您在准备提现后的4天内未提取资金，任何人都可以代表您执行提现。在这种情况下，资金将发送到您的地址，执行人将从您的资金中赚取少量费用。"
         }
       },
       "global-stats": {
-        "apy": "Al贸l Time APY",
-        "tvl": "T贸VL",
-        "price": "贸d{{poolSymbol}} Price",
-        "supply": "贸d{{poolSymbol}} Supply"
+        "apy": "24h APY",
+        "tvl": "TVL",
+        "price": "d{{poolSymbol}}价格",
+        "supply": "d{{poolSymbol}}供应量"
       },
       "add": {
-        "title": "A贸dd Liquidity",
-        "info1": "A贸dd {{poolSymbol}} liquidity to the pool and receive d{{poolSymbol}}, an ERC-20 token that represents your ownership in the liquidity pool.",
-        "info2": "A贸s a liquidity provider, you'll earn trading fees and funding rate payments on all trades collateralized in the collateral currency. You'll also participate in the PnL of the pool. d{{poolSymbol}} accumulates fees, funding rate payments and PnL in real-time.",
+        "title": "添加流动性",
+        "info1": "将{{poolSymbol}}添加流动性到池中以获取d{{poolSymbol}}（即代表流动性池中所有权的ERC-20 Token）。",
+        "info2": "作为流动性提供者，您将通过以抵押货币抵押的所有交易赚取交易费用和资金利率付款。您还将参与池中的PnL。d{{poolSymbol}}实时累积费用、资金费率和盈亏。",
         "amount": {
-          "title": "贸Amount of {{poolSymbol}}",
-          "info1": "贸Specify the amount of {{poolSymbol}} you want to add to the pool."
+          "title": "{poolSymbol}}数量",
+          "info1": "设置您要添加到池中的{{poolSymbol}}数量。"
         },
-        "receive": "Y贸ou receive d{{poolSymbol}}",
-        "max": "贸Max:",
-        "button": "A贸贸dd"
+        "receive": "您会收到d{{poolSymbol}}",
+        "max": "最大：",
+        "button": "添加"
       },
       "withdraw": {
-        "title": "W贸ithdraw Liquidity",
-        "info1": "T贸 withdraw liquidity you first initiate your withdrawal. Keep in mind that it takes 48 hours to process your request and you can only have one withdrawal request at a time.",
-        "info2": "A贸fter 48 hours, a withdrawable amount of d{{poolSymbol}} can be exchanged for {{poolSymbol}} at the d{{poolSymbol}} Price.",
+        "title": "提取流动性",
+        "info1": "要提取流动性，您首先要发起提现。请记住，处理请求需要48小时，并且您一次只能发起一项提现请求。",
+        "info2": "48小时后，可提取的d{{poolSymbol}}以d{{poolSymbol}}价格兑换为{{poolSymbol}}。",
         "initiate": {
-          "title": "1.贸 Initiate withdrawal of {{poolSymbol}}",
-          "info1": "Sp贸ecify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
-          "info2": "Af贸ter 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
-          "button": "I贸nitiate withdrawal"
+          "title": "1. 发起{{poolSymbol}}的提现",
+          "info1": "设置您想要兑换{{poolSymbol}}的d{{poolSymbol}}数量。",
+          "info2": "48小时后，该金额可以转换为MATIC并从流动性池中提取。 ",
+          "button": "发起提现"
         },
         "action": {
-          "title": "W贸ithdraw {{poolSymbol}}",
-          "info1": "T贸his amount can be converted to {{poolSymbol}}, which can be withdrawn from the pool.",
-          "date": "C贸an be withdrawn on:",
-          "receive": "Yo贸u receive:",
-          "button": "W贸ithdraw"
+          "title": "提现{{poolSymbol}}",
+          "info1": "该金额可转换为{{poolSymbol}}，可以从流动性池中提取。",
+          "date": "可以提现：",
+          "receive": "您将收到：",
+          "button": "提现"
         }
       },
-      "na": "N/A贸",
-      "overdue": "O贸verdue",
-      "now": "No贸w",
+      "na": "无",
+      "overdue": "过期",
+      "now": "现在",
       "toast": {
-        "adding": "Ad贸ding Liquidity",
-        "added": "Liq贸uidity Added",
+        "adding": "增加流动性",
+        "added": "流动性已增加",
         "error": {
-          "title": "Er贸ror Adding Liquidity",
-          "body": "Re贸ason"
+          "title": "增加流动性时发生错误",
+          "body": "原因"
         },
-        "withdrawing": "Wi贸thdrawing liquidity",
-        "withdrawn": "Li贸quidity withdrawn",
+        "withdrawing": "提取流动性",
+        "withdrawn": "流动性提取",
         "error-withdrawing": {
-          "title": "E贸rror Withdrawing Liquidity",
-          "body": "R贸eason"
+          "title": "提取流动性时发生错误",
+          "body": "原因"
         },
-        "initiating": "Ini贸tiating liquidity withdrawal",
-        "initiated": "Li贸quidity withdrawal initiated",
+        "initiating": "发起流动性提现",
+        "initiated": "流动性体现已发起",
         "error-initiating": {
-          "title": "Er贸ror initiating withdrawal",
-          "body": "R贸eason"
+          "title": "发起提现时发生错误",
+          "body": "原因"
         }    
       }
     }
   },
   "common": {
-    "change-language": "改變語言",
-    "wallet-connect": "連接",
+    "change-language": "切换语言",
+    "wallet-connect": "连接",
     "pagination": {
       "per-page": "每页"
     },
     "select": {
       "collateral": {
-        "label": "抵押品:",
-        "label2": "流动性池:",
+        "label": "抵押品：",
+        "label2": "流动性池：",
         "headers": {
           "collateral": "抵押品",
           "num-of-perps": "永续人数"
         }
       },
       "perpetual": {
-        "label": "永久的:",
+        "label": "永续:",
         "headers": {
-          "pair": "对的对子",
-          "status": "状"
+          "pair": "交易对",
+          "status": "状态"
         }
       }
     },
     "info-modal": {
-      "close": "Close状"
+      "close": "关闭"
     },
-    "refresh": "状Refresh状"
+    "refresh": "刷新"
   },
   "error": {
-    "wrong-network": "错误的网络"
+    "wrong-network": "错误网络"
   }
 }

@@ -21,7 +21,7 @@ function createLandObject(id: LanguageE, name: string, flag?: string) {
 
 const languageMetaMap: Record<LanguageE, LanguageMetaI> = {
   [LanguageE.EN]: createLandObject(LanguageE.EN, 'English', 'us'),
-  // [LanguageE.CN]: createLandObject(LanguageE.CN, '中国人'),
+  [LanguageE.CN]: createLandObject(LanguageE.CN, '中国人'),
   [LanguageE.DE]: createLandObject(LanguageE.DE, 'Deutsch'),
 };
 
