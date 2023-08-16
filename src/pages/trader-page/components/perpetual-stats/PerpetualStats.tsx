@@ -18,30 +18,16 @@ export const PerpetualStats = () => {
 
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
 
-  const digits = useMemo(() => {
-    if (!perpetualStatistics?.indexPrice) {
-      return 1;
-    }
-    return Math.max(0, Math.ceil(2.5 - Math.log10(perpetualStatistics?.indexPrice)));
-  }, [perpetualStatistics?.indexPrice]);
-
-  const digitsInv = useMemo(() => {
-    if (!perpetualStatistics?.indexPrice) {
-      return 1;
-    }
-    return Math.max(0, Math.ceil(-0.5 + Math.log10(perpetualStatistics?.indexPrice)));
-  }, [perpetualStatistics?.indexPrice]);
-
   const items: StatDataI[] = useMemo(
     () => [
       {
         id: 'midPrice',
         label: t('pages.trade.stats.mid-price'),
         value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true, digits)
+          ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true)
           : '--',
         numberOnly: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true, digits, true)
+          ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true, undefined, true)
           : '--',
         currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
@@ -49,10 +35,10 @@ export const PerpetualStats = () => {
         id: 'markPrice',
         label: t('pages.trade.stats.mark-price'),
         value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true, digits)
+          ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true)
           : '--',
         numberOnly: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true, digits, true)
+          ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true, undefined, true)
           : '--',
         grouped: true,
         columnNr: 1,
@@ -61,10 +47,10 @@ export const PerpetualStats = () => {
         id: 'indexPrice',
         label: t('pages.trade.stats.index-price'),
         value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true, digits)
+          ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true)
           : '--',
         numberOnly: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true, digits, true)
+          ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true, undefined, true)
           : '--',
         grouped: true,
         columnNr: 1,
@@ -80,7 +66,7 @@ export const PerpetualStats = () => {
         id: 'openInterestBC',
         label: t('pages.trade.stats.open-interest'),
         value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.openInterestBC, perpetualStatistics.baseCurrency, true, digitsInv)
+          ? formatToCurrency(perpetualStatistics.openInterestBC, perpetualStatistics.baseCurrency, true)
           : '--',
         grouped: true,
         columnNr: 2,
