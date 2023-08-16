@@ -210,7 +210,7 @@ export const Add = memo(() => {
             <OutlinedInput
               id="expected-amount"
               endAdornment={
-                <InputAdornment position="end">
+                <InputAdornment position="end" className={styles.expectedAmountInput}>
                   <Typography variant="adornment">d{selectedPool?.poolSymbol}</Typography>
                 </InputAdornment>
               }
