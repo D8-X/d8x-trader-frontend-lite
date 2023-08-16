@@ -133,7 +133,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
     address: address,
     token: selectedPool?.marginTokenAddr as AddressT | undefined,
     chainId: chain?.id,
-    enabled: !requestRef.current && address !== undefined && chainId === chain?.id,
+    enabled: !requestRef.current && address !== undefined && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
   });
 
   useEffect(() => {

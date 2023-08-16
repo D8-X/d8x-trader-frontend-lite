@@ -13,7 +13,7 @@ export function valueToFractionDigits(value: number | undefined) {
   if (!value) {
     return 1;
   }
-  return !value ? 1 : Math.max(1, Math.ceil(2.5 - Math.log10(Math.abs(value))));
+  return !value ? 1 : Math.max(0, Math.ceil(2.5 - Math.log10(Math.abs(value))));
 }
 
 export function formatToCurrency(

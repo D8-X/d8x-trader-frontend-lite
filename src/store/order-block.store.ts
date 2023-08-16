@@ -33,14 +33,25 @@ export const orderTypeAtom = atom(
   (get, set, newType: OrderTypeE) => {
     if (newType === OrderTypeE.Limit) {
       const perpetualStatistics = get(perpetualStatisticsAtom);
-      const initialLimit =
-        perpetualStatistics?.midPrice === undefined ? -1 : Math.round(100 * perpetualStatistics?.midPrice) / 100;
+      let initialLimit: number;
+      if (perpetualStatistics?.midPrice) {
+        const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
+        initialLimit = Math.round(perpetualStatistics.midPrice * step) / step;
+        console.log('initialLimit', initialLimit, 'step', step);
+      } else {
+        initialLimit = -1;
+      }
       set(limitPriceValueAtom, initialLimit);
       set(triggerPriceValueAtom, -1);
     } else if (newType === OrderTypeE.Stop) {
       const perpetualStatistics = get(perpetualStatisticsAtom);
-      const initialTrigger =
-        perpetualStatistics?.markPrice === undefined ? -1 : Math.round(100 * perpetualStatistics?.markPrice) / 100;
+      let initialTrigger: number;
+      if (perpetualStatistics?.markPrice) {
+        const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
+        initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
+      } else {
+        initialTrigger = -1;
+      }
       set(limitPriceValueAtom, -1);
       set(triggerPriceValueAtom, initialTrigger);
     } else {

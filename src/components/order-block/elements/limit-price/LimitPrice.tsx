@@ -23,11 +23,11 @@ export const LimitPrice = memo(() => {
   const inputValueChangedRef = useRef(false);
 
   const stepSize = useMemo(() => {
-    if (!selectedPerpetual?.indexPrice) {
+    if (!selectedPerpetual?.midPrice) {
       return '1';
     }
-    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
-  }, [selectedPerpetual?.indexPrice]);
+    return `${Math.min(1, 1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.midPrice)))}`;
+  }, [selectedPerpetual?.midPrice]);
 
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
@@ -36,9 +36,8 @@ export const LimitPrice = memo(() => {
         setInputValue(targetValue);
       } else {
         if (orderType === OrderTypeE.Limit) {
-          const initialTrigger =
-            perpetualStatistics?.markPrice === undefined ? -1 : Math.round(100 * perpetualStatistics?.markPrice) / 100;
-          setLimitPrice(`${initialTrigger}`);
+          const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics?.midPrice;
+          setLimitPrice(`${initialLimit}`);
           setInputValue('');
         } else if (orderType === OrderTypeE.Stop) {
           setLimitPrice(`-1`);
