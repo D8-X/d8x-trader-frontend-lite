@@ -404,7 +404,7 @@
         "withdrawal-amount": {
           "title": "Auszahlungsbetrag",
           "info1": "Der Betrag von d{{poolSymbol}}, für den sie eine Auszahlung eingeleitet haben.",
-          "info2": "Ihre Liquidität partizipiert weiterhin an den PnL- und Gebühreneinnahmen des Pools, bis Sie die Auszahlung abschliessen." 
+          "info2": "Ihre Liquidität partizipiert weiterhin an den PnL- und Gebühreneinnahmen des Pools, bis Sie die Auszahlung abschliessen."
         },
         "date": {
           "title": "Auszahlungdatum",
@@ -469,7 +469,7 @@
         "error-initiating": {
           "title": "Fehler beim der Einleitung der Liquiditätsentnahme",
           "body": "Grund"
-        }    
+        }
       }
     }
   },
