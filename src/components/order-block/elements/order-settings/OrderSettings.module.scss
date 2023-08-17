@@ -67,7 +67,7 @@
 .settingsIcon {
   cursor: pointer;
   transition: opacity 0.3s linear;
-  margin-right: $d8x-spacing * 1 - $d8x-spacing * 6;
+  margin-right: -$d8x-spacing * 5;
   margin-left: 0;
   padding: $d8x-spacing $d8x-spacing * 3 $d8x-spacing $d8x-spacing;
   width: 60px;
