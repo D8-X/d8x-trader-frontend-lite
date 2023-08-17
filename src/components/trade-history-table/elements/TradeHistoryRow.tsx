@@ -33,22 +33,22 @@ export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHist
       </TableCell>*/}
       <TableCell align={headers[3].align}>
         <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency) : ''}
+          {perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
         </Typography>
       </TableCell>
       <TableCell align={headers[4].align}>
         <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency) : ''}
+          {perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency, true) : ''}
         </Typography>
       </TableCell>
       <TableCell align={headers[5].align}>
         <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.fee, perpetual.poolName) : ''}
+          {perpetual ? formatToCurrency(tradeHistory.fee, perpetual.poolName, true) : ''}
         </Typography>
       </TableCell>
       <TableCell align={headers[6].align}>
         <Typography variant="cellSmall" style={{ color: pnlColor }}>
-          {perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName) : ''}
+          {perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName, true) : ''}
         </Typography>
       </TableCell>
       {/* <TableCell align={headers[7].align} /> */}
