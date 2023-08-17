@@ -47,16 +47,20 @@ export const OrderSize = memo(() => {
 
   const handleOrderSizeChange = useCallback(
     (orderSizeValue: string) => {
-      if (orderSizeValue) {
-        setOrderSize(+orderSizeValue / currentMultiplier);
-        setInputValue(orderSizeValue);
+      if (orderSizeValue && perpetualStaticInfo) {
+        const roundedValueBase = (
+          +roundToLotString(+orderSizeValue, perpetualStaticInfo.lotSizeBC) / currentMultiplier
+        ).toString();
+        const roundedValue = roundToLotString(+orderSizeValue, perpetualStaticInfo.lotSizeBC);
+        setOrderSize(+roundedValueBase);
+        setInputValue(roundedValue);
       } else {
         setOrderSize(0);
         setInputValue('');
       }
       inputValueChangedRef.current = true;
     },
-    [setOrderSize, currentMultiplier]
+    [setOrderSize, currentMultiplier, perpetualStaticInfo]
   );
 
   useEffect(() => {
@@ -95,8 +99,9 @@ export const OrderSize = memo(() => {
 
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
-      const roundedValue = roundToLotString(orderSize * currentMultiplier, perpetualStaticInfo.lotSizeBC);
-      setOrderSize(+roundedValue / currentMultiplier);
+      const roundedValue = (+roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC) * currentMultiplier).toString();
+      const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
+      setOrderSize(+roundedValueBase);
       setInputValue(roundedValue);
       inputValueChangedRef.current = true;
     }
@@ -119,7 +124,16 @@ export const OrderSize = memo(() => {
       if (currentMultiplier === 1) {
         return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
       } else {
-        return roundToLotString(perpetualStaticInfo.lotSizeBC * currentMultiplier, perpetualStaticInfo.lotSizeBC);
+        console.log(currentMultiplier);
+        console.log(perpetualStaticInfo.lotSizeBC);
+        console.log(
+          (
+            +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
+          ).toString()
+        );
+        return '20';
+        //return roundToLotString(perpetualStaticInfo.lotSizeBC * currentMultiplier, perpetualStaticInfo.lotSizeBC);
+        //return (+roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier).toFixed(4);
       }
     }
     return '0.1';
