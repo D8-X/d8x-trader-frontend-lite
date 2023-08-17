@@ -12,6 +12,17 @@
     align-items: center;
     gap: 8px;
   }
+
+  .selector {
+    padding: $d8x-spacing;
+  }
+}
+
+.inputHolder {
+
+  :global(.MuiInputBase-root) {
+    padding-right: 0;
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {

@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { ChangeEvent, memo, useCallback } from 'react';
+import { type ChangeEvent, memo, type ReactNode, useCallback } from 'react';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
@@ -19,6 +19,7 @@ interface ResponsiveInputPropsI {
   step?: string;
   min?: number;
   max?: number;
+  adornmentAction?: ReactNode;
 }
 
 export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
@@ -33,6 +34,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     step = '1',
     min = -1,
     max,
+    adornmentAction,
   } = props;
 
   const handleValueChange = useCallback(
@@ -105,6 +107,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         endAdornment={
           <InputAdornment position="end">
             <Typography variant="adornment">{currency}</Typography>
+            {adornmentAction}
           </InputAdornment>
         }
         inputProps={{ step, min, max }}
