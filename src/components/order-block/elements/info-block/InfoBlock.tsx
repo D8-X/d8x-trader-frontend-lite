@@ -50,7 +50,7 @@ export const InfoBlock = memo(() => {
           {t('pages.trade.order-block.info.order-size')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
-          {formatToCurrency(orderSize, selectedPerpetual?.baseCurrency)}
+          {orderSize}
         </Typography>
       </Box>
       <Box className={styles.row}>

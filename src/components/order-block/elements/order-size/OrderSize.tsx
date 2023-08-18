@@ -15,6 +15,7 @@ import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, trade
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { OrderBlockE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
 import styles from './OrderSize.module.scss';
@@ -87,8 +88,11 @@ export const OrderSize = memo(() => {
         updatedMultiplier = selectedPerpetual.indexPrice / selectedPerpetual.collToQuoteIndexPrice;
       }
       setCurrentMultiplier(updatedMultiplier);
+      const numberDigits = valueToFractionDigits(orderSize * updatedMultiplier);
       setInputValue(
-        updatedMultiplier === 1 || orderSize === 0 ? orderSize.toString() : (orderSize * updatedMultiplier).toFixed(4)
+        updatedMultiplier === 1 || orderSize === 0
+          ? orderSize.toString()
+          : (orderSize * updatedMultiplier).toFixed(numberDigits)
       );
       latestCurrency.current = selectedCurrency;
     }
@@ -103,12 +107,12 @@ export const OrderSize = memo(() => {
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
       const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-
+      const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
       setOrderSize(+roundedValueBase);
       setInputValue(
         currentMultiplier === 1 || orderSize === 0
           ? (+roundedValueBase).toString()
-          : (+roundedValueBase * currentMultiplier).toFixed(4)
+          : (+roundedValueBase * currentMultiplier).toFixed(numberDigits)
       );
       inputValueChangedRef.current = true;
     }
@@ -128,12 +132,15 @@ export const OrderSize = memo(() => {
 
   const orderSizeStep = useMemo(() => {
     if (perpetualStaticInfo) {
+      const numberDigits = valueToFractionDigits(
+        +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
+      );
       if (currentMultiplier === 1) {
         return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
       } else {
         return (
           +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
-        ).toFixed(4);
+        ).toFixed(numberDigits);
       }
     }
     return '0.1';
