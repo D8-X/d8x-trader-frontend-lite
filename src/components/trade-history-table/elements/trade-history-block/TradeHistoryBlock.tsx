@@ -48,25 +48,25 @@ export const TradeHistoryBlock = ({ headers, perpetuals, tradeHistory }: TradeHi
         />
         <SidesRow
           leftSide={headers[3].label}
-          rightSide={perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency) : ''}
+          rightSide={perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[4].label}
-          rightSide={perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency) : ''}
+          rightSide={perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[5].label}
-          rightSide={perpetual ? formatToCurrency(tradeHistory.fee, perpetual.poolName) : ''}
+          rightSide={perpetual ? formatToCurrency(tradeHistory.fee, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[6].label}
-          rightSide={perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName) : ''}
+          rightSide={perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={pnlColor}
         />

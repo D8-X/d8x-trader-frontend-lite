@@ -29,7 +29,7 @@ export const PositionRow = ({ position, handlePositionClose, handlePositionModif
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {formatToCurrency(position.positionNotionalBaseCCY, parsedSymbol?.baseCurrency)}
+          {formatToCurrency(position.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
         </Typography>
       </TableCell>
       <TableCell align="left">
@@ -41,19 +41,19 @@ export const PositionRow = ({ position, handlePositionClose, handlePositionModif
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency)}
+          {formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency, true)}
         </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
           {position.liquidationPrice[0] < 0
             ? `- ${parsedSymbol?.quoteCurrency}`
-            : formatToCurrency(position.liquidationPrice[0], parsedSymbol?.quoteCurrency)}
+            : formatToCurrency(position.liquidationPrice[0], parsedSymbol?.quoteCurrency, true)}
         </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {formatToCurrency(position.collateralCC, '')}({Math.round(position.leverage * 100) / 100}x)
+          {formatToCurrency(position.collateralCC, '', true)}({Math.round(position.leverage * 100) / 100}x)
         </Typography>
       </TableCell>
       <TableCell align="right">
@@ -61,7 +61,7 @@ export const PositionRow = ({ position, handlePositionClose, handlePositionModif
           variant="cellSmall"
           className={position.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative}
         >
-          {formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency)}
+          {formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
         </Typography>
       </TableCell>
       <TableCell align="center">

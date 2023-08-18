@@ -58,13 +58,13 @@ export const PositionBlock = ({ headers, position, handlePositionClose, handlePo
         />
         <SidesRow
           leftSide={headers[1].label}
-          rightSide={formatToCurrency(position.positionNotionalBaseCCY, parsedSymbol?.baseCurrency)}
+          rightSide={formatToCurrency(position.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[3].label}
-          rightSide={formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency)}
+          rightSide={formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency, true)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
@@ -73,20 +73,22 @@ export const PositionBlock = ({ headers, position, handlePositionClose, handlePo
           rightSide={
             position.liquidationPrice[0] < 0
               ? `- ${parsedSymbol?.quoteCurrency}`
-              : formatToCurrency(position.liquidationPrice[0], parsedSymbol?.quoteCurrency)
+              : formatToCurrency(position.liquidationPrice[0], parsedSymbol?.quoteCurrency, true)
           }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[5].label}
-          rightSide={`${formatToCurrency(position.collateralCC, '')}(${Math.round(position.leverage * 100) / 100}x)`}
+          rightSide={`${formatToCurrency(position.collateralCC, '', true)}(${
+            Math.round(position.leverage * 100) / 100
+          }x)`}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[6].label}
-          rightSide={formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency)}
+          rightSide={formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={pnlColor}
         />

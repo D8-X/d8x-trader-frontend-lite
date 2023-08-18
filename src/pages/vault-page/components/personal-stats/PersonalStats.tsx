@@ -83,7 +83,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
-          {userAmount !== undefined ? formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`) : '--'}
+          {userAmount !== undefined ? formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}, true`) : '--'}
         </Typography>
       </Box>
       <Box key="estimatedEarnings" className={styles.statContainer}>

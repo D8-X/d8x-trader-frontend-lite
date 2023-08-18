@@ -9,11 +9,20 @@ export const mapCurrencyToFractionDigits: Record<string, number> = {
   dETH: 4,
 };
 
+export function roundHalfDown(value: number | undefined) {
+  if (!value) {
+    return 2;
+  }
+  const i = Math.floor(value);
+  const f = value - i;
+  return f <= 0.5 ? i : Math.round(value);
+}
+
 export function valueToFractionDigits(value: number | undefined) {
   if (!value) {
-    return 1;
+    return 2;
   }
-  return !value ? 1 : Math.max(0, Math.ceil(2.5 - Math.log10(Math.abs(value))));
+  return !value ? 1 : Math.max(2, roundHalfDown(2.5 - Math.log10(Math.abs(value))));
 }
 
 export function formatToCurrency(

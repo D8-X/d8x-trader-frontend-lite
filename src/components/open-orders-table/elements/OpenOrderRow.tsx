@@ -39,19 +39,21 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
         </Typography>
       </TableCell>
       <TableCell align="right">
-        <Typography variant="cellSmall">{formatToCurrency(order.quantity, parsedSymbol?.baseCurrency)}</Typography>
+        <Typography variant="cellSmall">
+          {formatToCurrency(order.quantity, parsedSymbol?.baseCurrency, true)}
+        </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
           {order.limitPrice && order.limitPrice < Infinity
-            ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency)
+            ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency, true)
             : t('pages.trade.orders-table.table-content.na')}
         </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
           {order.stopPrice
-            ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency)
+            ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency, true)
             : t('pages.trade.orders-table.table-content.na')}
         </Typography>
       </TableCell>

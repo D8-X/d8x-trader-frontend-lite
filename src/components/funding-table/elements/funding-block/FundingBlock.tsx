@@ -41,7 +41,7 @@ export const FundingBlock = ({ headers, perpetuals, funding }: FundingRowPropsI)
         />
         <SidesRow
           leftSide={headers[2].label}
-          rightSide={perpetual ? formatToCurrency(funding.amount, perpetual.poolName) : ''}
+          rightSide={perpetual ? formatToCurrency(funding.amount, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
