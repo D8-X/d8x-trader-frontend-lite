@@ -41,7 +41,7 @@ jobs:
           VITE_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
           VITE_API_URL: default::https://api.quantena.tech;80001::https://api.quantena.tech;1442::https://api.zktest.quantena.tech
           VITE_HISTORY_URL: default::https://history.api.quantena.tech;80001::https://history.api.quantena.tech;1442::https://history.zktest.quantena.tech
-          VITE_REFERRAL_URL: default::https://referral.dev.quantena.tech;80001::https://referral.dev.quantena.tech
+          VITE_REFERRAL_URL: default::https://referral.app.quantena.tech;80001::https://referral.app.quantena.tech
           VITE_WEBSOCKET_URL: default::wss://ws.quantena.tech/;80001::wss://ws.quantena.tech/;1442::wss://ws.zktest.quantena.tech/
           VITE_CANDLES_WEBSOCKET_URL: default::wss://candles.testnet.quantena.tech/
         run: |
