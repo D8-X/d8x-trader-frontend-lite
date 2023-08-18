@@ -14,6 +14,7 @@ import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { OrderBlockE } from 'types/enums';
+import { formatToCurrency } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
 import styles from './OrderSize.module.scss';
@@ -52,9 +53,6 @@ export const OrderSize = memo(() => {
           +orderSizeValue / currentMultiplier,
           perpetualStaticInfo.lotSizeBC
         )).toString();
-        //const roundedValue = (Math.round(orderSizeValue * 10000) / 10000).toString();
-        console.log('setOrderSizeValue', roundedValueBase);
-        console.log('setInputValueValue', orderSizeValue);
         setOrderSize(+roundedValueBase);
         setInputValue(orderSizeValue);
       } else {
@@ -89,7 +87,9 @@ export const OrderSize = memo(() => {
         updatedMultiplier = selectedPerpetual.indexPrice / selectedPerpetual.collToQuoteIndexPrice;
       }
       setCurrentMultiplier(updatedMultiplier);
-      setInputValue(`${orderSize * updatedMultiplier}`);
+      setInputValue(
+        updatedMultiplier === 1 || orderSize === 0 ? orderSize.toString() : (orderSize * updatedMultiplier).toFixed(4)
+      );
       latestCurrency.current = selectedCurrency;
     }
   }, [selectedCurrency, selectedPool, selectedPerpetual, orderSize, setOrderSize]);
@@ -102,16 +102,14 @@ export const OrderSize = memo(() => {
 
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
-      console.log('orderSize', orderSize);
-      console.log('multiplier', currentMultiplier);
-      //const roundedValue = (+roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC) * currentMultiplier).toString();
-      const roundedValue = +orderSize.toFixed(4) * +currentMultiplier.toFixed(4);
       const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-      console.log('setOrderSizeValueOnBlur', roundedValueBase);
-      console.log('setInputValueValueOnBlur', roundedValue);
 
       setOrderSize(+roundedValueBase);
-      setInputValue(roundedValue);
+      setInputValue(
+        currentMultiplier === 1 || orderSize === 0
+          ? (+roundedValueBase).toString()
+          : (+roundedValueBase * currentMultiplier).toFixed(4)
+      );
       inputValueChangedRef.current = true;
     }
   }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier]);
@@ -133,18 +131,9 @@ export const OrderSize = memo(() => {
       if (currentMultiplier === 1) {
         return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
       } else {
-        console.log(currentMultiplier);
-        console.log(perpetualStaticInfo.lotSizeBC);
-        console.log(
-          (
-            +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
-          ).toString()
-        );
-        //return '1.01';
-        //return roundToLotString(perpetualStaticInfo.lotSizeBC * currentMultiplier, perpetualStaticInfo.lotSizeBC);
         return (
           +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
-        ).toString();
+        ).toFixed(4);
       }
     }
     return '0.1';
@@ -152,10 +141,16 @@ export const OrderSize = memo(() => {
 
   const minPositionString = useMemo(() => {
     if (perpetualStaticInfo) {
-      return roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
+      return formatToCurrency(
+        roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier,
+        '',
+        false,
+        undefined,
+        true
+      );
     }
     return '0.1';
-  }, [perpetualStaticInfo]);
+  }, [perpetualStaticInfo, currentMultiplier]);
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
@@ -167,8 +162,8 @@ export const OrderSize = memo(() => {
         fetchedMaxSizes.current = true;
         const data = await getMaxOrderSizeForTrader(_chainId, traderAPI, _address, symbol).catch((err) => {
           console.error(err);
-          fetchedMaxSizes.current = false;
         });
+        fetchedMaxSizes.current = false;
         let maxAmount: number | undefined;
         if (_isLong) {
           maxAmount = data?.data?.buy;
@@ -190,7 +185,6 @@ export const OrderSize = memo(() => {
         perpetualStaticInfo.id,
         orderBlock === OrderBlockE.Long
       ).then((result) => {
-        console.log('setMaxOrderSizeInBase', result);
         setMaxOrderSizeInBase(result);
       });
     }
@@ -237,9 +231,10 @@ export const OrderSize = memo(() => {
             <>
               <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
               <Typography>
-                {t('pages.trade.order-block.order-size.body2')} {maxOrderSizeInBase} {selectedPerpetual?.baseCurrency}.{' '}
-                {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedPerpetual?.baseCurrency}.{' '}
-                {t('pages.trade.order-block.order-size.body4')} {orderSizeStep} {selectedPerpetual?.baseCurrency}.
+                {t('pages.trade.order-block.order-size.body2')} {formatToCurrency(maxOrderSize, selectedCurrency)}.{' '}
+                {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
+                {t('pages.trade.order-block.order-size.body4')}{' '}
+                {formatToCurrency(orderSizeStep, selectedCurrency, false, 4)}.
               </Typography>
             </>
           }
