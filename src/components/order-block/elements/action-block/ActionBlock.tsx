@@ -383,9 +383,6 @@ export const ActionBlock = memo(() => {
     ) {
       return ValidityCheckE.Empty;
     }
-    if (isMarketClosed) {
-      return ValidityCheckE.Closed;
-    }
     let isTooLarge;
     if (orderInfo.orderBlock === OrderBlockE.Long) {
       isTooLarge = orderInfo.size > maxOrderSize.maxBuy;
@@ -416,6 +413,9 @@ export const ActionBlock = memo(() => {
     }
     if (orderInfo.takeProfitPrice !== null && orderInfo.takeProfitPrice <= 0) {
       return ValidityCheckE.Undefined;
+    }
+    if (isMarketClosed) {
+      return ValidityCheckE.Closed;
     }
     return ValidityCheckE.GoodToGo;
   }, [
@@ -450,10 +450,9 @@ export const ActionBlock = memo(() => {
     return !isOrderValid || requestSentRef.current || requestSent;
   }, [isOrderValid, requestSent]);
 
-  const validityColor =
-    validityCheckType === ValidityCheckE.GoodToGo
-      ? 'rgba(var(--d8x-background-buy-rgb), 1)'
-      : 'rgba(var(--d8x-background-sell-rgb), 1)';
+  const validityColor = [ValidityCheckE.GoodToGo, ValidityCheckE.Closed].some((x) => x === validityCheckType)
+    ? 'rgba(var(--d8x-background-buy-rgb), 1)'
+    : 'rgba(var(--d8x-background-sell-rgb), 1)';
 
   useEffect(() => {
     if (validityCheckType === ValidityCheckE.GoodToGo) {
