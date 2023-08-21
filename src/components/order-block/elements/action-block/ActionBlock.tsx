@@ -699,7 +699,9 @@ export const ActionBlock = memo(() => {
                     {validityCheckType !== ValidityCheckE.Empty
                       ? t(
                           `pages.trade.action-block.validity.${
-                            validityCheckType === ValidityCheckE.GoodToGo ? 'pass' : 'fail'
+                            [ValidityCheckE.GoodToGo, ValidityCheckE.Closed].some((x) => x === validityCheckType)
+                              ? 'pass'
+                              : 'fail'
                           }`
                         )
                       : ' '}
