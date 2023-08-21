@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import type { PropsWithChildren } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,6 @@ import {
   proxyAddrAtom,
   selectedPoolAtom,
   perpetualsAtom,
-  selectedPoolIdAtom,
   traderAPIAtom,
   poolTokenDecimalsAtom,
 } from 'store/pools.store';
@@ -53,13 +52,12 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
   const { chain } = useNetwork();
   const { address } = useAccount();
 
-  const [pools, setPools] = useAtom(poolsAtom);
-  const [, setPerpetuals] = useAtom(perpetualsAtom);
-  const [, setOracleFactoryAddr] = useAtom(oracleFactoryAddrAtom);
-  const [, setProxyAddr] = useAtom(proxyAddrAtom);
-  const [, setPoolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [, setSelectedPoolId] = useAtom(selectedPoolIdAtom);
-  const [, setPoolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const setPools = useSetAtom(poolsAtom);
+  const setPerpetuals = useSetAtom(perpetualsAtom);
+  const setOracleFactoryAddr = useSetAtom(oracleFactoryAddrAtom);
+  const setProxyAddr = useSetAtom(proxyAddrAtom);
+  const setPoolTokenBalance = useSetAtom(poolTokenBalanceAtom);
+  const setPoolTokenDecimals = useSetAtom(poolTokenDecimalsAtom);
   const [triggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -73,7 +71,23 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
         setProxyAddr(undefined);
         return;
       }
-      setPools(data.pools);
+      setPools(
+        data.pools.map((pool) => {
+          let poolId = 0;
+          if (traderAPI) {
+            try {
+              poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+
+          return {
+            ...pool,
+            poolId,
+          };
+        })
+      );
       const perpetuals: PerpetualDataI[] = [];
       data.pools.forEach((pool) => {
         perpetuals.push(
@@ -94,26 +108,14 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
       setOracleFactoryAddr(data.oracleFactoryAddr);
       setProxyAddr(data.proxyAddr);
     },
-    [setPools, setPerpetuals, setOracleFactoryAddr, setProxyAddr]
+    [setPools, setPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
   );
-
-  useEffect(() => {
-    let poolId = null;
-    if (traderAPI && pools.length > 0) {
-      try {
-        poolId = traderAPI.getPoolIdFromSymbol(pools[0].poolSymbol);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    setSelectedPoolId(poolId);
-  }, [pools, traderAPI, setSelectedPoolId]);
 
   useEffect(() => {
     if (!requestRef.current && chainId) {
       requestRef.current = true;
       setExchangeInfo(null);
-      getExchangeInfo(chainId, null)
+      getExchangeInfo(chainId, traderAPI)
         .then(({ data }) => {
           setExchangeInfo(data);
           requestRef.current = false;
@@ -123,7 +125,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
           requestRef.current = false;
         });
     }
-  }, [chainId, setExchangeInfo]);
+  }, [chainId, setExchangeInfo, traderAPI]);
 
   const {
     data: poolTokenBalance,

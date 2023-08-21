@@ -6,11 +6,11 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box } from '@mui/material';
 
 import { getEarnedRebate, getReferralVolume } from 'network/referral';
-import { selectedPoolAtom, selectedPoolIdAtom } from 'store/pools.store';
+import { poolsAtom } from 'store/pools.store';
 import { RebateTypeE } from 'types/enums';
-import type { EarnedRebateI, ReferralVolumeI } from 'types/types';
+import type { EarnedRebateI, OverviewItemI, OverviewPoolItemI, ReferralVolumeI } from 'types/types';
 
-import { Overview, type OverviewItemI } from '../overview/Overview';
+import { Overview } from '../overview/Overview';
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { ReferralsBlock } from '../referrals-block/ReferralsBlock';
 
@@ -18,8 +18,8 @@ import styles from './ReferrerTab.module.scss';
 
 export const ReferrerTab = memo(() => {
   const { t } = useTranslation();
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPoolId] = useAtom(selectedPoolIdAtom);
+
+  const [pools] = useAtom(poolsAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -78,27 +78,33 @@ export const ReferrerTab = memo(() => {
   }, [address, chainId]);
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
-    const referralVolumesAmount = referralVolumes
-      .filter((volume) => volume.poolId === selectedPoolId)
-      .reduce((accumulator, currentValue) => accumulator + currentValue.quantityCC, 0);
+    const referralVolumesByPools: OverviewPoolItemI[] = [];
+    const earnedRebatesByPools: OverviewPoolItemI[] = [];
 
-    const earnedRebatesAmount = earnedRebates
-      .filter((rebate) => rebate.poolId === selectedPoolId)
-      .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
+    pools.forEach((pool) => {
+      const referralVolumesAmount = referralVolumes
+        .filter((volume) => volume.poolId === pool.poolId)
+        .reduce((accumulator, currentValue) => accumulator + currentValue.quantityCC, 0);
+
+      const earnedRebatesAmount = earnedRebates
+        .filter((rebate) => rebate.poolId === pool.poolId)
+        .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
+
+      referralVolumesByPools.push({ poolSymbol: pool.poolSymbol, value: referralVolumesAmount });
+      earnedRebatesByPools.push({ poolSymbol: pool.poolSymbol, value: earnedRebatesAmount });
+    });
 
     return [
       {
         title: t('pages.refer.referrer-tab.volume'),
-        value: address ? referralVolumesAmount : '--',
-        poolSymbol: selectedPool?.poolSymbol ?? '--',
+        poolsItems: address ? referralVolumesByPools : [],
       },
       {
         title: t('pages.refer.referrer-tab.rebates'),
-        value: address ? earnedRebatesAmount : '--',
-        poolSymbol: selectedPool?.poolSymbol ?? '--',
+        poolsItems: address ? earnedRebatesByPools : [],
       },
     ];
-  }, [referralVolumes, earnedRebates, selectedPool?.poolSymbol, selectedPoolId, address, t]);
+  }, [pools, referralVolumes, earnedRebates, address, t]);
 
   return (
     <Box className={styles.root}>

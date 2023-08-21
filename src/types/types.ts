@@ -66,6 +66,10 @@ export interface PoolI {
   perpetuals: PerpetualI[];
 }
 
+export interface PoolWithIdI extends PoolI {
+  poolId: number;
+}
+
 export interface ValidatedResponseI<T> {
   type: string;
   msg: string;
@@ -316,4 +320,14 @@ export interface ReferralCodeI {
   trader: TraderDataI;
   referrer: ReferrerDataI[];
   agency: ReferrerDataI[];
+}
+
+export interface OverviewPoolItemI {
+  value: number | string;
+  poolSymbol: PoolI['poolSymbol'];
+}
+
+export interface OverviewItemI {
+  title: string;
+  poolsItems: OverviewPoolItemI[];
 }

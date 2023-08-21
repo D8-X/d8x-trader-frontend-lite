@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Slider, Typography } from '@mui/material';
@@ -22,8 +22,10 @@ function valueLabelFormat(value: number) {
 
 export const LeverageSelector = memo(() => {
   const { t } = useTranslation();
+
   const [leverage, setLeverage] = useAtom(leverageAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
+  const [inputValue, setInputValue] = useState(`${leverage}`);
 
   const maxLeverage = useMemo(() => {
     if (perpetualStaticInfo) {
@@ -55,10 +57,21 @@ export const LeverageSelector = memo(() => {
 
   const handleLeverageInputChange = useCallback(
     (targetValue: string) => {
-      setLeverage(+targetValue);
+      if (targetValue) {
+        const numberValue = +targetValue;
+        setLeverage(numberValue < 1 ? 1 : numberValue);
+        setInputValue(numberValue < 1 ? '1' : `${numberValue}`);
+      } else {
+        setLeverage(1);
+        setInputValue('');
+      }
     },
     [setLeverage]
   );
+
+  const handleInputBlur = useCallback(() => {
+    setInputValue(`${leverage}`);
+  }, [leverage]);
 
   const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
 
@@ -97,11 +110,12 @@ export const LeverageSelector = memo(() => {
         <ResponsiveInput
           id="leverage"
           className={styles.inputHolder}
-          inputValue={leverage}
+          inputValue={inputValue}
           setInputValue={handleLeverageInputChange}
+          handleInputBlur={handleInputBlur}
           currency="X"
           step={`${leverageStep}`}
-          min={1}
+          min={0}
           max={maxLeverage}
         />
       </Box>

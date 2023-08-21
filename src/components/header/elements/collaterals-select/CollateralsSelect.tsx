@@ -11,13 +11,7 @@ import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketC
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { clearInputsDataAtom } from 'store/order-block.store';
-import {
-  poolsAtom,
-  selectedPerpetualAtom,
-  selectedPoolAtom,
-  selectedPoolIdAtom,
-  traderAPIAtom,
-} from 'store/pools.store';
+import { poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import type { PoolI } from 'types/types';
 
 import { HeaderSelect } from '../header-select/HeaderSelect';
@@ -55,10 +49,8 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
 
   const [pools] = useAtom(poolsAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  const setSelectedPoolId = useSetAtom(selectedPoolIdAtom);
   const setSelectedPerpetual = useSetAtom(selectedPerpetualAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
 
   const urlChangesAppliedRed = useRef(false);
 
@@ -95,14 +87,7 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
   }, [selectedPool, isConnected, send, address]);
 
   const handleChange = (newItem: PoolI) => {
-    let poolId: number | undefined = undefined;
-    try {
-      poolId = traderAPI?.getPoolIdFromSymbol(newItem.poolSymbol);
-    } catch (error) {
-      console.error(error);
-    }
     setSelectedPool(newItem.poolSymbol);
-    setSelectedPoolId(poolId ?? null);
     setSelectedPerpetual(newItem.perpetuals[0].id);
 
     if (withNavigate) {

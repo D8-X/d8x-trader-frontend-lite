@@ -8,7 +8,7 @@ import type {
   PerpetualOpenOrdersI,
   PerpetualStatisticsI,
   PerpetualStaticInfoI,
-  PoolI,
+  PoolWithIdI,
   OrderI,
   TradeHistoryI,
   FundingI,
@@ -18,8 +18,7 @@ const SHOW_CHART_FOR_MOBILE_LS_KEY = 'd8x_showChartForMobile';
 
 export const traderAPIAtom = atom<TraderInterface | null>(null);
 export const traderAPIBusyAtom = atom(false);
-export const poolsAtom = atom<PoolI[]>([]);
-export const selectedPoolIdAtom = atom<number | null>(null);
+export const poolsAtom = atom<PoolWithIdI[]>([]);
 export const perpetualsAtom = atom<PerpetualDataI[]>([]);
 export const poolFeeAtom = atom<number | undefined>(undefined);
 export const oracleFactoryAddrAtom = atom('');

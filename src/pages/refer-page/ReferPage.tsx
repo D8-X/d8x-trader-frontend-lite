@@ -5,7 +5,6 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
-import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { Header } from 'components/header/Header';
 import { Container } from 'components/container/Container';
 import { Footer } from 'components/footer/Footer';
@@ -22,22 +21,22 @@ import styles from './ReferPage.module.scss';
 
 const tabComponents = [
   {
-    tabId: ReferTabIdE.Referral,
-    content: <ReferrerTab key={ReferTabIdE.Referral} />,
-  },
-  {
     tabId: ReferTabIdE.Trader,
     content: <TraderTab key={ReferTabIdE.Trader} />,
+  },
+  {
+    tabId: ReferTabIdE.Referral,
+    content: <ReferrerTab key={ReferTabIdE.Referral} />,
   },
 ];
 
 const queryParamToReferTabIdMap: Record<string, ReferTabIdE> = {
-  referral: ReferTabIdE.Referral,
   trader: ReferTabIdE.Trader,
+  referral: ReferTabIdE.Referral,
 };
 
 export const ReferPage = memo(() => {
-  const [activeTabId, setActiveTabId] = useState(ReferTabIdE.Referral);
+  const [activeTabId, setActiveTabId] = useState(ReferTabIdE.Trader);
 
   const setIsAgency = useSetAtom(isAgencyAtom);
   const setReferralCode = useSetAtom(referralCodeAtom);
@@ -125,9 +124,7 @@ export const ReferPage = memo(() => {
 
   return (
     <Box className={styles.root}>
-      <Header>
-        <CollateralsSelect />
-      </Header>
+      <Header />
       <Container className={styles.container}>
         <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
         {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}

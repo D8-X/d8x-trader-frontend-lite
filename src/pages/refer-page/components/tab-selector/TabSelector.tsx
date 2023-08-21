@@ -24,12 +24,12 @@ export const TabSelector = ({ activeTab, onTabChange }: TabSelectorPropsI) => {
   const tabItems: TabItemI[] = useMemo(
     () => [
       {
-        tabId: ReferTabIdE.Referral,
-        label: t('pages.refer.tab-selector.referrer'),
-      },
-      {
         tabId: ReferTabIdE.Trader,
         label: t('pages.refer.tab-selector.trader'),
+      },
+      {
+        tabId: ReferTabIdE.Referral,
+        label: t('pages.refer.tab-selector.referrer'),
       },
     ],
     [t]

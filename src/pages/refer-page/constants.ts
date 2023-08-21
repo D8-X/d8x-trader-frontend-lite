@@ -1,6 +1,6 @@
 export enum ReferTabIdE {
-  Referral = 'referral',
   Trader = 'trader',
+  Referral = 'referral',
 }
 
 export enum QueryParamE {
