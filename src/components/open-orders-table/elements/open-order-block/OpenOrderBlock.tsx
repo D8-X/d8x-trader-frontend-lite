@@ -42,13 +42,16 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[1].label}
-          rightSide={order.side}
+          rightSide={!!order.side && t(`pages.trade.orders-table.table-content.${order.side.toLowerCase()}`)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[2].label}
-          rightSide={typeToLabelMap[order.type]}
+          rightSide={
+            !!typeToLabelMap[order.type] &&
+            t(`pages.trade.orders-table.table-content.${typeToLabelMap[order.type].toLowerCase()}`)
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
@@ -60,13 +63,21 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[4].label}
-          rightSide={order.limitPrice ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency) : 'N/A'}
+          rightSide={
+            order.limitPrice && order.limitPrice < Infinity
+              ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency, true)
+              : t('pages.trade.orders-table.table-content.na')
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[5].label}
-          rightSide={order.stopPrice ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency) : 'N/A'}
+          rightSide={
+            order.stopPrice
+              ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency, true)
+              : t('pages.trade.orders-table.table-content.na')
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />

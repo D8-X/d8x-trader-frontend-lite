@@ -52,7 +52,11 @@ export const PositionBlock = ({ headers, position, handlePositionClose, handlePo
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[2].label}
-          rightSide={position.side}
+          rightSide={
+            position.side === 'BUY'
+              ? t('pages.trade.positions-table.table-content.buy')
+              : t('pages.trade.positions-table.table-content.sell')
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
