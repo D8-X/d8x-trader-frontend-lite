@@ -381,7 +381,7 @@
         "enter-new-code": "输入新的专属码",
         "title3": "输入邀请码",
         "enter-a-code": "输入专属码",
-        "instructions": "仅允许使用大写字符、数字、下划线(_) 和连字符 (-) 。",
+        "instructions": "您只能将邀请码链接至您的钱包地址。链接成功后将无法修改。",
         "cancel": "取消",
         "enter-code": "输入专属码",
         "code-not-found": "无法找到此专属码",

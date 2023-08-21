@@ -381,7 +381,7 @@
         "enter-new-code": "Enter new code",
         "title3": "Enter Referral Code",
         "enter-a-code": "Enter a code",
-        "instructions": "Only UPPERCASE characters, numbers, underscores (_) and hyphens (-) are allowed.",
+        "instructions": "You can only link one code to your address. Once the referral relationship has been established, it cannot be changed.",
         "cancel": "Cancel",
         "enter-code": "Enter a code",
         "code-not-found": "Code not found",

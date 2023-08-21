@@ -381,7 +381,7 @@
         "enter-new-code": "Code eingeben",
         "title3": "Code eingeben",
         "enter-a-code": "Code eingeben",
-        "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
+        "instructions": "Sie können nur einen Code mit ihrer Addresse verbinden. Sobald die Empfehlungsbeziehung hergestellt wurde, kann sie nicht mehr geändert werden.",
         "cancel": "Abbrechen",
         "enter-code": "Code eingeben",
         "code-not-found": "Code nicht gefunden",
