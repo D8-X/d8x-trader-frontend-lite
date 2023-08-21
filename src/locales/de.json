@@ -275,7 +275,7 @@
           }
         },
         "validity": {
-          "closed": "Warnung: Der Markt ist geschlossen",
+          "closed": "Orders werden erst ausgeführt wenn der Markt wieder offen ist",
           "order-too-large": "Order wird scheitern: Ordergrösse ist zu gross",
           "order-too-small": "Order wird scheitern: Ordergrösse ist zu klein",
           "position-too-small": "Order wird scheitern: Die resultierende Position ist zu klein",

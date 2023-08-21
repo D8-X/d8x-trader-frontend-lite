@@ -275,7 +275,7 @@
           }
         },
         "validity": {
-          "closed": "请注意：当前为休市状态",
+          "closed": "订单将在市场开盘时执行",
           "order-too-large": "订单过大，导致订单失败",
           "order-too-small": "订单过小，导致订单失败",
           "position-too-small": "仓位过小，导致订单失败",

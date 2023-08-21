@@ -275,7 +275,7 @@
           }
         },
         "validity": {
-          "closed": "Warning: Market is closed",
+          "closed": "Orders won't be executed until market opens",
           "order-too-large": "Order will fail: order size is too large",
           "order-too-small": "Order will fail: order size is too small",
           "position-too-small": "Order will fail: resulting position too small",
