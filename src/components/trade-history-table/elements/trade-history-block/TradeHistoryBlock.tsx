@@ -42,7 +42,11 @@ export const TradeHistoryBlock = ({ headers, perpetuals, tradeHistory }: TradeHi
         />
         <SidesRow
           leftSide={headers[2].label}
-          rightSide={tradeHistory.side}
+          rightSide={
+            tradeHistory.side === 'BUY'
+              ? t('pages.trade.positions-table.table-content.buy')
+              : t('pages.trade.positions-table.table-content.sell')
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />

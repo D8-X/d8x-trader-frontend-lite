@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { format } from 'date-fns';
 
 import { TableCell, TableRow, Typography } from '@mui/material';
@@ -12,6 +14,7 @@ interface TradeHistoryRowPropsI {
 }
 
 export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHistoryRowPropsI) => {
+  const { t } = useTranslation();
   const perpetual = perpetuals.find(({ id }) => id === tradeHistory.perpetualId);
   const time = format(new Date(tradeHistory.timestamp), 'yyyy-MM-dd HH:mm:ss');
   const pnlColor =
@@ -26,7 +29,11 @@ export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHist
         <Typography variant="cellSmall">{perpetual?.symbol}</Typography>
       </TableCell>
       <TableCell align={headers[2].align}>
-        <Typography variant="cellSmall">{tradeHistory.side}</Typography>
+        <Typography variant="cellSmall">
+          {tradeHistory.side === 'BUY'
+            ? t('pages.trade.positions-table.table-content.buy')
+            : t('pages.trade.positions-table.table-content.sell')}
+        </Typography>
       </TableCell>
       {/*<TableCell align={headers[3].align} style={{ display: 'none' }}>
         <Typography variant="cellSmall">TYPE</Typography>
