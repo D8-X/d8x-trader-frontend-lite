@@ -426,7 +426,7 @@
         "info1": "将{{poolSymbol}}添加流动性到池中以获取d{{poolSymbol}}（即代表流动性池中所有权的ERC-20 Token）。",
         "info2": "作为流动性提供者，您将通过以抵押货币抵押的所有交易赚取交易费用和资金利率付款。您还将参与池中的PnL。d{{poolSymbol}}实时累积费用、资金费率和盈亏。",
         "amount": {
-          "title": "{poolSymbol}}数量",
+          "title": "{{poolSymbol}}数量",
           "info1": "设置您要添加到池中的{{poolSymbol}}数量。"
         },
         "receive": "您会收到d{{poolSymbol}}",
