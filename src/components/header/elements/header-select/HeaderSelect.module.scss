@@ -82,6 +82,20 @@
   }
 }
 
+@media screen and ($d8x-breakpoint-max-lg) and ($d8x-breakpoint-min-md) {
+
+  .autocomplete {
+
+    :global(.MuiInputBase-root) {
+      min-width: 200px;
+    }
+  }
+
+  .optionHolder {
+    font-size: 14px;
+  }
+}
+
 @media screen and ($d8x-breakpoint-max-md) {
 
   .root {
@@ -106,6 +120,7 @@
     background-color: var(--d8x-background-white);
     border-radius: $d8x-spacing * 2;
     padding: $d8x-spacing * 2;
+    max-height: 58px;
   }
 }
 

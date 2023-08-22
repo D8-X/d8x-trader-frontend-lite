@@ -38,7 +38,7 @@ import { PositionRow } from './elements/position-row/PositionRow';
 
 import styles from './PositionsTable.module.scss';
 
-const MIN_WIDTH_FOR_TABLE = 900;
+const MIN_WIDTH_FOR_TABLE = 788;
 
 export const PositionsTable = memo(() => {
   const { t } = useTranslation();

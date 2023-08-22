@@ -73,7 +73,7 @@ export const PositionRow = ({ position, handlePositionClose, handlePositionModif
           <ModeEditOutlineOutlined className={styles.actionIcon} />
         </IconButton>
         <IconButton
-          aria-label={t('pages.trade.positions-table.table-content.modify')}
+          aria-label={t('pages.trade.positions-table.table-content.close')}
           title={t('pages.trade.positions-table.modify-modal.close')}
           onClick={() => handlePositionClose(position)}
         >

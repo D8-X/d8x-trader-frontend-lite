@@ -39,14 +39,25 @@
 @media screen and ($d8x-breakpoint-max-lg) {
 
   .root {
-    margin-top: 12px;
+    overflow-x: auto;
+  }
+}
+
+@media screen and ($d8x-breakpoint-min-sm) and ($d8x-breakpoint-max-lg) {
+
+  .statValue {
+    font-size: 16px;
   }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
 
   .root {
-    overflow-x: auto;
+    margin-top: $d8x-spacing * 3;
+  }
+
+  .statContainer {
+    padding: $d8x-spacing * 2 $d8x-spacing * 4;
   }
 }
 
@@ -54,7 +65,6 @@
 
   .root {
     justify-content: flex-start;
-    overflow-x: auto;
   }
 
   .statValue {
@@ -62,7 +72,8 @@
   }
 
   .statContainer {
-    padding: $d8x-spacing * 2 $d8x-spacing * 2;
+    padding: $d8x-spacing * 2 $d8x-spacing * 4;
+    max-height: 82px;
   }
 
   .rootMobile {
@@ -75,7 +86,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: $d8x-spacing * 2 $d8x-spacing * 2;
+      padding: $d8x-spacing * 2 $d8x-spacing * 4;
       gap: $d8x-spacing * 2;
     }
 

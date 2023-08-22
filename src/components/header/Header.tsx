@@ -213,7 +213,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
               onClick={handleDrawerToggle}
               variant="primary"
               className={styles.menuButton}
-              sx={{ ml: 2, display: { md: 'none' } }}
+              sx={{ display: { md: 'none' } }}
             >
               <MenuIcon />
             </Button>

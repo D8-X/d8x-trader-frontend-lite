@@ -30,7 +30,7 @@ import { tableRefreshHandlersAtom } from 'store/tables.store';
 
 import styles from './TradeHistoryTable.module.scss';
 
-const MIN_WIDTH_FOR_TABLE = 900;
+const MIN_WIDTH_FOR_TABLE = 788;
 
 export const TradeHistoryTable = memo(() => {
   const { t } = useTranslation();

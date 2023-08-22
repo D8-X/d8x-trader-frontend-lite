@@ -1,13 +1,16 @@
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
-import { Button, TableCell, TableRow, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { DeleteForeverOutlined } from '@mui/icons-material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
 import type { OrderWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { typeToLabelMap } from '../typeToLabelMap';
+import styles from './OpenOrderRow.module.scss';
 
 interface OpenOrderRowPropsI {
   order: OrderWithIdI;
@@ -64,9 +67,13 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
         <Typography variant="cellSmall">{deadlineDate}</Typography>
       </TableCell>
       <TableCell align="center">
-        <Button variant="primary" size="tableSmall" onClick={() => handleOrderCancel(order)}>
-          {t('pages.trade.orders-table.table-content.cancel')}
-        </Button>
+        <IconButton
+          aria-label={t('pages.trade.orders-table.table-content.cancel')}
+          title={t('pages.trade.positions-table.modify-modal.cancel')}
+          onClick={() => handleOrderCancel(order)}
+        >
+          <DeleteForeverOutlined className={styles.actionIcon} />
+        </IconButton>
       </TableCell>
     </TableRow>
   );

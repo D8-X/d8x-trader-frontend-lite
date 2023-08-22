@@ -46,7 +46,7 @@ import { HashZero } from '@ethersproject/constants';
 import { decodeEventLog, encodeEventTopics } from 'viem';
 import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
 
-const MIN_WIDTH_FOR_TABLE = 900;
+const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
 const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'ExecutionFailed' })[0];
 
