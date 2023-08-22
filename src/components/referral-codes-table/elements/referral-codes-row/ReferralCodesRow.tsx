@@ -32,7 +32,7 @@ export const ReferralCodesRow = ({ isAgency, data }: ReferralCodesRowPropsI) => 
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const baseRebate = useRebateRate(chainId, address, isAgency ? ReferrerRoleE.AGENCY : ReferrerRoleE.NORMAL);
+  const baseRebate = useRebateRate(chainId, address, data.agencyAddr ? ReferrerRoleE.AGENCY : ReferrerRoleE.NORMAL);
 
   const handleCodeShare = useCallback(
     (link: string, result: boolean) => {
