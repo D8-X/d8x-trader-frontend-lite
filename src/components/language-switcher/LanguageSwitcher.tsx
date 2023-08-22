@@ -24,6 +24,7 @@ const languageMetaMap: Record<LanguageE, LanguageMetaI> = {
   [LanguageE.EN]: createLandObject(LanguageE.EN, 'English', 'us'),
   [LanguageE.CN]: createLandObject(LanguageE.CN, '中文'),
   [LanguageE.DE]: createLandObject(LanguageE.DE, 'Deutsch'),
+  [LanguageE.ES]: createLandObject(LanguageE.ES, 'Español'),
 };
 
 export const LanguageSwitcher = () => {

@@ -2,6 +2,7 @@ export enum LanguageE {
   EN = 'en',
   CN = 'cn',
   DE = 'de',
+  ES = 'es',
 }
 
 export enum RequestMethodE {

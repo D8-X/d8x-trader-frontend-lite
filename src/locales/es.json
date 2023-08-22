@@ -1,7 +1,7 @@
 {
   "navigation": {
     "trade": "Comercio",
-    "refer": "Remitir",
+    "refer": "Referir",
     "vault": "Bóveda"
   },
   "pages": {
@@ -99,7 +99,7 @@
         }
       },
       "orders-table": {
-        "table-title": "Ordenes Abiertas",
+        "table-title": "Órdenes abiertas",
         "table-header": {
           "symbol": "Símbolo",
           "side": "Dirección",
@@ -208,8 +208,8 @@
         "trigger-price": {
           "title": "Precio de Activación",
           "body1": "El precio de activación es el nivel que el precio de marca debe alcanzar para que la orden se ejecute.",
-          "body2": "Si no seleccionas un precio límite ademas del precio de activación, estarias creando una orden 'stop-market'. Tu orden se ejecutaría al mejor preio posible cuando sea activada.",
-          "body3": "Si especificas un precio límite ademas del precio de activación, estarias creando una orden 'stop-limit'. Tu orden se ejecutaría solo cuando su precio sea igual o mejor que el precio limite."
+          "body2": "Si no seleccionas un precio límite además del precio de activación, estarías creando una orden 'stop-market'. Tu orden se ejecutaría al mejor preio posible cuando sea activada.",
+          "body3": "Si especificas un precio límite además del precio de activación, estarías creando una orden 'stop-limit'. Tu orden se ejecutaría solo cuando su precio sea igual o mejor que el precio limite."
         },
         "leverage": {
           "title": "Apalancamiento",
@@ -227,21 +227,21 @@
         "reduce-only": "Sólo reducir",
         "expiry": {
           "title": "Vencimiento",
-          "body": "Ingresa el numero de dias despues del cual tu orden principal vencera (esta configuración no afecta tus ordenes take-profit y stop-loss).",
+          "body": "Ingresa el número de dias despues del cual tu orden principal vencera (esta configuración no afecta tus ordenes take-profit y stop-loss).",
           "close": "Cerrar"
         },
         "stop-loss": {
           "title": "Detener Perdidas",
           "body1": "Puedes poner una orden de detener perdidas en conjunto con tu orden principal.",
-          "body2": "Si seleccionas e.g. -50%, estarias creando una orden adicional, que seria activada si las perdidas debido a tu orden principal exceden -50%.",
-          "body3": "Tecnicamente, estas especificando una orden de tipo stop-market, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estas especificando una orden stop-market de VENTA). El precio de activacion es calculado automaticamente de manera tal que tus perdidas netas no superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
+          "body2": "Si seleccionas e.g. -50%, estarías creando una orden adicional, que sería activada si las perdidas debido a tu orden principal exceden -50%.",
+          "body3": "Tecnicamente, estás especificando una orden de tipo stop-market, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estás especificando una orden stop-market de VENTA). El precio de activacion es calculado automaticamente de manera tal que tus perdidas netas no superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
           "none": "NADA"
         },
         "take-profit": {
           "title": "Tomar Ganancias",
           "body1": "Puedes poner una order de tomar ganancias en conjunto con tu orden principal.",
-          "body2": "Si seleccionas e.g., 100%, estarias creando una orden adicional, que seria activada si las ganancias en tu orden principal superan 100%.",
-          "body3": "Tecnicamente, estas especificando una orden de tipo limite, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estas especificando una orden limite de VENTA). El precio limite es calculado automaticamente de manera tal que tus ganancias netas superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
+          "body2": "Si seleccionas e.g., 100%, estarías creando una orden adicional, que sería activada si las ganancias en tu orden principal superan 100%.",
+          "body3": "Tecnicamente, estás especificando una orden de tipo limite, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estás especificando una orden limite de VENTA). El precio limite es calculado automaticamente de manera tal que tus ganancias netas superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
           "none": "NADA"
         },
         "info": {
@@ -275,7 +275,7 @@
           }
         },
         "validity": {
-          "closed": "Ordenes son ejecutadas sólo cuando el mercado abra",
+          "closed": "Órdenes son ejecutadas sólo cuando el mercado abra",
           "order-too-large": "El tamaño de la orden es muy grande",
           "order-too-small": "El tamaño de la orden es muy pequeno",
           "position-too-small": "El tamaño de la posicion es muy pequeno",
@@ -325,18 +325,18 @@
       "referrer-tab": {
         "disclaimer-text-block1": "Gana rebates invitando a otros usuarios a probar D8X. Los rebates son enviados a tu cartera cada semana via airdrop.",
         "disclaimer-text-block2": "Infórmate sobre los detalles del programa de rebates de D8X.",
-        "volume": "Volumen total remitido",
+        "volume": "Volumen total referido",
         "rebates": "Rebates ganados",
         "title1": "Tus remisiones",
-        "title2": "Remite & Gana",
+        "title2": "Refiere & Gana",
         "codes": "Tus Códigos",
         "create": "Crear Código",
         "na": "N/A",
-        "referrer-rebate-rate": "Tasa de Rebate al Remitir",
+        "referrer-rebate-rate": "Tasa de Rebate al Referir",
         "trader-rebate-rate": "Tasa de Rebate por Usuario",
         "agency-rebate-rate": "Tasa de Rebate por Agencia",
         "share": "Compartir",
-        "share-success": "Tu URL de remision ha sido copiada",
+        "share-success": "Tu URL para remitir usuarios ha sido copiada",
         "share-error": "Hubo un error copiando tu URL de remisión",
         "modify": "Modificar",
         "no-codes": "No tienes códigos de rebate"
@@ -355,7 +355,7 @@
         "enter-code": "Ingresar un código",
         "code-taken": "Código ya esta en uso",
         "create-code": "Crear Código",
-        "instructions": "Sólo letras MAYUSCULAS, numeros, guiones bajos (_) y guiones (-) estan permitidos.",
+        "instructions": "Sólo letras MAYUSCULAS, números, guiones bajos (_) y guiones (-) están permitidos.",
         "cancel": "Cancelar",
         "enter-addr": "Ingresa tu dirección",
         "error": "Por favor ingresar una dirección valida",
@@ -426,26 +426,26 @@
       },
       "global-stats": {
         "apy": "TAE hasta la fecha",
-        "tvl": "VTB",
+        "tvl": "Reservas Totales",
         "price": "Precio de d{{poolSymbol}}",
         "supply": "Suministro total de d{{poolSymbol}}"
       },
       "add": {
         "title": "Proveer Liquidez",
-        "info1": "Anade {{poolSymbol}} a las reservas y recibe a cambio d{{poolSymbol}}, una criptomoneda ERC-20 que representa la porcion de las reservas que te pertenece.",
-        "info2": "Como proveedor de liquidez, ganaras comisiones y financiamiento en todas las transacciones cuyo margen haga uso de las reservas correspondientes. Tambien participaras en el PyG. d{{poolSymbol}} acumula constantement comisiones, pagos de financiamiento y PyG, en tiempo real.",
+        "info1": "Añade {{poolSymbol}} a las reservas y recibe a cambio d{{poolSymbol}}, una críptomoneda ERC-20 que representa la porcion de las reservas que te pertenece.",
+        "info2": "Como proveedor de liquidez, ganarás parte de las comisiones y financiamiento en todas las transacciones cuyo margen haga uso de las reservas correspondientes. Tambien participarás en el PyG. d{{poolSymbol}} acumula constantement comisiones, pagos de financiamiento y PyG, en tiempo real.",
         "amount": {
           "title": "Cantidad de {{poolSymbol}}",
-          "info1": "Especifica la cantidad de {{poolSymbol}} que quieres anadir a las reservas."
+          "info1": "Especifica la cantidad de {{poolSymbol}} que quieres añadir a las reservas."
         },
-        "receive": "Recibes d{{poolSymbol}}",
+        "receive": "d{{poolSymbol}} que recibes",
         "max": "Max:",
         "button": "Anadir"
       },
       "withdraw": {
         "title": "Remover Liquidez",
-        "info1": "Para remover liquidez primero tienes que iniciar un retiro. Ten en mente que tu retiro solo se puede ejecutar 48 horas despues de ser iniciado, y no puedes tener mas que una solicitud de retiro abierta al mismo tiempo.",
-        "info2": "Despues de 48 horas, un monto de d{{poolSymbol}} podra ser intercambiado por {{poolSymbol}} al precio de d{{poolSymbol}} en ese momento.",
+        "info1": "Para remover liquidez primero tienes que iniciar un retiro. Ten en mente que tu retiro solo se puede ejecutar 48 horas despues de ser iniciado, y no puedes tener más que una solicitud de retiro abierta al mismo tiempo.",
+        "info2": "Despues de 48 horas, el monto de d{{poolSymbol}} que hayas ingresado podra ser intercambiado por {{poolSymbol}} al precio de d{{poolSymbol}} en ese momento.",
         "initiate": {
           "title": "1. Iniciar retiro de {{poolSymbol}}",
           "info1": "Ingresa el monto de d{{poolSymbol}} que quieres intercambiar por {{poolSymbol}}.",

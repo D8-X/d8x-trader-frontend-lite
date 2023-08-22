@@ -5,6 +5,7 @@ import { initReactI18next } from 'react-i18next';
 import cn from 'locales/cn.json';
 import de from 'locales/de.json';
 import en from 'locales/en.json';
+import es from 'locales/es.json';
 
 import { LanguageE } from 'types/enums';
 
@@ -17,6 +18,9 @@ const resources = {
   },
   en: {
     translation: en,
+  },
+  es: {
+    translation: es,
   },
 };
 
