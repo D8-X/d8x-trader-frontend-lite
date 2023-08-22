@@ -39,14 +39,21 @@
 @media screen and ($d8x-breakpoint-max-lg) {
 
   .root {
-    margin-top: 12px;
+    overflow-x: auto;
+  }
+}
+
+@media screen and ($d8x-breakpoint-min-sm) and ($d8x-breakpoint-max-lg) {
+
+  .statValue {
+    font-size: 16px;
   }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
 
   .root {
-    overflow-x: auto;
+    margin-top: $d8x-spacing * 3;
   }
 }
 
@@ -54,7 +61,6 @@
 
   .root {
     justify-content: flex-start;
-    overflow-x: auto;
   }
 
   .statValue {

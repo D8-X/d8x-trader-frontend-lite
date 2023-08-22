@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Button, Menu, Tooltip } from '@mui/material';
+
+import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
 import { LanguageE } from 'types/enums';
 import type { LanguageMetaI } from 'types/types';
 
 import { LanguageSwitcherMenuItem } from './elements/LanguageSwitcherMenuItem';
-import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
-import { IconButton, Menu, Tooltip } from '@mui/material';
 
 import styles from './LanguageSwitcher.module.scss';
 
@@ -32,7 +33,7 @@ export const LanguageSwitcher = () => {
 
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -42,17 +43,9 @@ export const LanguageSwitcher = () => {
   return (
     <>
       <Tooltip title={t('common.change-language')}>
-        <IconButton
-          onClick={handleClick}
-          size="small"
-          sx={{ ml: 2 }}
-          aria-controls={open ? 'account-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          className={styles.iconButton}
-        >
+        <Button onClick={handleClick} className={styles.iconButton} variant="primary">
           <LanguageIcon />
-        </IconButton>
+        </Button>
       </Tooltip>
       <Menu
         anchorEl={anchorEl}
@@ -60,17 +53,19 @@ export const LanguageSwitcher = () => {
         open={open}
         onClose={handleClose}
         onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
+        slotProps={{
+          paper: {
+            elevation: 0,
+            sx: {
+              overflow: 'visible',
+              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+              mt: 1.5,
+              '& .MuiAvatar-root': {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
             },
           },
         }}

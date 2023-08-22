@@ -21,9 +21,9 @@
   display: flex;
   align-items: center;
   border-color: transparent;
-  min-width: 64px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
 
   img {
     width: 32px;
@@ -45,25 +45,23 @@
   color: var(--d8x-color-white);
 }
 
-@media screen and ($d8x-breakpoint-max-xs) {
+@media screen and ($d8x-breakpoint-max-lg) {
 
   .buttonsHolder {
-    gap: $d8x-spacing * 1.5;
+    gap: $d8x-spacing * 2;
   }
 
   .connectWalletButton {
     padding-left: 20px;
     padding-right: 20px;
-    min-width: 50px;
+    min-width: 48px;
   }
+}
 
-  .chainButton {
-    padding: 0;
-    min-width: 50px;
-  }
+@media screen and ($d8x-breakpoint-max-xs) {
 
   .addressButton {
-    padding: 0 10px;
-    min-width: 50px;
+    padding: 0;
+    min-width: 48px;
   }
 }
