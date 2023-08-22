@@ -217,8 +217,8 @@
           "body2": "Si tu orden reduce una posicion ya existente ('cerrar parcialmente'), el apalcancamiento de tu orden no tiene ningun efecto."
         },
         "slippage": {
-          "title": "Configuracion de Slippage",
-          "body": "Selecciona tu tolerancia al slippage",
+          "title": "Configuracion de deslizamiento",
+          "body": "Deslizamiento Maximo",
           "max": "Precio de entrada maximo:",
           "min": "Precio de entrada minimo:",
           "cancel": "Cancelar",

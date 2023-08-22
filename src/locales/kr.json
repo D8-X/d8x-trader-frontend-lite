@@ -28,8 +28,8 @@
           "buy": "매수",
           "sell": "매도",
           "modify": "Modify",
-          "connect": "Please connect your wallet",
-          "no-open": "No open positions"
+          "connect": "지갑 연결",
+          "no-open": "열린 포지션이 없습니다."
         },
         "position-block-mobile": {
           "symbol": "Symbol",
@@ -40,7 +40,7 @@
           "selector": {
             "close": "Close",
             "add": "Add",
-            "remove": "Remove"
+            "remove": "출금"
           },
           "close": "Close position",
           "add": "Add collateral",
@@ -102,10 +102,10 @@
         "table-title": "Open Orders",
         "table-header": {
           "symbol": "Symbol",
-          "side": "Side",
+          "side": "측면",
           "type": "Type",
-          "order-size": "Order Size",
-          "limit-price": "Limit Price",
+          "order-size": "금액",
+          "limit-price": "지정가",
           "stop-price": "Stop Price",
           "leverage": "레버리지",
           "good-until": "Good Until"
@@ -113,8 +113,8 @@
         "table-content": {
           "buy": "매수",
           "sell": "매도",
-          "connect": "Please connect your wallet",
-          "no-open": "No open orders",
+          "connect": "지갑 연결",
+          "no-open": "주문 내역 없음",
           "na": "N/A",
           "cancel": "Cancel",
           "limit": "한도",
@@ -154,14 +154,14 @@
         "table-header": {
           "time": "Time",
           "perpetual": "Perpetual",
-          "side": "Side",
+          "side": "측면",
           "price": "Price",
           "quantity": "Quantity",
           "fee": "수수료",
           "realized-profit": "Realized Profit"
         },
         "table-content": {
-          "connect": "Please connect your wallet",
+          "connect": "지갑 연결",
           "no-open": "No trade history"
         },
         "history-block-mobile": {
@@ -176,7 +176,7 @@
           "funding-payment": "Funding Payment"
         },
         "table-content": {
-          "connect": "Please connect your wallet",
+          "connect": "지갑 연결",
           "no-open": "No funding payment data"
         },
         "funding-block-mobile": {
@@ -194,14 +194,14 @@
           "stop": "스탑"
         },
         "order-size": {
-          "title": "Order size",
+          "title": "금액",
           "body1": "Sets the size of your order.",
           "body2": "Your maximal order size, based on your open positions and the state of the exchange, is:",
           "body3": "The minimal position size for this perpetual is:",
           "body4": "The step size is:"
         },
         "limit-price": {
-          "title": "Limit price",
+          "title": "지정가",
           "body1": "If you specify a limit price your order will be executed at the predetermined limit price or a better price.",
           "body2": "For a stop order, setting a limit price is optional. A stop order with specified limit price is a stop-limit order, a stop order without specified limit price is a stop-market order."
         },
@@ -246,7 +246,7 @@
         },
         "info": {
           "balance": "Wallet balance",
-          "order-size": "Order size",
+          "order-size": "금액",
           "fees": "수수료"
         },
         "review": {
@@ -299,11 +299,11 @@
           "title": "Review order",
           "deposit": "Deposit from wallet:",
           "balance": "Wallet balance:",
-          "fee": "Trading fee:",
+          "fee": "수수료:",
           "max": "Max entry price:",
           "min": "Min entry price:",
           "trigger-price": "Trigger price",
-          "limit-price": "Limit price",
+          "limit-price": "지정가",
           "stop-loss": "Stop-loss price",
           "take-profit": "Take-profit price",
           "details": "New position details",
@@ -391,7 +391,7 @@
         "title": "Use this referral code?",
         "base": "Code",
         "trader-rebate": "Trader rebate",
-        "connect-wallet": "Please connect your wallet to proceed",
+        "connect-wallet": "지갑 연결",
         "already-linked": "You already applied a referral code",
         "cancel": "Cancel",
         "confirm": "Confirm"
@@ -457,7 +457,7 @@
           "info1": "This amount can be converted to {{poolSymbol}}, which can be withdrawn from the pool.",
           "date": "Can be withdrawn on:",
           "receive": "You receive:",
-          "button": "Withdraw"
+          "button": "출금"
         }
       },
       "na": "N/A",
