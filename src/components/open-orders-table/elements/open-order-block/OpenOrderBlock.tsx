@@ -1,6 +1,8 @@
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
+import IconButton from '@mui/material/IconButton';
+import { DeleteForeverOutlined } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 
 import { SidesRow } from 'components/sides-row/SidesRow';
@@ -35,9 +37,13 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
             {`${parsedSymbol?.baseCurrency}/${parsedSymbol?.quoteCurrency}`}
           </Typography>
         </Box>
-        <Button variant="primary" size="tableSmall" onClick={() => handleOrderCancel(order)}>
-          {t('pages.trade.orders-table.order-block-mobile.cancel')}
-        </Button>
+        <IconButton
+          aria-label={t('pages.trade.orders-table.table-content.cancel')}
+          title={t('pages.trade.positions-table.modify-modal.cancel')}
+          onClick={() => handleOrderCancel(order)}
+        >
+          <DeleteForeverOutlined className={styles.actionIcon} />
+        </IconButton>
       </Box>
       <Box className={styles.dataWrapper}>
         <SidesRow
