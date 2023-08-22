@@ -63,5 +63,10 @@
   .addressButton {
     padding: 0;
     min-width: 48px;
+
+    svg {
+      height: 26px;
+      width: 26px;
+    }
   }
 }
