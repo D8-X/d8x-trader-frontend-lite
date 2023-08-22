@@ -1,0 +1,519 @@
+{
+  "navigation": {
+    "trade": "거래",
+    "refer": "추천",
+    "vault": "Vault"
+  },
+  "pages": {
+    "trade": {
+      "stats": {
+        "mid-price": "Mid Price",
+        "mark-price": "Mark Price",
+        "index-price": "지수 가격",
+        "funding-rate": "펀딩 비율",
+        "open-interest": "미결제약정"
+      },
+      "positions-table": {
+        "table-title": "포지션 열기",
+        "table-header": {
+          "symbol": "Symbol",
+          "size": "포지션 크기",
+          "side": "측면",
+          "entry-price": "Entry Price",
+          "liq-price": "청산 가격",
+          "margin": "마진",
+          "pnl": "미실현손익"
+        },
+        "table-content": {
+          "buy": "매수",
+          "sell": "매도",
+          "modify": "Modify",
+          "connect": "Please connect your wallet",
+          "no-open": "No open positions"
+        },
+        "position-block-mobile": {
+          "symbol": "Symbol",
+          "modify": "Modify"
+        },
+        "modify-modal": {
+          "title": "Modify Position",
+          "selector": {
+            "close": "Close",
+            "add": "Add",
+            "remove": "Remove"
+          },
+          "close": "Close position",
+          "add": "Add collateral",
+          "remove": "Remove collateral",
+          "pos-details": {
+            "title": "New position details",
+            "size": "포지션 크기:",
+            "margin": "마진:",
+            "leverage": "레버리지:",
+            "liq-price": "청산 가격:"
+          },
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "toasts": {
+          "submit-close": {
+            "title": "Submitting Closing Order"
+          },
+          "submitted": {
+            "title": "Order Submitted",
+            "body": "Symbol"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          },
+          "error-processing": {
+            "title": "Error Processing Transaction",
+            "body": "Reason"
+          },
+          "adding-collateral": {
+            "title": "Adding Collateral"
+          },
+          "collateral-added": {
+            "title": "Collateral Added",
+            "body1": "Symbol",
+            "body2": "금액"
+          },
+          "removing-collateral": {
+            "title": "Removing Collateral"
+          },
+          "collateral-removed": {
+            "title": "Collateral Removed",
+            "body1": "Symbol",
+            "body2": "금액"
+          },
+          "trade-executed": {
+            "title": "Trade executed",
+            "body": "Symbol"
+          },
+          "order-failed": {
+            "title": "Order failed",
+            "body1": "Symbol",
+            "body2": "Reason"
+          }
+        }
+      },
+      "orders-table": {
+        "table-title": "Open Orders",
+        "table-header": {
+          "symbol": "Symbol",
+          "side": "Side",
+          "type": "Type",
+          "order-size": "Order Size",
+          "limit-price": "Limit Price",
+          "stop-price": "Stop Price",
+          "leverage": "레버리지",
+          "good-until": "Good Until"
+        },
+        "table-content": {
+          "buy": "매수",
+          "sell": "매도",
+          "connect": "Please connect your wallet",
+          "no-open": "No open orders",
+          "na": "N/A",
+          "cancel": "Cancel",
+          "limit": "한도",
+          "market": "시장",
+          "stop": "스탑"
+        },
+        "cancel-modal": {
+          "title": "Cancel Open Order",
+          "content": "Are you sure you want to cancel this order?",
+          "back": "Back",
+          "confirm": "Cancel order"
+        },
+        "order-block-mobile": {
+          "symbol": "Symbol",
+          "cancel": "Cancel"
+        },
+        "toasts": {
+          "cancel-order": {
+            "title": "Cancelling Order"
+          },
+          "order-cancelled": {
+            "title": "Order Cancelled",
+            "body": "Symbol"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          },
+          "error-processing": {
+            "title": "Error Processing Transaction",
+            "body": "Reason"
+          }
+        }
+      },
+      "history-table": {
+        "table-title": "Trade History",
+        "table-header": {
+          "time": "Time",
+          "perpetual": "Perpetual",
+          "side": "Side",
+          "price": "Price",
+          "quantity": "Quantity",
+          "fee": "수수료",
+          "realized-profit": "Realized Profit"
+        },
+        "table-content": {
+          "connect": "Please connect your wallet",
+          "no-open": "No trade history"
+        },
+        "history-block-mobile": {
+          "symbol": "Symbol"
+        }
+      },
+      "funding-table": {
+        "table-title": "Funding Payments",
+        "table-header": {
+          "time": "Time",
+          "perpetual": "Perpetual",
+          "funding-payment": "Funding Payment"
+        },
+        "table-content": {
+          "connect": "Please connect your wallet",
+          "no-open": "No funding payment data"
+        },
+        "funding-block-mobile": {
+          "symbol": "Symbol"
+        }
+      },
+      "order-block": {
+        "selector": {
+          "long": "Long",
+          "short": "Short"
+        },
+        "order-type": {
+          "market": "시장",
+          "limit": "한도",
+          "stop": "스탑"
+        },
+        "order-size": {
+          "title": "Order size",
+          "body1": "Sets the size of your order.",
+          "body2": "Your maximal order size, based on your open positions and the state of the exchange, is:",
+          "body3": "The minimal position size for this perpetual is:",
+          "body4": "The step size is:"
+        },
+        "limit-price": {
+          "title": "Limit price",
+          "body1": "If you specify a limit price your order will be executed at the predetermined limit price or a better price.",
+          "body2": "For a stop order, setting a limit price is optional. A stop order with specified limit price is a stop-limit order, a stop order without specified limit price is a stop-market order."
+        },
+        "trigger-price": {
+          "title": "Trigger price",
+          "body1": "The trigger price is the mark price at which your stop order is triggered.",
+          "body2": "If you do not select a limit price in addition to your trigger price, you would be placing a stop-market order. Your order will be executed at the best available price once triggered.",
+          "body3": "If you specify a limit price in addition to your trigger price, you would be placing a stop-limit order. Your order will be executed at the predetermined limit price or a better price."
+        },
+        "leverage": {
+          "title": "레버리지",
+          "body1": "Specifies the leverage of your order.",
+          "body2": "If your order is reducing an existing position ('partial closure'), the leverage you select has no impact."
+        },
+        "slippage": {
+          "title": "가격 충격",
+          "body": "Choose 가격 충격 tolerance",
+          "max": "Max entry price:",
+          "min": "Min entry price:",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "reduce-only": "Reduce only",
+        "expiry": {
+          "title": "Expiry settings",
+          "body": "Set the number of days after, which your main order will expire (this setting does not affect your take-profit and stop-loss orders).",
+          "close": "Close"
+        },
+        "stop-loss": {
+          "title": "Stop loss",
+          "body1": "You can specify a stop loss order to go along with your main order.",
+          "body2": "If you select e.g. -50%, you create a second order, that will be triggered if your loss on your main order reaches -50%.",
+          "body3": "Technically, you are specifying a stop-market order, of the opposing side (if your main order is a BUY order, you are specifying a stop-market SELL order). The trigger price is automatically calculated such that your overall loss is as per your selection, assuming you entered at the worst price your slippage settings allow.",
+          "none": "NONE"
+        },
+        "take-profit": {
+          "title": "Take profit",
+          "body1": "You can specify a take profit order to go along with your main order.",
+          "body2": "If you select e.g., 100%, you create a second order, that will be triggered if your profit on your main order reaches 100%.",
+          "body3": "Technically, you are specifying a limit order of the opposing side (if your main order is a BUY order, you are specifying a limit SELL order). The limit price is automatically calculated such that your overall profit is as per your selection, assuming you entered at the worst price your slippage settings allow.",
+          "none": "NONE"
+        },
+        "info": {
+          "balance": "Wallet balance",
+          "order-size": "Order size",
+          "fees": "수수료"
+        },
+        "review": {
+          "title": "Review order"
+        }
+      },
+      "action-block": {
+        "toasts": {
+          "processed": {
+            "title": "Order Submission Processed"
+          },
+          "orders-submitted": {
+            "title": "Orders Submitted",
+            "body": "Symbol"
+          },
+          "order-submitted": {
+            "title": "Order Submitted",
+            "body": "Symbol"
+          },
+          "error": {
+            "title": "Error Processing Transaction"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        },
+        "validity": {
+          "closed": "Orders won't be executed until market opens",
+          "order-too-large": "Order will fail: order size is too large",
+          "order-too-small": "Order will fail: order size is too small",
+          "position-too-small": "Order will fail: resulting position too small",
+          "below-min-position": "Warning: order size below minimal position size",
+          "insufficient-balance": "Order will fail: insufficient wallet balance",
+          "undefined": "Order undefined: take profit is incompatible with leverage",
+          "good-to-go": "Good to go",
+          "pass": "Passed",
+          "fail": "Failed"
+        },
+        "order-types": {
+          "market": "시장",
+          "limit": "한도",
+          "stop": "스탑"
+        },
+        "order-action": {
+          "long": "매수",
+          "short": "매도"
+        },
+        "review": {
+          "title": "Review order",
+          "deposit": "Deposit from wallet:",
+          "balance": "Wallet balance:",
+          "fee": "Trading fee:",
+          "max": "Max entry price:",
+          "min": "Min entry price:",
+          "trigger-price": "Trigger price",
+          "limit-price": "Limit price",
+          "stop-loss": "Stop-loss price",
+          "take-profit": "Take-profit price",
+          "details": "New position details",
+          "size": "포지션 크기",
+          "margin": "마진",
+          "leverage": "레버리지",
+          "liq-price": "청산 가격",
+          "validity-checks": "Validity checks",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        }
+      }
+    },
+    "refer": {
+      "tab-selector": {
+        "referrer": "As Referrer",
+        "trader": "As Trader"
+      },
+      "referrer-tab": {
+        "disclaimer-text-block1": "Earn rebates by inviting traders to trade on D8X. Rebates are airdropped to your wallet weekly.",
+        "disclaimer-text-block2": "Check out details on the D8X referral program.",
+        "volume": "Total referred trading volume",
+        "rebates": "Total earned rebates",
+        "title1": "Your referrals",
+        "title2": "Refer & Earn",
+        "codes": "Your codes",
+        "create": "Create code",
+        "na": "N/A",
+        "referrer-rebate-rate": "Referrer rebate rate",
+        "trader-rebate-rate": "Trader rebate rate",
+        "agency-rebate-rate": "Agency rebate rate",
+        "share": "Share",
+        "share-success": "Your referral URL is successfully copied to clipboard",
+        "share-error": "An error appeared to copy your referral URL",
+        "modify": "Modify",
+        "no-codes": "No rebate codes"
+      },
+      "manage-code": {
+        "title-create": "Create Referral Code",
+        "base": "Your Base Rebate Rate:",
+        "you-receive": "You receive",
+        "trader-receives": "Trader receives",
+        "agency": "Agency",
+        "referrer": "Referrer",
+        "trader": "Trader",
+        "trader-kickback": "Set Trader's Kickback Rate:",
+        "referrer-kickback": "Set Referrer's Kickback Rate:",
+        "referrer-addr": "Enter Referrer Address:",
+        "enter-code": "Enter a code",
+        "code-taken": "Code already taken",
+        "create-code": "Create code",
+        "instructions": "Only UPPERCASE characters, numbers, underscores (_) and hyphens (-) are allowed.",
+        "cancel": "Cancel",
+        "enter-addr": "Enter an address",
+        "error": "Please enter a valid address",
+        "title-modify": "Modify Referral Code",
+        "change-addr": "Change Referrer Address?",
+        "your-code": "Your code",
+        "modify": "Modify"
+      },
+      "toast": {
+        "success-create": "Code created successfully",
+        "success-modify": "Code modified successfully",
+        "success-apply": "Code applied successfully"
+      },
+      "trader-tab": {
+        "title1": "Your discounts",
+        "earned-rebates": "Total earned rebates",
+        "open-rewards": "Open rewards",
+        "title2": "Trade & Earn",
+        "disclaimer-text-block1": "Enter a referral code to receive discounts on trading fees.",
+        "disclaimer-text-block2": "The discounts are airdropped weekly to your wallet.",
+        "your-rebate-rate": "Your rebate rate",
+        "your-active-code": "Your active code",
+        "enter-new-code": "Enter new code",
+        "title3": "Enter Referral Code",
+        "enter-a-code": "Enter a code",
+        "instructions": "You can only link one code to your address. Once the referral relationship has been established, it cannot be changed.",
+        "cancel": "Cancel",
+        "enter-code": "Enter a code",
+        "code-not-found": "Code not found",
+        "use-code": "Use code"
+      },
+      "use-code": {
+        "title": "Use this referral code?",
+        "base": "Code",
+        "trader-rebate": "Trader rebate",
+        "connect-wallet": "Please connect your wallet to proceed",
+        "already-linked": "You already applied a referral code",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
+    },
+    "vault": {
+      "personal-stats": {
+        "title": "Your stats",
+        "amount": {
+          "title": "금액",
+          "info": "Amount of d{{poolSymbol}} you own."
+        },
+        "earnings": {
+          "title": "Estimated earnings",
+          "info1": "Estimated earnings are an approximation of how much you've earned.",
+          "info2": "Estimated earnings = d{{poolSymbol}} balance at market value + total {{poolSymbol}} withdrawn - total {{poolSymbol}} deposited"
+        },
+        "initiated": {
+          "title": "Withdrawal initiated?",
+          "info1": "Indicates if you have initated a withdrawal request for the {{poolSymbol}} pool."
+        },
+        "withdrawal-amount": {
+          "title": "Withdrawal amount",
+          "info1": "The amount of d{{poolSymbol}} you initiated to withdraw.",
+          "info2": "Your liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw."
+        },
+        "date": {
+          "title": "Can be withdrawn on",
+          "info1": "You can withdraw your liquidity two days after initializing withdrawal.",
+          "info2": "If you do not withdraw your funds within four days after they are ready to be withdrawn, anyone can execute the withdrawal on your behalf. In this case the funds are sent to your address, and the executor will earn a small fee paid out of your funds."
+        }
+      },
+      "global-stats": {
+        "apy": "All Time APY",
+        "tvl": "TVL",
+        "price": "d{{poolSymbol}} Price",
+        "supply": "d{{poolSymbol}} Supply"
+      },
+      "add": {
+        "title": "Add Liquidity",
+        "info1": "Add {{poolSymbol}} liquidity to the pool and receive d{{poolSymbol}}, an ERC-20 token that represents your ownership in the liquidity pool.",
+        "info2": "As a liquidity provider, you'll earn trading fees and funding rate payments on all trades collateralized in the collateral currency. You'll also participate in the PnL of the pool. d{{poolSymbol}} accumulates fees, funding rate payments and PnL in real-time.",
+        "amount": {
+          "title": "Amount of {{poolSymbol}}",
+          "info1": "Specify the amount of {{poolSymbol}} you want to add to the pool."
+        },
+        "receive": "You receive d{{poolSymbol}}",
+        "max": "Max:",
+        "button": "Add"
+      },
+      "withdraw": {
+        "title": "Withdraw Liquidity",
+        "info1": "To withdraw liquidity you first initiate your withdrawal. Keep in mind that it takes 48 hours to process your request and you can only have one withdrawal request at a time.",
+        "info2": "After 48 hours, a withdrawable amount of d{{poolSymbol}} can be exchanged for {{poolSymbol}} at the d{{poolSymbol}} Price.",
+        "initiate": {
+          "title": "1. Initiate withdrawal of {{poolSymbol}}",
+          "info1": "Specify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
+          "info2": "After 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
+          "button": "Initiate withdrawal"
+        },
+        "action": {
+          "title": "Withdraw {{poolSymbol}}",
+          "info1": "This amount can be converted to {{poolSymbol}}, which can be withdrawn from the pool.",
+          "date": "Can be withdrawn on:",
+          "receive": "You receive:",
+          "button": "Withdraw"
+        }
+      },
+      "na": "N/A",
+      "overdue": "Overdue",
+      "now": "Now",
+      "toast": {
+        "adding": "Adding Liquidity",
+        "added": "Liquidity Added",
+        "error": {
+          "title": "Error Adding Liquidity",
+          "body": "Reason"
+        },
+        "withdrawing": "Withdrawing liquidity",
+        "withdrawn": "Liquidity withdrawn",
+        "error-withdrawing": {
+          "title": "Error Withdrawing Liquidity",
+          "body": "Reason"
+        },
+        "initiating": "Initiating liquidity withdrawal",
+        "initiated": "Liquidity withdrawal initiated",
+        "error-initiating": {
+          "title": "Error initiating withdrawal",
+          "body": "Reason"
+        }
+      }
+    }
+  },
+  "common": {
+    "change-language": "Change Language",
+    "wallet-connect": "Connect",
+    "pagination": {
+      "per-page": "Per page"
+    },
+    "select": {
+      "collateral": {
+        "label": "Collateral:",
+        "label2": "Liquidity pool:",
+        "headers": {
+          "collateral": "Collateral",
+          "num-of-perps": "No. of perps"
+        }
+      },
+      "perpetual": {
+        "label": "Perpetual:",
+        "headers": {
+          "pair": "Pair",
+          "status": "Status"
+        }
+      }
+    },
+    "info-modal": {
+      "close": "Close"
+    },
+    "refresh": "Refresh"
+  },
+  "error": {
+    "wrong-network": "Wrong network"
+  }
+}

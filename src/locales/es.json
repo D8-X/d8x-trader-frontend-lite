@@ -39,7 +39,7 @@
           "title": "Modificar Posición",
           "selector": {
             "close": "Cerrar",
-            "add": "Anadir",
+            "add": "Añadir",
             "remove": "Remover"
           },
           "close": "Cerrar Posición",
@@ -140,7 +140,7 @@
             "body": "Símbolo"
           },
           "tx-failed": {
-            "title": "Transaccion Fallida",
+            "title": "Transacción Fallida",
             "body": "Razón"
           },
           "error-processing": {
@@ -197,7 +197,7 @@
           "title": "Tamaño",
           "body1": "Determina el tamaño de tu orden.",
           "body2": "Tu tamaño maximo de una orden, dadas tus posiciones abiertas y el estado del comercio, es:",
-          "body3": "El tamaño minimo de una posicion en este perpetuo es:",
+          "body3": "El tamaño minimo de una posición en este perpetuo es:",
           "body4": "El tamaño de los incrementos es:"
         },
         "limit-price": {
@@ -208,83 +208,83 @@
         "trigger-price": {
           "title": "Precio de Activación",
           "body1": "El precio de activación es el nivel que el precio de marca debe alcanzar para que la orden se ejecute.",
-          "body2": "Si no seleccionas un precio límite ademas del precio de activación, estarias creando una orden 'stop-market'. Tu orden se ejecutaría al mejor preio posible cuando sea gatillada.",
-          "body3": "Si especidicas un precio límite ademas del trigger price, estarias creando una orden 'stop-limit'. Tu orden se ejecutaría solo cuando su precio sea igual o mejor que el precio limite."
+          "body2": "Si no seleccionas un precio límite ademas del precio de activación, estarias creando una orden 'stop-market'. Tu orden se ejecutaría al mejor preio posible cuando sea activada.",
+          "body3": "Si especificas un precio límite ademas del precio de activación, estarias creando una orden 'stop-limit'. Tu orden se ejecutaría solo cuando su precio sea igual o mejor que el precio limite."
         },
         "leverage": {
           "title": "Apalancamiento",
           "body1": "Especifica el apalancamiento de tu orden.",
-          "body2": "Si tu orden reduce una posicion ya existente ('cerrar parcialmente'), el apalcancamiento de tu orden no es aplicable."
+          "body2": "Si tu orden reduce una posicion ya existente ('cerrar parcialmente'), el apalcancamiento de tu orden no tiene ningun efecto."
         },
         "slippage": {
-          "title": "Slippage settings",
-          "body": "Choose slippage tolerance",
+          "title": "Configuracion de Slippage",
+          "body": "Selecciona tu tolerancia al slippage",
           "max": "Precio de entrada maximo:",
           "min": "Precio de entrada minimo:",
           "cancel": "Cancelar",
           "confirm": "Confirmar"
         },
-        "reduce-only": "Reduce only",
+        "reduce-only": "Sólo reducir",
         "expiry": {
-          "title": "Expiry settings",
-          "body": "Set the number of days after, which your main order will expire (this setting does not affect your take-profit and stop-loss orders).",
-          "close": "Close"
+          "title": "Vencimiento",
+          "body": "Ingresa el numero de dias despues del cual tu orden principal vencera (esta configuración no afecta tus ordenes take-profit y stop-loss).",
+          "close": "Cerrar"
         },
         "stop-loss": {
-          "title": "Stop loss",
-          "body1": "You can specify a stop loss order to go along with your main order.",
-          "body2": "If you select e.g. -50%, you create a second order, that will be triggered if your loss on your main order reaches -50%.",
-          "body3": "Technically, you are specifying a stop-market order, of the opposing side (if your main order is a BUY order, you are specifying a stop-market SELL order). The trigger price is automatically calculated such that your overall loss is as per your selection, assuming you entered at the worst price your slippage settings allow.",
-          "none": "NONE"
+          "title": "Detener Perdidas",
+          "body1": "Puedes poner una orden de detener perdidas en conjunto con tu orden principal.",
+          "body2": "Si seleccionas e.g. -50%, estarias creando una orden adicional, que seria activada si las perdidas debido a tu orden principal exceden -50%.",
+          "body3": "Tecnicamente, estas especificando una orden de tipo stop-market, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estas especificando una orden stop-market de VENTA). El precio de activacion es calculado automaticamente de manera tal que tus perdidas netas no superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
+          "none": "NADA"
         },
         "take-profit": {
-          "title": "Take profit",
-          "body1": "You can specify a take profit order to go along with your main order.",
-          "body2": "If you select e.g., 100%, you create a second order, that will be triggered if your profit on your main order reaches 100%.",
-          "body3": "Technically, you are specifying a limit order of the opposing side (if your main order is a BUY order, you are specifying a limit SELL order). The limit price is automatically calculated such that your overall profit is as per your selection, assuming you entered at the worst price your slippage settings allow.",
-          "none": "NONE"
+          "title": "Tomar Ganancias",
+          "body1": "Puedes poner una order de tomar ganancias en conjunto con tu orden principal.",
+          "body2": "Si seleccionas e.g., 100%, estarias creando una orden adicional, que seria activada si las ganancias en tu orden principal superan 100%.",
+          "body3": "Tecnicamente, estas especificando una orden de tipo limite, del lado opuesto a tu orden principal (si tu orden principal es de COMPRA, entonces estas especificando una orden limite de VENTA). El precio limite es calculado automaticamente de manera tal que tus ganancias netas superen el porcentaje que has seleccionado, asumiendo que tu posicion fue abierta al precio esperado.",
+          "none": "NADA"
         },
         "info": {
-          "balance": "Wallet balance",
-          "order-size": "Order size",
-          "fees": "Fees"
+          "balance": "Balance de tu Cartera",
+          "order-size": "Tamaño de tu orden",
+          "fees": "Comisiones"
         },
         "review": {
-          "title": "Review order"
+          "title": "Revisar orden"
         }
       },
       "action-block": {
         "toasts": {
           "processed": {
-            "title": "Order Submission Processed"
+            "title": "Orden Procesada"
           },
           "orders-submitted": {
-            "title": "Orders Submitted",
-            "body": "Symbol"
+            "title": "Orden Puesta",
+            "body": "Símbolo"
           },
           "order-submitted": {
-            "title": "Order Submitted",
-            "body": "Symbol"
+            "title": "Orden Puesta",
+            "body": "Símbolo"
           },
           "error": {
-            "title": "Error Processing Transaction"
+            "title": "Error Procesando Transacción"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transacción Fallida",
+            "body": "Razón"
           }
         },
         "validity": {
-          "closed": "Orders won't be executed until market opens",
-          "order-too-large": "Order will fail: order size is too large",
-          "order-too-small": "Order will fail: order size is too small",
-          "position-too-small": "Order will fail: resulting position too small",
-          "below-min-position": "Warning: order size below minimal position size",
-          "insufficient-balance": "Order will fail: insufficient wallet balance",
-          "undefined": "Order undefined: take profit is incompatible with leverage",
-          "good-to-go": "Good to go",
-          "pass": "Passed",
-          "fail": "Failed"
+          "closed": "Ordenes son ejecutadas solo cuando el mercado abra",
+          "order-too-large": "El tamaño de la orden es muy grande",
+          "order-too-small": "El tamaño de la orden es muy pequeno",
+          "position-too-small": "El tamaño de la posicion es muy pequeno",
+          "below-min-position": "Cuidado: El tamaño de la orden esta debajo del tamaño minimo para una posicion",
+          "insufficient-balance": "Insuficiente saldo en tu cartera",
+          "undefined": "El valor de tomar ganancias es incompatible con el apalancamiento",
+          "good-to-go": "Todo Listo",
+          "pass": "Paso",
+          "fail": "No Paso"
         },
         "order-types": {
           "market": "market",
@@ -292,85 +292,85 @@
           "stop": "stop"
         },
         "order-action": {
-          "long": "Buy",
-          "short": "Sell"
+          "long": "Comprar",
+          "short": "Vender"
         },
         "review": {
-          "title": "Review order",
-          "deposit": "Deposit from wallet:",
-          "balance": "Wallet balance:",
-          "fee": "Trading fee:",
-          "max": "Max entry price:",
-          "min": "Min entry price:",
-          "trigger-price": "Trigger price",
-          "limit-price": "Limit price",
-          "stop-loss": "Stop-loss price",
-          "take-profit": "Take-profit price",
-          "details": "New position details",
-          "size": "Position size",
-          "margin": "Margin",
-          "leverage": "Leverage",
-          "liq-price": "Liquidation price",
-          "validity-checks": "Validity checks",
-          "cancel": "Cancel",
-          "confirm": "Confirm"
+          "title": "Revisar orden",
+          "deposit": "Deposito desde tu cartera:",
+          "balance": "Saldo en tu cartera:",
+          "fee": "Comisión",
+          "max": "Precio de entrada maximo:",
+          "min": "Precio de entrada minimo:",
+          "trigger-price": "Precio de Activacion",
+          "limit-price": "Precio Límite",
+          "stop-loss": "Precio de Parada",
+          "take-profit": "Precio de Tomar Ganancias",
+          "details": "Detalles de la nueva posicion",
+          "size": "Tamaño de la posicion",
+          "margin": "Margen",
+          "leverage": "Apalancamiento",
+          "liq-price": "Precio de Liquidación",
+          "validity-checks": "Comprobacion de validez",
+          "cancel": "Cancelar",
+          "confirm": "Confirmar"
         }
       }
     },
     "refer": {
       "tab-selector": {
-        "referrer": "As Referrer",
-        "trader": "As Trader"
+        "referrer": "Como Remitor",
+        "trader": "Como Usuario"
       },
       "referrer-tab": {
-        "disclaimer-text-block1": "Earn rebates by inviting traders to trade on D8X. Rebates are airdropped to your wallet weekly.",
-        "disclaimer-text-block2": "Check out details on the D8X referral program.",
-        "volume": "Total referred trading volume",
-        "rebates": "Total earned rebates",
-        "title1": "Your referrals",
-        "title2": "Refer & Earn",
-        "codes": "Your codes",
-        "create": "Create code",
+        "disclaimer-text-block1": "Gana rebates invitando a otros usuarios a probar D8X. Los rebates son enviados a tu cartera cada semana via airdrop.",
+        "disclaimer-text-block2": "Informate sobre los detalles del programa de rebates de D8X.",
+        "volume": "Volumen total remitido",
+        "rebates": "Rebates ganados",
+        "title1": "Tus remisiones",
+        "title2": "Remite & Gana",
+        "codes": "Tus Codigos",
+        "create": "Crear Codigo",
         "na": "N/A",
-        "referrer-rebate-rate": "Referrer rebate rate",
-        "trader-rebate-rate": "Trader rebate rate",
-        "agency-rebate-rate": "Agency rebate rate",
-        "share": "Share",
-        "share-success": "Your referral URL is successfully copied to clipboard",
-        "share-error": "An error appeared to copy your referral URL",
-        "modify": "Modify",
-        "no-codes": "No rebate codes"
+        "referrer-rebate-rate": "Tasa de Rebate por Remision",
+        "trader-rebate-rate": "Tasa de Rebate por Usuario",
+        "agency-rebate-rate": "Tasa de Rebate por Agencia",
+        "share": "Compartir",
+        "share-success": "Tu URL de remision ha sido copiada",
+        "share-error": "Hubo un error copiando tu URL de remision",
+        "modify": "Modificar",
+        "no-codes": "No tienes codigos de rebate"
       },
       "manage-code": {
-        "title-create": "Create Referral Code",
-        "base": "Your Base Rebate Rate:",
-        "you-receive": "You receive",
-        "trader-receives": "Trader receives",
-        "agency": "Agency",
-        "referrer": "Referrer",
-        "trader": "Trader",
+        "title-create": "Crear Codigo de Remision",
+        "base": "Tu tasa de remision base:",
+        "you-receive": "Recibes",
+        "trader-receives": "Usuarios remitiods reciben",
+        "agency": "Agencia",
+        "referrer": "Remitor",
+        "trader": "Usuario",
         "trader-kickback": "Set Trader's Kickback Rate:",
         "referrer-kickback": "Set Referrer's Kickback Rate:",
-        "referrer-addr": "Enter Referrer Address:",
-        "enter-code": "Enter a code",
-        "code-taken": "Code already taken",
-        "create-code": "Create code",
-        "instructions": "Only UPPERCASE characters, numbers, underscores (_) and hyphens (-) are allowed.",
-        "cancel": "Cancel",
-        "enter-addr": "Enter an address",
-        "error": "Please enter a valid address",
-        "title-modify": "Modify Referral Code",
-        "change-addr": "Change Referrer Address?",
-        "your-code": "Your code",
-        "modify": "Modify"
+        "referrer-addr": "Ingresar una direccion para remitir:",
+        "enter-code": "Ingresar un codigo",
+        "code-taken": "Codigo ya esta en uso",
+        "create-code": "Crear Codigo",
+        "instructions": "Solo letras MAYUSCULAS, numeros, guiones bajos (_) y guiones (-) estan permitidos.",
+        "cancel": "Cancelar",
+        "enter-addr": "Ingresa tu direccion",
+        "error": "Por favor ingresar una direccion valida",
+        "title-modify": "Cambiar Codigo de Remisiones",
+        "change-addr": "¿Cambiar cartera para remitir?",
+        "your-code": "Tu Codigo",
+        "modify": "Modificar"
       },
       "toast": {
-        "success-create": "Code created successfully",
-        "success-modify": "Code modified successfully",
-        "success-apply": "Code applied successfully"
+        "success-create": "Codigo Creado",
+        "success-modify": "Codigo Modificado",
+        "success-apply": "Codigo Aplicado"
       },
       "trader-tab": {
-        "title1": "Your discounts",
+        "title1": "Tus descuentos",
         "earned-rebates": "Total earned rebates",
         "open-rewards": "Open rewards",
         "title2": "Trade & Earn",
@@ -399,7 +399,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "Tus Estadisticas",
+        "title": "Tus Datos",
         "amount": {
           "title": "Cantidad",
           "info": "Cantidad de d{{poolSymbol}} que te pertenece."
@@ -443,21 +443,21 @@
         "button": "Anadir"
       },
       "withdraw": {
-        "title": "Withdraw Liquidity",
-        "info1": "To withdraw liquidity you first initiate your withdrawal. Keep in mind that it takes 48 hours to process your request and you can only have one withdrawal request at a time.",
-        "info2": "After 48 hours, a withdrawable amount of d{{poolSymbol}} can be exchanged for {{poolSymbol}} at the d{{poolSymbol}} Price.",
+        "title": "Remover Liquidez",
+        "info1": "Para remover liquidez primero tienes que iniciar un retiro. Ten en mente que tu retiro solo se puede ejecutar 48 horas despues de ser iniciado, y no puedes tener mas que una solicitud de retiro abierta al mismo tiempo.",
+        "info2": "Despues de 48 horas, un monto de d{{poolSymbol}} podra ser intercambiado por {{poolSymbol}} al precio de d{{poolSymbol}} en ese momento.",
         "initiate": {
-          "title": "1. Initiate withdrawal of {{poolSymbol}}",
-          "info1": "Specify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
-          "info2": "After 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
-          "button": "Initiate withdrawal"
+          "title": "1. Iniciar retiro de {{poolSymbol}}",
+          "info1": "Ingresa el monto de d{{poolSymbol}} que quieres intercambiar por {{poolSymbol}}.",
+          "info2": "Despues de 48 horas, este monto puede ser convertido a {{poolSymbol}} y removido de las reservas.",
+          "button": "Iniciar Retiro"
         },
         "action": {
           "title": "Retirar {{poolSymbol}}",
-          "info1": "Esta cantidad puede convertirse a {{poolSymbol}}, la cual puede ser retirada de la Reserva.",
-          "date": "Can be withdrawn on:",
-          "receive": "You receive:",
-          "button": "Withdraw"
+          "info1": "Este monto puede convertirse a {{poolSymbol}} y removido de las reservas.",
+          "date": "Puede retirarse en:",
+          "receive": "Recibes:",
+          "button": "Retirar"
         }
       },
       "na": "N/A",
