@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import IconButton from '@mui/material/IconButton';
 import { DeleteForeverOutlined } from '@mui/icons-material';
-import { Button, TableCell, TableRow, Typography } from '@mui/material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
 import type { OrderWithIdI } from 'types/types';

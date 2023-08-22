@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import IconButton from '@mui/material/IconButton';
 import { DeleteForeverOutlined } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { parseSymbol } from 'helpers/parseSymbol';
