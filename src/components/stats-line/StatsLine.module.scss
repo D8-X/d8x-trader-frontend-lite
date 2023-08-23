@@ -18,7 +18,7 @@
   white-space: nowrap;
   margin-bottom: $d8x-spacing * 0.5;
   color: var(--d8x-color-black-500);
-  min-width: 100px;
+  min-width: 50px;
 }
 
 .statValue {
@@ -37,7 +37,6 @@
 }
 
 .iconButton {
-  margin-left: 4 * $d8x-spacing;
   color: var(--d8x-color-white);
   padding: 0;
   min-width: 40px;
