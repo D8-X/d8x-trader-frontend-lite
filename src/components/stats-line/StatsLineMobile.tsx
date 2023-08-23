@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useAtom } from 'jotai';
 import { memo } from 'react';
 
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 
 import { ReactComponent as ChartLineIcon } from 'assets/icons/chartLineIcon.svg';
 
@@ -38,10 +38,9 @@ export const StatsLineMobile = memo(({ items }: StatsLinePropsI) => {
           </Typography>
         </Box>
         <Box>
-          <ChartLineIcon
-            className={classNames(styles.chartIcon, { [styles.active]: showChartForMobile })}
-            onClick={handleChartIconClick}
-          />
+          <Button onClick={handleChartIconClick} className={styles.iconButton} variant="primary">
+            <ChartLineIcon />
+          </Button>
         </Box>
       </Box>
 
