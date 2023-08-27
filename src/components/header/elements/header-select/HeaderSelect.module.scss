@@ -9,6 +9,7 @@
   display: flex;
   align-items: center;
   gap: 0.5 * $d8x-spacing;
+  color: var(--d8x-color-purple);
 }
 
 .iconWrapper {
@@ -33,6 +34,8 @@
 
   :global(.MuiInputBase-root) {
     min-width: 240px;
+    color: var(--d8x-color-purple);
+    font-weight: 600;
   }
 
   :global(.MuiInputLabel-root):global(.Mui-focused) {
@@ -40,7 +43,7 @@
   }
 
   :global(.MuiInputLabel-root) {
-    color: var(--d8x-color-black);
+    color: var(--d8x-color-black-500);
   }
 }
 
