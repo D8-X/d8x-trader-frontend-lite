@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
+import { AttachMoneyOutlined } from '@mui/icons-material';
 import { Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as CollateralIcon } from 'assets/icons/collateralIcon.svg';
 import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
@@ -105,7 +105,7 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
   return (
     <Box className={styles.holderRoot}>
       <Box className={styles.iconWrapper}>
-        <CollateralIcon />
+        <AttachMoneyOutlined />
       </Box>
       <HeaderSelect<PoolI>
         id="collaterals-select"

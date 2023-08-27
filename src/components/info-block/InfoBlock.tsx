@@ -2,9 +2,9 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { InfoOutlined } from '@mui/icons-material';
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import { ReactComponent as InfoIcon } from 'assets/icons/infoIcon.svg';
 import { Dialog } from 'components/dialog/Dialog';
 
 import styles from './InfoBlock.module.scss';
@@ -21,7 +21,7 @@ export const InfoBlock = ({ title, content, classname }: InfoBlockPropsI) => {
 
   return (
     <>
-      <InfoIcon onClick={() => setModalOpen(true)} className={classNames(styles.actionIcon, classname)} /> {title}
+      {title} <InfoOutlined onClick={() => setModalOpen(true)} className={classNames(styles.actionIcon, classname)} />
       <Dialog open={isModalOpen} className={styles.dialog}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent className={styles.dialogContent}>{content}</DialogContent>

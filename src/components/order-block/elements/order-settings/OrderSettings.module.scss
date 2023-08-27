@@ -72,6 +72,8 @@
   padding: $d8x-spacing $d8x-spacing * 3 $d8x-spacing $d8x-spacing;
   width: 60px;
   height: 24px;
+  margin-bottom: 2px;
+  color: var(--d8x-color-purple);
 
   &:hover {
     opacity: 0.7;

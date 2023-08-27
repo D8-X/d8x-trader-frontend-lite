@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useChainId, useNetwork } from 'wagmi';
 
+import { AccountBalanceOutlined } from '@mui/icons-material';
 import { Box, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as PerpetualIcon } from 'assets/icons/perpetualIcon.svg';
 import { useCandlesWebSocketContext } from 'context/websocket-context/candles/useCandlesWebSocketContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
@@ -165,7 +165,7 @@ export const PerpetualsSelect = memo(({ withNavigate }: PerpetualsSelectPropsI) 
   return (
     <Box className={styles.holderRoot}>
       <Box className={styles.iconWrapper}>
-        <PerpetualIcon />
+        <AccountBalanceOutlined />
       </Box>
       <HeaderSelect<PerpetualI>
         id="perpetuals-select"

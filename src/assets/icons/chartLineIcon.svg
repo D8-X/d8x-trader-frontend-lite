@@ -1,6 +1,10 @@
-<svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="&#240;&#159;&#166;&#134; icon &#34;chart line&#34;">
-<path id="Vector" d="M15.1022 2.78564V4.09177H17.7704L10.0409 11.8213L7.10215 8.8825L2.88525 13.0994L3.80885 14.023L7.10215 10.7296L10.0409 13.6684L18.694 5.01536V7.6836H20.0001V2.78564H15.1022Z" fill="currentColor"/>
-<path id="Vector_2" d="M1.71433 0.5H0.408203V16.5H20V15.1939H1.71433V0.5Z" fill="currentColor"/>
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_612_3230)">
+<path d="M88 20V28H76V40H68V28H56V20H68V8H76V20H88ZM76 76H20V20H44V12H20C15.6 12 12 15.6 12 20V76C12 80.4 15.6 84 20 84H76C80.4 84 84 80.4 84 76V52H76V76ZM60 52V68H68V52H60ZM44 68H52V36H44V68ZM36 68V44H28V68H36Z" fill="currentColor"/>
 </g>
+<defs>
+<clipPath id="clip0_612_3230">
+<rect width="96" height="96" fill="white"/>
+</clipPath>
+</defs>
 </svg>
