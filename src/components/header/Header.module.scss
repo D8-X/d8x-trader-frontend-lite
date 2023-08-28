@@ -16,7 +16,10 @@
 
 .toolbar {
   align-items: center;
-  padding: 0;
+  padding: 8px 32px 0;
+  margin: -16px -32px 0;
+  min-height: 80px;
+  background-color: var(--d8x-color-white);
 }
 
 .leftSide {
@@ -116,10 +119,11 @@
   gap: 15px;
 }
 
-@media screen and ($d8x-breakpoint-max-md) {
+@media screen and ($d8x-breakpoint-max-lg) {
 
-  .menuButton {
-    margin-left: $d8x-spacing * 2;
+  .toolbar {
+    padding: 8px 16px 0;
+    margin: -16px -16px 0;
   }
 }
 
@@ -138,7 +142,22 @@
   }
 
   .toolbar {
-    min-height: 48px;
+    min-height: 80px;
+    padding: 0 40px;
+    margin: -16px -40px 0;
+  }
+
+  .menuButton {
+    margin-left: $d8x-spacing * 2;
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-sm) {
+
+  .toolbar {
+    min-height: 80px;
+    padding: 0 24px;
+    margin: -16px -24px 0;
   }
 }
 
@@ -149,5 +168,12 @@
     :global(.MuiPaper-root) {
       height: auto;
     }
+  }
+
+  .toolbar {
+    padding: 0 12px;
+    margin: -16px -12px 0;
+    min-height: 72px;
+    background-color: var(--d8x-color-white);
   }
 }
