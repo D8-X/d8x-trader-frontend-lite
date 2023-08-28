@@ -1,22 +1,22 @@
+import { HashZero } from '@ethersproject/constants';
 import { useAtom } from 'jotai';
-import { memo, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
-import { HashZero } from 'app-constants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
-import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
+import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { orderDigest } from 'network/network';
 import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
-import { type MarginAccountI, type OrderI } from 'types/types';
+import { AddressT, MarginAccountI, OrderI } from 'types/types';
 
 import styles from '../Modal.module.scss';
 
@@ -38,7 +38,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);
   const [symbolForTx, setSymbolForTx] = useState('');
 
   const requestSentRef = useRef(false);
@@ -73,7 +73,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     enabled: !!address && !!txHash,
   });
 
-  const handleClosePositionConfirm = () => {
+  const handleClosePositionConfirm = useCallback(() => {
     if (requestSentRef.current) {
       return;
     }
@@ -133,7 +133,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         setRequestSent(false);
         requestSentRef.current = false;
       });
-  };
+  }, [selectedPosition, chainId, address, selectedPool, proxyAddr, walletClient, poolTokenDecimals, closeModal, t]);
 
   return (
     <Dialog open={isOpen} className={styles.root}>

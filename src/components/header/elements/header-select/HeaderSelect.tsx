@@ -1,10 +1,13 @@
-import { Box, FormControl, InputLabel, Select, type SelectChangeEvent } from '@mui/material';
-import { useMemo, type HTMLAttributes, type JSXElementConstructor, type ReactNode } from 'react';
+import type { HTMLAttributes, JSXElementConstructor, ReactNode } from 'react';
+import { useCallback, useMemo } from 'react';
+
+import { Box, FormControl, InputLabel, Select, SelectChangeEvent } from '@mui/material';
 
 import { genericMemo } from 'helpers/genericMemo';
 
+import { SelectItemI } from './types';
+
 import styles from './HeaderSelect.module.scss';
-import { type SelectItemI } from './types';
 
 interface HeaderSelectI<T> {
   id: string;
@@ -37,23 +40,29 @@ function HeaderSelectComponent<T>(props: HeaderSelectI<T>) {
     return items.map((item) => renderOption(item));
   }, [items, renderOption]);
 
-  const onChange = (event: SelectChangeEvent) => {
-    const newValue = event.target.value;
-    if (newValue) {
-      const foundItem = items.find((item) => item.value === newValue);
-      if (foundItem) {
-        handleChange(foundItem.item);
+  const onChange = useCallback(
+    (event: SelectChangeEvent) => {
+      const newValue = event.target.value;
+      if (newValue) {
+        const foundItem = items.find((item) => item.value === newValue);
+        if (foundItem) {
+          handleChange(foundItem.item);
+        }
       }
-    }
-  };
+    },
+    [items, handleChange]
+  );
 
-  const renderValue = (valueForLabel: string) => {
-    const foundItem = items.find((item) => item.value === valueForLabel);
-    if (foundItem) {
-      return renderLabel(foundItem.item);
-    }
-    return null;
-  };
+  const renderValue = useCallback(
+    (valueForLabel: string) => {
+      const foundItem = items.find((item) => item.value === valueForLabel);
+      if (foundItem) {
+        return renderLabel(foundItem.item);
+      }
+      return null;
+    },
+    [items, renderLabel]
+  );
 
   if (!value) {
     return null;

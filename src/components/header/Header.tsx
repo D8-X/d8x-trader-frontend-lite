@@ -3,34 +3,34 @@ import type { PropsWithChildren } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { createSymbol } from 'helpers/createSymbol';
+import { pages } from 'navigation/pages';
 import { getExchangeInfo } from 'network/network';
-import { pages } from 'routes/pages';
+import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import {
   oracleFactoryAddrAtom,
-  perpetualsAtom,
   poolTokenBalanceAtom,
-  poolTokenDecimalsAtom,
   poolsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
+  perpetualsAtom,
   traderAPIAtom,
+  poolTokenDecimalsAtom,
 } from 'store/pools.store';
-import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
-import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
+import type { AddressT, ExchangeInfoI, PerpetualDataI } from 'types/types';
 
 import { Container } from '../container/Container';
 import { InteractiveLogo } from '../interactive-logo/InteractiveLogo';
 import { LanguageSwitcher } from '../language-switcher/LanguageSwitcher';
 import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
 
-import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import styles from './Header.module.scss';
 
 interface HeaderPropsI extends PropsWithChildren {
   /**
@@ -132,10 +132,10 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
     isError,
     refetch,
   } = useBalance({
-    address,
-    token: selectedPool?.marginTokenAddr as Address,
+    address: address,
+    token: selectedPool?.marginTokenAddr as AddressT | undefined,
     chainId: chain?.id,
-    enabled: !requestRef.current && address && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
+    enabled: !requestRef.current && address !== undefined && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
   });
 
   useEffect(() => {

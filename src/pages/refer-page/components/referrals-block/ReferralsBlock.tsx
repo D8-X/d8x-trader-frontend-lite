@@ -33,7 +33,7 @@ export const ReferralsBlock = () => {
         </Button>
       </Box>
       <Separator className={styles.divider} />
-      {address && referralCode?.agency && referralCode.referrer ? (
+      {address && referralCode && referralCode.agency && referralCode.referrer ? (
         <ReferralCodesTable isAgency={isAgency} codes={isAgency ? referralCode.agency : referralCode.referrer} />
       ) : (
         <>

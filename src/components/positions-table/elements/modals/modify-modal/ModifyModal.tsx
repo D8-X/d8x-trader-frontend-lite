@@ -1,8 +1,8 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransaction, useWalletClient, type Address } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
   Box,
@@ -39,13 +39,14 @@ import {
   traderAPIAtom,
   traderAPIBusyAtom,
 } from 'store/pools.store';
-import type { MarginAccountI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import type { AddressT, MarginAccountI } from 'types/types';
 
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
 import styles from '../Modal.module.scss';
+import { sdkConnectedAtom } from '../../../../../store/vault-pools.store';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -59,6 +60,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
+  const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
 
@@ -68,9 +70,9 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
   const [requestSent, setRequestSent] = useState(false);
   const [modifyType, setModifyType] = useState(ModifyTypeE.Add);
-  const [txHashForAdd, setTxHashForAdd] = useState<Address | undefined>(undefined);
+  const [txHashForAdd, setTxHashForAdd] = useState<AddressT | undefined>(undefined);
   const [amountForAdd, setAmountForAdd] = useState(0);
-  const [txHashForRemove, setTxHashForRemove] = useState<Address | undefined>(undefined);
+  const [txHashForRemove, setTxHashForRemove] = useState<AddressT | undefined>(undefined);
   const [amountForRemove, setAmountForRemove] = useState(0);
   const [symbolForTx, setSymbolForTx] = useState('');
   const [newPositionRisk, setNewPositionRisk] = useState<MarginAccountI | null>();
@@ -78,6 +80,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const [removeCollateral, setRemoveCollateral] = useState(0);
   const [maxCollateral, setMaxCollateral] = useState<number>();
 
+  const traderAPIRef = useRef(traderAPI);
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
 
@@ -152,11 +155,19 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     enabled: !!address && !!txHashForRemove,
   });
 
-  const handleMaxCollateral = () => {
+  const handleMaxCollateral = useCallback(() => {
     if (maxCollateral) {
       setRemoveCollateral(maxCollateral);
     }
-  };
+  }, [maxCollateral]);
+
+  const handleAddCollateralCapture = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setAddCollateral(+event.target.value);
+  }, []);
+
+  const handleRemoveCollateralCapture = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRemoveCollateral(+event.target.value);
+  }, []);
 
   const debouncedAddCollateral = useDebounce(addCollateral, 500);
 
@@ -178,7 +189,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     setAPIBusy(true);
     await positionRiskOnCollateralAction(
       chainId,
-      traderAPI,
+      traderAPIRef.current,
       address,
       modifyType === ModifyTypeE.Add ? debouncedAddCollateral : -debouncedRemoveCollateral,
       selectedPosition
@@ -192,16 +203,13 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         console.error(err);
         setAPIBusy(false);
       });
-  }, [
-    chainId,
-    address,
-    selectedPosition,
-    modifyType,
-    debouncedAddCollateral,
-    debouncedRemoveCollateral,
-    setAPIBusy,
-    traderAPI,
-  ]);
+  }, [chainId, address, selectedPosition, modifyType, debouncedAddCollateral, debouncedRemoveCollateral, setAPIBusy]);
+
+  useEffect(() => {
+    if (isSDKConnected) {
+      traderAPIRef.current = traderAPI;
+    }
+  }, [traderAPI, isSDKConnected]);
 
   useEffect(() => {
     handleRefreshPositionRisk().then();
@@ -224,14 +232,14 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
     if (modifyType === ModifyTypeE.Remove) {
       setAPIBusy(true);
-      getAvailableMargin(chainId, traderAPI, selectedPosition.symbol, address).then(({ data }) => {
+      getAvailableMargin(chainId, traderAPIRef.current, selectedPosition.symbol, address).then(({ data }) => {
         setMaxCollateral(data.amount < 0 ? 0 : data.amount);
         setAPIBusy(false);
       });
     } else {
       setMaxCollateral(undefined);
     }
-  }, [modifyType, chainId, address, selectedPosition, setAPIBusy, traderAPI]);
+  }, [modifyType, chainId, address, selectedPosition, setAPIBusy]);
 
   const parsedSymbol = useMemo(() => {
     if (selectedPosition) {
@@ -307,7 +315,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     }
   }, [requestSent, modifyType, addCollateral, removeCollateral, maxCollateral]);
 
-  const handleModifyPositionConfirm = async () => {
+  const handleModifyPositionConfirm = useCallback(async () => {
     if (requestSentRef.current) {
       return;
     }
@@ -319,7 +327,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     if (modifyType === ModifyTypeE.Add) {
       requestSentRef.current = true;
       setRequestSent(true);
-      getAddCollateral(chainId, traderAPI, selectedPosition.symbol, addCollateral)
+      getAddCollateral(chainId, traderAPIRef.current, selectedPosition.symbol, addCollateral)
         .then(({ data }) => {
           approveMarginToken(
             walletClient,
@@ -371,7 +379,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
       requestSentRef.current = true;
       setRequestSent(true);
-      getRemoveCollateral(chainId, traderAPI, selectedPosition.symbol, removeCollateral)
+      getRemoveCollateral(chainId, traderAPIRef.current, selectedPosition.symbol, removeCollateral)
         .then(({ data }) => {
           withdraw(walletClient, data)
             .then((tx) => {
@@ -409,7 +417,21 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
           setRequestSent(false);
         });
     }
-  };
+  }, [
+    modifyType,
+    selectedPosition,
+    chainId,
+    address,
+    selectedPool,
+    proxyAddr,
+    addCollateral,
+    removeCollateral,
+    maxCollateral,
+    walletClient,
+    poolTokenDecimals,
+    closeModal,
+    t,
+  ]);
 
   return (
     <Dialog open={isOpen} className={styles.root}>
@@ -431,7 +453,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                   type="number"
                   inputProps={{ step: 0.1, min: 0 }}
                   defaultValue={addCollateral}
-                  onChange={(event) => setAddCollateral(+event.target.value)}
+                  onChange={handleAddCollateralCapture}
                 />
               }
             />
@@ -452,7 +474,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                       type="number"
                       inputProps={{ step: 0.1, min: 0, max: maxCollateral }}
                       value={removeCollateral}
-                      onChange={(event) => setRemoveCollateral(+event.target.value)}
+                      onChange={handleRemoveCollateralCapture}
                     />
                   </FormControl>
                 }

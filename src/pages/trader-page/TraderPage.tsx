@@ -1,24 +1,24 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useAtom } from 'jotai';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { type Address, useAccount, useChainId } from 'wagmi';
+import { useTranslation } from 'react-i18next';
+import { useAccount, useChainId } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
 import { Container } from 'components/container/Container';
-import { Footer } from 'components/footer/Footer';
-import { FundingTable } from 'components/funding-table/FundingTable';
-import { Header } from 'components/header/Header';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { PerpetualsSelect } from 'components/header/elements/perpetuals-select/PerpetualsSelect';
-import { Helmet } from 'components/helmet';
+import { Header } from 'components/header/Header';
+import { Footer } from 'components/footer/Footer';
+import { FundingTable } from 'components/funding-table/FundingTable';
 import { OpenOrdersTable } from 'components/open-orders-table/OpenOrdersTable';
 import { OrderBlock } from 'components/order-block/OrderBlock';
 import { PositionsTable } from 'components/positions-table/PositionsTable';
-import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
-import { type SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
+import { SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
+import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
 import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
@@ -32,11 +32,12 @@ import {
 } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { TableTypeE } from 'types/enums';
+import type { AddressT } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TraderPage.module.scss';
 
-export const TraderPage = () => {
+export const TraderPage = memo(() => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isBigScreen = useMediaQuery(theme.breakpoints.up('lg'));
@@ -57,7 +58,7 @@ export const TraderPage = () => {
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [positions, setPositions] = useAtom(positionsAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
-  const setPoolFee = useSetAtom(poolFeeAtom);
+  const [, setPoolFee] = useAtom(poolFeeAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -65,56 +66,63 @@ export const TraderPage = () => {
   const location = useLocation();
 
   const fetchPositions = useCallback(
-    async (_chainId: number, _poolSymbol: string, _address: Address) => {
+    async (_chainId: number, _poolSymbol: string, _address: AddressT) => {
       if (!traderAPI || traderAPI.chainId !== _chainId || !isSDKConnected || fetchPositionsRef.current) {
         return;
       }
       fetchPositionsRef.current = true;
-      try {
-        const { data } = await getPositionRisk(_chainId, traderAPI, _poolSymbol, _address);
-        data.map(setPositions);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        fetchPositionsRef.current = false;
-      }
+      await getPositionRisk(_chainId, traderAPI, _poolSymbol, _address)
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            data.map((p) => setPositions(p));
+          }
+          fetchFeeRef.current = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          fetchPositionsRef.current = false;
+        });
     },
     [traderAPI, isSDKConnected, setPositions]
   );
 
   const fetchOrders = useCallback(
-    async (_chainId: number, _poolSymbol: string, _address: Address) => {
+    async (_chainId: number, _poolSymbol: string, _address: AddressT) => {
       if (!traderAPI || traderAPI.chainId !== _chainId || !isSDKConnected || fetchOrdersRef.current) {
         return;
       }
       fetchOrdersRef.current = true;
-      try {
-        const { data } = await getOpenOrders(_chainId, traderAPI, _poolSymbol, _address);
-        data.map(setOpenOrders);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        fetchOrdersRef.current = false;
-      }
+      await getOpenOrders(_chainId, traderAPI, _poolSymbol, _address)
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            data.map((orders) => setOpenOrders(orders));
+          }
+          fetchFeeRef.current = false;
+        })
+        .catch((err) => {
+          console.error(err);
+          fetchOrdersRef.current = false;
+        });
     },
     [traderAPI, isSDKConnected, setOpenOrders]
   );
 
   const fetchFee = useCallback(
-    async (_chainId: number, _poolSymbol: string, _address: Address) => {
+    async (_chainId: number, _poolSymbol: string, _address: string) => {
       if (fetchFeeRef.current) {
         return;
       }
       fetchFeeRef.current = true;
       setPoolFee(undefined);
-      try {
-        const { data } = await getTradingFee(_chainId, _poolSymbol, _address);
-        setPoolFee(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        fetchFeeRef.current = false;
-      }
+      getTradingFee(_chainId, _poolSymbol, _address)
+        .then(({ data }) => {
+          setPoolFee(data);
+          fetchFeeRef.current = false;
+        })
+        .catch((error) => {
+          console.error(error);
+          fetchFeeRef.current = false;
+        });
     },
     [setPoolFee]
   );
@@ -134,9 +142,9 @@ export const TraderPage = () => {
     if (!chainId || !selectedPool?.poolSymbol || !address) {
       return;
     }
-    fetchPositions(chainId, selectedPool.poolSymbol, address);
-    fetchOrders(chainId, selectedPool?.poolSymbol, address);
-    fetchFee(chainId, selectedPool.poolSymbol, address);
+    fetchPositions(chainId, selectedPool.poolSymbol, address).then();
+    fetchOrders(chainId, selectedPool?.poolSymbol, address).then();
+    fetchFee(chainId, selectedPool.poolSymbol, address).then();
   }, [chainId, selectedPool, address, fetchPositions, fetchOrders, fetchFee]);
 
   useEffect(() => {
@@ -211,17 +219,19 @@ export const TraderPage = () => {
 
   return (
     <>
-      <Helmet
-        title={`${
-          perpetualStatistics
-            ? formatToCurrency(
-                perpetualStatistics.midPrice,
-                `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
-                true
-              )
-            : ''
-        } | D8X App`}
-      />
+      <Helmet>
+        <title>
+          {`${
+            perpetualStatistics
+              ? formatToCurrency(
+                  perpetualStatistics.midPrice,
+                  `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
+                  true
+                )
+              : ''
+          } | D8X App`}
+        </title>
+      </Helmet>
       <Box className={styles.root}>
         <Header>
           <CollateralsSelect withNavigate={true} />
@@ -270,4 +280,4 @@ export const TraderPage = () => {
       </Box>
     </>
   );
-};
+});

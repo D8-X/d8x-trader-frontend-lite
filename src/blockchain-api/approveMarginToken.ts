@@ -1,9 +1,10 @@
+import { MaxUint256 } from '@ethersproject/constants';
 import { readContract, waitForTransaction } from '@wagmi/core';
-import type { Account, Address, Transport, WalletClient } from 'viem';
 import { parseUnits } from 'viem';
-import { erc20ABI, type Chain } from 'wagmi';
+import type { WalletClient, Account, Transport } from 'viem';
+import { type Chain, erc20ABI } from 'wagmi';
 
-import { MaxUint256 } from 'app-constants';
+import type { AddressT } from 'types/types';
 
 export function approveMarginToken(
   walletClient: WalletClient<Transport, Chain, Account>,
@@ -14,10 +15,10 @@ export function approveMarginToken(
 ) {
   const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
   return readContract({
-    address: marginTokenAddr as Address,
+    address: marginTokenAddr as AddressT,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [walletClient.account.address, proxyAddr as Address],
+    args: [walletClient.account.address, proxyAddr as AddressT],
   }).then((allowance) => {
     if (allowance > minAmountBN) {
       return Promise.resolve(null);
@@ -29,10 +30,10 @@ export function approveMarginToken(
       return walletClient
         .writeContract({
           chain: walletClient.chain,
-          address: marginTokenAddr as Address,
+          address: marginTokenAddr as AddressT,
           abi: erc20ABI,
           functionName: 'approve',
-          args: [proxyAddr as Address, BigInt(MaxUint256)],
+          args: [proxyAddr as AddressT, BigInt(MaxUint256.toString())],
           gas: BigInt(100_000),
           account: account,
         })

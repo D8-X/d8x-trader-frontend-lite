@@ -1,4 +1,5 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
+import type { ChangeEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
@@ -36,7 +37,7 @@ export const FundingTable = memo(() => {
   const [fundingList, setFundingList] = useAtom(fundingListAtom);
   const [perpetuals] = useAtom(perpetualsAtom);
   const [positions] = useAtom(positionsAtom);
-  const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const [, setTableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
@@ -71,6 +72,15 @@ export const FundingTable = memo(() => {
   useEffect(() => {
     refreshFundingList();
   }, [positions, refreshFundingList]); // "positions" change should affect refresh for Funding table
+
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }, []);
 
   const fundingListHeaders: TableHeaderI[] = useMemo(
     () => [
@@ -153,11 +163,8 @@ export const FundingTable = memo(() => {
             count={fundingList.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={(_event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(+event.target.value);
-              setPage(0);
-            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>

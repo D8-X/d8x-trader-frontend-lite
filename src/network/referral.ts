@@ -1,12 +1,19 @@
-import type { APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
 import { ReferralCodeSigner } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Transport } from 'viem';
+import type { APIReferralCodeSelectionPayload, APIReferralCodePayload } from '@d8x/perpetuals-sdk';
+import type { Account, Transport } from 'viem';
 import type { Chain, WalletClient } from 'wagmi';
 
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
-import { type RebateTypeE, RequestMethodE } from 'types/enums';
-import type { EarnedRebateI, OpenTraderRebateI, ReferralCodeI, ReferralVolumeI, ValidatedResponseI } from 'types/types';
+import type {
+  AddressT,
+  EarnedRebateI,
+  OpenTraderRebateI,
+  ReferralCodeI,
+  ReferralVolumeI,
+  ValidatedResponseI,
+} from 'types/types';
+import { RebateTypeE, RequestMethodE } from 'types/enums';
 
 function getReferralUrlByChainId(chainId: number) {
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
@@ -24,7 +31,7 @@ export async function postUpsertReferralCode(
   onSignatureSuccess: () => void
 ) {
   const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
+    walletClient.signMessage({ message: { raw: x as AddressT | Uint8Array } }) as Promise<string>;
   const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
   const payload: APIReferralCodePayload = {
     code,
@@ -65,7 +72,7 @@ export async function postUseReferralCode(
   onSignatureSuccess: () => void
 ) {
   const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
+    walletClient.signMessage({ message: { raw: x as AddressT | Uint8Array } }) as Promise<string>;
   const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
   const payload: APIReferralCodeSelectionPayload = {
     code,

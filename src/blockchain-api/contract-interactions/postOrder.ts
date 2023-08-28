@@ -1,14 +1,14 @@
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Transport, WalletClient } from 'viem';
+import type { Account, Transport, WalletClient } from 'viem';
 import type { Chain } from 'wagmi';
 
-import { type OrderDigestI } from 'types/types';
+import { OrderDigestI, AddressT } from 'types/types';
 
 export function postOrder(
   walletClient: WalletClient<Transport, Chain, Account>,
   signatures: string[],
   data: OrderDigestI
-): Promise<{ hash: Address }> {
+): Promise<{ hash: AddressT }> {
   const orders = TraderInterface.chainOrders(data.SCOrders, data.orderIds).map(
     TraderInterface.fromClientOrderToTypeSafeOrder
   );
@@ -19,7 +19,7 @@ export function postOrder(
   return walletClient
     .writeContract({
       chain: walletClient.chain,
-      address: data.OrderBookAddr as Address,
+      address: data.OrderBookAddr as AddressT,
       abi: LOB_ABI,
       functionName: 'postOrders',
       args: [orders, signatures],

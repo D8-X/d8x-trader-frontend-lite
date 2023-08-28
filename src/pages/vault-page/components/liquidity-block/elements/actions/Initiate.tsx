@@ -1,8 +1,8 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useWaitForTransaction, useWalletClient, type Address } from 'wagmi';
+import { useTranslation } from 'react-i18next';
+import { useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -17,6 +17,7 @@ import {
   userAmountAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
+import type { AddressT } from 'types/types';
 
 import styles from './Action.module.scss';
 
@@ -26,14 +27,14 @@ export const Initiate = memo(() => {
   const [liqProvTool] = useAtom(traderAPIAtom);
   const [userAmount] = useAtom(userAmountAtom);
   const [withdrawals] = useAtom(withdrawalsAtom);
-  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
-  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const [, setTriggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
+  const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
   const { data: walletClient } = useWalletClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);
 
   const [inputValue, setInputValue] = useState(`${initiateAmount}`);
 

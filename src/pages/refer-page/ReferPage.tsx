@@ -1,19 +1,19 @@
 import { useSetAtom } from 'jotai';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
+import { Header } from 'components/header/Header';
 import { Container } from 'components/container/Container';
 import { Footer } from 'components/footer/Footer';
-import { Header } from 'components/header/Header';
 import { useQuery } from 'hooks/useQuery';
 import { getIsAgency, getReferralCodes } from 'network/referral';
 import { isAgencyAtom, referralCodeAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
-import { ReferrerTab } from './components/referrer-tab/ReferrerTab';
 import { TabSelector } from './components/tab-selector/TabSelector';
+import { ReferrerTab } from './components/referrer-tab/ReferrerTab';
 import { TraderTab } from './components/trader-tab/TraderTab';
 import { QueryParamE, ReferTabIdE } from './constants';
 
@@ -35,7 +35,7 @@ const queryParamToReferTabIdMap: Record<string, ReferTabIdE> = {
   referral: ReferTabIdE.Referral,
 };
 
-export const ReferPage = () => {
+export const ReferPage = memo(() => {
   const [activeTabId, setActiveTabId] = useState(ReferTabIdE.Trader);
 
   const setIsAgency = useSetAtom(isAgencyAtom);
@@ -132,4 +132,4 @@ export const ReferPage = () => {
       <Footer />
     </Box>
   );
-};
+});

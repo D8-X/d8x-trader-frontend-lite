@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { memo, type ChangeEvent, type ReactNode } from 'react';
+import { type ChangeEvent, memo, type ReactNode, useCallback } from 'react';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
@@ -37,18 +37,21 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     adornmentAction,
   } = props;
 
-  const handleValueChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = +event.target.value;
-    if (value < min) {
-      setInputValue(`${min}`);
-    } else if (max && value > max) {
-      setInputValue(`${max}`);
-    } else {
-      setInputValue(event.target.value);
-    }
-  };
+  const handleValueChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = +event.target.value;
+      if (value < min) {
+        setInputValue(`${min}`);
+      } else if (max && value > max) {
+        setInputValue(`${max}`);
+      } else {
+        setInputValue(event.target.value);
+      }
+    },
+    [setInputValue, max, min]
+  );
 
-  const handleValueDecrease = () => {
+  const handleValueDecrease = useCallback(() => {
     if (inputValue === null) {
       return;
     }
@@ -66,9 +69,9 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     const rounded = Math.round((+inputValue - stepNumber) / stepNumber) * stepNumber;
 
     setInputValue(rounded.toFixed(decimalPlaces));
-  };
+  }, [inputValue, setInputValue, step]);
 
-  const handleValueIncrease = () => {
+  const handleValueIncrease = useCallback(() => {
     const parts = step.split('.');
 
     let decimalPlaces;
@@ -83,7 +86,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     const rounded = Math.round((inputNumber + stepNumber) / stepNumber) * stepNumber;
 
     setInputValue(rounded.toFixed(decimalPlaces));
-  };
+  }, [inputValue, setInputValue, step]);
 
   const inputNumeric = inputValue !== null ? +inputValue : null;
 

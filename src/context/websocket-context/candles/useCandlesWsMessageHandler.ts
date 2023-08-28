@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { useCallback } from 'react';
 import { UTCTimestamp } from 'lightweight-charts';
 
@@ -46,10 +46,10 @@ function createPairWithPeriod(perpetual: PerpetualI, period: TvChartPeriodE) {
 export function useCandlesWsMessageHandler() {
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
-  const setCandlesWebSocketReady = useSetAtom(candlesWebSocketReadyAtom);
-  const setCandles = useSetAtom(candlesAtom);
-  const setNewCandles = useSetAtom(newCandlesAtom);
-  const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
+  const [, setCandlesWebSocketReady] = useAtom(candlesWebSocketReadyAtom);
+  const [, setCandles] = useAtom(candlesAtom);
+  const [, setNewCandles] = useAtom(newCandlesAtom);
+  const [, setCandlesDataReady] = useAtom(candlesDataReadyAtom);
 
   return useCallback(
     (message: string) => {

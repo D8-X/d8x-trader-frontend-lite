@@ -1,12 +1,14 @@
 import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Transport, WalletClient } from 'viem';
+import type { Account, Transport, WalletClient } from 'viem';
 import type { Chain } from 'wagmi';
+
+import type { AddressT } from 'types/types';
 
 export async function executeLiquidityWithdrawal(
   walletClient: WalletClient<Transport, Chain, Account>,
   traderAPI: TraderInterface,
   symbol: string
-): Promise<{ hash: Address }> {
+): Promise<{ hash: AddressT }> {
   const decimals = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
   const poolId = traderAPI.getPoolIdFromSymbol(symbol);
   const account = walletClient.account?.address;
@@ -16,7 +18,7 @@ export async function executeLiquidityWithdrawal(
   return walletClient
     .writeContract({
       chain: walletClient.chain,
-      address: traderAPI.getProxyAddress() as Address,
+      address: traderAPI.getProxyAddress() as AddressT,
       abi: PROXY_ABI,
       functionName: 'executeLiquidityWithdrawal',
       args: [poolId, walletClient.account?.address],

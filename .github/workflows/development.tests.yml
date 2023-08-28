@@ -24,10 +24,6 @@ jobs:
         with:
           node-version: 18
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Cache root node_modules
         uses: actions/cache@v2
         id: cache-root-node-modules
@@ -37,12 +33,12 @@ jobs:
 
       - name: Install dependencies (if not cached)
         if: steps.cache-root-node-modules.outputs.cache-hit != 'true'
-        run: pnpm i
+        run: npm ci
         env:
           CI: true
 
       - name: Eslint
-        run: pnpm run eslint
+        run: npm run eslint
 
       - name: Stylelint
-        run: pnpm run stylelint
+        run: npm run stylelint

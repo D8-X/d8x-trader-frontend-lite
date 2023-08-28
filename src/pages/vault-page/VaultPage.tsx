@@ -1,5 +1,6 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { useEffect, useRef } from 'react';
+import { useAtom } from 'jotai';
+import { memo, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -7,9 +8,8 @@ import { Box } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { Footer } from 'components/footer/Footer';
-import { Header } from 'components/header/Header';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
-import { Helmet } from 'components/helmet';
+import { Header } from 'components/header/Header';
 import { getOpenWithdrawals } from 'network/history';
 import { GlobalStats } from 'pages/vault-page/components/global-stats/GlobalStats';
 import { LiquidityBlock } from 'pages/vault-page/components/liquidity-block/LiquidityBlock';
@@ -18,7 +18,7 @@ import { triggerWithdrawalsUpdateAtom, withdrawalsAtom } from 'store/vault-pools
 
 import styles from './VaultPage.module.scss';
 
-export const VaultPage = () => {
+export const VaultPage = memo(() => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
@@ -26,7 +26,7 @@ export const VaultPage = () => {
 
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [triggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
-  const setWithdrawals = useSetAtom(withdrawalsAtom);
+  const [, setWithdrawals] = useAtom(withdrawalsAtom);
 
   const withdrawalsRequestSentRef = useRef(false);
 
@@ -52,7 +52,9 @@ export const VaultPage = () => {
 
   return (
     <>
-      <Helmet title={`${selectedPool?.poolSymbol} Vault | D8X App`} />
+      <Helmet>
+        <title>{`${selectedPool?.poolSymbol} Vault | D8X App`}</title>
+      </Helmet>
       <Box className={styles.root}>
         <Header>
           <CollateralsSelect label={t('common.select.collateral.label2')} />
@@ -65,4 +67,4 @@ export const VaultPage = () => {
       </Box>
     </>
   );
-};
+});

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
-import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
@@ -18,7 +18,7 @@ export const TakeProfitSelector = memo(() => {
   const { t } = useTranslation();
   const [orderInfo] = useAtom(orderInfoAtom);
   const [takeProfit, setTakeProfit] = useAtom(takeProfitAtom);
-  const setTakeProfitPrice = useSetAtom(takeProfitPriceAtom);
+  const [, setTakeProfitPrice] = useAtom(takeProfitPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
 
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null>(null);
@@ -26,21 +26,27 @@ export const TakeProfitSelector = memo(() => {
   const currentOrderBlockRef = useRef(orderInfo?.orderBlock);
   const currentLeverageRef = useRef(orderInfo?.leverage);
 
-  const handleTakeProfitPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const takeProfitPriceValue = event.target.value;
-    if (takeProfitPriceValue !== '') {
-      setTakeProfitInputPrice(+takeProfitPriceValue);
-      setTakeProfit(null);
-    } else {
-      setTakeProfitInputPrice(null);
-    }
-  };
+  const handleTakeProfitPriceChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const takeProfitPriceValue = event.target.value;
+      if (takeProfitPriceValue !== '') {
+        setTakeProfitInputPrice(+takeProfitPriceValue);
+        setTakeProfit(null);
+      } else {
+        setTakeProfitInputPrice(null);
+      }
+    },
+    [setTakeProfit]
+  );
 
-  const handleTakeProfitChange = (takeProfitValue: TakeProfitE) => {
-    setTakeProfitPrice(null);
-    setTakeProfitInputPrice(null);
-    setTakeProfit(takeProfitValue);
-  };
+  const handleTakeProfitChange = useCallback(
+    (takeProfitValue: TakeProfitE) => {
+      setTakeProfitPrice(null);
+      setTakeProfitInputPrice(null);
+      setTakeProfit(takeProfitValue);
+    },
+    [setTakeProfitPrice, setTakeProfit]
+  );
 
   const minTakeProfitPrice = useMemo(() => {
     if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Long) {

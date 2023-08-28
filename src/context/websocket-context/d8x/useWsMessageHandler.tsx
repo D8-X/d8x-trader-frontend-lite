@@ -1,5 +1,5 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { useCallback } from 'react';
+import { useAtom } from 'jotai';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId } from 'wagmi';
@@ -79,13 +79,15 @@ export function useWsMessageHandler() {
 
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const setWebSocketReady = useSetAtom(webSocketReadyAtom);
-  const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
-  const setPositions = useSetAtom(positionsAtom);
-  const setOpenOrders = useSetAtom(openOrdersAtom);
-  const removeOpenOrder = useSetAtom(removeOpenOrderAtom);
-  const failOpenOrder = useSetAtom(failOrderAtom);
+  const [, setWebSocketReady] = useAtom(webSocketReadyAtom);
+  const [, setPerpetualStatistics] = useAtom(perpetualStatisticsAtom);
+  const [, setPositions] = useAtom(positionsAtom);
+  const [, setOpenOrders] = useAtom(openOrdersAtom);
+  const [, removeOpenOrder] = useAtom(removeOpenOrderAtom);
+  const [, failOpenOrder] = useAtom(failOrderAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
+
+  const traderAPIRef = useRef(traderAPI);
 
   const updatePerpetualStats = useCallback(
     (stats: PerpetualStatisticsI) => {
@@ -162,10 +164,10 @@ export function useWsMessageHandler() {
           return;
         }
         // refresh open orders
-        getOpenOrders(chainId, traderAPI, parsedMessage.data.obj.symbol, address)
+        getOpenOrders(chainId, traderAPIRef.current, parsedMessage.data.obj.symbol, address)
           .then(({ data }) => {
-            if (data?.length > 0) {
-              data.map(setOpenOrders);
+            if (data && data.length > 0) {
+              data.map((o) => setOpenOrders(o));
             }
           })
           .catch(console.error);
@@ -219,7 +221,6 @@ export function useWsMessageHandler() {
       chainId,
       address,
       t,
-      traderAPI,
     ]
   );
 }

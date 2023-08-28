@@ -1,7 +1,7 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -39,10 +39,10 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const setTraderAPI = useSetAtom(traderAPIAtom);
+  const [, setTraderAPI] = useAtom(traderAPIAtom);
   const [loyaltyScore, setLoyaltyScore] = useAtom(loyaltyScoreAtom);
-  const setSDKConnected = useSetAtom(sdkConnectedAtom);
-  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
+  const [, setSDKConnected] = useAtom(sdkConnectedAtom);
+  const [, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
   const loadingAPIRef = useRef(false);
   const loadingTraderLoyaltyRef = useRef(false);
@@ -139,7 +139,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
     }
     unloadSDK();
     loadSDK(publicClient, chainId)
-      .then()
+      .then(() => {})
       .catch((err) => console.log(err));
   }, [isConnected, publicClient, chainId, loadSDK, unloadSDK]);
 

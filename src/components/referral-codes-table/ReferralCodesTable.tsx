@@ -1,4 +1,5 @@
-import { memo, useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -47,6 +48,15 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
     return headers;
   }, [isAgency, t]);
 
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }, []);
+
   return (
     <TableContainer>
       <Table>
@@ -71,7 +81,7 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
         </TableBody>
       </Table>
       {codes.length > 5 && (
-        <Box>
+        <Box className={styles.paginationHolder}>
           <TablePagination
             align="center"
             rowsPerPageOptions={[5, 10, 20]}
@@ -79,11 +89,8 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
             count={codes.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={(_event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(+event.target.value);
-              setPage(0);
-            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>

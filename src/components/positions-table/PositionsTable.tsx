@@ -1,5 +1,5 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount, useChainId } from 'wagmi';
@@ -40,17 +40,18 @@ import styles from './PositionsTable.module.scss';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 
-export const PositionsTable = () => {
+export const PositionsTable = memo(() => {
   const { t } = useTranslation();
 
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [positions, setPositions] = useAtom(positionsAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
-  const removePosition = useSetAtom(removePositionAtom);
+  const [, removePosition] = useAtom(removePositionAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
-  const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const [, setTableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
 
+  const traderAPIRef = useRef(traderAPI);
   const isAPIBusyRef = useRef(isAPIBusy);
 
   const chainId = useChainId();
@@ -97,26 +98,29 @@ export const PositionsTable = () => {
   }, [selectedPool, removePosition]);
 
   useEffect(() => {
-    if (isDisconnected || traderAPI?.chainId !== chainId) {
+    if (isDisconnected || traderAPIRef.current?.chainId !== chainId) {
       clearPositions();
     }
-  }, [isDisconnected, chainId, clearPositions, traderAPI]);
+  }, [isDisconnected, chainId, clearPositions]);
 
   const refreshPositions = useCallback(async () => {
     if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
+      if (isAPIBusyRef.current || chainId !== traderAPIRef.current?.chainId) {
         return;
       }
       setAPIBusy(true);
-      try {
-        const { data } = await getPositionRisk(chainId, traderAPI, selectedPool.poolSymbol, address, Date.now());
-        clearPositions();
-        data.map(setPositions);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setAPIBusy(false);
-      }
+      await getPositionRisk(chainId, traderAPIRef.current, selectedPool.poolSymbol, address, Date.now())
+        .then(({ data }) => {
+          setAPIBusy(false);
+          clearPositions();
+          if (data && data.length > 0) {
+            data.map((p) => setPositions(p));
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          setAPIBusy(false);
+        });
     }
   }, [
     chainId,
@@ -127,12 +131,26 @@ export const PositionsTable = () => {
     setAPIBusy,
     setPositions,
     clearPositions,
-    traderAPI,
   ]);
+
+  useEffect(() => {
+    if (isSDKConnected) {
+      traderAPIRef.current = traderAPI;
+    }
+  }, [traderAPI, isSDKConnected]);
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.POSITIONS]: refreshPositions }));
   }, [refreshPositions, setTableRefreshHandlers]);
+
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }, []);
 
   const positionsHeaders: TableHeaderI[] = useMemo(
     () => [
@@ -222,11 +240,8 @@ export const PositionsTable = () => {
             count={positions.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={(_event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(+event.target.value);
-              setPage(0);
-            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>
@@ -236,4 +251,4 @@ export const PositionsTable = () => {
       <CloseModal isOpen={isCloseModalOpen} selectedPosition={selectedPosition} closeModal={closeCloseModal} />
     </div>
   );
-};
+});

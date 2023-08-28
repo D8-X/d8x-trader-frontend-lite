@@ -1,8 +1,8 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { memo, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -20,6 +20,7 @@ import {
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import type { AddressT } from 'types/types';
 
 import { Initiate } from './Initiate';
 
@@ -36,13 +37,13 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const [userAmount] = useAtom(userAmountAtom);
   const [withdrawals] = useAtom(withdrawalsAtom);
-  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
-  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const [, setTriggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
+  const [, setTriggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
 
   const { data: walletClient } = useWalletClient();
 
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);
 
   const requestSentRef = useRef(false);
 
@@ -66,7 +67,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     enabled: !!txHash,
   });
 
-  const handleWithdrawLiquidity = () => {
+  const handleWithdrawLiquidity = useCallback(() => {
     if (requestSentRef.current) {
       return;
     }
@@ -101,7 +102,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
         requestSentRef.current = false;
         setRequestSent(false);
       });
-  };
+  }, [liqProvTool, selectedPool, walletClient, setTriggerUserStatsUpdate, setTriggerWithdrawalsUpdate, t]);
 
   const shareAmount = useMemo(() => {
     if (!withdrawals) {
@@ -137,7 +138,9 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     return 0;
   }, [dCurrencyPrice, withdrawals]);
 
-  const isButtonDisabled = !userAmount || !shareAmount || requestSent;
+  const isButtonDisabled = useMemo(() => {
+    return !userAmount || !shareAmount || requestSent;
+  }, [userAmount, shareAmount, requestSent]);
 
   return (
     <div className={styles.root}>

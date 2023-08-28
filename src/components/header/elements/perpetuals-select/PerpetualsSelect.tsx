@@ -23,7 +23,7 @@ import { candlesAtom, candlesDataReadyAtom, newCandlesAtom, selectedPeriodAtom }
 import type { PerpetualI } from 'types/types';
 
 import { HeaderSelect } from '../header-select/HeaderSelect';
-import { type SelectItemI } from '../header-select/types';
+import { SelectItemI } from '../header-select/types';
 
 import styles from '../header-select/HeaderSelect.module.scss';
 
@@ -66,6 +66,7 @@ export const PerpetualsSelect = memo(({ withNavigate }: PerpetualsSelectPropsI) 
   const [traderAPI] = useAtom(traderAPIAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 
+  const traderAPIRef = useRef(traderAPI);
   const urlChangesAppliedRed = useRef(false);
 
   useEffect(() => {
@@ -139,13 +140,13 @@ export const PerpetualsSelect = memo(({ withNavigate }: PerpetualsSelectPropsI) 
 
   useEffect(() => {
     if (symbol && chainId && chainId === chain?.id) {
-      getPerpetualStaticInfo(chainId, traderAPI, symbol)
+      getPerpetualStaticInfo(chainId, traderAPIRef.current, symbol)
         .then(({ data }) => {
           setPerpetualStaticInfo(data);
         })
         .catch(console.error);
     }
-  }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI]);
+  }, [chain, chainId, symbol, setPerpetualStaticInfo]);
 
   const handleChange = (newItem: PerpetualI) => {
     setSelectedPerpetual(newItem.id);

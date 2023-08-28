@@ -1,10 +1,8 @@
-import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
-import { useAtom, useSetAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
-import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
 import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
@@ -23,7 +21,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import { HashZero } from 'app-constants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
@@ -36,15 +33,18 @@ import {
   traderAPIAtom,
   traderAPIBusyAtom,
 } from 'store/pools.store';
-import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
+import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { AlignE, TableTypeE } from 'types/enums';
-import type { OrderWithIdI, TableHeaderI } from 'types/types';
+import type { AddressT, OrderWithIdI, TableHeaderI } from 'types/types';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
+import { HashZero } from '@ethersproject/constants';
+import { decodeEventLog, encodeEventTopics } from 'viem';
+import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
@@ -60,44 +60,45 @@ export const OpenOrdersTable = memo(() => {
 
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
-  const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
+  const [, clearOpenOrders] = useAtom(clearOpenOrdersAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
-  const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const [, setTableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
 
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithIdI | null>(null);
   const [requestSent, setRequestSent] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<AddressT | undefined>(undefined);
 
+  const traderAPIRef = useRef(traderAPI);
   const isAPIBusyRef = useRef(isAPIBusy);
 
   useEffect(() => {
-    if (isDisconnected || traderAPI?.chainId !== chainId) {
+    if (isDisconnected || traderAPIRef.current?.chainId !== chainId) {
       clearOpenOrders();
     }
-  }, [isDisconnected, chainId, clearOpenOrders, traderAPI]);
+  }, [isDisconnected, chainId, clearOpenOrders]);
 
   const handleOrderCancel = useCallback((order: OrderWithIdI) => {
     setCancelModalOpen(true);
     setSelectedOrder(order);
   }, []);
 
-  const closeCancelModal = () => {
+  const closeCancelModal = useCallback(() => {
     setCancelModalOpen(false);
     setSelectedOrder(null);
-  };
+  }, []);
 
   const refreshOpenOrders = useCallback(async () => {
     if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
+      if (isAPIBusyRef.current || chainId !== traderAPIRef.current?.chainId) {
         return;
       }
       setAPIBusy(true);
-      await getOpenOrders(chainId, traderAPI, selectedPool.poolSymbol, address, Date.now())
+      await getOpenOrders(chainId, traderAPIRef.current, selectedPool.poolSymbol, address, Date.now())
         .then(({ data }) => {
           setAPIBusy(false);
           clearOpenOrders();
@@ -110,17 +111,7 @@ export const OpenOrdersTable = memo(() => {
           setAPIBusy(false);
         });
     }
-  }, [
-    chainId,
-    address,
-    selectedPool,
-    isConnected,
-    isSDKConnected,
-    setAPIBusy,
-    setOpenOrders,
-    clearOpenOrders,
-    traderAPI,
-  ]);
+  }, [chainId, address, selectedPool, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders]);
 
   useWaitForTransaction({
     hash: txHash,
@@ -178,7 +169,7 @@ export const OpenOrdersTable = memo(() => {
     enabled: !!address && !!txHash,
   });
 
-  const handleCancelOrderConfirm = () => {
+  const handleCancelOrderConfirm = useCallback(() => {
     if (!selectedOrder) {
       return;
     }
@@ -192,7 +183,7 @@ export const OpenOrdersTable = memo(() => {
     }
 
     setRequestSent(true);
-    getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
+    getCancelOrder(chainId, traderAPIRef.current, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
           cancelOrder(walletClient, HashZero, data.data, selectedOrder.id)
@@ -216,11 +207,26 @@ export const OpenOrdersTable = memo(() => {
         console.error(error);
         setRequestSent(false);
       });
-  };
+  }, [selectedOrder, requestSent, isDisconnected, walletClient, chainId, t]);
+
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleChangeRowsPerPage = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }, []);
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.OPEN_ORDERS]: refreshOpenOrders }));
   }, [refreshOpenOrders, setTableRefreshHandlers]);
+
+  useEffect(() => {
+    if (isSDKConnected) {
+      traderAPIRef.current = traderAPI;
+    }
+  }, [traderAPI, isSDKConnected]);
 
   const openOrdersHeaders: TableHeaderI[] = useMemo(
     () => [
@@ -314,11 +320,8 @@ export const OpenOrdersTable = memo(() => {
             count={sortedOpenOrders.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={(_event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(+event.target.value);
-              setPage(0);
-            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
         </Box>

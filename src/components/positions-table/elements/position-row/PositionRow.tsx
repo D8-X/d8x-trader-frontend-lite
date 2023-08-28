@@ -1,9 +1,8 @@
-import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DeleteForeverOutlined, ModeEditOutlineOutlined } from '@mui/icons-material';
-import { TableCell, TableRow, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import { ModeEditOutlineOutlined, DeleteForeverOutlined } from '@mui/icons-material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
 import type { MarginAccountI } from 'types/types';
@@ -17,7 +16,7 @@ interface PositionRowPropsI {
   handlePositionModify: (position: MarginAccountI) => void;
 }
 
-export const PositionRow = memo(({ position, handlePositionClose, handlePositionModify }: PositionRowPropsI) => {
+export const PositionRow = ({ position, handlePositionClose, handlePositionModify }: PositionRowPropsI) => {
   const { t } = useTranslation();
   const parsedSymbol = parseSymbol(position.symbol);
 
@@ -83,4 +82,4 @@ export const PositionRow = memo(({ position, handlePositionClose, handlePosition
       </TableCell>
     </TableRow>
   );
-});
+};
