@@ -21,7 +21,8 @@ export const InfoBlock = ({ title, content, classname }: InfoBlockPropsI) => {
 
   return (
     <>
-      {title} <InfoOutlined onClick={() => setModalOpen(true)} className={classNames(styles.actionIcon, classname)} />
+      <p className={styles.title}>{title}</p>{' '}
+      <InfoOutlined onClick={() => setModalOpen(true)} className={classNames(styles.actionIcon, classname)} />
       <Dialog open={isModalOpen} className={styles.dialog}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent className={styles.dialogContent}>{content}</DialogContent>

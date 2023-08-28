@@ -25,3 +25,14 @@
     margin-bottom: 3 * $d8x-spacing;
   }
 }
+
+@media screen and ($d8x-breakpoint-max-xs) {
+
+  .root {
+
+    button {
+      font-size: 12px;
+      max-height: 32px;
+    }
+  }
+}

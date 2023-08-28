@@ -41,3 +41,13 @@
     }
   }
 }
+
+@media screen and ($d8x-breakpoint-max-xs) {
+
+  .rootOptions {
+
+    :global(.MuiButtonBase-root) {
+      font-size: 14px;
+    }
+  }
+}

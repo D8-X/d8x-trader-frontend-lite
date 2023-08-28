@@ -137,6 +137,11 @@
 
     :global(.MuiInputBase-root) {
       min-width: initial;
+      font-size: 14px;
+    }
+
+    :global(.MuiInputLabel-root) {
+      font-size: 12px;
     }
   }
 
