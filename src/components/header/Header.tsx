@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useChainId, useNetwork, type Address } from 'wagmi';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -31,6 +31,7 @@ import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButto
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { collateralsAtom } from './elements/market-select/collaterals.store';
 
 interface HeaderPropsI extends PropsWithChildren {
   /**
@@ -53,6 +54,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
   const { address } = useAccount();
 
   const setPools = useSetAtom(poolsAtom);
+  const setCollaterals = useSetAtom(collateralsAtom);
   const setPerpetuals = useSetAtom(perpetualsAtom);
   const setOracleFactoryAddr = useSetAtom(oracleFactoryAddrAtom);
   const setProxyAddr = useSetAtom(proxyAddrAtom);
@@ -71,23 +73,23 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
         setProxyAddr(undefined);
         return;
       }
-      setPools(
-        data.pools.map((pool) => {
-          let poolId = 0;
-          if (traderAPI) {
-            try {
-              poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
-            } catch (error) {
-              console.log(error);
-            }
+      const pools = data.pools.map((pool) => {
+        let poolId = 0;
+        if (traderAPI) {
+          try {
+            poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
+          } catch (error) {
+            console.log(error);
           }
+        }
 
-          return {
-            ...pool,
-            poolId,
-          };
-        })
-      );
+        return {
+          ...pool,
+          poolId,
+        };
+      });
+      setPools(pools);
+      setCollaterals(pools.map((pool) => pool.poolSymbol));
       const perpetuals: PerpetualDataI[] = [];
       data.pools.forEach((pool) => {
         perpetuals.push(
@@ -108,7 +110,7 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
       setOracleFactoryAddr(data.oracleFactoryAddr);
       setProxyAddr(data.proxyAddr);
     },
-    [setPools, setPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
+    [setPools, setCollaterals, setPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
   );
 
   useEffect(() => {

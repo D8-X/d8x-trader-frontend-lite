@@ -1,31 +1,50 @@
+import { atom, useAtom } from 'jotai';
 import styles from './Tabs.module.scss';
-import { useState } from 'react';
+
+enum TokenGroupsE {
+  CRYPTO,
+  FX,
+  COMMODITY,
+}
 
 const options = [
   {
     label: 'Crypto',
-    value: 'crypto',
+    value: TokenGroupsE.CRYPTO,
   },
   {
     label: 'FX',
-    value: 'fx',
+    value: TokenGroupsE.FX,
   },
   {
     label: 'Commodity',
-    value: 'commodity',
+    value: TokenGroupsE.COMMODITY,
   },
 ];
 
+export const tokenGroups: { [key in TokenGroupsE]: string[] } = {
+  [TokenGroupsE.CRYPTO]: ['MATIC', 'ETC', 'BTC'],
+  [TokenGroupsE.FX]: ['CHF', 'XAU', 'GBP'],
+  [TokenGroupsE.COMMODITY]: [],
+};
+
+export const groupFilterAtom = atom<TokenGroupsE | null>(null);
+
 export const Tabs = () => {
-  const [activeTab, setActiveTab] = useState(options[0].value);
+  const [groupFilter, setGroupFilter] = useAtom(groupFilterAtom);
 
   return (
     <div className={styles.container}>
       {options.map((option) => (
         <div
           key={option.value}
-          className={activeTab === option.value ? styles.active : styles.inactive}
-          onClick={() => setActiveTab(option.value)}
+          className={groupFilter === option.value ? styles.active : styles.inactive}
+          onClick={() => {
+            if (groupFilter === option.value) {
+              return setGroupFilter(null);
+            }
+            return setGroupFilter(option.value);
+          }}
         >
           {option.label}
         </div>
