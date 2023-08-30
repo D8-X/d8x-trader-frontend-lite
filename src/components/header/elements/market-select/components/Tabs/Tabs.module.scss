@@ -1,0 +1,24 @@
+@import '~styles/theme/_theme.scss';
+@import '~styles/theme/_utils.scss';
+@import '~styles/breakpoints.scss';
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.active {
+  background-color: var(--d8x-color-purple-50);
+  padding: 4px 12px;
+  border-radius: 8px;
+  color: #6649DF;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.inactive {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}

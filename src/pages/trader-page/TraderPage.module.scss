@@ -36,6 +36,9 @@
   max-width: 450px;
   min-width: 450px;
   margin-left: $d8x-spacing * 2.5;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {

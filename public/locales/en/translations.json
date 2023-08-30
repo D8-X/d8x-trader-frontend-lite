@@ -507,6 +507,10 @@
           "num-of-perps": "No. of perps"
         }
       },
+      "market": {
+        "label": "Market",
+        "header": "Choose Market"
+      },
       "perpetual": {
         "label": "Perpetual:",
         "headers": {

@@ -67,6 +67,15 @@
     width: 100px;
     text-align: right;
   }
+
+  .header {
+    color: var(--d8x-color-black-maintext);
+    text-align: center;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 32px; /* 200% */
+  }
 }
 
 .optionHolder {
@@ -163,5 +172,13 @@
     &:hover {
       background-color: var(--d8x-color-black-150);
     }
+  }
+}
+
+.select {
+
+  :global(.MuiList-root) {
+    display: flex;
+    flex-direction: column;
   }
 }

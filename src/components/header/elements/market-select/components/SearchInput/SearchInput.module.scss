@@ -1,0 +1,30 @@
+@import '~styles/theme/_theme.scss';
+@import '~styles/theme/_utils.scss';
+
+// @import '~styles/breakpoints.scss';
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchRaw {
+  width: 100%;
+  background-color: var(--d8x-background);
+  border: none;
+  padding: 12px 8px 12px 40px;
+  border-radius: 8px;
+}
+
+.searchIcon {
+  position: absolute;
+  margin-left: 8px;
+}
+
+.closeIcon {
+  position: absolute;
+  cursor: pointer;
+  right: 0;
+  margin-right: 8px;
+}

@@ -1,0 +1,155 @@
+@import '~styles/theme/_theme.scss';
+@import '~styles/theme/_utils.scss';
+
+// @import '~styles/breakpoints.scss';
+
+.holderRoot {
+  display: flex;
+  align-items: center;
+  gap: 0.5 * $d8x-spacing;
+  background-color: white;
+  border-radius: 8px;
+  height: 82px;
+}
+
+.iconWrapper {
+  @include flex-center;
+
+  height: 45px;
+  min-width: 45px;
+  border-radius: 50%;
+  background-color: var(--d8x-color-white);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.selectedValueContainer {
+  display: flex;
+  flex-direction: column;
+  color: var(--main-text-primary, #1C1C1C);
+
+  // font-family: Inter;
+  font-size: 16px;
+
+  // font-style: normal;
+  // font-weight: 500;
+  line-height: 20px; /* 150% */
+
+  .collateral {
+    // color: var(--main-text-primary, #1c1c1c);
+    // font-family: Inter;
+    font-size: 10px;
+
+    // font-style: normal;
+    // font-weight: 500;
+    line-height: 1;
+
+    // @include mediaDesktop() {
+    //   font-size: 20px;
+    // }
+  }
+}
+
+.optionsHeader {
+  // display: flex;
+  display: block;
+  padding: 12px;
+
+  // align-items: center;
+  // gap: $d8x-spacing * 4;
+  // text-align: center;
+
+  .header {
+    color: var(--d8x-color-black-maintext);
+    text-align: center;
+
+    // font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 32px; /* 200% */
+  }
+}
+
+.optionHolder {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: $d8x-spacing;
+
+  .label {
+    font-weight: bold;
+    font-size: 0.875rem;
+
+    div {
+      font-size: 0.625rem;
+    }
+  }
+
+  .value {
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.75rem;
+  }
+}
+
+.optionLeftBlock {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.optionRightBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.priceChange {
+  text-align: right;
+  font-weight: bold;
+  font-size: 0.625rem;
+}
+
+.controlsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 16px;
+  border-bottom: 1px solid lightgray;
+  border-top: 1px solid lightgray;
+}
+
+.collateralSelect {
+  background-color: var(--d8x-color-purple-50);
+
+  // :global(.MuiPaper-root) {
+  //   background-color: var(--d8x-color-purple-50);
+  // }
+}
+
+.collateralOptionContainer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 16px;
+
+  // background-color: var(--d8x-color-purple-50);
+}
+
+.collateralContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.625rem;
+
+  // background-color: var(--d8x-color-purple-50);
+
+  div {
+    color: #6649DF;
+    font-size: 0.75rem;
+  }
+}

@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { type Address, useAccount, useChainId } from 'wagmi';
+import { useAccount, useChainId, type Address } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -11,13 +11,14 @@ import { Footer } from 'components/footer/Footer';
 import { FundingTable } from 'components/funding-table/FundingTable';
 import { Header } from 'components/header/Header';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
+import { MarketSelect } from 'components/header/elements/market-select/MarketSelect';
 import { PerpetualsSelect } from 'components/header/elements/perpetuals-select/PerpetualsSelect';
 import { Helmet } from 'components/helmet/Helmet';
 import { OpenOrdersTable } from 'components/open-orders-table/OpenOrdersTable';
 import { OrderBlock } from 'components/order-block/OrderBlock';
 import { PositionsTable } from 'components/positions-table/PositionsTable';
 import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
-import { type SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
+import { TableSelector, type SelectorItemI } from 'components/table-selector/TableSelector';
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
 import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
@@ -239,6 +240,7 @@ export const TraderPage = () => {
               />
             </Box>
             <Box className={styles.rightBlock}>
+              <MarketSelect />
               <OrderBlock />
             </Box>
           </Container>
