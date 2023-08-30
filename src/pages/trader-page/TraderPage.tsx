@@ -227,6 +227,7 @@ export const TraderPage = () => {
         <Header>
           <CollateralsSelect withNavigate={true} />
           <PerpetualsSelect withNavigate={true} />
+          {!isBigScreen && <MarketSelect />}
         </Header>
         {isBigScreen && (
           <Container className={styles.sidesContainer}>

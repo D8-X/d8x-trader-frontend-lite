@@ -30,7 +30,7 @@ export interface SelectPropsI {
   onSelect: OnSelectFnT;
 }
 
-export const Select: FC<SelectPropsI> = ({ options, onSelect, defaultValueIndex }) => {
+export const Select: FC<SelectPropsI> = ({ options, onSelect }) => {
   // const [isOpen, setIsOpen] = useState(false);
   // const [currentValueIndex, setCurrentValueIndex] = useState(defaultValueIndex || 0);
 
@@ -43,19 +43,9 @@ export const Select: FC<SelectPropsI> = ({ options, onSelect, defaultValueIndex 
   return (
     <div data-prefix="Collateral:" className={styles.customSelect}>
       <select>
-        {options.map((option, i) => {
-          return <CollateralOption key={option} collateral={option} onClick={() => setSelectValue(option, i)} />;
-          // return (
-          //   <option
-          //     key={option}
-          //     value={option}
-          //     // className={styles.selectOption}
-          //     onClick={() => setSelectValue(option, i)}
-          //   >
-          //     {option}
-          //   </option>
-          // );
-        })}
+        {options.map((option, i) => (
+          <CollateralOption key={option} collateral={option} onClick={() => setSelectValue(option, i)} />
+        ))}
       </select>
     </div>
   );

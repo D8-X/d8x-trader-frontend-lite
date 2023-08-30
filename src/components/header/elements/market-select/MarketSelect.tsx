@@ -11,22 +11,18 @@ import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { clearInputsDataAtom } from 'store/order-block.store';
 import { poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
-import { PerpetualI } from 'types/types';
 import { tokensIconsMap } from 'utils/tokens';
 
 import { HeaderSelect } from '../header-select/HeaderSelect';
 import type { SelectItemI } from '../header-select/types';
 
 import styles from './MarketSelect.module.scss';
-import { collateralFilterAtom, collateralsAtom, defaultCollateralFilter } from './collaterals.store';
+import { collateralFilterAtom, collateralsAtom } from './collaterals.store';
 import { SearchInput } from './components/SearchInput/SearchInput';
 import { Select } from './components/Select';
-import { Tabs, groupFilterAtom, tokenGroups } from './components/Tabs/Tabs';
-
-interface PerpetualWithPoolI extends PerpetualI {
-  poolSymbol: string;
-  symbol: string;
-}
+import { Tabs } from './components/Tabs/Tabs';
+import { PerpetualWithPoolI } from './types';
+import { useMarketsFilter } from './useMarketsFilter';
 
 // const CollateralOption = ({ collateral }: { collateral: string }) => {
 //   const IconComponent = tokensIconsMap[collateral.toLowerCase()]?.icon ?? tokensIconsMap.default.icon;
@@ -99,7 +95,11 @@ const Option = ({
   // console.log('option :>> ', option);
   const IconComponent = tokensIconsMap[option.item.baseCurrency.toLowerCase()]?.icon ?? tokensIconsMap.default.icon;
   return (
-    <MenuItem value={option.value} selected={option.value === selectedPerpetual?.toString()}>
+    <MenuItem
+      value={option.value}
+      selected={option.value === selectedPerpetual?.toString()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       <div className={styles.optionHolder}>
         <div className={styles.optionLeftBlock}>
           <IconComponent width={24} height={24} />
@@ -205,26 +205,8 @@ export const MarketSelect = memo(() => {
       );
     return marketsData;
   }, [pools]);
-  const [collateralFilter] = useAtom(collateralFilterAtom);
-  const [groupFilter] = useAtom(groupFilterAtom);
 
-  const filteredMarkets = useMemo(() => {
-    let collateralFiltered = markets;
-    if (collateralFilter === defaultCollateralFilter) {
-      collateralFiltered = markets;
-    } else {
-      collateralFiltered = markets.filter((market) => market.item.poolSymbol === collateralFilter);
-    }
-
-    if (groupFilter === null) {
-      return collateralFiltered;
-    }
-    const groupToFilter = tokenGroups[groupFilter];
-    const groupFiltered = collateralFiltered.filter((market) => groupToFilter.includes(market.item.baseCurrency));
-    return groupFiltered;
-  }, [markets, collateralFilter, groupFilter]);
-
-  console.log('markets :>> ', { collateralFilter, pools, markets, selectedPool, filteredMarkets });
+  const filteredMarkets = useMarketsFilter(markets);
 
   return (
     <div className={styles.holderRoot}>
@@ -240,15 +222,13 @@ export const MarketSelect = memo(() => {
         value={selectedPerpetual?.id.toString()}
         handleChange={handleChange}
         OptionsHeader={OptionsHeader}
-        renderLabel={(value) => {
-          return (
-            <SelectedValue
-              key={`${value.baseCurrency}/${value.quoteCurrency}`}
-              collateral={selectedPool?.poolSymbol}
-              value={`${value.baseCurrency}/${value.quoteCurrency}`}
-            />
-          );
-        }}
+        renderLabel={(value) => (
+          <SelectedValue
+            key={`${value.baseCurrency}/${value.quoteCurrency}`}
+            collateral={selectedPool?.poolSymbol}
+            value={`${value.baseCurrency}/${value.quoteCurrency}`}
+          />
+        )}
         renderOption={(option) =>
           isMobileScreen ? (
             <option key={option.value} value={option.value}>
