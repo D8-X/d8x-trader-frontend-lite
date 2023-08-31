@@ -103,13 +103,13 @@ export const PositionsTable = () => {
   }, [isDisconnected, chainId, clearPositions, traderAPI]);
 
   const refreshPositions = useCallback(async () => {
-    if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
+    if (address && isConnected && chainId && isSDKConnected) {
       if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
         return;
       }
       setAPIBusy(true);
       try {
-        const { data } = await getPositionRisk(chainId, traderAPI, selectedPool.poolSymbol, address, Date.now());
+        const { data } = await getPositionRisk(chainId, traderAPI, address, Date.now());
         clearPositions();
         data.map(setPositions);
       } catch (err) {
@@ -118,17 +118,7 @@ export const PositionsTable = () => {
         setAPIBusy(false);
       }
     }
-  }, [
-    chainId,
-    address,
-    isConnected,
-    selectedPool?.poolSymbol,
-    isSDKConnected,
-    setAPIBusy,
-    setPositions,
-    clearPositions,
-    traderAPI,
-  ]);
+  }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setPositions, clearPositions, traderAPI]);
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.POSITIONS]: refreshPositions }));
@@ -142,12 +132,12 @@ export const PositionsTable = () => {
       { label: t('pages.trade.positions-table.table-header.entry-price'), align: AlignE.Right },
       { label: t('pages.trade.positions-table.table-header.liq-price'), align: AlignE.Right },
       {
-        label: `${t('pages.trade.positions-table.table-header.margin')} (${selectedPool?.poolSymbol})`,
+        label: t('pages.trade.positions-table.table-header.margin'),
         align: AlignE.Right,
       },
       { label: t('pages.trade.positions-table.table-header.pnl'), align: AlignE.Right },
     ],
-    [selectedPool, t]
+    [t]
   );
 
   return (

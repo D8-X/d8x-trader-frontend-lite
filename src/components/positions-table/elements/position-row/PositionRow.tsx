@@ -25,7 +25,7 @@ export const PositionRow = memo(({ position, handlePositionClose, handlePosition
     <TableRow>
       <TableCell align="left">
         <Typography variant="cellSmall">
-          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}
+          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol}
         </Typography>
       </TableCell>
       <TableCell align="right">
@@ -54,7 +54,8 @@ export const PositionRow = memo(({ position, handlePositionClose, handlePosition
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {formatToCurrency(position.collateralCC, '', true)}({Math.round(position.leverage * 100) / 100}x)
+          {formatToCurrency(position.collateralCC, parsedSymbol?.poolSymbol, true)} (
+          {Math.round(position.leverage * 100) / 100}x)
         </Typography>
       </TableCell>
       <TableCell align="right">

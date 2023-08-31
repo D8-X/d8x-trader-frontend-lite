@@ -27,7 +27,7 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
     <TableRow>
       <TableCell align="left">
         <Typography variant="cellSmall">
-          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}
+          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol}
         </Typography>
       </TableCell>
       <TableCell align="left">

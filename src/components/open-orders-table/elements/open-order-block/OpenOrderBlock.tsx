@@ -34,7 +34,7 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
             {t('pages.trade.orders-table.order-block-mobile.symbol')}
           </Typography>
           <Typography variant="bodySmall" component="p" className={styles.symbol}>
-            {`${parsedSymbol?.baseCurrency}/${parsedSymbol?.quoteCurrency}`}
+            {`${parsedSymbol?.baseCurrency}/${parsedSymbol?.quoteCurrency}/${parsedSymbol?.poolSymbol}`}
           </Typography>
         </Box>
         <IconButton

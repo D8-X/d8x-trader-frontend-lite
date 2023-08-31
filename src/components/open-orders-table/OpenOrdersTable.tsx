@@ -29,13 +29,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getCancelOrder, getOpenOrders } from 'network/network';
-import {
-  clearOpenOrdersAtom,
-  openOrdersAtom,
-  selectedPoolAtom,
-  traderAPIAtom,
-  traderAPIBusyAtom,
-} from 'store/pools.store';
+import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
@@ -58,7 +52,6 @@ export const OpenOrdersTable = memo(() => {
   const { data: walletClient } = useWalletClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -92,17 +85,17 @@ export const OpenOrdersTable = memo(() => {
   };
 
   const refreshOpenOrders = useCallback(async () => {
-    if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
+    if (address && isConnected && chainId && isSDKConnected) {
       if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
         return;
       }
       setAPIBusy(true);
-      await getOpenOrders(chainId, traderAPI, selectedPool.poolSymbol, address, Date.now())
+      await getOpenOrders(chainId, traderAPI, address, Date.now())
         .then(({ data }) => {
           setAPIBusy(false);
           clearOpenOrders();
-          if (data && data.length > 0) {
-            data.map((o) => setOpenOrders(o));
+          if (data?.length > 0) {
+            data.map(setOpenOrders);
           }
         })
         .catch((err) => {
@@ -110,17 +103,7 @@ export const OpenOrdersTable = memo(() => {
           setAPIBusy(false);
         });
     }
-  }, [
-    chainId,
-    address,
-    selectedPool,
-    isConnected,
-    isSDKConnected,
-    setAPIBusy,
-    setOpenOrders,
-    clearOpenOrders,
-    traderAPI,
-  ]);
+  }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders, traderAPI]);
 
   useWaitForTransaction({
     hash: txHash,

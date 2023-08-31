@@ -33,7 +33,7 @@ export const PositionBlock = memo(
               {t('pages.trade.positions-table.position-block-mobile.symbol')}
             </Typography>
             <Typography variant="bodySmall" component="p" className={styles.symbol}>
-              {`${parsedSymbol?.baseCurrency}/${parsedSymbol?.quoteCurrency}`}
+              {`${parsedSymbol?.baseCurrency}/${parsedSymbol?.quoteCurrency}/${parsedSymbol?.poolSymbol}`}
             </Typography>
           </Box>
           <IconButton
@@ -86,7 +86,7 @@ export const PositionBlock = memo(
           />
           <SidesRow
             leftSide={headers[5].label}
-            rightSide={`${formatToCurrency(position.collateralCC, '', true)}(${
+            rightSide={`${formatToCurrency(position.collateralCC, parsedSymbol?.poolSymbol, true)}${' '}(${
               Math.round(position.leverage * 100) / 100
             }x)`}
             leftSideStyles={styles.dataLabel}

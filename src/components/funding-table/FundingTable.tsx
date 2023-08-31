@@ -18,7 +18,7 @@ import {
 
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { getFundingRatePayments } from 'network/history';
-import { fundingListAtom, perpetualsAtom, positionsAtom, selectedPoolAtom } from 'store/pools.store';
+import { fundingListAtom, perpetualsAtom, positionsAtom } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
@@ -37,7 +37,6 @@ export const FundingTable = memo(() => {
   const [perpetuals] = useAtom(perpetualsAtom);
   const [positions] = useAtom(positionsAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
 
@@ -87,7 +86,7 @@ export const FundingTable = memo(() => {
         <TableContainer className={styles.root}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow>
+              <TableRow className={styles.tableHolder}>
                 {fundingListHeaders.map((header) => (
                   <TableCell key={header.label.toString()} align={header.align}>
                     <Typography variant="bodySmall">{header.label}</Typography>
@@ -98,7 +97,7 @@ export const FundingTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 fundingList
-                  .filter((h) => selectedPool?.perpetuals.some(({ id }) => id === h.perpetualId))
+                  .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((funding) => (
                     <FundingRow

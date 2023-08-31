@@ -18,7 +18,7 @@ import {
 
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { getTradesHistory } from 'network/history';
-import { openOrdersAtom, perpetualsAtom, selectedPoolAtom, tradesHistoryAtom } from 'store/pools.store';
+import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
@@ -37,7 +37,6 @@ export const TradeHistoryTable = memo(() => {
   const [perpetuals] = useAtom(perpetualsAtom);
   const [openOrders] = useAtom(openOrdersAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
 
@@ -88,10 +87,10 @@ export const TradeHistoryTable = memo(() => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer className={styles.tableHolder}>
+        <TableContainer>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow>
+              <TableRow className={styles.tableHolder}>
                 {tradeHistoryHeaders.map((header) => (
                   <TableCell key={header.label.toString()} align={header.align}>
                     <Typography variant="bodySmall">{header.label}</Typography>
@@ -102,8 +101,7 @@ export const TradeHistoryTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 tradesHistory
-                  .filter((h) => selectedPool?.perpetuals.some(({ id }) => id === h.perpetualId))
-                  .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+                  .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((tradeHistory) => (
                     <TradeHistoryRow
