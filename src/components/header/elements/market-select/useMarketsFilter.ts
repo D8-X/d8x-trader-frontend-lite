@@ -1,9 +1,10 @@
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
+
 import { SelectItemI } from '../header-select/types';
-import { collateralFilterAtom, defaultCollateralFilter } from './collaterals.store';
-import { searchFilterAtom } from './components/SearchInput/SearchInput';
-import { groupFilterAtom, tokenGroups } from './components/Tabs/Tabs';
+import { searchFilterAtom } from './components/search-input/SearchInput';
+import { collateralFilterAtom, defaultCollateralFilter, groupFilterAtom } from './collaterals.store';
+import { tokenGroups } from './constants';
 import { PerpetualWithPoolI } from './types';
 
 export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolI>[]) => {
@@ -21,16 +22,16 @@ export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolI>[]) => 
     if (groupFilter === null) {
       return collateralFiltered;
     }
+
     const groupToFilter = tokenGroups[groupFilter];
-    const groupFiltered = collateralFiltered.filter((market) => groupToFilter.includes(market.item.baseCurrency));
-    return groupFiltered;
+    return collateralFiltered.filter((market) => groupToFilter.includes(market.item.baseCurrency));
   }, [markets, collateralFilter, groupFilter]);
 
   const [searchFilter] = useAtom(searchFilterAtom);
 
-  const textFilteredMarkets = useMemo(() => {
+  return useMemo(() => {
     const checkStr = searchFilter.toLowerCase();
-    const newMarkets = [...filteredMarkets]
+    return [...filteredMarkets]
       .filter((market) => market.item.baseCurrency.toLowerCase().includes(checkStr))
       .sort((a, b) => {
         const bIndex = b.item.baseCurrency.toLowerCase().indexOf(checkStr);
@@ -41,10 +42,5 @@ export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolI>[]) => 
         if (bIndex < aIndex) return 1;
         return 0;
       });
-    return newMarkets;
   }, [filteredMarkets, searchFilter]);
-
-  console.log('markets :>> ', { collateralFilter, markets, filteredMarkets, textFilteredMarkets });
-
-  return textFilteredMarkets;
 };

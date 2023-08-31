@@ -1,104 +1,76 @@
-import { MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount } from 'wagmi';
+import { useAccount, useChainId, useNetwork } from 'wagmi';
 
-import { AttachMoneyOutlined } from '@mui/icons-material';
+import { Button, DialogActions, DialogContent, MenuItem, Typography } from '@mui/material';
+import { ArrowDropDown, ArrowDropUp, AttachMoneyOutlined } from '@mui/icons-material';
+
+import { Dialog } from 'components/dialog/Dialog';
+import { Separator } from 'components/separator/Separator';
+import { useCandlesWebSocketContext } from 'context/websocket-context/candles/useCandlesWebSocketContext';
 import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
+import { getPerpetualStaticInfo } from 'network/network';
 import { clearInputsDataAtom } from 'store/order-block.store';
-import { poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
+import {
+  perpetualStaticInfoAtom,
+  perpetualStatisticsAtom,
+  poolsAtom,
+  selectedPerpetualAtom,
+  selectedPoolAtom,
+  traderAPIAtom,
+} from 'store/pools.store';
+import { candlesDataReadyAtom, newCandlesAtom, selectedPeriodAtom } from 'store/tv-chart.store';
 import { tokensIconsMap } from 'utils/tokens';
 
-import { HeaderSelect } from '../header-select/HeaderSelect';
 import type { SelectItemI } from '../header-select/types';
-
-import styles from './MarketSelect.module.scss';
-import { collateralFilterAtom, collateralsAtom } from './collaterals.store';
-import { SearchInput } from './components/SearchInput/SearchInput';
-import { Select } from './components/Select';
-import { Tabs } from './components/Tabs/Tabs';
+import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
+import { SearchInput } from './components/search-input/SearchInput';
+import { Filters } from './components/filters/Filters';
 import { PerpetualWithPoolI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
-// const CollateralOption = ({ collateral }: { collateral: string }) => {
-//   const IconComponent = tokensIconsMap[collateral.toLowerCase()]?.icon ?? tokensIconsMap.default.icon;
-
-//   return (
-//     <MenuItem className={styles.collateralOptionContainer} value={collateral}>
-//       <IconComponent width={24} height={24} />
-//       {collateral}
-//     </MenuItem>
-//   );
-// };
-
-// const SelectedCollateral = ({ collateral }: { collateral?: string }) => {
-//   return (
-//     <div className={styles.collateralContainer}>
-//       Collateral:
-//       <div>{collateral}</div>
-//     </div>
-//   );
-// };
+import styles from './MarketSelect.module.scss';
 
 const OptionsHeader = () => {
   const { t } = useTranslation();
-  const setCollateralFilter = useSetAtom(collateralFilterAtom);
-  const [collaterals] = useAtom(collateralsAtom);
 
   return (
     <>
       <div className={styles.optionsHeader}>
         <div className={styles.header}>{t('common.select.market.header')}</div>
       </div>
+      <Separator />
       <div className={styles.controlsContainer}>
         <SearchInput />
-        <Select options={collaterals} onSelect={(v) => setCollateralFilter(v)} />
-        {/* <MaterialSelect
-          sx={{ width: '100%' }}
-          className={styles.collateralSelect}
-          value={collaterals[0]}
-          onChange={() => {
-            console.log('onChange');
-          }}
-          renderValue={(valueForLabel) => <SelectedCollateral collateral={valueForLabel} />}
-        >
-          {collaterals.map((collateral) => (
-            <CollateralOption key={collateral} collateral={collateral} />
-          ))}
-        </MaterialSelect> */}
-        <Tabs />
+        <CollateralFilter />
+        <Filters />
       </div>
     </>
   );
 };
 
-const SelectedValue = ({ value, collateral }: { value: string; collateral?: string }) => {
-  return (
-    <div className={styles.selectedValueContainer}>
-      <div>{value}</div>
-      <div className={styles.collateral}>{collateral}</div>
-    </div>
-  );
-};
-
 const Option = ({
   option,
-  selectedPerpetual,
+  isSelected,
+  onClick,
 }: {
+  isSelected: boolean;
   option: SelectItemI<PerpetualWithPoolI>;
-  selectedPerpetual?: number;
+  onClick: () => void;
 }) => {
-  // console.log('option :>> ', option);
   const IconComponent = tokensIconsMap[option.item.baseCurrency.toLowerCase()]?.icon ?? tokensIconsMap.default.icon;
+
   return (
     <MenuItem
       value={option.value}
-      selected={option.value === selectedPerpetual?.toString()}
-      onKeyDown={(e) => e.stopPropagation()}
+      selected={isSelected}
+      className={classnames({ [styles.selectedOption]: isSelected })}
+      onClick={onClick}
     >
       <div className={styles.optionHolder}>
         <div className={styles.optionLeftBlock}>
@@ -119,23 +91,35 @@ const Option = ({
   );
 };
 
-export const MarketSelect = memo(() => {
-  const { address } = useAccount();
+interface MarketSelectPropsI {
+  withNavigate?: boolean;
+  updatePerpetual?: boolean;
+}
 
-  const theme = useTheme();
-  const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelectPropsI) => {
   const { t } = useTranslation();
+
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+  const chainId = useChainId();
   const navigate = useNavigate();
   const location = useLocation();
 
   const { isConnected, send } = useWebSocketContext();
+  const { isConnected: isConnectedCandlesWs, send: sendToCandlesWs } = useCandlesWebSocketContext();
 
   const [pools] = useAtom(poolsAtom);
-  const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  // console.log('pools :>> ', pools, selectedPool);
+  const [selectedPeriod] = useAtom(selectedPeriodAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
+  const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
+  const setNewCandles = useSetAtom(newCandlesAtom);
+  const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
+  const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
+  const setPerpetualStaticInfo = useSetAtom(perpetualStaticInfoAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
+  const [traderAPI] = useAtom(traderAPIAtom);
+
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const urlChangesAppliedRed = useRef(false);
 
@@ -153,33 +137,98 @@ export const MarketSelect = memo(() => {
   }, [location.hash, selectedPool, setSelectedPool]);
 
   useEffect(() => {
-    if (selectedPool && isConnected) {
-      send(JSON.stringify({ type: 'unsubscribe' }));
-      selectedPool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
-        const symbol = createSymbol({
-          baseCurrency,
-          quoteCurrency,
-          poolSymbol: selectedPool.poolSymbol,
-        });
-        send(
-          JSON.stringify({
-            traderAddr: address ?? '',
-            symbol,
-          })
-        );
+    if (selectedPool && selectedPerpetual) {
+      setPerpetualStatistics({
+        id: selectedPerpetual.id,
+        baseCurrency: selectedPerpetual.baseCurrency,
+        quoteCurrency: selectedPerpetual.quoteCurrency,
+        poolName: selectedPool.poolSymbol,
+        midPrice: selectedPerpetual.midPrice,
+        markPrice: selectedPerpetual.markPrice,
+        indexPrice: selectedPerpetual.indexPrice,
+        currentFundingRateBps: selectedPerpetual.currentFundingRateBps,
+        openInterestBC: selectedPerpetual.openInterestBC,
       });
     }
-  }, [selectedPool, isConnected, send, address]);
+  }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
+
+  useEffect(() => {
+    if (pools.length && isConnected) {
+      send(JSON.stringify({ type: 'unsubscribe' }));
+
+      pools.forEach((pool) => {
+        pool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
+          const symbol = createSymbol({
+            baseCurrency,
+            quoteCurrency,
+            poolSymbol: pool.poolSymbol,
+          });
+          send(
+            JSON.stringify({
+              traderAddr: address ?? '',
+              symbol,
+            })
+          );
+        });
+      });
+    }
+  }, [pools, isConnected, send, address]);
+
+  useEffect(() => {
+    if (updatePerpetual && selectedPerpetual && isConnectedCandlesWs) {
+      sendToCandlesWs(JSON.stringify({ type: 'unsubscribe' }));
+      sendToCandlesWs(
+        JSON.stringify({
+          type: 'subscribe',
+          symbol: `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`,
+          period: selectedPeriod,
+        })
+      );
+      setNewCandles([]);
+      setCandlesDataReady(false);
+    }
+  }, [
+    updatePerpetual,
+    selectedPerpetual,
+    selectedPeriod,
+    setNewCandles,
+    setCandlesDataReady,
+    isConnectedCandlesWs,
+    sendToCandlesWs,
+  ]);
+
+  const symbol = useMemo(() => {
+    if (selectedPool && selectedPerpetual) {
+      return createSymbol({
+        baseCurrency: selectedPerpetual.baseCurrency,
+        quoteCurrency: selectedPerpetual.quoteCurrency,
+        poolSymbol: selectedPool.poolSymbol,
+      });
+    }
+    return '';
+  }, [selectedPool, selectedPerpetual]);
+
+  useEffect(() => {
+    if (updatePerpetual && symbol && chainId && chainId === chain?.id) {
+      getPerpetualStaticInfo(chainId, traderAPI, symbol)
+        .then(({ data }) => {
+          setPerpetualStaticInfo(data);
+        })
+        .catch(console.error);
+    }
+  }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI, updatePerpetual]);
 
   const handleChange = (newItem: PerpetualWithPoolI) => {
-    console.log('newItem :>> ', newItem);
     setSelectedPool(newItem.poolSymbol);
     setSelectedPerpetual(newItem.id);
 
-    navigate(
-      `${location.pathname}${location.search}#${newItem.baseCurrency}-${newItem.quoteCurrency}-${newItem.poolSymbol}`
-    );
+    if (withNavigate) {
+      navigate(
+        `${location.pathname}${location.search}#${newItem.baseCurrency}-${newItem.quoteCurrency}-${newItem.poolSymbol}`
+      );
+    }
     clearInputsData();
+    setModalOpen(false);
   };
 
   const markets = useMemo(() => {
@@ -213,32 +262,41 @@ export const MarketSelect = memo(() => {
       <div className={styles.iconWrapper}>
         <AttachMoneyOutlined />
       </div>
-      <HeaderSelect<PerpetualWithPoolI>
-        id="market-select"
-        label={t('common.select.market.label')}
-        native={isMobileScreen}
-        items={filteredMarkets}
-        width="100%"
-        value={selectedPerpetual?.id.toString()}
-        handleChange={handleChange}
-        OptionsHeader={OptionsHeader}
-        renderLabel={(value) => (
-          <SelectedValue
-            key={`${value.baseCurrency}/${value.quoteCurrency}`}
-            collateral={selectedPool?.poolSymbol}
-            value={`${value.baseCurrency}/${value.quoteCurrency}`}
+      <Button onClick={() => setModalOpen(true)} className={styles.marketSelectButton} variant="outlined">
+        <div className={styles.selectedMarketBlock}>
+          <Typography variant="bodyTiny" className={styles.selectedMarketLabel}>
+            {t('common.select.market.label')}
+          </Typography>
+          <div className={styles.selectedMarketValue}>
+            <Typography variant="bodyMedium" className={styles.selectedMarketPerpetual}>
+              {selectedPerpetual?.baseCurrency}/{selectedPerpetual?.quoteCurrency}
+            </Typography>
+            <Typography variant="bodyTiny" className={styles.selectedMarketCollateral}>
+              {selectedPool?.poolSymbol}
+            </Typography>
+          </div>
+        </div>
+        <div className={styles.arrowDropDown}>{isModalOpen ? <ArrowDropUp /> : <ArrowDropDown />}</div>
+      </Button>
+
+      <Dialog open={isModalOpen} className={styles.dialog} onClose={() => setModalOpen(false)} scroll="paper">
+        <OptionsHeader />
+        <Separator />
+        <DialogContent className={styles.dialogContent}></DialogContent>
+        {filteredMarkets.map((market) => (
+          <Option
+            key={market.value}
+            option={market}
+            isSelected={market.item.id === selectedPerpetual?.id}
+            onClick={() => handleChange(market.item)}
           />
-        )}
-        renderOption={(option) =>
-          isMobileScreen ? (
-            <option key={option.value} value={option.value}>
-              {option.item.baseCurrency}/{option.item.quoteCurrency}
-            </option>
-          ) : (
-            <Option key={option.value} option={option} selectedPerpetual={selectedPerpetual?.id} />
-          )
-        }
-      />
+        ))}
+        <DialogActions className={styles.dialogAction}>
+          <Button onClick={() => setModalOpen(false)} variant="secondary" size="small">
+            {t('common.info-modal.close')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 });

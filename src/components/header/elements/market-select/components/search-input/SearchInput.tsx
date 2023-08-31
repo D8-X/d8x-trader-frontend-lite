@@ -3,10 +3,11 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import { atom, useAtom } from 'jotai';
 import styles from './SearchInput.module.scss';
+import { memo } from 'react';
 
 export const searchFilterAtom = atom<string>('');
 
-export const SearchInput = () => {
+export const SearchInput = memo(() => {
   const [searchFilter, setSearchFilter] = useAtom(searchFilterAtom);
 
   return (
@@ -14,6 +15,7 @@ export const SearchInput = () => {
       <input
         className={styles.searchRaw}
         onChange={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           setSearchFilter(e.target.value);
         }}
@@ -24,4 +26,4 @@ export const SearchInput = () => {
       {searchFilter && <ClearIcon className={styles.closeIcon} onClick={() => setSearchFilter('')} />}
     </div>
   );
-};
+});

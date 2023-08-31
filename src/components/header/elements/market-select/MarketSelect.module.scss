@@ -1,8 +1,6 @@
 @import '~styles/theme/_theme.scss';
 @import '~styles/theme/_utils.scss';
 
-// @import '~styles/breakpoints.scss';
-
 .holderRoot {
   display: flex;
   align-items: center;
@@ -19,6 +17,8 @@
   min-width: 45px;
   border-radius: 50%;
   background-color: var(--d8x-color-white);
+  color: var(--d8x-color-purple);
+  margin-left: $d8x-spacing * 3;
 
   svg {
     width: 20px;
@@ -26,51 +26,96 @@
   }
 }
 
-.selectedValueContainer {
+.marketSelectButton {
   display: flex;
-  flex-direction: column;
-  color: var(--main-text-primary, #1C1C1C);
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: $d8x-spacing * 3;
+  border-radius: $d8x-spacing * 2;
+  border-color: transparent;
+}
 
-  // font-family: Inter;
-  font-size: 16px;
+.arrowDropDown {
+  color: var(--d8x-color-purple);
+  padding-top: 2 * $d8x-spacing;
+}
 
-  // font-style: normal;
-  // font-weight: 500;
-  line-height: 20px; /* 150% */
+.selectBlock {
+  border-radius: $d8x-spacing;
+  border: 1px solid silver;
 
-  .collateral {
-    // color: var(--main-text-primary, #1c1c1c);
-    // font-family: Inter;
-    font-size: 10px;
+  :global(.MuiSelect-select) {
+    background-color: transparent !important;
+  }
 
-    // font-style: normal;
-    // font-weight: 500;
-    line-height: 1;
+  :global(.MuiInputBase-root) {
+    min-width: 240px;
+    color: var(--d8x-color-purple);
+    font-weight: 600;
+  }
 
-    // @include mediaDesktop() {
-    //   font-size: 20px;
-    // }
+  :global(.MuiInputLabel-root):global(.Mui-focused) {
+    color: var(--d8x-color-black);
+  }
+
+  :global(.MuiInputLabel-root) {
+    color: var(--d8x-color-black-500);
   }
 }
 
+.selectedMarketBlock {
+  text-align: left;
+}
+
+.selectedMarketLabel {
+  color: var(--d8x-color-black-500);
+}
+
+.selectedMarketValue {
+  display: flex;
+  flex-direction: column;
+  color: var(--d8x-color-purple);
+
+  .selectedMarketPerpetual {
+    font-weight: 600;
+  }
+}
+
+.collateralFilter {
+  width: 100%;
+}
+
+.dialog {
+
+  :global(.MuiDialog-container) {
+    align-items: flex-start;
+  }
+
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 300px;
+    border-radius: $d8x-border-radius;
+  }
+}
+
+.dialogAction {
+  margin-top: $d8x-spacing * 6;
+  justify-content: center;
+}
+
 .optionsHeader {
-  // display: flex;
   display: block;
   padding: 12px;
-
-  // align-items: center;
-  // gap: $d8x-spacing * 4;
-  // text-align: center;
 
   .header {
     color: var(--d8x-color-black-maintext);
     text-align: center;
-
-    // font-family: Inter;
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
-    line-height: 32px; /* 200% */
+    line-height: 32px;
   }
 }
 
@@ -96,6 +141,10 @@
   }
 }
 
+.selectedOption {
+  background-color: var(--d8x-background-purple);
+}
+
 .optionLeftBlock {
   display: flex;
   gap: 8px;
@@ -119,37 +168,43 @@
   flex-direction: column;
   gap: 16px;
   padding: 8px 16px;
-  border-bottom: 1px solid lightgray;
-  border-top: 1px solid lightgray;
 }
 
-.collateralSelect {
-  background-color: var(--d8x-color-purple-50);
+@media screen and ($d8x-breakpoint-max-md) {
 
-  // :global(.MuiPaper-root) {
-  //   background-color: var(--d8x-color-purple-50);
-  // }
+  .holderRoot {
+    height: 58px;
+    min-width: 350px;
+    max-width: 350px;
+  }
+
+  .iconWrapper {
+    margin-left: $d8x-spacing * 2;
+  }
+
+  .marketSelectButton {
+    padding: $d8x-spacing * 2;
+  }
+
+  .selectedMarketValue {
+    flex-direction: row;
+    align-items: flex-end;
+
+    .selectedMarketPerpetual::after {
+      content: '/';
+    }
+
+    .selectedMarketCollateral {
+      line-height: 22px;
+    }
+  }
 }
 
-.collateralOptionContainer {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 6px 16px;
+@media screen and ($d8x-breakpoint-max-xs) {
 
-  // background-color: var(--d8x-color-purple-50);
-}
-
-.collateralContainer {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.625rem;
-
-  // background-color: var(--d8x-color-purple-50);
-
-  div {
-    color: #6649DF;
-    font-size: 0.75rem;
+  .holderRoot {
+    width: 100%;
+    min-width: inherit;
+    max-width: inherit;
   }
 }

@@ -1,36 +1,27 @@
-import { atom, useAtom } from 'jotai';
-import styles from './Tabs.module.scss';
+import { useAtom } from 'jotai';
+import { memo } from 'react';
 
-enum TokenGroupsE {
-  CRYPTO,
-  FX,
-  COMMODITY,
-}
+import { groupFilterAtom } from '../../collaterals.store';
+import { TokenGroupE } from '../../constants';
+
+import styles from './Filters.module.scss';
 
 const options = [
   {
     label: 'Crypto',
-    value: TokenGroupsE.CRYPTO,
+    value: TokenGroupE.CRYPTO,
   },
   {
     label: 'FX',
-    value: TokenGroupsE.FX,
+    value: TokenGroupE.FX,
   },
   {
     label: 'Commodity',
-    value: TokenGroupsE.COMMODITY,
+    value: TokenGroupE.COMMODITY,
   },
 ];
 
-export const tokenGroups: { [key in TokenGroupsE]: string[] } = {
-  [TokenGroupsE.CRYPTO]: ['MATIC', 'ETC', 'BTC'],
-  [TokenGroupsE.FX]: ['CHF', 'XAU', 'GBP'],
-  [TokenGroupsE.COMMODITY]: [],
-};
-
-export const groupFilterAtom = atom<TokenGroupsE | null>(null);
-
-export const Tabs = () => {
+export const Filters = memo(() => {
   const [groupFilter, setGroupFilter] = useAtom(groupFilterAtom);
 
   return (
@@ -51,4 +42,4 @@ export const Tabs = () => {
       ))}
     </div>
   );
-};
+});
