@@ -29,13 +29,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getCancelOrder, getOpenOrders } from 'network/network';
-import {
-  clearOpenOrdersAtom,
-  openOrdersAtom,
-  selectedPoolAtom,
-  traderAPIAtom,
-  traderAPIBusyAtom,
-} from 'store/pools.store';
+import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
@@ -58,7 +52,6 @@ export const OpenOrdersTable = memo(() => {
   const { data: walletClient } = useWalletClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
