@@ -22,7 +22,7 @@ export const FundingRow = ({ headers, perpetuals, funding }: FundingRowPropsI) =
       </TableCell>
       <TableCell align={headers[1].align}>
         <Typography variant="cellSmall">
-          {perpetual ? `${perpetual.baseCurrency}-${perpetual.quoteCurrency}` : ''}
+          {perpetual ? `${perpetual.baseCurrency}/${perpetual.quoteCurrency}/${perpetual.poolName}` : ''}
         </Typography>
       </TableCell>
       <TableCell align={headers[2].align}>

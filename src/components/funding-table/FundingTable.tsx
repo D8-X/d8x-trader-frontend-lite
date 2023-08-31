@@ -98,7 +98,7 @@ export const FundingTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 fundingList
-                  .filter((h) => selectedPool?.perpetuals.some(({ id }) => id === h.perpetualId))
+                  .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((funding) => (
                     <FundingRow
