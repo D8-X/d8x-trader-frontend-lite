@@ -102,8 +102,7 @@ export const TradeHistoryTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 tradesHistory
-                  .filter((h) => selectedPool?.perpetuals.some(({ id }) => id === h.perpetualId))
-                  .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+                  .sort((a, b) => (b.timestamp > a.timestamp ? 1 : -1))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((tradeHistory) => (
                     <TradeHistoryRow

@@ -26,7 +26,9 @@ export const TradeHistoryRow = ({ headers, perpetuals, tradeHistory }: TradeHist
         <Typography variant="cellSmall">{time}</Typography>
       </TableCell>
       <TableCell align={headers[1].align}>
-        <Typography variant="cellSmall">{perpetual?.symbol}</Typography>
+        <Typography variant="cellSmall">
+          {perpetual ? `${perpetual.baseCurrency}/${perpetual.quoteCurrency}/${perpetual.poolName}` : ''}
+        </Typography>
       </TableCell>
       <TableCell align={headers[2].align}>
         <Typography variant="cellSmall">
