@@ -132,12 +132,12 @@ export const PositionsTable = () => {
       { label: t('pages.trade.positions-table.table-header.entry-price'), align: AlignE.Right },
       { label: t('pages.trade.positions-table.table-header.liq-price'), align: AlignE.Right },
       {
-        label: `${t('pages.trade.positions-table.table-header.margin')} (${selectedPool?.poolSymbol})`,
+        label: t('pages.trade.positions-table.table-header.margin'),
         align: AlignE.Right,
       },
       { label: t('pages.trade.positions-table.table-header.pnl'), align: AlignE.Right },
     ],
-    [selectedPool, t]
+    [t]
   );
 
   return (
