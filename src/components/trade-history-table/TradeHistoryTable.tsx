@@ -87,10 +87,10 @@ export const TradeHistoryTable = memo(() => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer className={styles.tableHolder}>
+        <TableContainer>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow>
+              <TableRow className={styles.tableHolder}>
                 {tradeHistoryHeaders.map((header) => (
                   <TableCell key={header.label.toString()} align={header.align}>
                     <Typography variant="bodySmall">{header.label}</Typography>

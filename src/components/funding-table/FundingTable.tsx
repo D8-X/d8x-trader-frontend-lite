@@ -86,7 +86,7 @@ export const FundingTable = memo(() => {
         <TableContainer className={styles.root}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow>
+              <TableRow className={styles.tableHolder}>
                 {fundingListHeaders.map((header) => (
                   <TableCell key={header.label.toString()} align={header.align}>
                     <Typography variant="bodySmall">{header.label}</Typography>
