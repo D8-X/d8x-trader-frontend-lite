@@ -1,6 +1,6 @@
 import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
 import { type Time } from 'lightweight-charts';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import {
   type AlignE,
@@ -210,7 +210,7 @@ export interface MaxOrderSizeResponseI {
 }
 
 export interface TableHeaderI {
-  label: JSX.Element | string;
+  label: ReactElement | string;
   align: AlignE;
 }
 

@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,7 @@ import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTa
 import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
+import { orderBlockPositionAtom } from 'store/app.store';
 import {
   openOrdersAtom,
   perpetualStatisticsAtom,
@@ -32,7 +34,7 @@ import {
   traderAPIAtom,
 } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { TableTypeE } from 'types/enums';
+import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TraderPage.module.scss';
@@ -52,6 +54,7 @@ export const TraderPage = () => {
   const fetchFeeRef = useRef(false);
   const isPageUrlAppliedRef = useRef(false);
 
+  const [orderBlockPosition] = useAtom(orderBlockPositionAtom);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -230,7 +233,11 @@ export const TraderPage = () => {
           {!isBigScreen && <MarketSelect />}
         </Header>
         {isBigScreen && (
-          <Container className={styles.sidesContainer}>
+          <Container
+            className={classnames(styles.sidesContainer, {
+              [styles.swapSides]: orderBlockPosition === OrderBlockPositionE.Left,
+            })}
+          >
             <Box className={styles.leftBlock}>
               <PerpetualStats />
               <ChartHolder />

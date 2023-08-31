@@ -1,21 +1,29 @@
 @import '~styles/theme/_theme.scss';
 
-.iconButton {
-  margin-left: 4 * $d8x-spacing;
-  color: var(--d8x-color-white);
-  padding: 0;
-  min-width: 48px;
+.languageButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   height: 48px;
+  padding-left: 3 * $d8x-spacing;
+  padding-right: 3 * $d8x-spacing;
+  border-radius: $d8x-spacing;
+}
+
+.selectedLanguage {
+  display: flex;
+  align-items: center;
+  gap: 2 * $d8x-spacing;
 
   svg {
-    width: 32px;
-    height: 32px;
+    color: var(--d8x-color-purple);
+    width: 24px;
+    height: 24px;
   }
 }
 
-@media screen and ($d8x-breakpoint-max-lg) {
-
-  .iconButton {
-    margin-left: 2 * $d8x-spacing;
-  }
+.arrowDropDown {
+  color: var(--d8x-color-purple);
+  padding-top: 2 * $d8x-spacing;
 }

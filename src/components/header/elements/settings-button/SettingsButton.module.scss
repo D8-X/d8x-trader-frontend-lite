@@ -1,0 +1,33 @@
+@import '~styles/theme/_theme.scss';
+
+.iconButton {
+  margin-left: 4 * $d8x-spacing;
+  color: var(--d8x-color-white);
+  padding: 0;
+  min-width: 48px;
+  height: 48px;
+}
+
+.dialog {
+
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 375px;
+    border-radius: $d8x-border-radius;
+  }
+}
+
+.dialogContent {
+  font-size: 16px;
+  line-height: 24px;
+  margin-top: 10 * $d8x-spacing;
+  margin-bottom: 10 * $d8x-spacing;
+}
+
+.dialogContent > :not(:first-of-type) {
+  margin-top: 4 * $d8x-spacing;
+}
+
+.dialogAction {
+  justify-content: center;
+}

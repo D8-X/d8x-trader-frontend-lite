@@ -1,9 +1,11 @@
+import { useAtom } from 'jotai';
 import { type MouseEvent, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { Button, Menu, Tooltip } from '@mui/material';
+import { Button, Menu } from '@mui/material';
+import { ArrowDropDown } from '@mui/icons-material';
 
 import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
+import { selectedLanguageAtom } from 'store/app.store';
 import { LanguageE } from 'types/enums';
 import type { LanguageMetaI } from 'types/types';
 
@@ -28,26 +30,32 @@ const languageMetaMap: Record<LanguageE, LanguageMetaI> = {
 };
 
 export const LanguageSwitcher = () => {
-  const { t } = useTranslation();
+  const [selectedLanguage] = useAtom(selectedLanguageAtom);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
 
+  const selectedLanguageMeta = languageMetaMap[selectedLanguage];
+
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   return (
     <>
-      <Tooltip title={t('common.change-language')}>
-        <Button onClick={handleClick} className={styles.iconButton} variant="primary">
-          <LanguageIcon />
-        </Button>
-      </Tooltip>
+      <Button onClick={handleClick} className={styles.languageButton} variant="outlined">
+        <div className={styles.selectedLanguage}>
+          <LanguageIcon /> {selectedLanguageMeta.name}
+        </div>
+        <div className={styles.arrowDropDown}>
+          <ArrowDropDown />
+        </div>
+      </Button>
       <Menu
         anchorEl={anchorEl}
         id="dropdown-language"

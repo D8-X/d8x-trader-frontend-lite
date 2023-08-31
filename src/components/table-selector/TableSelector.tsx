@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import { type ReactNode } from 'react';
 
 import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
 
@@ -10,7 +11,7 @@ import styles from './TableSelector.module.scss';
 
 export interface SelectorItemI {
   label: string;
-  item: JSX.Element;
+  item: ReactNode;
   tableType: TableTypeE;
 }
 

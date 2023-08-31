@@ -14,9 +14,9 @@ import { pages } from 'routes/pages';
 import {
   oracleFactoryAddrAtom,
   perpetualsAtom,
+  poolsAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
-  poolsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -28,6 +28,8 @@ import { Container } from '../container/Container';
 import { InteractiveLogo } from '../interactive-logo/InteractiveLogo';
 import { LanguageSwitcher } from '../language-switcher/LanguageSwitcher';
 import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
+import { SettingsBlock } from './elements/settings-block/SettingsBlock';
+import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
@@ -41,14 +43,16 @@ interface HeaderPropsI extends PropsWithChildren {
   window?: () => Window;
 }
 
-const drawerWidth = 240;
+const DRAWER_WIDTH_FOR_TABLETS = 300;
 
 export const Header = memo(({ window, children }: HeaderPropsI) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const isTabletScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { t } = useTranslation();
+
   const chainId = useChainId();
   const { chain } = useNetwork();
   const { address } = useAccount();
@@ -158,12 +162,12 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+    <Box>
+      <Typography variant="h6" sx={{ my: 2, textAlign: 'center' }} onClick={handleDrawerToggle}>
         <InteractiveLogo />
       </Typography>
       <Divider />
-      <nav className={styles.navMobileWrapper}>
+      <nav className={styles.navMobileWrapper} onClick={handleDrawerToggle}>
         {pages.map((page) => (
           <NavLink
             key={page.id}
@@ -174,6 +178,19 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
           </NavLink>
         ))}
       </nav>
+      <Divider />
+      <Box className={styles.settings}>
+        <SettingsBlock />
+      </Box>
+      <Divider />
+      <Box className={styles.languageSwitcher}>
+        <LanguageSwitcher />
+      </Box>
+      <Box className={styles.closeAction}>
+        <Button onClick={handleDrawerToggle} variant="secondary" size="small">
+          {t('common.info-modal.close')}
+        </Button>
+      </Box>
     </Box>
   );
 
@@ -212,15 +229,12 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
             <Typography variant="h6" component="div" className={styles.walletConnect}>
               <WalletConnectButton />
             </Typography>
-            <LanguageSwitcher />
-            <Button
-              onClick={handleDrawerToggle}
-              variant="primary"
-              className={styles.menuButton}
-              sx={{ display: { md: 'none' } }}
-            >
-              <MenuIcon />
-            </Button>
+            {!isTabletScreen && <SettingsButton />}
+            {isTabletScreen && (
+              <Button onClick={handleDrawerToggle} variant="primary" className={styles.menuButton}>
+                <MenuIcon />
+              </Button>
+            )}
           </Toolbar>
           {isSmallScreen && <Box className={styles.mobileSelectBoxes}>{children}</Box>}
         </PageAppBar>
@@ -236,7 +250,10 @@ export const Header = memo(({ window, children }: HeaderPropsI) => {
             }}
             sx={{
               display: { sm: 'block', md: 'none' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: isMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,
+              },
             }}
           >
             {drawer}

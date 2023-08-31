@@ -8,7 +8,7 @@ import { Box, Typography } from '@mui/material';
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { getEarnings } from 'network/history';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
-import { triggerUserStatsUpdateAtom, sdkConnectedAtom, userAmountAtom, withdrawalsAtom } from 'store/vault-pools.store';
+import { sdkConnectedAtom, triggerUserStatsUpdateAtom, userAmountAtom, withdrawalsAtom } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './PersonalStats.module.scss';
@@ -35,15 +35,15 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
 
   useEffect(() => {
     setUserAmount(null);
-    if (selectedPool && traderAPI && isSDKConnected && address) {
+    if (selectedPool?.poolSymbol && traderAPI && isSDKConnected && address) {
       traderAPI.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
         setUserAmount(amount);
       });
     }
-  }, [selectedPool, traderAPI, isSDKConnected, address, triggerUserStatsUpdate, setUserAmount]);
+  }, [selectedPool?.poolSymbol, traderAPI, isSDKConnected, address, triggerUserStatsUpdate, setUserAmount]);
 
   useEffect(() => {
-    if (!chainId || !selectedPool || !address) {
+    if (!chainId || !selectedPool?.poolSymbol || !address) {
       setEstimatedEarnings(undefined);
       return;
     }
@@ -60,7 +60,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       .finally(() => {
         earningsRequestSentRef.current = false;
       });
-  }, [chainId, address, selectedPool, triggerUserStatsUpdate]);
+  }, [chainId, address, selectedPool?.poolSymbol, triggerUserStatsUpdate]);
 
   return (
     <Box className={styles.root}>

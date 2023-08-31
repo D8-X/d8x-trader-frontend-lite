@@ -321,7 +321,7 @@ export const theme = createTheme({
             borderColor: 'var(--d8x-color-black-opac)',
             '&:hover': {
               backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
-              border: '0',
+              borderColor: 'transparent',
             },
           },
         },

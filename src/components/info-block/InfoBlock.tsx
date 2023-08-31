@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { InfoOutlined } from '@mui/icons-material';
@@ -10,8 +10,8 @@ import { Dialog } from 'components/dialog/Dialog';
 import styles from './InfoBlock.module.scss';
 
 interface InfoBlockPropsI {
-  title: string | JSX.Element;
-  content: string | JSX.Element;
+  title: string | ReactNode;
+  content: string | ReactNode;
   classname?: string;
 }
 

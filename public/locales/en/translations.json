@@ -498,6 +498,14 @@
     "pagination": {
       "per-page": "Per page"
     },
+    "settings": {
+      "title": "Settings",
+      "ui-settings": {
+        "title": "UI Settings",
+        "order-block": "Order Block",
+        "dark-mode": "Dark Mode"
+      }
+    },
     "select": {
       "collateral": {
         "label": "Collateral:",

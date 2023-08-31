@@ -36,7 +36,10 @@
 .navMobileWrapper {
   display: flex;
   flex-direction: column;
-  padding-top: $d8x-spacing * 4;
+  justify-content: center;
+  text-align: center;
+  padding-top: $d8x-spacing * 10;
+  padding-bottom: $d8x-spacing * 10;
   gap: $d8x-spacing * 6;
 }
 
@@ -81,6 +84,19 @@
       border-bottom: none;
     }
   }
+}
+
+.settings {
+  padding: $d8x-spacing * 10;
+}
+
+.languageSwitcher {
+  padding: $d8x-spacing * 10;
+}
+
+.closeAction {
+  text-align: center;
+  padding: $d8x-spacing * 10;
 }
 
 .menuButton {

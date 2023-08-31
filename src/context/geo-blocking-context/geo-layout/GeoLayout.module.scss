@@ -3,13 +3,16 @@
 .root {
   width: 100%;
   height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .content {
   position: relative;
   display: flex;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 .body {
@@ -29,6 +32,7 @@
   overflow-x: auto;
   margin: 0 auto;
   max-width: 1400px;
+  min-height: 150px;
   width: 100%;
 }
 

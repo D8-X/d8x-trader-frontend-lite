@@ -7,7 +7,7 @@ import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { getWeeklyAPI } from 'network/history';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { dCurrencyPriceAtom, tvlAtom, triggerUserStatsUpdateAtom, sdkConnectedAtom } from 'store/vault-pools.store';
+import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom, tvlAtom } from 'store/vault-pools.store';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 
 export const GlobalStats = () => {
@@ -26,7 +26,7 @@ export const GlobalStats = () => {
   const weeklyApiRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!chainId || !selectedPool) {
+    if (!chainId || !selectedPool?.poolSymbol) {
       setWeeklyAPI(undefined);
       return;
     }
@@ -44,28 +44,28 @@ export const GlobalStats = () => {
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
       });
-  }, [chainId, selectedPool, triggerUserStatsUpdate]);
+  }, [chainId, selectedPool?.poolSymbol, triggerUserStatsUpdate]);
 
   useEffect(() => {
     setDCurrencyPrice(null);
-    if (traderAPI && isSDKConnected && selectedPool) {
+    if (traderAPI && isSDKConnected && selectedPool?.poolSymbol) {
       traderAPI.getShareTokenPrice(selectedPool.poolSymbol).then((price) => setDCurrencyPrice(price));
     }
-  }, [traderAPI, selectedPool, triggerUserStatsUpdate, isSDKConnected, setDCurrencyPrice]);
+  }, [traderAPI, selectedPool?.poolSymbol, triggerUserStatsUpdate, isSDKConnected, setDCurrencyPrice]);
 
   useEffect(() => {
     setTvl(null);
-    if (traderAPI && isSDKConnected && selectedPool) {
+    if (traderAPI && isSDKConnected && selectedPool?.poolSymbol) {
       traderAPI.getPoolState(selectedPool.poolSymbol).then((PoolState) => setTvl(PoolState.pnlParticipantCashCC));
     }
-  }, [traderAPI, selectedPool, triggerUserStatsUpdate, isSDKConnected, setTvl]);
+  }, [traderAPI, selectedPool?.poolSymbol, triggerUserStatsUpdate, isSDKConnected, setTvl]);
 
   const dSupply = useMemo(() => {
-    if (selectedPool && dCurrencyPrice && tvl) {
-      return formatToCurrency(tvl / dCurrencyPrice, `d${selectedPool?.poolSymbol}`, true);
+    if (selectedPool?.poolSymbol && dCurrencyPrice && tvl) {
+      return formatToCurrency(tvl / dCurrencyPrice, `d${selectedPool.poolSymbol}`, true);
     }
     return '--';
-  }, [selectedPool, dCurrencyPrice, tvl]);
+  }, [selectedPool?.poolSymbol, dCurrencyPrice, tvl]);
 
   const items: StatDataI[] = useMemo(
     () => [
