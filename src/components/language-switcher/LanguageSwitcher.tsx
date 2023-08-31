@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import { type MouseEvent, useState } from 'react';
 
 import { Button, Menu } from '@mui/material';
-import { ArrowDropDown } from '@mui/icons-material';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
 import { selectedLanguageAtom } from 'store/app.store';
@@ -52,9 +52,7 @@ export const LanguageSwitcher = () => {
         <div className={styles.selectedLanguage}>
           <LanguageIcon /> {selectedLanguageMeta.name}
         </div>
-        <div className={styles.arrowDropDown}>
-          <ArrowDropDown />
-        </div>
+        <div className={styles.arrowDropDown}>{open ? <ArrowDropUp /> : <ArrowDropDown />}</div>
       </Button>
       <Menu
         anchorEl={anchorEl}

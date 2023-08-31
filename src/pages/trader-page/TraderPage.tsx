@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useChainId, type Address } from 'wagmi';
+import { type Address, useAccount, useChainId } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -11,15 +11,13 @@ import { Container } from 'components/container/Container';
 import { Footer } from 'components/footer/Footer';
 import { FundingTable } from 'components/funding-table/FundingTable';
 import { Header } from 'components/header/Header';
-import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { MarketSelect } from 'components/header/elements/market-select/MarketSelect';
-import { PerpetualsSelect } from 'components/header/elements/perpetuals-select/PerpetualsSelect';
 import { Helmet } from 'components/helmet/Helmet';
 import { OpenOrdersTable } from 'components/open-orders-table/OpenOrdersTable';
 import { OrderBlock } from 'components/order-block/OrderBlock';
 import { PositionsTable } from 'components/positions-table/PositionsTable';
 import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
-import { TableSelector, type SelectorItemI } from 'components/table-selector/TableSelector';
+import { type SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
 import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
@@ -138,9 +136,9 @@ export const TraderPage = () => {
     if (!chainId || !selectedPool?.poolSymbol || !address) {
       return;
     }
-    fetchPositions(chainId, selectedPool.poolSymbol, address);
-    fetchOrders(chainId, selectedPool?.poolSymbol, address);
-    fetchFee(chainId, selectedPool.poolSymbol, address);
+    fetchPositions(chainId, selectedPool.poolSymbol, address).then();
+    fetchOrders(chainId, selectedPool?.poolSymbol, address).then();
+    fetchFee(chainId, selectedPool.poolSymbol, address).then();
   }, [chainId, selectedPool, address, fetchPositions, fetchOrders, fetchFee]);
 
   useEffect(() => {
@@ -227,11 +225,7 @@ export const TraderPage = () => {
         } | D8X App`}
       />
       <Box className={styles.root}>
-        <Header>
-          <CollateralsSelect withNavigate={true} />
-          <PerpetualsSelect withNavigate={true} />
-          {!isBigScreen && <MarketSelect />}
-        </Header>
+        <Header>{!isBigScreen && <MarketSelect withNavigate={true} updatePerpetual={true} />}</Header>
         {isBigScreen && (
           <Container
             className={classnames(styles.sidesContainer, {
@@ -248,7 +242,7 @@ export const TraderPage = () => {
               />
             </Box>
             <Box className={styles.rightBlock}>
-              <MarketSelect />
+              <MarketSelect withNavigate={true} updatePerpetual={true} />
               <OrderBlock />
             </Box>
           </Container>

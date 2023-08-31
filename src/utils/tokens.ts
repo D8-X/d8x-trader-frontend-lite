@@ -10,7 +10,7 @@ interface TokenI {
   icon: FC<SVGProps<SVGSVGElement>>;
 }
 
-export const tokensIconsMap: { [key: string]: TokenI } = {
+export const tokensIconsMap: Record<string, TokenI> = {
   matic: {
     icon: MaticIcon,
   },
