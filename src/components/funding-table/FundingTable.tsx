@@ -18,7 +18,7 @@ import {
 
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { getFundingRatePayments } from 'network/history';
-import { fundingListAtom, perpetualsAtom, positionsAtom, selectedPoolAtom } from 'store/pools.store';
+import { fundingListAtom, perpetualsAtom, positionsAtom } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
@@ -37,7 +37,6 @@ export const FundingTable = memo(() => {
   const [perpetuals] = useAtom(perpetualsAtom);
   const [positions] = useAtom(positionsAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
 

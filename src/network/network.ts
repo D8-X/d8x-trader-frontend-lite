@@ -72,12 +72,10 @@ export async function getTraderLoyalty(chainId: number, address: string): Promis
 export async function getPositionRisk(
   chainId: number,
   traderAPI: TraderInterface | null,
-  symbol: string,
   traderAddr: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<MarginAccountI[]>> {
   const params = new URLSearchParams({
-    symbol,
     traderAddr,
   });
   if (timestamp) {
@@ -85,11 +83,11 @@ export async function getPositionRisk(
   }
 
   if (traderAPI) {
-    console.log(`positionRisk via SDK ${symbol}`);
-    const data = await traderAPI.positionRisk(traderAddr, symbol);
+    console.log(`positionRisk via SDK`);
+    const data = await traderAPI.positionRisk(traderAddr);
     return { type: 'position-risk', msg: '', data };
   } else {
-    // console.log(`positionRisk via BE ${symbol}`);
+    // console.log(`positionRisk via BE`);
     const data = await fetch(`${getApiUrlByChainId(chainId)}/position-risk?${params}`, getRequestOptions());
     if (!data.ok) {
       console.error({ data });
@@ -165,18 +163,16 @@ export function positionRiskOnCollateralAction(
 export async function getOpenOrders(
   chainId: number,
   traderAPI: TraderInterface | null,
-  symbol: string,
   traderAddr: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<PerpetualOpenOrdersI[]>> {
   if (traderAPI) {
-    console.log(`openOrders via SDK ${symbol} `);
-    const data = await traderAPI.openOrders(traderAddr, symbol);
+    console.log(`openOrders via SDK`);
+    const data = await traderAPI.openOrders(traderAddr);
     return { type: 'open-orders', msg: '', data };
   } else {
-    // console.log(`openOrders via BE ${symbol}`);
+    // console.log(`openOrders via BE`);
     const params = new URLSearchParams({
-      symbol,
       traderAddr,
     });
     if (timestamp) {

@@ -252,10 +252,10 @@ export const ActionBlock = memo(() => {
     },
     onSettled() {
       setTxHash(undefined);
-      getOpenOrders(chainId, traderAPI, orderInfo?.symbol as string, address as Address)
+      getOpenOrders(chainId, traderAPI, address as Address)
         .then(({ data: d }) => {
-          if (d && d.length > 0) {
-            d.map((o) => setOpenOrders(o));
+          if (d?.length > 0) {
+            d.map(setOpenOrders);
           }
         })
         .catch(console.error);

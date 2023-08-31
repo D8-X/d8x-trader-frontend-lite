@@ -25,7 +25,7 @@ export const PositionRow = memo(({ position, handlePositionClose, handlePosition
     <TableRow>
       <TableCell align="left">
         <Typography variant="cellSmall">
-          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}
+          {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol}
         </Typography>
       </TableCell>
       <TableCell align="right">

@@ -92,17 +92,17 @@ export const OpenOrdersTable = memo(() => {
   };
 
   const refreshOpenOrders = useCallback(async () => {
-    if (selectedPool?.poolSymbol && address && isConnected && chainId && isSDKConnected) {
+    if (address && isConnected && chainId && isSDKConnected) {
       if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
         return;
       }
       setAPIBusy(true);
-      await getOpenOrders(chainId, traderAPI, selectedPool.poolSymbol, address, Date.now())
+      await getOpenOrders(chainId, traderAPI, address, Date.now())
         .then(({ data }) => {
           setAPIBusy(false);
           clearOpenOrders();
-          if (data && data.length > 0) {
-            data.map((o) => setOpenOrders(o));
+          if (data?.length > 0) {
+            data.map(setOpenOrders);
           }
         })
         .catch((err) => {
@@ -110,17 +110,7 @@ export const OpenOrdersTable = memo(() => {
           setAPIBusy(false);
         });
     }
-  }, [
-    chainId,
-    address,
-    selectedPool,
-    isConnected,
-    isSDKConnected,
-    setAPIBusy,
-    setOpenOrders,
-    clearOpenOrders,
-    traderAPI,
-  ]);
+  }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders, traderAPI]);
 
   useWaitForTransaction({
     hash: txHash,

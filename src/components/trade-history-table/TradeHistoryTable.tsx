@@ -18,7 +18,7 @@ import {
 
 import { EmptyTableRow } from 'components/empty-table-row/EmptyTableRow';
 import { getTradesHistory } from 'network/history';
-import { openOrdersAtom, perpetualsAtom, selectedPoolAtom, tradesHistoryAtom } from 'store/pools.store';
+import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
 import { AlignE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
@@ -37,7 +37,6 @@ export const TradeHistoryTable = memo(() => {
   const [perpetuals] = useAtom(perpetualsAtom);
   const [openOrders] = useAtom(openOrdersAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const updateTradesHistoryRef = useRef(false);
 
