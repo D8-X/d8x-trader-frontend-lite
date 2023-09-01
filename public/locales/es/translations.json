@@ -6,11 +6,11 @@
   },
   "pages": {
     "geolocation": {
-      "access-denied": "To continue, please enable geolocation services in your browser. Please refer to your browser’s documentation for instructions on how to enable geolocation services.",
-      "access-blocked": "THE D8X PROTOCOL SOFTWARE WAS NOT DEPLOYED TO BE ACCESSED OR USED BY ANY USER OF A PROHIBITED JURISDICTION. THE PROHIBITED JURISDICTIONS INCLUDE, BUT ARE NOT LIMITED TO, THE UNITED STATES OF AMERICA, BELARUS, BURUNDI, BURMA (MYANMAR), CENTRAL AFRICAN REPUBLIC, CONGO, DEMOCRATIC REP., DEMOCRATIC PEOPLE’S REPUBLIC OF KOREA (DPRK), GUINEA, GUINEA BISSAU, HAITI, IRAN, IRAQ, YEMEN, LEBANON, LIBYA, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIC OF SOUTH SUDAN, SYRIA, VENEZUELA AND ZIMBABWE.",
-      "not-supported": "Geolocation is not supported by your browser. To continue, please switch to a browser that supports geolocation.",
-      "locating": "Locating...",
-      "getting-location": "Identifying location..."
+      "access-denied": "Para continuar, debes autorizar el servicio de geolocalizacion en tu explorador. Refierete a las instrucciones de tu explorador para autorizar este servicio.",
+      "access-blocked": "EL PROTOCOLO DE SOFTWARE D8X NO HA SIDO IMPLEMENTADO PARA SER ACCESIBLE O USADO POR NINGUN USUARIO DE JURISDICCIONES PROHIBIDAS. LAS JURISDICCIONES PROHIBIDAS INCLUDEN, PERO NO SE LIMITAN A, LOS ESTADOS UNIDOS DE AMERICA, BIELORRUSIA, BURUNDI, BIRMANIA (MYANMAR), REPUBLICA CENTROAFRICANA, REPUBLICA DEMOCRATICA DEL CONGO, REPUBLICA POPULAR DEMOCRATICA DE COREA (RPDC), GUINEA, GUINEA-BISAU, HAITI, IRAN, IRAkK, YEMEN, LIBANO, LIBIA, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLICA DE SUDAN DEL SUR, SIRIA, VENEZUELA Y ZIMBABWE.",
+      "not-supported": "Tu explorador no es compatible con geolocalizacion. Para continuar, debes usar un explorador compatible con geolocalizacion",
+      "locating": "Localizando...",
+      "getting-location": "Identificando localizacion..."
     },
     "trade": {
       "stats": {
@@ -224,7 +224,7 @@
           "body2": "Si tu orden reduce una posicion ya existente ('cerrar parcialmente'), el apalcancamiento de tu orden no tiene ningun efecto."
         },
         "slippage": {
-          "title": "Configuracion de deslizamiento",
+          "title": "Configuración de deslizamiento",
           "body": "Deslizamiento Maximo",
           "max": "Precio de entrada maximo:",
           "min": "Precio de entrada minimo:",
@@ -499,11 +499,11 @@
       "per-page": "Por página"
     },
     "settings": {
-      "title": "Settings",
+      "title": "Configuración",
       "ui-settings": {
-        "title": "UI Settings",
-        "order-block": "Order Block",
-        "dark-mode": "Coming soon"
+        "title": "Configuración de UI",
+        "order-block": "Bloque de Ordenes",
+        "dark-mode": "Pronto"
       }
     },
     "select": {
@@ -516,13 +516,13 @@
         }
       },
       "market": {
-        "label": "Market",
-        "header": "Choose Market",
-        "crypto": "Crypto",
+        "label": "Mercado",
+        "header": "Escoger Mercado",
+        "crypto": "Cripto",
         "fx": "FX",
-        "commodity": "Commodity"
+        "commodity": "Productos Basicos"
       },
-      "search": "Search...",
+      "search": "Buscar...",
       "perpetual": {
         "label": "Perpetuos:",
         "headers": {
