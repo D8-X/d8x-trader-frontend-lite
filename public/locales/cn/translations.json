@@ -6,11 +6,11 @@
   },
   "pages": {
     "geolocation": {
-      "access-denied": "To continue, please enable geolocation services in your browser. Please refer to your browser’s documentation for instructions on how to enable geolocation services.",
-      "access-blocked": "THE D8X PROTOCOL SOFTWARE WAS NOT DEPLOYED TO BE ACCESSED OR USED BY ANY USER OF A PROHIBITED JURISDICTION. THE PROHIBITED JURISDICTIONS INCLUDE, BUT ARE NOT LIMITED TO, THE UNITED STATES OF AMERICA, BELARUS, BURUNDI, BURMA (MYANMAR), CENTRAL AFRICAN REPUBLIC, CONGO, DEMOCRATIC REP., DEMOCRATIC PEOPLE’S REPUBLIC OF KOREA (DPRK), GUINEA, GUINEA BISSAU, HAITI, IRAN, IRAQ, YEMEN, LEBANON, LIBYA, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIC OF SOUTH SUDAN, SYRIA, VENEZUELA AND ZIMBABWE.",
-      "not-supported": "Geolocation is not supported by your browser. To continue, please switch to a browser that supports geolocation.",
-      "locating": "Locating...",
-      "getting-location": "Identifying location..."
+      "access-denied": "要继续操作，请在您的浏览器中启用地理定位服务。关于如何启用地理定位服务的说明，请参阅您的浏览器文档。",
+      "access-blocked": "D8X协议软件禁止某些司法管辖区的任何用户访问或使用，包括但不限于美利坚合众国（美国）、白俄罗斯、布隆迪、缅甸、中非共和国、刚果、民主共和国、朝鲜民主主义人民共和国（朝鲜）、几内亚、几内亚比绍、 海地、伊朗、伊拉克、也门、黎巴嫩、利比亚、马里、尼加拉瓜、索马里、苏丹、南苏丹共和国、叙利亚、委内瑞拉和津巴布韦。",
+      "not-supported": "您的浏览器暂不支持地理定位。要继续操作，请切换至其他已支持地理定位的浏览器。",
+      "locating": "定位中...",
+      "getting-location": "定位认证中..."
     },
     "trade": {
       "stats": {
@@ -395,11 +395,11 @@
         "use-code": "使用专属码"
       },
       "use-code": {
-        "title": "Use this referral code?",
-        "base": "Code",
+        "title": "使用此邀请码",
+        "base": "邀请码",
         "trader-rebate": "交易员返佣比例",
         "connect-wallet": "请连接钱包",
-        "already-linked": "You already applied a referral code",
+        "already-linked": "您已申请邀请码",
         "cancel": "取消",
         "confirm": "确认"
       }
@@ -517,7 +517,7 @@
       },
       "market": {
         "label": "市场",
-        "header": "市场",
+        "header": "选择市场",
         "crypto": "加密货币",
         "fx": "外汇",
         "commodity": "商品"
