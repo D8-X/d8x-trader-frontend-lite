@@ -83,8 +83,10 @@ const Option = ({
         <div className={styles.optionRightBlock}>
           <div className={styles.value}>{option.item.indexPrice.toFixed(2)}</div>
           <div
-            className={styles.priceChange}
-            style={{ color: option.item.indexPrice > 0 ? 'var(--d8x-color-green)' : 'var(--d8x-color-red)' }}
+            className={classnames(styles.priceChange, {
+              [styles.buyPrice]: option.item.indexPrice > 0,
+              [styles.sellPrice]: option.item.indexPrice < 0,
+            })}
           >
             +2.00%
           </div>

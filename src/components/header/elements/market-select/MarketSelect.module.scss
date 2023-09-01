@@ -163,6 +163,14 @@
   text-align: right;
   font-weight: bold;
   font-size: 0.625rem;
+
+  .buyPrice {
+    color: rgba(var(--d8x-background-buy-rgb), 1);
+  }
+
+  .sellPrice {
+    color: rgba(var(--d8x-background-sell-rgb), 1);
+  }
 }
 
 .controlsContainer {
@@ -215,7 +223,7 @@
 
     .selectedMarketPerpetual {
       font-size: 14px;
-      line-height: '8px';
+      line-height: 8px;
     }
   }
 }
