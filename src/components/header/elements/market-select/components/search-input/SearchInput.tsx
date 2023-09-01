@@ -1,10 +1,11 @@
+import { atom, useAtom } from 'jotai';
+import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 
-import { atom, useAtom } from 'jotai';
 import styles from './SearchInput.module.scss';
-import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export const searchFilterAtom = atom<string>('');
 

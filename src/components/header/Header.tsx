@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useBalance, useChainId, useNetwork, type Address } from 'wagmi';
+import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -28,12 +28,12 @@ import { Container } from '../container/Container';
 import { InteractiveLogo } from '../interactive-logo/InteractiveLogo';
 import { LanguageSwitcher } from '../language-switcher/LanguageSwitcher';
 import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
+import { collateralsAtom } from './elements/market-select/collaterals.store';
 import { SettingsBlock } from './elements/settings-block/SettingsBlock';
 import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { collateralsAtom } from './elements/market-select/collaterals.store';
 
 interface HeaderPropsI extends PropsWithChildren {
   /**

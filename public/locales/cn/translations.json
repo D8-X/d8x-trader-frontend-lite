@@ -507,6 +507,7 @@
       }
     },
     "select": {
+      "option-all": "凡是",
       "collateral": {
         "label": "抵押品：",
         "label2": "流动性池：",

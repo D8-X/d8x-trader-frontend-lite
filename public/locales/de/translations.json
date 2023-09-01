@@ -507,6 +507,7 @@
       }
     },
     "select": {
+      "option-all": "ALLE",
       "collateral": {
         "label": "Sicherheit:",
         "label2": "Liquiditäts Pool:",

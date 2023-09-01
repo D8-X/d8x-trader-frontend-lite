@@ -507,6 +507,7 @@
       }
     },
     "select": {
+      "option-all": "TODOS",
       "collateral": {
         "label": "Colateral:",
         "label2": "Reserva de Liquidez:",

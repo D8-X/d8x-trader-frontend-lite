@@ -8,7 +8,7 @@ import { Button, Menu, MenuItem, Typography } from '@mui/material';
 
 import { tokensIconsMap } from 'utils/tokens';
 
-import { collateralFilterAtom, collateralsAtom, defaultCollateralFilter } from '../../collaterals.store';
+import { collateralFilterAtom, collateralsAtom } from '../../collaterals.store';
 
 import styles from './CollateralFilter.module.scss';
 
@@ -38,7 +38,7 @@ export const CollateralFilter = memo(() => {
             {t('common.select.collateral.label')}
           </Typography>
           <Typography variant="bodyTiny" className={styles.value}>
-            {collateralFilter}
+            {collateralFilter !== null ? collateralFilter : t('common.select.option-all')}
           </Typography>
         </div>
         <div className={styles.arrowDropDown}>{open ? <ArrowDropUp /> : <ArrowDropDown />}</div>
@@ -69,6 +69,17 @@ export const CollateralFilter = memo(() => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
+        <MenuItem
+          key="all"
+          onClick={() => {
+            setCollateralFilter(null);
+            handleClose();
+          }}
+          className={classnames(styles.menuItem, { [styles.selected]: collateralFilter === null })}
+        >
+          <span className={styles.tokenIcon} />
+          {t('common.select.option-all')}
+        </MenuItem>
         {collaterals.map((collateral) => {
           const IconComponent = tokensIconsMap[collateral.toLowerCase()]?.icon ?? tokensIconsMap.default.icon;
 
@@ -81,11 +92,7 @@ export const CollateralFilter = memo(() => {
               }}
               className={classnames(styles.menuItem, { [styles.selected]: collateralFilter === collateral })}
             >
-              {collateral === defaultCollateralFilter ? (
-                <span className={styles.tokenIcon} />
-              ) : (
-                <IconComponent className={styles.tokenIcon} />
-              )}
+              <IconComponent className={styles.tokenIcon} />
               {collateral}
             </MenuItem>
           );
