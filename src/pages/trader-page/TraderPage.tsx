@@ -104,9 +104,7 @@ export const TraderPage = () => {
 
   const fetchFee = useCallback(
     async (_chainId: number, _poolSymbol: string, _address: Address) => {
-      console.log('fetchFee');
       if (fetchFeeRef.current) {
-        console.log('fetchFeeRef.current =', fetchFeeRef.current);
         return;
       }
       fetchFeeRef.current = true;
