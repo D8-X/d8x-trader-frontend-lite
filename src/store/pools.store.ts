@@ -72,8 +72,8 @@ export const selectedPoolAtom = atom(
   (_get, set, newPool: string) => {
     set(selectedPoolNameAtom, newPool);
     // Clear data about previous stats and orders
-    set(perpetualsStatsAtom, {});
-    set(ordersAtom, {});
+    // set(perpetualsStatsAtom, {});
+    // set(ordersAtom, {});
   }
 );
 
