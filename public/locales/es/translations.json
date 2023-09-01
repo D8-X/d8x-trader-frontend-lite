@@ -32,8 +32,8 @@
           "pnl": "Ganancias sin Realizar"
         },
         "table-content": {
-          "buy": "COMPRAR",
-          "sell": "VENDER",
+          "buy": "COMPRA",
+          "sell": "VENTA",
           "modify": "Modificar",
           "connect": "Por favor conecte su cartera",
           "no-open": "No hay posiciones abiertas"
