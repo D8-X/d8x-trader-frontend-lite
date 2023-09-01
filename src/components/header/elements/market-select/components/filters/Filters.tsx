@@ -1,28 +1,30 @@
 import { useAtom } from 'jotai';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { groupFilterAtom } from '../../collaterals.store';
 import { TokenGroupE } from '../../constants';
 
 import styles from './Filters.module.scss';
 
-const options = [
-  {
-    label: 'Crypto',
-    value: TokenGroupE.CRYPTO,
-  },
-  {
-    label: 'FX',
-    value: TokenGroupE.FX,
-  },
-  {
-    label: 'Commodity',
-    value: TokenGroupE.COMMODITY,
-  },
-];
-
 export const Filters = memo(() => {
   const [groupFilter, setGroupFilter] = useAtom(groupFilterAtom);
+  const { t } = useTranslation();
+
+  const options = [
+    {
+      label: t('common.select.market.crypto'),
+      value: TokenGroupE.CRYPTO,
+    },
+    {
+      label: t('common.select.market.fx'),
+      value: TokenGroupE.FX,
+    },
+    {
+      label: t('common.select.market.commodity'),
+      value: TokenGroupE.COMMODITY,
+    },
+  ];
 
   return (
     <div className={styles.container}>

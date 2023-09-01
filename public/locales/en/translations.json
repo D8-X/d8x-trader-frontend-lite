@@ -503,7 +503,7 @@
       "ui-settings": {
         "title": "UI Settings",
         "order-block": "Order Block",
-        "dark-mode": "Dark Mode"
+        "dark-mode": "Coming soon"
       }
     },
     "select": {
@@ -517,8 +517,12 @@
       },
       "market": {
         "label": "Market",
-        "header": "Choose Market"
+        "header": "Choose Market",
+        "crypto": "Crypto",
+        "fx": "FX",
+        "commodity": "Commodity"
       },
+      "search": "Search...",
       "perpetual": {
         "label": "Perpetual:",
         "headers": {

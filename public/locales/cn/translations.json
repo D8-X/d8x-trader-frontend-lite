@@ -5,6 +5,13 @@
     "vault": "金库"
   },
   "pages": {
+    "geolocation": {
+      "access-denied": "To continue, please enable geolocation services in your browser. Please refer to your browser’s documentation for instructions on how to enable geolocation services.",
+      "access-blocked": "THE D8X PROTOCOL SOFTWARE WAS NOT DEPLOYED TO BE ACCESSED OR USED BY ANY USER OF A PROHIBITED JURISDICTION. THE PROHIBITED JURISDICTIONS INCLUDE, BUT ARE NOT LIMITED TO, THE UNITED STATES OF AMERICA, BELARUS, BURUNDI, BURMA (MYANMAR), CENTRAL AFRICAN REPUBLIC, CONGO, DEMOCRATIC REP., DEMOCRATIC PEOPLE’S REPUBLIC OF KOREA (DPRK), GUINEA, GUINEA BISSAU, HAITI, IRAN, IRAQ, YEMEN, LEBANON, LIBYA, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIC OF SOUTH SUDAN, SYRIA, VENEZUELA AND ZIMBABWE.",
+      "not-supported": "Geolocation is not supported by your browser. To continue, please switch to a browser that supports geolocation.",
+      "locating": "Locating...",
+      "getting-location": "Identifying location..."
+    },
     "trade": {
       "stats": {
         "mid-price": "中间价",
@@ -386,6 +393,15 @@
         "enter-code": "输入专属码",
         "code-not-found": "无法找到此专属码",
         "use-code": "使用专属码"
+      },
+      "use-code": {
+        "title": "Use this referral code?",
+        "base": "Code",
+        "trader-rebate": "交易员返佣比例",
+        "connect-wallet": "请连接钱包",
+        "already-linked": "You already applied a referral code",
+        "cancel": "取消",
+        "confirm": "确认"
       }
     },
     "vault": {
@@ -482,6 +498,14 @@
     "pagination": {
       "per-page": "每页"
     },
+    "settings": {
+      "title": "设置",
+      "ui-settings": {
+        "title": "用户界面设置",
+        "order-block": "订单号",
+        "dark-mode": "黑夜模式"
+      }
+    },
     "select": {
       "collateral": {
         "label": "抵押品：",
@@ -491,6 +515,14 @@
           "num-of-perps": "永续人数"
         }
       },
+      "market": {
+        "label": "市场",
+        "header": "市场",
+        "crypto": "加密货币",
+        "fx": "外汇",
+        "commodity": "商品"
+      },
+      "search": " 搜索...",
       "perpetual": {
         "label": "永续:",
         "headers": {

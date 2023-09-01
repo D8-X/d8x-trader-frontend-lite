@@ -6,6 +6,13 @@
   },
   "pages": {
     "trade": {
+      "geolocation": {
+        "access-denied": "To continue, please enable geolocation services in your browser. Please refer to your browser’s documentation for instructions on how to enable geolocation services.",
+        "access-blocked": "THE D8X PROTOCOL SOFTWARE WAS NOT DEPLOYED TO BE ACCESSED OR USED BY ANY USER OF A PROHIBITED JURISDICTION. THE PROHIBITED JURISDICTIONS INCLUDE, BUT ARE NOT LIMITED TO, THE UNITED STATES OF AMERICA, BELARUS, BURUNDI, BURMA (MYANMAR), CENTRAL AFRICAN REPUBLIC, CONGO, DEMOCRATIC REP., DEMOCRATIC PEOPLE’S REPUBLIC OF KOREA (DPRK), GUINEA, GUINEA BISSAU, HAITI, IRAN, IRAQ, YEMEN, LEBANON, LIBYA, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIC OF SOUTH SUDAN, SYRIA, VENEZUELA AND ZIMBABWE.",
+        "not-supported": "Geolocation is not supported by your browser. To continue, please switch to a browser that supports geolocation.",
+        "locating": "Locating...",
+        "getting-location": "Identifying location..."
+      },
       "stats": {
         "mid-price": "Mid Price",
         "mark-price": "Mark Price",
@@ -491,6 +498,14 @@
     "pagination": {
       "per-page": "Per page"
     },
+    "settings": {
+      "title": "Settings",
+      "ui-settings": {
+        "title": "UI Settings",
+        "order-block": "Order Block",
+        "dark-mode": "Dark Mode"
+      }
+    },
     "select": {
       "collateral": {
         "label": "Collateral:",
@@ -500,6 +515,14 @@
           "num-of-perps": "No. of perps"
         }
       },
+      "market": {
+        "label": "Market",
+        "header": "Choose Market",
+        "crypto": "Crypto",
+        "fx": "FX",
+        "commodity": "Commodity"
+      },
+      "search": "Search...",
       "perpetual": {
         "label": "Perpetual:",
         "headers": {

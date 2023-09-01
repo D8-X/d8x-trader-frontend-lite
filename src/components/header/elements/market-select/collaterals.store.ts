@@ -2,7 +2,8 @@ import { atom } from 'jotai';
 
 import { TokenGroupE } from './constants';
 
-export const defaultCollateralFilter = 'ALL';
+export const defaultCollateralFilter = '-';
+
 export const collateralFilterAtom = atom<string>(defaultCollateralFilter);
 
 export const groupFilterAtom = atom<TokenGroupE | null>(null);

@@ -5,6 +5,13 @@
     "vault": "Liquidität"
   },
   "pages": {
+    "geolocation": {
+      "access-denied": "Um fortzufahren, aktivieren Sie bitte die Geolokalisierungsdienste in Ihrem Browser. Anweisungen zum Aktivieren von Geolokalisierungsdiensten finden Sie in der Dokumentation Ihres Browsers.",
+      "access-blocked": "DIE D8X-PROTOKOLL-SOFTWARE WURDE NICHT FÜR DEN ZUGRIFF ODER DIE VERWENDUNG DURCH BENUTZER AUS EINEM AUSGESCHLOSSENEN HOHEITSGEBIET BEREITGESTELLT. Zu den ausgeschlossenen Hoheitsgebieten gehören unter anderem die VEREINIGTEN STAATEN VON AMERIKA, WEISSRUSSLAND, BURUNDI, BURMA (Myanmar), die ZENTRALAFRIKANISCHE REPUBLIK, die DEMOKRATISCHE REPUBLIK KONGO, die DEMOKRATISCHE VOLKSREPUBLIK KOREA (DVRK), GUINEA, GUINEA-BISSAU, HAITI, IRAN, IRAK, JEMEN, LIBANON, LIBYEN, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIK SÜDSUDAN, SYRIEN, VENEZUELA UND SIMBABWE.",
+      "not-supported": "Geolokalisierung wird von Ihrem Browser nicht unterstützt. Um fortzufahren, wechseln Sie bitte zu einem Browser, der Geolokalisierung unterstützt.",
+      "locating": "Ortung...",
+      "getting-location": "Standort identifizieren..."
+    },
     "trade": {
       "stats": {
         "mid-price": "Mid-Preis",
@@ -386,6 +393,15 @@
         "enter-code": "Code eingeben",
         "code-not-found": "Code nicht gefunden",
         "use-code": "Code verwenden"
+      },
+      "use-code": {
+        "title": "Diesen Code benutzen?",
+        "base": "Code",
+        "trader-rebate": "Rabattsatz Händler",
+        "connect-wallet": "Verbinden Sie Ihre Wallet",
+        "already-linked": "Sie benutzen bereits einen Rabbatcode",
+        "cancel": "Abbrechen",
+        "confirm": "Bestätigen"
       }
     },
     "vault": {
@@ -482,6 +498,14 @@
     "pagination": {
       "per-page": "Pro Seite"
     },
+    "settings": {
+      "title": "Einstellungen",
+      "ui-settings": {
+        "title": "UI-Einstellungen",
+        "order-block": "Order Block",
+        "dark-mode": "Coming soon"
+      }
+    },
     "select": {
       "collateral": {
         "label": "Sicherheit:",
@@ -491,6 +515,14 @@
           "num-of-perps": "Nr. of perps"
         }
       },
+      "market": {
+        "label": "Markt",
+        "header": "Marktauswahl",
+        "crypto": "Krypto",
+        "fx": "Devisen",
+        "commodity": "Rohstoffe"
+      },
+      "search": "Suchen...",
       "perpetual": {
         "label": "Perpetual:",
         "headers": {
