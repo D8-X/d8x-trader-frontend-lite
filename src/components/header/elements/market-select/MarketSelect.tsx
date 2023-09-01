@@ -268,7 +268,7 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
             {t('common.select.market.label')}
           </Typography>
           <div className={styles.selectedMarketValue}>
-            <Typography variant="bodyMedium" className={styles.selectedMarketPerpetual}>
+            <Typography variant="bodyLarge" className={styles.selectedMarketPerpetual}>
               {selectedPerpetual?.baseCurrency}/{selectedPerpetual?.quoteCurrency}
             </Typography>
             <Typography variant="bodyTiny" className={styles.selectedMarketCollateral}>
