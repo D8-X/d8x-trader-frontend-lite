@@ -420,7 +420,7 @@ export const ActionBlock = memo(() => {
     if (validityCheckType === ValidityCheckE.Empty) {
       return '-';
     } else if (validityCheckType === ValidityCheckE.InsufficientBalance) {
-      return `${t('pages.trade.action-block.validity.insufficient-balance')} {' '} ${poolTokenBalance}`;
+      return `${t('pages.trade.action-block.validity.insufficient-balance')} ${poolTokenBalance}`;
     }
     return t(`pages.trade.action-block.validity.${validityCheckType}`);
   }, [t, validityCheckType, poolTokenBalance]);
