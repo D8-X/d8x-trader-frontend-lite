@@ -136,10 +136,16 @@ export const TraderPage = () => {
     if (!chainId || !selectedPool?.poolSymbol || !address) {
       return;
     }
+    fetchFee(chainId, selectedPool.poolSymbol, address).then();
+  }, [chainId, selectedPool?.poolSymbol, address, fetchFee]);
+
+  useEffect(() => {
+    if (!chainId || !address) {
+      return;
+    }
     fetchPositions(chainId, address).then();
     fetchOrders(chainId, address).then();
-    fetchFee(chainId, selectedPool.poolSymbol, address).then();
-  }, [chainId, selectedPool, address, fetchPositions, fetchOrders, fetchFee]);
+  }, [chainId, address, fetchPositions, fetchOrders]);
 
   useEffect(() => {
     fetchOrdersRef.current = selectedPool?.poolSymbol === undefined;
