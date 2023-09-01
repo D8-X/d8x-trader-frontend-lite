@@ -37,7 +37,9 @@ export const SettingsBlock = memo(() => {
       </Box>
       {isBigScreen && (
         <Box className={styles.optionRow}>
-          <Typography variant="bodyMedium">{t('common.settings.ui-settings.order-block')}</Typography>
+          <Typography variant="bodyMedium" className={styles.setting}>
+            {t('common.settings.ui-settings.order-block')}
+          </Typography>
           <Switch
             className={styles.switch}
             checked={orderBlockPosition === OrderBlockPositionE.Right}
@@ -46,7 +48,9 @@ export const SettingsBlock = memo(() => {
         </Box>
       )}
       <Box className={styles.optionRow}>
-        <Typography variant="bodyMedium">{t('common.settings.ui-settings.dark-mode')}</Typography>
+        <Typography variant="bodyMedium" className={styles.setting}>
+          {t('common.settings.ui-settings.dark-mode')}
+        </Typography>
         <Switch className={styles.switch} checked={enabledDarkMode} onChange={handleEnabledDarkMode} />
       </Box>
     </Box>

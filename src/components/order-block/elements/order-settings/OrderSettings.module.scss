@@ -55,6 +55,7 @@
 .settings {
   display: flex;
   align-items: center;
+  color: var(--d8x-color-purple);
 
   :global(.MuiFormControlLabel-root) {
     margin-left: -12px;

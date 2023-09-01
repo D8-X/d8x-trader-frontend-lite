@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   gap: 2 * $d8x-spacing;
+  font-size: 16px;
 
   svg {
     color: var(--d8x-color-purple);
@@ -26,4 +27,11 @@
 .arrowDropDown {
   color: var(--d8x-color-purple);
   padding-top: 2 * $d8x-spacing;
+}
+
+@media screen and ($d8x-breakpoint-max-md) {
+
+  .selectedLanguage {
+    font-size: 14px;
+  }
 }

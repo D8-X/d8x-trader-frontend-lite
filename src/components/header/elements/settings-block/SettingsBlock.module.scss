@@ -77,3 +77,14 @@
     box-sizing: border-box;
   }
 }
+
+@media screen and ($d8x-breakpoint-max-md) {
+
+  .label {
+    font-size: 14px;
+  }
+
+  .setting {
+    font-size: 14px;
+  }
+}

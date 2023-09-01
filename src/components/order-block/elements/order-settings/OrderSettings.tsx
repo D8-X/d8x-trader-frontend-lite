@@ -147,7 +147,9 @@ export const OrderSettings = memo(() => {
           {orderType === OrderTypeE.Market && (
             <>
               <SettingsIcon className={styles.settingsIcon} onClick={() => setShowSettingsModal(true)} />
-              <Typography variant="bodyTiny">{t('pages.trade.order-block.slippage.title')}</Typography>
+              <Typography variant="bodyTiny" className={styles.setting}>
+                {t('pages.trade.order-block.slippage.title')}
+              </Typography>
             </>
           )}
           {orderType !== OrderTypeE.Market && (
@@ -162,7 +164,9 @@ export const OrderSettings = memo(() => {
                 labelPlacement="end"
               />
               <SettingsIcon className={styles.settingsIcon} onClick={() => setShowExpiryModal(true)} />
-              <Typography variant="bodyTiny">{t('pages.trade.order-block.expiry.title')}</Typography>
+              <Typography variant="bodyTiny" className={styles.setting}>
+                {t('pages.trade.order-block.expiry.title')}
+              </Typography>
             </Box>
           )}
         </Box>
