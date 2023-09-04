@@ -95,7 +95,17 @@ export function useWsMessageHandler() {
           stats.quoteCurrency === selectedPerpetual.quoteCurrency &&
           stats.poolName === selectedPool.poolSymbol
         ) {
-          setPerpetualStatistics(stats);
+          if (Math.abs(stats.currentFundingRateBps) < 1e-6) {
+            // update does not contain funding rate/open interest - keep current values
+            setPerpetualStatistics({
+              ...stats,
+              currentFundingRateBps: selectedPerpetual.currentFundingRateBps,
+              openInterestBC: selectedPerpetual.openInterestBC,
+            });
+          } else {
+            // update all
+            setPerpetualStatistics(stats);
+          }
         }
       }
     },
