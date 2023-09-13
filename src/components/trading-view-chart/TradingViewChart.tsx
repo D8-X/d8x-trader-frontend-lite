@@ -5,7 +5,7 @@ import { useResizeDetector } from 'react-resize-detector';
 
 import { Box, CircularProgress } from '@mui/material';
 
-import { candlesAtom, candlesDataReadyAtom, newCandlesAtom } from 'store/tv-chart.store';
+import { candlesAtom, candlesDataReadyAtom, newCandleAtom } from 'store/tv-chart.store';
 
 import { ChartBlock } from './elements/chart-block/ChartBlock';
 import { PeriodSelector } from './elements/period-selector/PeriodSelector';
@@ -14,7 +14,7 @@ import styles from './TradingViewChart.module.scss';
 
 export const TradingViewChart = memo(() => {
   const [candles] = useAtom(candlesAtom);
-  const [newCandles, setNewCandles] = useAtom(newCandlesAtom);
+  const [newCandle, setNewCandle] = useAtom(newCandleAtom);
   const [isCandleDataReady] = useAtom(candlesDataReadyAtom);
 
   const seriesRef = useRef<ISeriesApi<'Candlestick'>>(null);
@@ -23,20 +23,17 @@ export const TradingViewChart = memo(() => {
   const { width, ref } = useResizeDetector();
 
   useEffect(() => {
-    const candlesLength = newCandles.length;
-    if (candlesLength === 0 || !seriesRef.current || !latestCandleTimeRef.current) {
+    if (newCandle == null || !seriesRef.current || !latestCandleTimeRef.current) {
       return;
     }
 
     const latestCandleTime = latestCandleTimeRef.current || 0;
-    const filteredNewCandles = newCandles.filter(({ time }) => time >= latestCandleTime);
-    if (filteredNewCandles.length > 0) {
-      const latestCandle = filteredNewCandles[filteredNewCandles.length - 1];
-      seriesRef.current.update(latestCandle);
-      latestCandleTimeRef.current = latestCandle.time;
+    if (newCandle.time > latestCandleTime) {
+      // seriesRef.current.update(newCandle);
+      latestCandleTimeRef.current = newCandle.time;
     }
-    setNewCandles((prevData) => prevData.slice(newCandles.length));
-  }, [newCandles, setNewCandles]);
+    setNewCandle(null);
+  }, [newCandle, setNewCandle]);
 
   useEffect(() => {
     if (candles.length > 0) {

@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
@@ -6,18 +6,19 @@ import { config } from 'config';
 import { candlesWebSocketReadyAtom } from 'store/tv-chart.store';
 
 import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
+import { useHandleMessage } from '../hooks/useHandleMessage';
+import { usePingPong } from '../hooks/usePingPong';
+import { useMessagesToSend } from '../hooks/useMessagesToSend';
+import { useSend } from '../hooks/useSend';
 import { WebSocketI } from '../types';
 import { CandlesWebSocketContext, CandlesWebSocketContextI } from './CandlesWebSocketContext';
 import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
-import { usePingPong } from '../hooks/usePingPong';
-import { useHandleMessage } from '../hooks/useHandleMessage';
-import { useMessagesToSend } from '../hooks/useMessagesToSend';
-import { useSend } from '../hooks/useSend';
 
 let client: WebSocketI;
 
 export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren) => {
-  const [isCandlesWebSocketReady, setCandlesWebSocketReadyAtom] = useAtom(candlesWebSocketReadyAtom);
+  const setCandlesWebSocketReadyAtom = useSetAtom(candlesWebSocketReadyAtom);
+
   const chainId = useChainId();
 
   const waitForPongRef = useRef(false);
@@ -78,10 +79,10 @@ export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren)
 
   const contextValue: CandlesWebSocketContextI = useMemo(
     () => ({
-      isConnected: isCandlesWebSocketReady,
+      isConnected,
       send,
     }),
-    [isCandlesWebSocketReady, send]
+    [isConnected, send]
   );
 
   return <CandlesWebSocketContext.Provider value={contextValue}>{children}</CandlesWebSocketContext.Provider>;

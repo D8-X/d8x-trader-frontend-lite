@@ -24,14 +24,14 @@ import {
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
-import { candlesDataReadyAtom, newCandlesAtom, selectedPeriodAtom } from 'store/tv-chart.store';
+import { candlesDataReadyAtom, marketsDataAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
 import { getDynamicLogo } from 'utils/tokens';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
 import { Filters } from './components/filters/Filters';
 import { SearchInput } from './components/search-input/SearchInput';
-import { PerpetualWithPoolI } from './types';
+import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
@@ -54,63 +54,67 @@ const OptionsHeader = () => {
   );
 };
 
-const Option = ({
-  option,
-  isSelected,
-  onClick,
-}: {
-  isSelected: boolean;
-  option: SelectItemI<PerpetualWithPoolI>;
-  onClick: () => void;
-}) => {
-  const IconComponent = getDynamicLogo(option.item.baseCurrency.toLowerCase());
-  const { t } = useTranslation();
+const Option = memo(
+  ({
+    option,
+    isSelected,
+    onClick,
+  }: {
+    isSelected: boolean;
+    option: SelectItemI<PerpetualWithPoolAndMarketI>;
+    onClick: () => void;
+  }) => {
+    const IconComponent = getDynamicLogo(option.item.baseCurrency.toLowerCase());
+    const { t } = useTranslation();
 
-  return (
-    <MenuItem
-      value={option.value}
-      selected={isSelected}
-      className={classnames({ [styles.selectedOption]: isSelected })}
-      onClick={onClick}
-    >
-      <div className={styles.optionHolder}>
-        <div className={styles.optionLeftBlock}>
-          <Suspense fallback={null}>
-            <IconComponent width={24} height={24} />
-          </Suspense>
-          <Typography variant="bodySmall" className={styles.label}>
-            {option.item.baseCurrency}/{option.item.quoteCurrency}
-            <Typography variant="bodyTiny" component="div">
-              {option.item.poolSymbol}
-            </Typography>
-          </Typography>
-        </div>
-        <div className={styles.optionRightBlock}>
-          {!option.item.isMarketClosed ? (
-            <>
-              <Typography variant="bodySmall" className={styles.value}>
-                {option.item.indexPrice.toFixed(2)}
+    return (
+      <MenuItem
+        value={option.value}
+        selected={isSelected}
+        className={classnames({ [styles.selectedOption]: isSelected })}
+        onClick={onClick}
+      >
+        <div className={styles.optionHolder}>
+          <div className={styles.optionLeftBlock}>
+            <div className={styles.iconHolder}>
+              <Suspense fallback={null}>
+                <IconComponent width={24} height={24} />
+              </Suspense>
+            </div>
+            <Typography variant="bodySmall" className={styles.label}>
+              {option.item.baseCurrency}/{option.item.quoteCurrency}
+              <Typography variant="bodyTiny" component="div">
+                {option.item.poolSymbol}
               </Typography>
-              <Typography
-                variant="bodyTiny"
-                className={classnames(styles.priceChange, {
-                  [styles.buyPrice]: option.item.indexPrice > 0,
-                  [styles.sellPrice]: option.item.indexPrice < 0,
-                })}
-              >
-                +2.00%
-              </Typography>
-            </>
-          ) : (
-            <Typography variant="bodySmall" className={styles.status}>
-              {t('common.select.market.closed')}
             </Typography>
-          )}
+          </div>
+          <div className={styles.optionRightBlock}>
+            {option.item.marketData && option.item.marketData.isOpen ? (
+              <>
+                <Typography variant="bodySmall" className={styles.value}>
+                  {option.item.marketData.currentPx.toFixed(2)}
+                </Typography>
+                <Typography
+                  variant="bodyTiny"
+                  className={classnames(styles.priceChange, {
+                    [styles.buyPrice]: option.item.marketData.ret24hPerc > 0,
+                    [styles.sellPrice]: option.item.marketData.ret24hPerc < 0,
+                  })}
+                >
+                  {option.item.marketData.ret24hPerc.toFixed(2)}%
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="bodySmall" className={styles.status}>
+                {t('common.select.market.closed')}
+              </Typography>
+            )}
+          </div>
         </div>
-      </div>
-    </MenuItem>
-  );
-};
+      </MenuItem>
+    );
+  }
+);
 
 interface MarketSelectPropsI {
   withNavigate?: boolean;
@@ -133,7 +137,8 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  const setNewCandles = useSetAtom(newCandlesAtom);
+  const setNewCandle = useSetAtom(newCandleAtom);
+  const [marketsData] = useAtom(marketsDataAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
   const setPerpetualStaticInfo = useSetAtom(perpetualStaticInfoAtom);
@@ -142,20 +147,35 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
 
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const urlChangesAppliedRed = useRef(false);
+  const urlChangesAppliedRef = useRef(false);
+  const topicRef = useRef('');
+  const wsConnectedStateRef = useRef(false);
 
   useEffect(() => {
-    if (!location.hash || urlChangesAppliedRed.current) {
+    if (!location.hash || urlChangesAppliedRef.current || !pools.length) {
       return;
     }
 
     const symbolHash = location.hash.slice(1);
     const result = parseSymbol(symbolHash);
-    urlChangesAppliedRed.current = true;
+    urlChangesAppliedRef.current = true;
     if (result && selectedPool?.poolSymbol !== result.poolSymbol) {
       setSelectedPool(result.poolSymbol);
+
+      const foundPool = pools.find(({ poolSymbol }) => poolSymbol === result.poolSymbol);
+      if (!foundPool) {
+        return;
+      }
+
+      const foundPerpetual = foundPool.perpetuals.find(
+        ({ baseCurrency, quoteCurrency }) =>
+          baseCurrency === result.baseCurrency && quoteCurrency === result.quoteCurrency
+      );
+      if (foundPerpetual) {
+        setSelectedPerpetual(foundPerpetual.id);
+      }
     }
-  }, [location.hash, selectedPool, setSelectedPool]);
+  }, [location.hash, selectedPool, setSelectedPool, setSelectedPerpetual, pools]);
 
   useEffect(() => {
     if (selectedPool && selectedPerpetual) {
@@ -198,23 +218,34 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
   }, [selectedPool?.poolId, pools, isConnected, send, address]);
 
   useEffect(() => {
+    if (isConnectedCandlesWs && isConnectedCandlesWs !== wsConnectedStateRef.current) {
+      sendToCandlesWs(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
+    }
+
+    wsConnectedStateRef.current = isConnectedCandlesWs;
+
     if (updatePerpetual && selectedPerpetual && isConnectedCandlesWs) {
-      sendToCandlesWs(JSON.stringify({ type: 'unsubscribe' }));
-      sendToCandlesWs(
-        JSON.stringify({
-          type: 'subscribe',
-          symbol: `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`,
-          period: selectedPeriod,
-        })
-      );
-      setNewCandles([]);
-      setCandlesDataReady(false);
+      const topicInfo = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}:${selectedPeriod}`;
+      if (topicInfo !== topicRef.current) {
+        if (topicRef.current) {
+          sendToCandlesWs(JSON.stringify({ type: 'unsubscribe', topic: topicRef.current }));
+        }
+        topicRef.current = topicInfo;
+        sendToCandlesWs(
+          JSON.stringify({
+            type: 'subscribe',
+            topic: topicRef.current,
+          })
+        );
+        setNewCandle(null);
+        setCandlesDataReady(false);
+      }
     }
   }, [
     updatePerpetual,
     selectedPerpetual,
     selectedPeriod,
-    setNewCandles,
+    setNewCandle,
     setCandlesDataReady,
     isConnectedCandlesWs,
     sendToCandlesWs,
@@ -241,7 +272,7 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
     }
   }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI, updatePerpetual]);
 
-  const handleChange = (newItem: PerpetualWithPoolI) => {
+  const handleChange = (newItem: PerpetualWithPoolAndMarketI) => {
     setSelectedPool(newItem.poolSymbol);
     setSelectedPerpetual(newItem.id);
 
@@ -255,28 +286,33 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
   };
 
   const markets = useMemo(() => {
-    const marketsData: SelectItemI<PerpetualWithPoolI>[] = [];
+    const marketsList: SelectItemI<PerpetualWithPoolAndMarketI>[] = [];
     pools
       .filter((pool) => pool.isRunning)
       .forEach((pool) =>
-        marketsData.push(
-          ...pool.perpetuals.map((perpetual) => ({
-            value: perpetual.id.toString(),
-            // label: `${perpetual.baseCurrency}/${perpetual.quoteCurrency}`,
-            item: {
-              ...perpetual,
-              poolSymbol: pool.poolSymbol,
-              symbol: createSymbol({
+        marketsList.push(
+          ...pool.perpetuals.map((perpetual) => {
+            const pairId = `${perpetual.baseCurrency}-${perpetual.quoteCurrency}`.toLowerCase();
+            const marketData = marketsData.find((market) => market.symbol === pairId);
+
+            return {
+              value: perpetual.id.toString(),
+              item: {
+                ...perpetual,
                 poolSymbol: pool.poolSymbol,
-                baseCurrency: perpetual.baseCurrency,
-                quoteCurrency: perpetual.quoteCurrency,
-              }),
-            },
-          }))
+                symbol: createSymbol({
+                  poolSymbol: pool.poolSymbol,
+                  baseCurrency: perpetual.baseCurrency,
+                  quoteCurrency: perpetual.quoteCurrency,
+                }),
+                marketData: marketData ?? null,
+              },
+            };
+          })
         )
       );
-    return marketsData;
-  }, [pools]);
+    return marketsList;
+  }, [pools, marketsData]);
 
   const filteredMarkets = useMarketsFilter(markets);
 

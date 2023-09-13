@@ -8,7 +8,8 @@ import {
   candlesAtom,
   candlesDataReadyAtom,
   candlesWebSocketReadyAtom,
-  newCandlesAtom,
+  marketsDataAtom,
+  newCandleAtom,
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
 import { PerpetualI } from 'types/types';
@@ -17,8 +18,12 @@ import { TvChartPeriodE } from 'types/enums';
 import {
   CommonWsMessageI,
   ConnectWsMessageI,
-  // ErrorWsMessageI,
+  MarketsSubscribeWsErrorMessageI,
+  MarketsSubscribeWsMessageI,
+  MarketsWsMessageI,
+  MessageTopicE,
   MessageTypeE,
+  SubscribeWsErrorMessageI,
   SubscribeWsMessageI,
   UpdateWsMessageI,
 } from './types';
@@ -31,12 +36,42 @@ function isConnectMessage(message: CommonWsMessageI): message is ConnectWsMessag
 //   return message.type === MessageTypeE.Error;
 // }
 
-function isSubscribeMessage(message: CommonWsMessageI): message is SubscribeWsMessageI {
-  return message.type === MessageTypeE.Subscribe;
+function isSubscribeMessage(message: SubscribeWsMessageI): message is SubscribeWsMessageI {
+  return (
+    message.type === MessageTypeE.Subscribe && message.topic !== MessageTopicE.Markets && Array.isArray(message.data)
+  );
+}
+
+function isSubscribeErrorMessage(message: SubscribeWsErrorMessageI): message is SubscribeWsErrorMessageI {
+  return (
+    message.type === MessageTypeE.Subscribe &&
+    message.topic !== MessageTopicE.Markets &&
+    message.data.error !== undefined
+  );
+}
+
+function isMarketsSubscribeMessage(message: MarketsSubscribeWsMessageI): message is MarketsSubscribeWsMessageI {
+  return (
+    message.type === MessageTypeE.Subscribe && message.topic === MessageTopicE.Markets && Array.isArray(message.data)
+  );
+}
+
+function isMarketsSubscribeErrorMessage(
+  message: MarketsSubscribeWsErrorMessageI
+): message is MarketsSubscribeWsErrorMessageI {
+  return (
+    message.type === MessageTypeE.Subscribe &&
+    message.topic === MessageTopicE.Markets &&
+    message.data.error !== undefined
+  );
 }
 
 function isUpdateMessage(message: UpdateWsMessageI): message is UpdateWsMessageI {
-  return message.type === MessageTypeE.Update;
+  return message.type === MessageTypeE.Update && message.topic !== MessageTopicE.Markets;
+}
+
+function isMarketsMessage(message: MarketsWsMessageI): message is MarketsWsMessageI {
+  return message.type === MessageTypeE.Update && message.topic === MessageTopicE.Markets;
 }
 
 function createPairWithPeriod(perpetual: PerpetualI, period: TvChartPeriodE) {
@@ -48,7 +83,8 @@ export function useCandlesWsMessageHandler() {
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
   const setCandlesWebSocketReady = useSetAtom(candlesWebSocketReadyAtom);
   const setCandles = useSetAtom(candlesAtom);
-  const setNewCandles = useSetAtom(newCandlesAtom);
+  const setNewCandle = useSetAtom(newCandleAtom);
+  const setMarketsData = useSetAtom(marketsDataAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
 
   return useCallback(
@@ -58,19 +94,26 @@ export function useCandlesWsMessageHandler() {
       if (isConnectMessage(parsedMessage)) {
         setCandlesWebSocketReady(true);
         setCandlesDataReady(true);
+      } else if (isSubscribeErrorMessage(parsedMessage)) {
+        console.error(parsedMessage.data.error);
+      } else if (isMarketsSubscribeErrorMessage(parsedMessage)) {
+        console.error(parsedMessage.data.error);
       } else if (isSubscribeMessage(parsedMessage) && selectedPerpetual) {
         const symbol = createPairWithPeriod(selectedPerpetual, selectedPeriod);
         const newData = parsedMessage.data;
-        if (parsedMessage.msg !== symbol || !newData) {
+        if (parsedMessage.topic !== symbol || !newData) {
           return;
         }
+
+        setCandlesWebSocketReady(true);
 
         setCandles((prevData) => {
           // TODO: VOV: Temporary work-around. Should be only 1 message from backend
           if (prevData.length === newData.length && prevData[0].close === +newData[0].close) {
             return prevData;
           }
-          return parsedMessage.data.map((candle) => {
+
+          return newData.map((candle) => {
             const localTime = timeToLocal(candle.time);
 
             return {
@@ -84,33 +127,37 @@ export function useCandlesWsMessageHandler() {
           });
         });
         setCandlesDataReady(true);
+      } else if (isMarketsSubscribeMessage(parsedMessage)) {
+        setMarketsData(parsedMessage.data);
       } else if (isUpdateMessage(parsedMessage) && selectedPerpetual) {
         const symbol = createPairWithPeriod(selectedPerpetual, selectedPeriod);
-        if (parsedMessage.msg !== symbol || !parsedMessage.data) {
+        if (parsedMessage.topic !== symbol || !parsedMessage.data) {
           return;
         }
 
-        setNewCandles((prevData) => {
-          const newData = [...prevData];
-
-          parsedMessage.data.forEach((newCandle) => {
-            const localTime = timeToLocal(newCandle.time);
-
-            newData.push({
-              start: localTime,
-              time: (localTime / 1000) as UTCTimestamp,
-              open: +newCandle.open,
-              high: +newCandle.high,
-              low: +newCandle.low,
-              close: +newCandle.close,
-            });
-          });
-
-          return newData;
+        const localTime = timeToLocal(parsedMessage.data.time);
+        setNewCandle({
+          start: localTime,
+          time: (localTime / 1000) as UTCTimestamp,
+          open: +parsedMessage.data.open,
+          high: +parsedMessage.data.high,
+          low: +parsedMessage.data.low,
+          close: +parsedMessage.data.close,
         });
+
         setCandlesDataReady(true);
+      } else if (isMarketsMessage(parsedMessage)) {
+        setMarketsData(parsedMessage.data);
       }
     },
-    [setCandlesWebSocketReady, setCandles, setNewCandles, setCandlesDataReady, selectedPerpetual, selectedPeriod]
+    [
+      setCandlesWebSocketReady,
+      setCandles,
+      setNewCandle,
+      setMarketsData,
+      setCandlesDataReady,
+      selectedPerpetual,
+      selectedPeriod,
+    ]
   );
 }

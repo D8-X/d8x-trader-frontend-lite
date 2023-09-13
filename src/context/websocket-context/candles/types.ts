@@ -5,9 +5,19 @@ export enum MessageTypeE {
   Update = 'update',
 }
 
+export enum MessageTopicE {
+  Markets = 'markets',
+}
+
+export enum AssetTypeE {
+  Crypto = 'crypto',
+  Fx = 'fx',
+  Metal = 'metal',
+}
+
 export interface CommonWsMessageI {
   type: MessageTypeE;
-  msg: string;
+  topic: string;
   data: unknown;
 }
 
@@ -30,10 +40,46 @@ export interface CandleDataI {
 
 export interface SubscribeWsMessageI extends CommonWsMessageI {
   type: MessageTypeE.Subscribe;
+  topic: string;
   data: CandleDataI[];
+}
+
+export interface SubscribeWsErrorMessageI extends CommonWsMessageI {
+  type: MessageTypeE.Subscribe;
+  topic: string;
+  data: { error: string };
+}
+
+export interface MarketsSubscribeWsMessageI extends CommonWsMessageI {
+  type: MessageTypeE.Subscribe;
+  topic: MessageTopicE;
+  data: MarketDataI[];
+}
+
+export interface MarketsSubscribeWsErrorMessageI extends CommonWsMessageI {
+  type: MessageTypeE.Subscribe;
+  topic: MessageTopicE;
+  data: { error: string };
 }
 
 export interface UpdateWsMessageI extends CommonWsMessageI {
   type: MessageTypeE.Update;
-  data: CandleDataI[];
+  topic: string;
+  data: CandleDataI;
+}
+
+export interface MarketDataI {
+  symbol: string;
+  assetType: AssetTypeE;
+  ret24hPerc: number;
+  currentPx: number;
+  isOpen: boolean;
+  nextOpen: number;
+  nextClose: number;
+}
+
+export interface MarketsWsMessageI extends CommonWsMessageI {
+  type: MessageTypeE.Update;
+  topic: MessageTopicE;
+  data: MarketDataI[];
 }

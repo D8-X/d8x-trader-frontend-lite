@@ -2,27 +2,28 @@ import { useAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { groupFilterAtom } from '../../collaterals.store';
-import { TokenGroupE } from '../../constants';
+import { AssetTypeE } from 'context/websocket-context/candles/types';
+
+import { assetTypeFilterAtom } from '../../collaterals.store';
 
 import styles from './Filters.module.scss';
 
 export const Filters = memo(() => {
-  const [groupFilter, setGroupFilter] = useAtom(groupFilterAtom);
+  const [groupFilter, setGroupFilter] = useAtom(assetTypeFilterAtom);
   const { t } = useTranslation();
 
   const options = [
     {
       label: t('common.select.market.crypto'),
-      value: TokenGroupE.CRYPTO,
+      value: AssetTypeE.Crypto,
     },
     {
       label: t('common.select.market.fx'),
-      value: TokenGroupE.FX,
+      value: AssetTypeE.Fx,
     },
     {
       label: t('common.select.market.commodity'),
-      value: TokenGroupE.COMMODITY,
+      value: AssetTypeE.Metal,
     },
   ];
 

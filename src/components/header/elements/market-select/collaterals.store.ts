@@ -1,10 +1,10 @@
 import { atom } from 'jotai';
 
-import { TokenGroupE } from './constants';
+import { AssetTypeE } from 'context/websocket-context/candles/types';
 
 export const collateralFilterAtom = atom<string | null>(null);
 
-export const groupFilterAtom = atom<TokenGroupE | null>(null);
+export const assetTypeFilterAtom = atom<AssetTypeE | null>(null);
 
 const collateralsPrimitiveAtom = atom<string[]>([]);
 export const collateralsAtom = atom(

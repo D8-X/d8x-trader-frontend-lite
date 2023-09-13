@@ -3,14 +3,13 @@ import { useMemo } from 'react';
 
 import { SelectItemI } from '../header-select/types';
 import { searchFilterAtom } from './components/search-input/SearchInput';
-import { collateralFilterAtom, groupFilterAtom } from './collaterals.store';
-import { tokenGroups } from './constants';
-import { PerpetualWithPoolI } from './types';
+import { assetTypeFilterAtom, collateralFilterAtom } from './collaterals.store';
+import { PerpetualWithPoolAndMarketI } from './types';
 
-export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolI>[]) => {
+export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolAndMarketI>[]) => {
   const [collateralFilter] = useAtom(collateralFilterAtom);
   const [searchFilter] = useAtom(searchFilterAtom);
-  const [groupFilter] = useAtom(groupFilterAtom);
+  const [assetTypeFilter] = useAtom(assetTypeFilterAtom);
 
   const filteredMarkets = useMemo(() => {
     let collateralFiltered;
@@ -20,13 +19,12 @@ export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolI>[]) => 
       collateralFiltered = markets.filter((market) => market.item.poolSymbol === collateralFilter);
     }
 
-    if (groupFilter === null) {
+    if (assetTypeFilter === null) {
       return collateralFiltered;
     }
 
-    const groupToFilter = tokenGroups[groupFilter];
-    return collateralFiltered.filter((market) => groupToFilter.includes(market.item.baseCurrency));
-  }, [markets, collateralFilter, groupFilter]);
+    return collateralFiltered.filter((market) => assetTypeFilter === market.item.marketData?.assetType);
+  }, [markets, collateralFilter, assetTypeFilter]);
 
   return useMemo(() => {
     const checkStr = searchFilter.toLowerCase();

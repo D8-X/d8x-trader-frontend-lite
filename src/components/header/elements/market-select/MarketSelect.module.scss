@@ -156,6 +156,11 @@
   display: flex;
   gap: 8px;
   align-items: center;
+
+  .iconHolder {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .optionRightBlock {
