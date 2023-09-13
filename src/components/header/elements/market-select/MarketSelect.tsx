@@ -64,6 +64,7 @@ const Option = ({
   onClick: () => void;
 }) => {
   const IconComponent = getDynamicLogo(option.item.baseCurrency.toLowerCase());
+  const { t } = useTranslation();
 
   return (
     <MenuItem
@@ -85,7 +86,7 @@ const Option = ({
           </Typography>
         </div>
         <div className={styles.optionRightBlock}>
-          {option.item.state === 'NORMAL' ? (
+          {!option.item.isMarketClosed ? (
             <>
               <Typography variant="bodySmall" className={styles.value}>
                 {option.item.indexPrice.toFixed(2)}
@@ -102,7 +103,7 @@ const Option = ({
             </>
           ) : (
             <Typography variant="bodySmall" className={styles.status}>
-              {option.item.state}
+              {t('common.select.market.closed')}
             </Typography>
           )}
         </div>

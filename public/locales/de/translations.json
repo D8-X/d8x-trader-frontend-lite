@@ -536,7 +536,8 @@
         "header": "Marktauswahl",
         "crypto": "Krypto",
         "fx": "Devisen",
-        "commodity": "Rohstoffe"
+        "commodity": "Rohstoffe",
+        "closed": "Geschlossen"
       },
       "search": "Suchen...",
       "perpetual": {

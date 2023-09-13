@@ -536,7 +536,8 @@
         "header": "Escoger Mercado",
         "crypto": "Cripto",
         "fx": "FX",
-        "commodity": "Productos Basicos"
+        "commodity": "Productos Basicos",
+        "closed": "Cerrado"
       },
       "search": "Buscar...",
       "perpetual": {

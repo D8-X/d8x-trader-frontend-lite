@@ -536,7 +536,8 @@
         "header": "选择市场",
         "crypto": "加密货币",
         "fx": "外汇",
-        "commodity": "商品"
+        "commodity": "商品",
+        "closed": "休市"
       },
       "search": " 搜索...",
       "perpetual": {

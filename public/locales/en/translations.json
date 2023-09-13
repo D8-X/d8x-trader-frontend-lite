@@ -536,7 +536,8 @@
         "header": "Choose Market",
         "crypto": "Crypto",
         "fx": "FX",
-        "commodity": "Commodity"
+        "commodity": "Commodity",
+        "closed": "Closed"
       },
       "search": "Search...",
       "perpetual": {
