@@ -36,6 +36,8 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
 import styles from './ActionBlock.module.scss';
+import { createWalletClient, custom, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
 
@@ -104,6 +106,20 @@ export const ActionBlock = memo(() => {
       console.log(error);
     },
   });
+
+  const is1CTEnabled = true;
+
+  const tradingClient = useMemo(() => {
+    if (is1CTEnabled && walletClient?.chain && window?.ethereum) {
+      return createWalletClient({
+        account: privateKeyToAccount('0xasfasdf'),
+        chain: walletClient.chain,
+        transport: custom(window.ethereum),
+      });
+    } else {
+      return walletClient;
+    }
+  }, [walletClient, is1CTEnabled]);
 
   const [orderInfo] = useAtom(orderInfoAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
@@ -280,7 +296,15 @@ export const ActionBlock = memo(() => {
   });
 
   const handleOrderConfirm = () => {
-    if (!address || !walletClient || !parsedOrders || !selectedPool || !proxyAddr || !poolTokenDecimals) {
+    if (
+      !address ||
+      !walletClient ||
+      !tradingClient ||
+      !parsedOrders ||
+      !selectedPool ||
+      !proxyAddr ||
+      !poolTokenDecimals
+    ) {
       return;
     }
     setRequestSent(true);
@@ -300,7 +324,7 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(walletClient, signatures, data.data)
+              postOrder(tradingClient, signatures, data.data)
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // success submitting order to the node
