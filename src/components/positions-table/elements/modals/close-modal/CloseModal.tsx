@@ -13,8 +13,15 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { orderDigest } from 'network/network';
-import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom } from 'store/pools.store';
+import { getOpenOrders, getPositionRisk, orderDigest } from 'network/network';
+import {
+  openOrdersAtom,
+  poolTokenDecimalsAtom,
+  positionsAtom,
+  proxyAddrAtom,
+  selectedPoolAtom,
+  traderAPIAtom,
+} from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 import { type MarginAccountI, type OrderI } from 'types/types';
 
@@ -32,6 +39,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const [, setOpenOrders] = useAtom(openOrdersAtom);
+  const [, setPositions] = useAtom(positionsAtom);
+  const [traderAPI] = useAtom(traderAPIAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -69,6 +79,22 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     onSettled() {
       setTxHash(undefined);
       setSymbolForTx('');
+      setTimeout(() => {
+        getOpenOrders(chainId, traderAPI, address as Address)
+          .then(({ data: d }) => {
+            if (d?.length > 0) {
+              d.map(setOpenOrders);
+            }
+          })
+          .catch(console.error);
+        getPositionRisk(chainId, traderAPI, address as Address, Date.now())
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              data.map(setPositions);
+            }
+          })
+          .catch(console.error);
+      }, 30_000);
     },
     enabled: !!address && !!txHash,
   });

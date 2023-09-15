@@ -14,7 +14,7 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useDebounce } from 'helpers/useDebounce';
-import { getOpenOrders, orderDigest, positionRiskOnTrade } from 'network/network';
+import { getOpenOrders, getPositionRisk, orderDigest, positionRiskOnTrade } from 'network/network';
 import { clearInputsDataAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralDepositAtom,
@@ -111,7 +111,7 @@ export const ActionBlock = memo(() => {
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
-  const [positions] = useAtom(positionsAtom);
+  const [positions, setPositions] = useAtom(positionsAtom);
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
@@ -259,6 +259,22 @@ export const ActionBlock = memo(() => {
           }
         })
         .catch(console.error);
+      setTimeout(() => {
+        getOpenOrders(chainId, traderAPI, address as Address)
+          .then(({ data: d }) => {
+            if (d?.length > 0) {
+              d.map(setOpenOrders);
+            }
+          })
+          .catch(console.error);
+        getPositionRisk(chainId, traderAPI, address as Address, Date.now())
+          .then(({ data }) => {
+            if (data && data.length > 0) {
+              data.map(setPositions);
+            }
+          })
+          .catch(console.error);
+      }, 30_000);
     },
     enabled: !!address && !!orderInfo && !!txHash,
   });
