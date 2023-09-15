@@ -6,39 +6,25 @@ function getHistoryUrlByChainId(chainId: number) {
   return config.historyUrl[`${chainId}`] || config.historyUrl.default;
 }
 
+const fetchUrl = async (url: string, chainId: number) => {
+  const data = await fetch(`${getHistoryUrlByChainId(chainId)}/${url}`, getRequestOptions());
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+};
+
 export function getTradesHistory(chainId: number, traderAddr: string): Promise<TradeHistoryI[]> {
-  return fetch(`${getHistoryUrlByChainId(chainId)}/trades-history?traderAddr=${traderAddr}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`trades-history?traderAddr=${traderAddr}`, chainId);
 }
 
 export function getFundingRatePayments(chainId: number, traderAddr: string): Promise<FundingI[]> {
-  return fetch(
-    `${getHistoryUrlByChainId(chainId)}/funding-rate-payments?traderAddr=${traderAddr}`,
-    getRequestOptions()
-  ).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`funding-rate-payments?traderAddr=${traderAddr}`, chainId);
 }
 
 export function getWeeklyAPI(chainId: number, poolSymbol: string): Promise<WeeklyApiI> {
-  return fetch(`${getHistoryUrlByChainId(chainId)}/apy?poolSymbol=${poolSymbol}`, getRequestOptions()).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`apy?poolSymbol=${poolSymbol}`, chainId);
 }
 
 export function getEarnings(chainId: number, address: string, poolSymbol: string): Promise<EarningsI> {
@@ -46,15 +32,7 @@ export function getEarnings(chainId: number, address: string, poolSymbol: string
     lpAddr: address,
     poolSymbol,
   };
-  return fetch(`${getHistoryUrlByChainId(chainId)}/earnings?${new URLSearchParams(params)}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`earnings?${new URLSearchParams(params)}`, chainId);
 }
 
 export function getOpenWithdrawals(chainId: number, address: string, poolSymbol: string): Promise<OpenWithdrawalsI> {
@@ -62,14 +40,5 @@ export function getOpenWithdrawals(chainId: number, address: string, poolSymbol:
     lpAddr: address,
     poolSymbol,
   };
-  return fetch(
-    `${getHistoryUrlByChainId(chainId)}/open-withdrawals?${new URLSearchParams(params)}`,
-    getRequestOptions()
-  ).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`open-withdrawals?${new URLSearchParams(params)}`, chainId);
 }

@@ -1,0 +1,56 @@
+@import '~styles/theme/_theme.scss';
+
+.sideBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  background: var(--d8x-color-black-50);
+  padding: 40px 40px 64px;
+  width: 274px;
+
+  @include media-tablet {
+    background-color: var(--d8x-background-white);
+    border-radius: $d8x-border-radius;
+    margin: $d8x-spacing * 4 0 $d8x-spacing * 4;
+    padding: $d8x-spacing * 6;
+    width: auto;
+  }
+}
+
+.accountValue {
+  color: var(--d8x-color-purple-dark);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  margin-top: $d8x-spacing;
+}
+
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: $d8x-spacing * 2;
+}
+
+.detailsHeader {
+  color: var(--d8x-color-black-500);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.separator {
+  width: 100%;
+  height: 1px;
+  background: var(--d8x-color-black-200);
+}
+
+.detailsLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--d8x-color-black-500);
+  line-height: 2;
+}
+
+.detailsValue {
+  color: var(--d8x-color-purple-dark);
+}

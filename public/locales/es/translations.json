@@ -2,7 +2,8 @@
   "navigation": {
     "trade": "Comercio",
     "refer": "Referir",
-    "vault": "Bóveda"
+    "vault": "Bóveda",
+    "portfolio": "Cartera"
   },
   "pages": {
     "geolocation": {
@@ -489,6 +490,33 @@
         "error-initiating": {
           "title": "Error Iniciando Retirada de Liquidez",
           "body": "Razón"
+        }
+      }
+    },
+    "portfolio": {
+      "perpetuals": "Perpetuos",
+      "vault": "Bóveda",
+      "account-value": {
+        "title": "Valor de la cuenta",
+        "details": {
+          "wallet": {
+            "title": "Detalles de la cartera",
+            "funds": "Fondos"
+          },
+          "perps": {
+            "title": "Detalles de los perpetradores",
+            "leverage": "Aproveche",
+            "unrealized": "PnL no realizado",
+            "realized": "PnL realizado",
+            "referral": "Ingresos por remisión"
+          },
+          "vault": {
+            "title": "Detalles de la cámara acorazada",
+            "assets": "Activos",
+            "assets-pool": "Activos en pools",
+            "earnings-pool": "Beneficios por pool",
+            "total": "Total estim. Ingresos"
+          }
         }
       }
     }

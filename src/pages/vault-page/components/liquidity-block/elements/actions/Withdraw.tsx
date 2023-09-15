@@ -166,11 +166,9 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
               </>
             }
             content={
-              <>
-                <Typography>
-                  {t('pages.vault.withdraw.action.info1', { poolSymbol: selectedPool?.poolSymbol })}
-                </Typography>
-              </>
+              <Typography>
+                {t('pages.vault.withdraw.action.info1', { poolSymbol: selectedPool?.poolSymbol })}
+              </Typography>
             }
             classname={styles.actionIcon}
           />

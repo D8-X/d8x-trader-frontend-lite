@@ -7,9 +7,10 @@
 
 .inactive,
 .active {
-  padding: $d8x-spacing $d8x-spacing * 3;
+  padding: $d8x-spacing * 2 $d8x-spacing * 3;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 1rem;
+  line-height: 1.5;
   cursor: pointer;
 }
 

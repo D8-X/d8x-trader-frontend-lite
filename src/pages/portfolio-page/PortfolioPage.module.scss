@@ -1,0 +1,33 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+
+  @include media-tablet {
+    padding: 0 $d8x-spacing * 3;
+  }
+}
+
+.container {
+  display: flex;
+  border-radius: $d8x-border-radius;
+  overflow-x: auto;
+  margin: auto;
+  max-width: 1400px;
+  width: 100%;
+
+  @include media-tablet {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 0 0;
+}

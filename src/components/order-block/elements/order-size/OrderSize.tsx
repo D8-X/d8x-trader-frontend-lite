@@ -71,11 +71,6 @@ export const OrderSize = memo(() => {
     }
     inputValueChangedRef.current = false;
 
-    if (latestCurrency.current === '') {
-      latestCurrency.current = selectedCurrency;
-      return;
-    }
-
     if (!selectedPool || !selectedPerpetual) {
       return;
     }

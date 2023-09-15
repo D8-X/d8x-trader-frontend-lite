@@ -16,6 +16,7 @@ import { TraderTab } from './components/trader-tab/TraderTab';
 import { QueryParamE, ReferTabIdE } from './constants';
 
 import styles from './ReferPage.module.scss';
+import { Helmet } from '../../components/helmet/Helmet';
 
 const tabComponents = [
   {
@@ -121,11 +122,14 @@ export const ReferPage = () => {
   }, [query]);
 
   return (
-    <Box className={styles.root}>
-      <Container className={styles.container}>
-        <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
-        {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
-      </Container>
-    </Box>
+    <>
+      <Helmet title="Refer | D8X App" />
+      <Box className={styles.root}>
+        <Container className={styles.container}>
+          <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
+          {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
+        </Container>
+      </Box>
+    </>
   );
 };

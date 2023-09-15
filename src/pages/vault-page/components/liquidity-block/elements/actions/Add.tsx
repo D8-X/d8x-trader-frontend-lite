@@ -161,8 +161,8 @@ export const Add = memo(() => {
         <Box className={styles.inputLine}>
           <Box className={styles.label}>
             <InfoBlock
-              title={<>{t('pages.vault.add.amount.title', { poolSymbol: selectedPool?.poolSymbol })}</>}
-              content={<>{t('pages.vault.add.amount.info1', { poolSymbol: selectedPool?.poolSymbol })}</>}
+              title={t('pages.vault.add.amount.title', { poolSymbol: selectedPool?.poolSymbol })}
+              content={t('pages.vault.add.amount.info1', { poolSymbol: selectedPool?.poolSymbol })}
               classname={styles.actionIcon}
             />
           </Box>

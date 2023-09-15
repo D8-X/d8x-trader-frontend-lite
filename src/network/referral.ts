@@ -12,6 +12,15 @@ function getReferralUrlByChainId(chainId: number) {
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
 }
 
+const fetchUrl = async (url: string, chainId: number) => {
+  const data = await fetch(`${getReferralUrlByChainId(chainId)}/${url}`, getRequestOptions());
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+};
+
 export async function postUpsertReferralCode(
   chainId: number,
   referrerAddr: string,
@@ -98,35 +107,15 @@ export function getReferralCodeExists(
   chainId: number,
   code: string
 ): Promise<ValidatedResponseI<{ code: string; traderRebatePerc: number }[]>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/code-info?code=${code}`, getRequestOptions()).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`code-info?code=${code}`, chainId);
 }
 
 export function getIsAgency(chainId: number, address: string): Promise<ValidatedResponseI<{ isAgency: boolean }>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/is-agency?addr=${address}`, getRequestOptions()).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`is-agency?addr=${address}`, chainId);
 }
 
 export function getReferralVolume(chainId: number, address: string): Promise<ValidatedResponseI<ReferralVolumeI[]>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/referral-volume?referrerAddr=${address}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`referral-volume?referrerAddr=${address}`, chainId);
 }
 
 export function getEarnedRebate(
@@ -137,63 +126,27 @@ export function getEarnedRebate(
   const params = new URLSearchParams();
   params.append(`${rebateType}Addr`, address);
 
-  return fetch(`${getReferralUrlByChainId(chainId)}/earned-rebate?${params}`, getRequestOptions()).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`earned-rebate?${params}`, chainId);
 }
 
 export function getReferralCodes(chainId: number, address: string): Promise<ValidatedResponseI<ReferralCodeI>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/my-referral-codes?addr=${address}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`my-referral-codes?addr=${address}`, chainId);
 }
 
 export function getOpenTraderRebate(
   chainId: number,
   traderAddr: string
 ): Promise<ValidatedResponseI<OpenTraderRebateI[]>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/open-trader-rebate?addr=${traderAddr}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`open-trader-rebate?addr=${traderAddr}`, chainId);
 }
 
 export function getReferralRebate(
   chainId: number,
   address: string
 ): Promise<ValidatedResponseI<{ percentageCut: number }>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/referral-rebate?referrerAddr=${address}`, getRequestOptions()).then(
-    (data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    }
-  );
+  return fetchUrl(`referral-rebate?referrerAddr=${address}`, chainId);
 }
 
 export function getAgencyRebate(chainId: number): Promise<ValidatedResponseI<{ percentageCut: number }>> {
-  return fetch(`${getReferralUrlByChainId(chainId)}/agency-rebate`, getRequestOptions()).then((data) => {
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
-  });
+  return fetchUrl(`agency-rebate`, chainId);
 }

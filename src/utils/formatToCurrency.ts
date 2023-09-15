@@ -22,7 +22,7 @@ export function valueToFractionDigits(value: number | undefined) {
   if (!value) {
     return 2;
   }
-  return !value ? 1 : Math.max(2, roundHalfDown(2.5 - Math.log10(Math.abs(value))));
+  return Math.max(2, roundHalfDown(2.5 - Math.log10(Math.abs(value))));
 }
 
 export function formatToCurrency(

@@ -1,35 +1,30 @@
 import { useAtom } from 'jotai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
 import { useReferralCodes } from 'hooks/useReferralCodes';
-import { getEarnedRebate, getOpenTraderRebate } from 'network/referral';
 import { poolsAtom } from 'store/pools.store';
 import { RebateTypeE } from 'types/enums';
-import type { EarnedRebateI, OpenTraderRebateI, OverviewItemI, OverviewPoolItemI } from 'types/types';
+import type { OverviewItemI, OverviewPoolItemI } from 'types/types';
 
-import { Overview } from '../overview/Overview';
 import { Disclaimer } from '../disclaimer/Disclaimer';
+import { Overview } from '../overview/Overview';
 import { ReferralCodeBlock } from '../referral-code-block/ReferralCodeBlock';
+import { useFetchEarnedRebate } from '../referrer-tab/useFetchEarnedRebate';
 
 import styles from './TraderTab.module.scss';
+import { useFetchOpenRewards } from './useFetchOpenRewards';
 
 export const TraderTab = () => {
   const { t } = useTranslation();
-
-  const [earnedRebates, setEarnedRebates] = useState<EarnedRebateI[]>([]);
-  const [openRewards, setOpenRewards] = useState<OpenTraderRebateI[]>([]);
 
   const [pools] = useAtom(poolsAtom);
 
   const { address } = useAccount();
   const chainId = useChainId();
-
-  const earnedRebateRequestRef = useRef(false);
-  const openRewardsRequestRef = useRef(false);
 
   const { referralCode, traderRebatePercentage, getReferralCodesAsync } = useReferralCodes(address, chainId);
 
@@ -38,47 +33,8 @@ export const TraderTab = () => {
     [t]
   );
 
-  useEffect(() => {
-    if (address && chainId) {
-      if (earnedRebateRequestRef.current) {
-        return;
-      }
-
-      earnedRebateRequestRef.current = true;
-
-      getEarnedRebate(chainId, address, RebateTypeE.Trader)
-        .then(({ data }) => {
-          setEarnedRebates(data);
-        })
-        .catch(console.error)
-        .finally(() => {
-          earnedRebateRequestRef.current = false;
-        });
-    } else {
-      setEarnedRebates([]);
-    }
-  }, [address, chainId]);
-
-  useEffect(() => {
-    if (address && chainId) {
-      if (openRewardsRequestRef.current) {
-        return;
-      }
-
-      openRewardsRequestRef.current = true;
-
-      getOpenTraderRebate(chainId, address)
-        .then(({ data }) => {
-          setOpenRewards(data);
-        })
-        .catch(console.error)
-        .finally(() => {
-          openRewardsRequestRef.current = false;
-        });
-    } else {
-      setOpenRewards([]);
-    }
-  }, [address, chainId]);
+  const { earnedRebates } = useFetchEarnedRebate(RebateTypeE.Trader);
+  const { openRewards } = useFetchOpenRewards();
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
     const earnedRebatesByPools: OverviewPoolItemI[] = [];

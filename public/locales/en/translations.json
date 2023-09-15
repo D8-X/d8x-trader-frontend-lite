@@ -2,7 +2,8 @@
   "navigation": {
     "trade": "Trade",
     "refer": "Refer",
-    "vault": "Vault"
+    "vault": "Vault",
+    "portfolio": "Portfolio"
   },
   "pages": {
     "geolocation": {
@@ -489,6 +490,33 @@
         "error-initiating": {
           "title": "Error initiating withdrawal",
           "body": "Reason"
+        }
+      }
+    },
+    "portfolio": {
+      "perpetuals": "Perpetuals",
+      "vault": "Vault",
+      "account-value": {
+        "title": "Account Value",
+        "details": {
+          "wallet": {
+            "title": "Wallet details",
+            "funds": "Funds"
+          },
+          "perps": {
+            "title": "Perps details",
+            "leverage": "Leverage",
+            "unrealized": "Unrealized PnL",
+            "realized": "Realized PnL",
+            "referral": "Referral earnings"
+          },
+          "vault": {
+            "title": "Vault details",
+            "assets": "Assets",
+            "assets-pool": "Assets in pools",
+            "earnings-pool": "Earnings per pool",
+            "total": "Total estim. Earnings"
+          }
         }
       }
     }

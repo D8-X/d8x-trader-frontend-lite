@@ -72,12 +72,10 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           <InfoBlock
             title={t('pages.vault.personal-stats.amount.title')}
             content={
-              <>
-                <Typography>
-                  {' '}
-                  {t('pages.vault.personal-stats.amount.info', { poolSymbol: selectedPool?.poolSymbol })}{' '}
-                </Typography>
-              </>
+              <Typography>
+                {' '}
+                {t('pages.vault.personal-stats.amount.info', { poolSymbol: selectedPool?.poolSymbol })}{' '}
+              </Typography>
             }
             classname={styles.actionIcon}
           />
@@ -117,12 +115,10 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           <InfoBlock
             title={t('pages.vault.personal-stats.initiated.title')}
             content={
-              <>
-                <Typography>
-                  {' '}
-                  {t('pages.vault.personal-stats.initiated.info1', { poolSymbol: selectedPool?.poolSymbol })}
-                </Typography>
-              </>
+              <Typography>
+                {' '}
+                {t('pages.vault.personal-stats.initiated.info1', { poolSymbol: selectedPool?.poolSymbol })}
+              </Typography>
             }
             classname={styles.actionIcon}
           />

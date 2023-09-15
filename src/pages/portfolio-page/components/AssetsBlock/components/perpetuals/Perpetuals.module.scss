@@ -1,0 +1,35 @@
+@import '~styles/theme/_theme.scss';
+
+.pnlBlock {
+  width: 50%;
+
+  @include media-tablet {
+    width: auto;
+  }
+}
+
+.pnlHeader {
+  color: var(--d8x-color-black-maintext);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.assetsList {
+  display: flex;
+  flex-direction: column;
+  gap: $d8x-spacing * 4;
+  width: 178px;
+
+  @include media-tablet {
+    width: auto;
+  }
+}
+
+.assetsLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $d8x-spacing * 2;
+}

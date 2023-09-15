@@ -1,9 +1,7 @@
-import { useSetAtom } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
 import { config } from 'config';
-import { candlesWebSocketReadyAtom } from 'store/tv-chart.store';
 
 import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
 import { useHandleMessage } from '../hooks/useHandleMessage';
@@ -17,8 +15,6 @@ import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 let client: WebSocketI;
 
 export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren) => {
-  const setCandlesWebSocketReadyAtom = useSetAtom(candlesWebSocketReadyAtom);
-
   const chainId = useChainId();
 
   const waitForPongRef = useRef(false);
@@ -70,12 +66,6 @@ export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren)
       client.off(handleMessage);
     };
   }, [chainId]);
-
-  useEffect(() => {
-    if (!isConnected) {
-      setCandlesWebSocketReadyAtom(false);
-    }
-  }, [setCandlesWebSocketReadyAtom, isConnected]);
 
   const contextValue: CandlesWebSocketContextI = useMemo(
     () => ({

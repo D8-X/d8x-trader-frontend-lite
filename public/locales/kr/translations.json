@@ -2,7 +2,8 @@
   "navigation": {
     "trade": "거래",
     "refer": "추천",
-    "vault": "Vault"
+    "vault": "Vault",
+    "portfolio": "포트폴리오"
   },
   "pages": {
     "trade": {
@@ -489,6 +490,33 @@
         "error-initiating": {
           "title": "Error initiating withdrawal",
           "body": "Reason"
+        }
+      }
+    },
+    "portfolio": {
+      "perpetuals": "퍼페추얼",
+      "vault": "볼트",
+      "account-value": {
+        "title": "계정 가치",
+        "details": {
+          "wallet": {
+            "title": "지갑 세부 정보",
+            "funds": "자금"
+          },
+          "perps": {
+            "title": "범인 세부 정보",
+            "leverage": "레버리지",
+            "unrealized": "미실현 손익",
+            "realized": "실현된 손익",
+            "referral": "추천인 수익"
+          },
+          "vault": {
+            "title": "볼트 세부 정보",
+            "assets": "자산",
+            "assets-pool": "풀의 자산",
+            "earnings-pool": "풀당 수익",
+            "total": "총 추정치. 수입"
+          }
         }
       }
     }

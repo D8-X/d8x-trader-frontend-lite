@@ -137,7 +137,7 @@ export const Initiate = memo(() => {
     <>
       <Box className={styles.withdrawLabel}>
         <InfoBlock
-          title={<>{t('pages.vault.withdraw.initiate.title', { poolSymbol: selectedPool?.poolSymbol })}</>}
+          title={t('pages.vault.withdraw.initiate.title', { poolSymbol: selectedPool?.poolSymbol })}
           content={
             <>
               <Typography>

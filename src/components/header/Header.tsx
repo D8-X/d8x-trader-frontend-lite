@@ -9,7 +9,7 @@ import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTh
 
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo } from 'network/network';
-import { pages } from 'routes/pages';
+import { pages, authPages } from 'routes/pages';
 import {
   oracleFactoryAddrAtom,
   perpetualsAtom,
@@ -160,6 +160,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     setMobileOpen(!mobileOpen);
   };
 
+  const availablePages = [...pages];
+  if (address) {
+    availablePages.push(...authPages);
+  }
   const drawer = (
     <>
       <Typography variant="h6" sx={{ my: 2, textAlign: 'center' }} onClick={handleDrawerToggle}>
@@ -167,7 +171,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       </Typography>
       <Divider />
       <nav className={styles.navMobileWrapper} onClick={handleDrawerToggle}>
-        {pages.map((page) => (
+        {availablePages.map((page) => (
           <NavLink
             key={page.id}
             to={page.path}
@@ -207,7 +211,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               </Typography>
               {!isTabletScreen && (
                 <nav className={styles.navWrapper}>
-                  {pages.map((page) => (
+                  {availablePages.map((page) => (
                     <NavLink
                       key={page.id}
                       to={page.path}

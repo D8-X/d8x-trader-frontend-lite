@@ -5,16 +5,17 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
-import { getEarnedRebate, getReferralVolume } from 'network/referral';
+import { getReferralVolume } from 'network/referral';
 import { poolsAtom } from 'store/pools.store';
 import { RebateTypeE } from 'types/enums';
-import type { EarnedRebateI, OverviewItemI, OverviewPoolItemI, ReferralVolumeI } from 'types/types';
+import type { OverviewItemI, OverviewPoolItemI, ReferralVolumeI } from 'types/types';
 
-import { Overview } from '../overview/Overview';
 import { Disclaimer } from '../disclaimer/Disclaimer';
+import { Overview } from '../overview/Overview';
 import { ReferralsBlock } from '../referrals-block/ReferralsBlock';
 
 import styles from './ReferrerTab.module.scss';
+import { useFetchEarnedRebate } from './useFetchEarnedRebate';
 
 export const ReferrerTab = memo(() => {
   const { t } = useTranslation();
@@ -25,10 +26,8 @@ export const ReferrerTab = memo(() => {
   const { address } = useAccount();
 
   const [referralVolumes, setReferralVolumes] = useState<ReferralVolumeI[]>([]);
-  const [earnedRebates, setEarnedRebates] = useState<EarnedRebateI[]>([]);
 
   const referralVolumeRequestRef = useRef(false);
-  const earnedRebateRequestRef = useRef(false);
 
   const disclaimerTextBlocks = useMemo(
     () => [t('pages.refer.referrer-tab.disclaimer-text-block1'), t('pages.refer.referrer-tab.disclaimer-text-block2')],
@@ -56,26 +55,7 @@ export const ReferrerTab = memo(() => {
     }
   }, [address, chainId]);
 
-  useEffect(() => {
-    if (address && chainId) {
-      if (earnedRebateRequestRef.current) {
-        return;
-      }
-
-      earnedRebateRequestRef.current = true;
-
-      getEarnedRebate(chainId, address, RebateTypeE.Referrer)
-        .then(({ data }) => {
-          setEarnedRebates(data);
-        })
-        .catch(console.error)
-        .finally(() => {
-          earnedRebateRequestRef.current = false;
-        });
-    } else {
-      setReferralVolumes([]);
-    }
-  }, [address, chainId]);
+  const { earnedRebates } = useFetchEarnedRebate(RebateTypeE.Referrer);
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
     const referralVolumesByPools: OverviewPoolItemI[] = [];

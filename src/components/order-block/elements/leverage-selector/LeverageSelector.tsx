@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Slider, Typography } from '@mui/material';
@@ -25,7 +25,11 @@ export const LeverageSelector = memo(() => {
 
   const [leverage, setLeverage] = useAtom(leverageAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
+
+  const [updatedLeverage, setUpdatedLeverage] = useState(leverage);
   const [inputValue, setInputValue] = useState(`${leverage}`);
+
+  const inputValueChangedRef = useRef(false);
 
   const maxLeverage = useMemo(() => {
     if (perpetualStaticInfo) {
@@ -64,6 +68,14 @@ export const LeverageSelector = memo(() => {
     setInputValue(`${leverage}`);
   }, [leverage]);
 
+  useEffect(() => {
+    if (!inputValueChangedRef.current) {
+      setLeverage(updatedLeverage);
+      setInputValue(`${updatedLeverage}`);
+    }
+    inputValueChangedRef.current = false;
+  }, [setLeverage, updatedLeverage]);
+
   const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
 
   return (
@@ -97,7 +109,7 @@ export const LeverageSelector = memo(() => {
             marks={marks}
             onChange={(_event, newValue) => {
               if (typeof newValue === 'number') {
-                setLeverage(newValue);
+                setUpdatedLeverage(newValue);
               }
             }}
           />

@@ -29,3 +29,37 @@ $d8x-breakpoint-min-lg: 'min-width: 1280px';
 $d8x-breakpoint-max-lg: 'max-width: 1649px';
 $d8x-breakpoint-min-xl: 'min-width: 1650px';
 $d8x-breakpoint-height-max-md: 'max-height: 920px';
+$media: (
+  sm: 599px,
+  md: 967px,
+  lg: 1279px,
+  xl: 1649px,
+);
+
+@mixin md($breakpoint) {
+  @each $breakpoints, $size in $media {
+    @if $breakpoint == $breakpoints {
+      @media screen and (max-width: $size) {
+        @content;
+      }
+    }
+  }
+}
+
+@mixin media-phone() {
+  @include md('sm') {
+    @content;
+  }
+}
+
+@mixin media-tablet() {
+  @include md('md') {
+    @content;
+  }
+}
+
+@mixin media-desktop() {
+  @include md('lg') {
+    @content;
+  }
+}

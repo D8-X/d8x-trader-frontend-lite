@@ -7,7 +7,6 @@ import { selectedPerpetualAtom } from 'store/pools.store';
 import {
   candlesAtom,
   candlesDataReadyAtom,
-  candlesWebSocketReadyAtom,
   marketsDataAtom,
   newCandleAtom,
   selectedPeriodAtom,
@@ -77,7 +76,6 @@ function createPairWithPeriod(perpetual: PerpetualI, period: TvChartPeriodE) {
 export function useCandlesWsMessageHandler() {
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
-  const setCandlesWebSocketReady = useSetAtom(candlesWebSocketReadyAtom);
   const setCandles = useSetAtom(candlesAtom);
   const setNewCandle = useSetAtom(newCandleAtom);
   const setMarketsData = useSetAtom(marketsDataAtom);
@@ -88,7 +86,6 @@ export function useCandlesWsMessageHandler() {
       const parsedMessage = JSON.parse(message);
 
       if (isConnectMessage(parsedMessage)) {
-        setCandlesWebSocketReady(true);
         setCandlesDataReady(true);
       } else if (isSubscribeErrorMessage(parsedMessage)) {
         console.error(parsedMessage.data.error);
@@ -100,8 +97,6 @@ export function useCandlesWsMessageHandler() {
         if (parsedMessage.topic !== symbol || !newData) {
           return;
         }
-
-        setCandlesWebSocketReady(true);
 
         setCandles((prevData) => {
           // TODO: VOV: Temporary work-around. Should be only 1 message from backend
@@ -146,14 +141,6 @@ export function useCandlesWsMessageHandler() {
         setMarketsData(parsedMessage.data);
       }
     },
-    [
-      setCandlesWebSocketReady,
-      setCandles,
-      setNewCandle,
-      setMarketsData,
-      setCandlesDataReady,
-      selectedPerpetual,
-      selectedPeriod,
-    ]
+    [setCandles, setNewCandle, setMarketsData, setCandlesDataReady, selectedPerpetual, selectedPeriod]
   );
 }

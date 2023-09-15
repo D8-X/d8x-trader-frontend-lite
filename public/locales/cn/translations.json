@@ -2,7 +2,8 @@
   "navigation": {
     "trade": "交易",
     "refer": "邀请",
-    "vault": "金库"
+    "vault": "金库",
+    "portfolio": "投资组合"
   },
   "pages": {
     "geolocation": {
@@ -489,6 +490,33 @@
         "error-initiating": {
           "title": "发起提现时发生错误",
           "body": "原因"
+        }
+      }
+    },
+    "portfolio": {
+      "perpetuals": "万年历",
+      "vault": "金库",
+      "account-value": {
+        "title": "账户价值",
+        "details": {
+          "wallet": {
+            "title": "钱包详情",
+            "funds": "资金"
+          },
+          "perps": {
+            "title": "罪犯详情",
+            "leverage": "杠杆作用",
+            "unrealized": "未实现的 PnL",
+            "realized": "实现的 PnL",
+            "referral": "推荐收入"
+          },
+          "vault": {
+            "title": "保险库详细信息",
+            "assets": "资产",
+            "assets-pool": "集合资产",
+            "earnings-pool": "每池收益",
+            "total": "估算总额 收益"
+          }
         }
       }
     }
