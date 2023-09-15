@@ -116,7 +116,6 @@ export const OrderSize = memo(() => {
           ? (+roundedValueBase).toString()
           : (+roundedValueBase * currentMultiplier).toFixed(numberDigits)
       );
-      inputValueChangedRef.current = true;
     }
   }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier]);
 
@@ -210,7 +209,7 @@ export const OrderSize = memo(() => {
   };
 
   const handleClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }
 
