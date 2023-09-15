@@ -41,7 +41,7 @@ if (container) {
                 <WagmiConfig config={wagmiConfig}>
                   <RainbowKitProvider
                     chains={chains}
-                    initialChain={80001}
+                    initialChain={1442}
                     appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
                     modalSize="compact"
                   >
