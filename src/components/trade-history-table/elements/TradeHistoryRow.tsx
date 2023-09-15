@@ -45,7 +45,7 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
       </TableCell>
       <TableCell align={headers[4].align}>
         <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency, true) : ''}
+          {perpetual ? formatToCurrency(Math.abs(tradeHistory.quantity), perpetual.baseCurrency, true) : ''}
         </Typography>
       </TableCell>
       <TableCell align={headers[5].align}>
