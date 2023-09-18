@@ -578,8 +578,7 @@
     },
     "info-modal": {
       "close": "关闭"
-    },
-    "refresh": "刷新"
+    }
   },
   "error": {
     "wrong-network": "错误网络"

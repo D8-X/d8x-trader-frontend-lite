@@ -7,6 +7,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { createSymbol } from 'helpers/createSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -57,6 +58,7 @@ export const PositionsTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
   const [orderBy, setOrderBy] = useState<keyof MarginAccountWithLiqPriceI>('symbol');
+  const [filter, setFilter] = useState<FilterI<MarginAccountWithLiqPriceI>>({});
 
   const handlePositionModify = useCallback((position: MarginAccountI) => {
     setModifyModalOpen(true);
@@ -123,43 +125,36 @@ export const PositionsTable = () => {
     () => [
       {
         field: 'symbol',
-        numeric: false,
         label: t('pages.trade.positions-table.table-header.symbol'),
         align: AlignE.Left,
       },
       {
         field: 'positionNotionalBaseCCY',
-        numeric: true,
         label: t('pages.trade.positions-table.table-header.size'),
         align: AlignE.Right,
       },
       {
         field: 'side',
-        numeric: false,
         label: t('pages.trade.positions-table.table-header.side'),
         align: AlignE.Left,
       },
       {
         field: 'entryPrice',
-        numeric: true,
         label: t('pages.trade.positions-table.table-header.entry-price'),
         align: AlignE.Right,
       },
       {
         field: 'liqPrice',
-        numeric: false,
         label: t('pages.trade.positions-table.table-header.liq-price'),
         align: AlignE.Right,
       },
       {
         field: 'collateralCC',
-        numeric: true,
         label: t('pages.trade.positions-table.table-header.margin'),
         align: AlignE.Right,
       },
       {
         field: 'unrealizedPnlQuoteCCY',
-        numeric: true,
         label: t('pages.trade.positions-table.table-header.pnl'),
         align: AlignE.Right,
       },
@@ -176,9 +171,25 @@ export const PositionsTable = () => {
     });
   }, [positions]);
 
-  const visibleRows = stableSort(positionsWithLiqPrice, getComparator(order, orderBy)).slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+  const filteredRows = useMemo(() => {
+    if (filter.field && filter.value) {
+      const checkStr = filter.value.toLowerCase();
+      return positionsWithLiqPrice.filter((position) => {
+        // eslint-disable-next-line
+        // @ts-ignore
+        return String(position[filter.field]).toLowerCase().includes(checkStr);
+      });
+    }
+    return positionsWithLiqPrice;
+  }, [positionsWithLiqPrice, filter]);
+
+  const visibleRows = useMemo(
+    () =>
+      stableSort(filteredRows, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [filteredRows, page, rowsPerPage, order, orderBy]
   );
 
   return (
@@ -261,6 +272,7 @@ export const PositionsTable = () => {
         </Box>
       )}
 
+      <FilterPopup headers={positionsHeaders} filter={filter} setFilter={setFilter} />
       <ModifyModal isOpen={isModifyModalOpen} selectedPosition={selectedPosition} closeModal={closeModifyModal} />
       <CloseModal isOpen={isCloseModalOpen} selectedPosition={selectedPosition} closeModal={closeCloseModal} />
     </div>

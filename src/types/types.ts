@@ -222,7 +222,6 @@ export interface TableHeaderI<T> {
   label: ReactElement | string;
   align: AlignE;
   field?: keyof T;
-  numeric?: boolean;
 }
 
 export interface TvChartCandleI {

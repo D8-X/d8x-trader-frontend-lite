@@ -578,8 +578,7 @@
     },
     "info-modal": {
       "close": "Schliessen"
-    },
-    "refresh": "Aktualisieren"
+    }
   },
   "error": {
     "wrong-network": "Falsches Netzwerk"

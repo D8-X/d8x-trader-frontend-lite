@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
-import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
+import { decodeEventLog, encodeEventTopics, type Address } from 'viem';
 import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
@@ -25,6 +25,7 @@ import { HashZero } from 'app-constants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -67,6 +68,7 @@ export const OpenOrdersTable = memo(() => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof OrderWithIdI>('executionTimestamp');
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [filter, setFilter] = useState<FilterI<OrderWithIdI>>({});
 
   const isAPIBusyRef = useRef(isAPIBusy);
 
@@ -211,49 +213,41 @@ export const OpenOrdersTable = memo(() => {
     () => [
       {
         field: 'symbol',
-        numeric: false,
         label: t('pages.trade.orders-table.table-header.symbol'),
         align: AlignE.Left,
       },
       {
         field: 'side',
-        numeric: false,
         label: t('pages.trade.orders-table.table-header.side'),
         align: AlignE.Left,
       },
       {
         field: 'type',
-        numeric: false,
         label: t('pages.trade.orders-table.table-header.type'),
         align: AlignE.Left,
       },
       {
         field: 'quantity',
-        numeric: true,
         label: t('pages.trade.orders-table.table-header.order-size'),
         align: AlignE.Right,
       },
       {
         field: 'limitPrice',
-        numeric: true,
         label: t('pages.trade.orders-table.table-header.limit-price'),
         align: AlignE.Right,
       },
       {
         field: 'stopPrice',
-        numeric: true,
         label: t('pages.trade.orders-table.table-header.stop-price'),
         align: AlignE.Right,
       },
       {
         field: 'leverage',
-        numeric: true,
         label: t('pages.trade.orders-table.table-header.leverage'),
         align: AlignE.Right,
       },
       {
         field: 'deadline',
-        numeric: false,
         label: t('pages.trade.orders-table.table-header.good-until'),
         align: AlignE.Left,
       },
@@ -261,11 +255,27 @@ export const OpenOrdersTable = memo(() => {
     [t]
   );
 
-  // FIXME: VOV: Get rid from `<any>` later
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const visibleRows = stableSort(openOrders, getComparator<any>(order, orderBy)).slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+  const filteredRows = useMemo(() => {
+    if (filter.field && filter.value) {
+      const checkStr = filter.value.toLowerCase();
+      return openOrders.filter((position) => {
+        // eslint-disable-next-line
+        // @ts-ignore
+        return String(position[filter.field]).toLowerCase().includes(checkStr);
+      });
+    }
+    return openOrders;
+  }, [openOrders, filter]);
+
+  const visibleRows = useMemo(
+    () =>
+      // FIXME: VOV: Get rid from `<any>` later
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      stableSort(filteredRows, getComparator<any>(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [filteredRows, order, orderBy, page, rowsPerPage]
   );
 
   return (
@@ -341,6 +351,8 @@ export const OpenOrdersTable = memo(() => {
           />
         </Box>
       )}
+
+      <FilterPopup headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
       <Dialog open={isCancelModalOpen} className={styles.dialog}>
         <DialogTitle>{t('pages.trade.orders-table.cancel-modal.title')}</DialogTitle>
         <DialogContent className={styles.dialogContent}>

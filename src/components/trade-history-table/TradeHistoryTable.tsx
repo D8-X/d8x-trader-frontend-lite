@@ -7,19 +7,19 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getTradesHistory } from 'network/history';
 import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
+import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 
 import { TradeHistoryBlock } from './elements/trade-history-block/TradeHistoryBlock';
 import { TradeHistoryRow } from './elements/TradeHistoryRow';
 
-import { tableRefreshHandlersAtom } from 'store/tables.store';
-
-import styles from './TradeHistoryTable.module.scss';
 import { SortableHeaders } from '../table/sortable-header/SortableHeaders';
+import styles from './TradeHistoryTable.module.scss';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 
@@ -41,6 +41,7 @@ export const TradeHistoryTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof TradeHistoryWithSymbolDataI>('timestamp');
+  const [filter, setFilter] = useState<FilterI<TradeHistoryWithSymbolDataI>>({});
 
   const refreshTradesHistory = useCallback(() => {
     if (updateTradesHistoryRef.current || !address || !isConnected) {
@@ -70,38 +71,32 @@ export const TradeHistoryTable = memo(() => {
     () => [
       {
         field: 'timestamp',
-        numeric: false,
         label: t('pages.trade.history-table.table-header.time'),
         align: AlignE.Left,
       },
       {
         field: 'symbol',
-        numeric: false,
         label: t('pages.trade.history-table.table-header.perpetual'),
         align: AlignE.Left,
       },
       {
         field: 'side',
-        numeric: false,
         label: t('pages.trade.history-table.table-header.side'),
         align: AlignE.Left,
       },
       {
         field: 'price',
-        numeric: true,
         label: t('pages.trade.history-table.table-header.price'),
         align: AlignE.Right,
       },
       {
         field: 'quantity',
-        numeric: true,
         label: t('pages.trade.history-table.table-header.quantity'),
         align: AlignE.Right,
       },
-      { field: 'fee', numeric: true, label: t('pages.trade.history-table.table-header.fee'), align: AlignE.Right },
+      { field: 'fee', label: t('pages.trade.history-table.table-header.fee'), align: AlignE.Right },
       {
         field: 'realizedPnl',
-        numeric: true,
         label: t('pages.trade.history-table.table-header.realized-profit'),
         align: AlignE.Right,
       },
@@ -121,12 +116,28 @@ export const TradeHistoryTable = memo(() => {
     });
   }, [tradesHistory, perpetuals]);
 
-  const visibleRows = address
-    ? stableSort(tradesHistoryWithSymbol, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      )
-    : [];
+  const filteredRows = useMemo(() => {
+    if (filter.field && filter.value) {
+      const checkStr = filter.value.toLowerCase();
+      return tradesHistoryWithSymbol.filter((position) => {
+        // eslint-disable-next-line
+        // @ts-ignore
+        return String(position[filter.field]).toLowerCase().includes(checkStr);
+      });
+    }
+    return tradesHistoryWithSymbol;
+  }, [tradesHistoryWithSymbol, filter]);
+
+  const visibleRows = useMemo(
+    () =>
+      address
+        ? stableSort(filteredRows, getComparator(order, orderBy)).slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+          )
+        : [],
+    [address, filteredRows, order, orderBy, page, rowsPerPage]
+  );
 
   return (
     <div className={styles.root} ref={ref}>
@@ -200,6 +211,7 @@ export const TradeHistoryTable = memo(() => {
           />
         </Box>
       )}
+      <FilterPopup headers={tradeHistoryHeaders} filter={filter} setFilter={setFilter} />
     </div>
   );
 });

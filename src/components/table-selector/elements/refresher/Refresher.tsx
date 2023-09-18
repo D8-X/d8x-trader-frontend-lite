@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
-import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 
 import { ReactComponent as RefreshIcon } from 'assets/icons/refreshIcon.svg';
 
@@ -16,15 +15,11 @@ interface RefresherPropsI {
 }
 
 export const Refresher = ({ activeTableType }: RefresherPropsI) => {
-  const { t } = useTranslation();
   const [tableRefreshHandlers] = useAtom(tableRefreshHandlersAtom);
 
   return (
     <Box className={styles.root} onClick={tableRefreshHandlers[activeTableType] ?? undefined}>
       <RefreshIcon className={styles.actionIcon} />
-      <Typography variant="bodySmall" className={styles.refreshLabel}>
-        {t('common.refresh')}
-      </Typography>
     </Box>
   );
 };

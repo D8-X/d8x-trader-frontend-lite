@@ -28,7 +28,7 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
 
   const referralCodesHeaders = useMemo(() => {
     const headers: TableHeaderI<ReferrerDataI>[] = [
-      { field: 'code', numeric: false, label: t('pages.refer.referrer-tab.codes'), align: AlignE.Left },
+      { field: 'code', label: t('pages.refer.referrer-tab.codes'), align: AlignE.Left },
     ];
 
     if (!isAgency) {
@@ -37,13 +37,11 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
 
     headers.push({
       field: 'referrerRebatePerc',
-      numeric: true,
       label: t('pages.refer.referrer-tab.referrer-rebate-rate'),
       align: AlignE.Right,
     });
     headers.push({
       field: 'traderRebatePerc',
-      numeric: true,
       label: t('pages.refer.referrer-tab.trader-rebate-rate'),
       align: AlignE.Right,
     });
@@ -51,7 +49,6 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
     if (isAgency) {
       headers.push({
         field: 'agencyRebatePerc',
-        numeric: true,
         label: t('pages.refer.referrer-tab.agency-rebate-rate'),
         align: AlignE.Right,
       });

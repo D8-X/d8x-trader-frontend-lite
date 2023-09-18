@@ -578,8 +578,7 @@
     },
     "info-modal": {
       "close": "Close"
-    },
-    "refresh": "Refresh"
+    }
   },
   "error": {
     "wrong-network": "Wrong network"

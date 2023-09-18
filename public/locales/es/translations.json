@@ -578,8 +578,7 @@
     },
     "info-modal": {
       "close": "Cerrar"
-    },
-    "refresh": "Actualizar"
+    }
   },
   "error": {
     "wrong-network": "Red Incorrecta"

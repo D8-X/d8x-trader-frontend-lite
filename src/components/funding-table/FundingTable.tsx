@@ -7,6 +7,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getFundingRatePayments } from 'network/history';
@@ -41,6 +42,7 @@ export const FundingTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof FundingWithSymbolDataI>('timestamp');
+  const [filter, setFilter] = useState<FilterI<FundingWithSymbolDataI>>({});
 
   const refreshFundingList = useCallback(() => {
     if (updateTradesHistoryRef.current || !address || !isConnected) {
@@ -70,19 +72,16 @@ export const FundingTable = memo(() => {
     () => [
       {
         field: 'timestamp',
-        numeric: false,
         label: t('pages.trade.funding-table.table-header.time'),
         align: AlignE.Left,
       },
       {
         field: 'symbol',
-        numeric: false,
         label: t('pages.trade.funding-table.table-header.perpetual'),
         align: AlignE.Left,
       },
       {
         field: 'amount',
-        numeric: true,
         label: t('pages.trade.funding-table.table-header.funding-payment'),
         align: AlignE.Right,
       },
@@ -102,12 +101,28 @@ export const FundingTable = memo(() => {
     });
   }, [fundingList, perpetuals]);
 
-  const visibleRows = address
-    ? stableSort(fundingListWithSymbol, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      )
-    : [];
+  const filteredRows = useMemo(() => {
+    if (filter.field && filter.value) {
+      const checkStr = filter.value.toLowerCase();
+      return fundingListWithSymbol.filter((position) => {
+        // eslint-disable-next-line
+        // @ts-ignore
+        return String(position[filter.field]).toLowerCase().includes(checkStr);
+      });
+    }
+    return fundingListWithSymbol;
+  }, [fundingListWithSymbol, filter]);
+
+  const visibleRows = useMemo(
+    () =>
+      address
+        ? stableSort(filteredRows, getComparator(order, orderBy)).slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+          )
+        : [],
+    [address, filteredRows, order, orderBy, page, rowsPerPage]
+  );
 
   return (
     <div className={styles.root} ref={ref}>
@@ -185,6 +200,7 @@ export const FundingTable = memo(() => {
           />
         </Box>
       )}
+      <FilterPopup headers={fundingListHeaders} filter={filter} setFilter={setFilter} />
     </div>
   );
 });
