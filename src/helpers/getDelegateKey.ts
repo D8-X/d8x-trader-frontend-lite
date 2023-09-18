@@ -10,7 +10,7 @@ export function getDelegateKey(storageKey: string) {
     try {
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (err) {
-      return undefined;
+      throw new Error('Invalid storaget key');
     }
   }
 }
