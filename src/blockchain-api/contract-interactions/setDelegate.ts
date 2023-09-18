@@ -1,7 +1,7 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 
-export async function setDelegate(
+export function setDelegate(
   walletClient: WalletClient,
   proxyAddr: Address,
   delegateAddr: Address

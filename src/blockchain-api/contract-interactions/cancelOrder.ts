@@ -2,7 +2,7 @@ import { LOB_ABI } from '@d8x/perpetuals-sdk';
 import { type CancelOrderResponseI } from 'types/types';
 import { type Address, type WalletClient } from 'viem';
 
-export async function cancelOrder(
+export function cancelOrder(
   walletClient: WalletClient,
   signature: string,
   data: CancelOrderResponseI,

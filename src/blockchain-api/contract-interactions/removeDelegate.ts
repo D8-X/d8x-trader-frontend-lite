@@ -1,7 +1,7 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 
-export async function removeDelegate(walletClient: WalletClient, proxyAddr: Address): Promise<{ hash: Address }> {
+export function removeDelegate(walletClient: WalletClient, proxyAddr: Address): Promise<{ hash: Address }> {
   const account = walletClient.account?.address;
   if (!account) {
     throw new Error('account not connected');
