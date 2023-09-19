@@ -10,7 +10,7 @@ import styles from '../OrderSize.module.scss';
 import { selectedCurrencyAtom } from '../store';
 
 const multipliers = [0, 0.25, 0.5, 0.75, 1];
-const marks = multipliers.map((multiplier) => ({ value: multiplier * 100, label: `${multiplier}%` }));
+const marks = multipliers.map((multiplier) => ({ value: multiplier * 100, label: `${multiplier * 100}%` }));
 
 const valueLabelFormat = (value: number) => `${value}%`;
 
