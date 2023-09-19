@@ -55,6 +55,7 @@
     "@mui/icons-material": "5.14.3",
     "@mui/material": "5.14.4",
     "@mui/utils": "5.14.8",
+    "@noble/secp256k1": "^2.0.0",
     "@rainbow-me/rainbowkit": "1.0.8",
     "@wagmi/core": "1.3.9",
     "buffer": "6.0.3",
