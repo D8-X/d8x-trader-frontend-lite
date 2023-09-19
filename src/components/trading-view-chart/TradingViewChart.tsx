@@ -26,7 +26,12 @@ export const TradingViewChart = memo(() => {
     if (newCandle == null || !seriesRef.current || !latestCandleTimeRef.current) {
       return;
     }
-    seriesRef.current.update(newCandle);
+
+    const latestCandleTime = latestCandleTimeRef.current || 0;
+    if (newCandle.time >= latestCandleTime) {
+      seriesRef.current.update(newCandle);
+      latestCandleTimeRef.current = newCandle.time;
+    }
 
     setNewCandle(null);
   }, [newCandle, setNewCandle]);
