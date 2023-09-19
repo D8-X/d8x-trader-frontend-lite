@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Slider, Typography } from '@mui/material';
@@ -28,8 +28,6 @@ export const LeverageSelector = memo(() => {
 
   const [updatedLeverage, setUpdatedLeverage] = useState(leverage);
   const [inputValue, setInputValue] = useState(`${leverage}`);
-
-  const inputValueChangedRef = useRef(false);
 
   const maxLeverage = useMemo(() => {
     if (perpetualStaticInfo) {
@@ -69,14 +67,11 @@ export const LeverageSelector = memo(() => {
   }, [leverage]);
 
   useEffect(() => {
-    if (!inputValueChangedRef.current) {
-      setLeverage(updatedLeverage);
-      setInputValue(`${updatedLeverage}`);
-    }
-    inputValueChangedRef.current = false;
+    setLeverage(updatedLeverage);
+    setInputValue(`${updatedLeverage}`);
   }, [setLeverage, updatedLeverage]);
 
-  const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
+  const leverageStep = (maxLeverage / 2) % 10 ? 0.5 : 1;
 
   return (
     <Box className={styles.root}>

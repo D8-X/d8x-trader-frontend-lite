@@ -56,3 +56,15 @@
     margin-top: 2 * $d8x-spacing;
   }
 }
+
+.sliderHolder {
+  margin: 0 9px;
+
+  @include media-phone {
+    display: none;
+  }
+
+  @include media-desktop {
+    margin-bottom: 4px;
+  }
+}

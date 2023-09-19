@@ -691,7 +691,7 @@ export const ActionBlock = memo(() => {
               }
               rightSide={
                 !isValidityCheckDone ? (
-                  <Box className={styles.loaderHolder}>
+                  <Box>
                     <CircularProgress color="primary" />
                   </Box>
                 ) : (

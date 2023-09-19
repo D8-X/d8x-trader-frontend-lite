@@ -1,6 +1,6 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { useAtom } from 'jotai';
-import { memo, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -18,7 +18,9 @@ import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
+import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
+import { selectedCurrencyAtom } from './store';
 
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
@@ -32,7 +34,7 @@ export const OrderSize = memo(() => {
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [defaultCurrency] = useAtom(defaultCurrencyAtom);
 
-  const [selectedCurrency, setSelectedCurrency] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [inputValue, setInputValue] = useState(`${orderSize}`);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
@@ -110,7 +112,7 @@ export const OrderSize = memo(() => {
     } else {
       setSelectedCurrency(selectedPool.poolSymbol);
     }
-  }, [selectedPerpetual, selectedPool, defaultCurrency]);
+  }, [selectedPerpetual, selectedPool, defaultCurrency, setSelectedCurrency]);
 
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
@@ -216,7 +218,7 @@ export const OrderSize = memo(() => {
   };
 
   const handleClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }
 
@@ -232,87 +234,90 @@ export const OrderSize = memo(() => {
   };
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.label}>
-        <InfoBlock
-          title={t('pages.trade.order-block.order-size.title')}
-          content={
-            <>
-              <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
-              <Typography>
-                {t('pages.trade.order-block.order-size.body2')} {formatToCurrency(maxOrderSize, selectedCurrency)}.{' '}
-                {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
-                {t('pages.trade.order-block.order-size.body4')}{' '}
-                {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
-              </Typography>
-            </>
+    <>
+      <Box className={styles.root}>
+        <Box className={styles.label}>
+          <InfoBlock
+            title={t('pages.trade.order-block.order-size.title')}
+            content={
+              <>
+                <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
+                <Typography>
+                  {t('pages.trade.order-block.order-size.body2')} {formatToCurrency(maxOrderSize, selectedCurrency)}.{' '}
+                  {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
+                  {t('pages.trade.order-block.order-size.body4')}{' '}
+                  {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
+                </Typography>
+              </>
+            }
+            classname={commonStyles.actionIcon}
+          />
+        </Box>
+        <ResponsiveInput
+          id="order-size"
+          inputValue={inputValue}
+          setInputValue={handleOrderSizeChange}
+          handleInputBlur={handleInputBlur}
+          currency={
+            <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
+              {selectedCurrency}
+            </span>
           }
-          classname={commonStyles.actionIcon}
+          step={orderSizeStep}
+          min={0}
+          max={maxOrderSize}
+          className={styles.inputHolder}
+          adornmentAction={
+            <div ref={anchorRef}>
+              <IconButton
+                aria-label="change currency"
+                onClick={handleCurrencyChangeToggle}
+                edge="start"
+                size="small"
+                className={styles.selector}
+              >
+                <ArrowDropDownIcon />
+              </IconButton>
+              <Popper
+                sx={{
+                  zIndex: 1,
+                }}
+                open={openCurrencySelector}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom' ? 'left top' : 'left bottom',
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList id="split-button-menu" autoFocusItem className={styles.menuItems}>
+                          {currencyOptions.map((option) => (
+                            <MenuItem
+                              key={option}
+                              selected={option === selectedCurrency}
+                              onClick={(event) => handleCurrencySelect(event, option)}
+                            >
+                              {option}
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
+          }
         />
       </Box>
-      <ResponsiveInput
-        id="order-size"
-        inputValue={inputValue}
-        setInputValue={handleOrderSizeChange}
-        handleInputBlur={handleInputBlur}
-        currency={
-          <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
-            {selectedCurrency}
-          </span>
-        }
-        step={orderSizeStep}
-        min={0}
-        max={maxOrderSize}
-        className={styles.inputHolder}
-        adornmentAction={
-          <div ref={anchorRef}>
-            <IconButton
-              aria-label="change currency"
-              onClick={handleCurrencyChangeToggle}
-              edge="start"
-              size="small"
-              className={styles.selector}
-            >
-              <ArrowDropDownIcon />
-            </IconButton>
-            <Popper
-              sx={{
-                zIndex: 1,
-              }}
-              open={openCurrencySelector}
-              anchorEl={anchorRef.current}
-              role={undefined}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin: placement === 'bottom' ? 'left top' : 'left bottom',
-                  }}
-                >
-                  <Paper>
-                    <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList id="split-button-menu" autoFocusItem className={styles.menuItems}>
-                        {currencyOptions.map((option) => (
-                          <MenuItem
-                            key={option}
-                            selected={option === selectedCurrency}
-                            onClick={(event) => handleCurrencySelect(event, option)}
-                          >
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </div>
-        }
-      />
-    </Box>
+      <OrderSizeSlider />
+    </>
   );
 });

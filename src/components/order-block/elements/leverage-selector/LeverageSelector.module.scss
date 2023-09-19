@@ -11,7 +11,6 @@
   height: 24px;
   display: flex;
   width: 100%;
-  flex-direction: row;
   margin-top: 0;
   align-items: flex-end;
   justify-content: space-between;
@@ -20,7 +19,6 @@
 .rowTwo {
   display: flex;
   width: 100%;
-  flex-direction: row;
   margin-top: 3 * $d8x-spacing;
   justify-content: space-between;
 }
