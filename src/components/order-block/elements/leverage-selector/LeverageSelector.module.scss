@@ -5,6 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: 6 * $d8x-spacing;
 }
 
 .rowOne {
@@ -69,5 +70,9 @@
 
   .sliderHolder {
     margin-bottom: 4px;
+  }
+
+  .root {
+    margin-top: 4 * $d8x-spacing;
   }
 }
