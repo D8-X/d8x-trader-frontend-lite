@@ -34,14 +34,7 @@ export const maxOrderSizeAtom = atom((get) => {
     collateralCC = openPosition?.collateralCC || 0;
   }
 
-  console.log('poolTokenBalance:', poolTokenBalance);
-  console.log('collateralCC', collateralCC);
-  console.log('leverage', leverage);
-  console.log('collToQuoteIndexPrice', collToQuoteIndexPrice);
-  console.log('indexPrice', indexPrice);
-  console.log('buffer', buffer);
   const max = ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
-  console.log('max', max);
   return max;
 });
 
