@@ -1,5 +1,4 @@
 import { atom, useAtom } from 'jotai';
-import { useMemo } from 'react';
 
 import { Slider } from '@mui/material';
 
@@ -11,6 +10,7 @@ import styles from '../OrderSize.module.scss';
 import { selectedCurrencyAtom } from '../store';
 
 const multipliers = [0, 0.25, 0.5, 0.75, 1];
+const marks = multipliers.map((multiplier) => ({ value: multiplier * 100, label: `${multiplier}%` }));
 
 const valueLabelFormat = (value: number) => `${value}%`;
 
@@ -29,11 +29,8 @@ export const maxOrderSizeAtom = atom((get) => {
   let collateralCC = 0;
   if (orderBlock !== OrderBlockE.Long) {
     const positions = get(positionsAtom);
-    const openPosition = positions.find(
-      (position) =>
-        position.symbol ===
-        `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`
-    );
+    const selectedPerpetualSymbol = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+    const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
     collateralCC = openPosition?.collateralCC || 0;
   }
   const max = (poolTokenBalance + collateralCC * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
@@ -65,11 +62,6 @@ export const setSizeFromSliderAtom = atom(
 );
 
 export const OrderSizeSlider = () => {
-  const marks = useMemo(
-    () => multipliers.map((multiplier) => ({ value: multiplier * 100, label: `${multiplier}%` })),
-    []
-  );
-
   const [sliderPercent, setSizeFromSlider] = useAtom(setSizeFromSliderAtom);
 
   return (
