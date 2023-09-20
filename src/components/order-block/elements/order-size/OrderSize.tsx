@@ -66,6 +66,12 @@ export const OrderSize = memo(() => {
   );
 
   useEffect(() => {
+    if (orderSize === 0) {
+      setInputValue('0');
+    }
+  }, [orderSize]);
+
+  useEffect(() => {
     if (!inputValueChangedRef.current) {
       setInputValue(`${orderSize}`);
     }

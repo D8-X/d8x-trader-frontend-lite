@@ -32,12 +32,13 @@
   cursor: pointer;
   position: relative;
   color: var(--d8x-color-purple);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
-@media screen and ($d8x-breakpoint-max-xs) {
+.title {
+  line-height: 1;
 
-  .title {
-    font-size: 12px;
+  @include media-phone {
+    font-size: 0.75rem;
   }
 }

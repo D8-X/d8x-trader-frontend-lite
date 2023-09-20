@@ -20,7 +20,8 @@
         "index-price": "指数价格",
         "funding-rate": "资金费率",
         "open-interest": "持仓量",
-        "view-graph": "View Graph"
+        "view-graph": "View Graph",
+        "hide-graph": "Hide Graph"
       },
       "positions-table": {
         "table-title": "持仓",

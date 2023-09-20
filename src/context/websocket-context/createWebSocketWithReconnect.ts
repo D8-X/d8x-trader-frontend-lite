@@ -77,7 +77,6 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
       setTimeout(() => {
         reconnectOnClose = true;
         start();
-        stateChangeListeners.forEach((fn) => fn(true));
       }, RECONNECT_TIMEOUT);
     },
     send: (message: string) => {

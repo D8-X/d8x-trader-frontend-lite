@@ -20,7 +20,8 @@
         "index-price": "Precio de Índice",
         "funding-rate": "Tasa de Financiación",
         "open-interest": "Interés Abierto",
-        "view-graph": "View Graph"
+        "view-graph": "View Graph",
+        "hide-graph": "Hide Graph"
       },
       "positions-table": {
         "table-title": "Posiciones",

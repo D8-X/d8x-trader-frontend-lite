@@ -187,7 +187,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
             </Typography>
           </Box>
         </Box>
-        <Box className={styles.buttonHolder}>
+        <Box>
           <Button
             variant="primary"
             onClick={handleWithdrawLiquidity}
