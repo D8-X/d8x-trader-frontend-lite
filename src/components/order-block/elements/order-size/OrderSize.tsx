@@ -44,7 +44,6 @@ export const OrderSize = memo(() => {
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const inputValueChangedRef = useRef(false);
   const fetchedMaxSizes = useRef(false);
   const anchorRef = useRef<HTMLDivElement>(null);
   const latestCurrency = useRef('');
@@ -59,23 +58,11 @@ export const OrderSize = memo(() => {
         setOrderSize(0);
         setInputValue('');
       }
-      inputValueChangedRef.current = true;
     },
     [setOrderSize, currentMultiplier, perpetualStaticInfo, setInputValue]
   );
 
   useEffect(() => {
-    if (orderSize === 0) {
-      setInputValue('0');
-    }
-  }, [orderSize, setInputValue]);
-
-  useEffect(() => {
-    if (!inputValueChangedRef.current) {
-      setInputValue(`${orderSize}`);
-    }
-    inputValueChangedRef.current = false;
-
     if (!selectedPool || !selectedPerpetual) {
       return;
     }
@@ -122,7 +109,6 @@ export const OrderSize = memo(() => {
         const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
         setInputValue((+roundedValueBase * currentMultiplier).toFixed(numberDigits));
       }
-      inputValueChangedRef.current = true;
     }
   }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier, setInputValue]);
 

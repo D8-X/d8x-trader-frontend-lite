@@ -37,6 +37,32 @@ export const maxOrderSizeAtom = atom((get) => {
   return ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
 });
 
+const setInputFromOrderSizeAtom = atom(null, async (get, set, orderSize: number) => {
+  const selectedPool = get(selectedPoolAtom);
+  const selectedPerpetual = get(selectedPerpetualAtom);
+
+  if (!selectedPool || !selectedPerpetual) return;
+
+  const selectedCurrency = get(selectedCurrencyAtom);
+
+  const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
+  let currentMultiplier = 1;
+  if (selectedCurrency === selectedPerpetual.quoteCurrency) {
+    currentMultiplier = selectedPerpetual.indexPrice;
+  } else if (selectedCurrency === selectedPool.poolSymbol) {
+    currentMultiplier = indexPrice / collToQuoteIndexPrice;
+  }
+
+  let inputValue = '0';
+  if (currentMultiplier === 1 || orderSize === 0) {
+    inputValue = orderSize.toString();
+  } else {
+    const numberDigits = valueToFractionDigits(orderSize * currentMultiplier);
+    inputValue = (orderSize * currentMultiplier).toFixed(numberDigits);
+  }
+  set(inputValueAtom, inputValue);
+});
+
 export const setSizeFromSliderAtom = atom(
   (get) => {
     const max = get(maxOrderSizeAtom);
@@ -47,36 +73,15 @@ export const setSizeFromSliderAtom = atom(
   },
   async (get, set, percent: number) => {
     const max = get(maxOrderSizeAtom);
-    const selectedPool = get(selectedPoolAtom);
-    const selectedPerpetual = get(selectedPerpetualAtom);
     const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
-    if (!max || !selectedPool || !selectedPerpetual || !perpetualStaticInfo) return;
-
-    const selectedCurrency = get(selectedCurrencyAtom);
+    if (!max || !perpetualStaticInfo) return;
 
     const orderSize = (max * percent) / 100;
-
-    const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
-    let currentMultiplier = 1;
-    if (selectedCurrency === selectedPerpetual.quoteCurrency) {
-      currentMultiplier = selectedPerpetual.indexPrice;
-    } else if (selectedCurrency === selectedPool.poolSymbol) {
-      currentMultiplier = indexPrice / collToQuoteIndexPrice;
-    }
-
-    let inputValue = '0';
-    if (currentMultiplier === 1 || orderSize === 0) {
-      inputValue = orderSize.toString();
-    } else {
-      const numberDigits = valueToFractionDigits(orderSize * currentMultiplier);
-      inputValue = (orderSize * currentMultiplier).toFixed(numberDigits);
-    }
-
     const roundedValueBase = Number(roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC));
 
     set(orderSizeAtom, roundedValueBase);
-    set(inputValueAtom, inputValue);
+    set(setInputFromOrderSizeAtom, roundedValueBase);
 
     return orderSize;
   }
