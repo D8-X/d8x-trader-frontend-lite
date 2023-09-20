@@ -24,13 +24,16 @@ export const maxOrderSizeAtom = atom((get) => {
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
 
-  const buffer = (1.0005 + leverage * 0.008) * 1.01;
+  const buffer = (1.001 + leverage * 0.05) * 1.05;
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
   let collateralCC = 0;
-  if (orderBlock !== OrderBlockE.Long) {
-    const positions = get(positionsAtom);
-    const selectedPerpetualSymbol = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
-    const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
+
+  const positions = get(positionsAtom);
+  const selectedPerpetualSymbol = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+  const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
+  const orderBlockSide = orderBlock === OrderBlockE.Long ? 'BUY' : 'SELL';
+
+  if (orderBlockSide !== openPosition?.side) {
     collateralCC = openPosition?.collateralCC || 0;
   }
 
