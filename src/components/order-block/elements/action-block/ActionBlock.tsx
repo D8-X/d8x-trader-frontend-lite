@@ -38,6 +38,7 @@ import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 import styles from './ActionBlock.module.scss';
 import { createWalletClient, custom } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
+import { getDelegateKey } from 'helpers/getDelegateKey';
 
 const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
 
@@ -109,17 +110,21 @@ export const ActionBlock = memo(() => {
 
   const is1CTEnabled = true;
 
+  const storageKey = 'get this from the user when he enables 1ct';
+
   const tradingClient = useMemo(() => {
-    if (is1CTEnabled && walletClient?.chain && window?.ethereum) {
-      return createWalletClient({
-        account: privateKeyToAccount('0xasfasdf'),
-        chain: walletClient.chain,
-        transport: custom(window.ethereum),
-      });
-    } else {
-      return walletClient;
+    if (is1CTEnabled && storageKey && walletClient?.chain && window?.ethereum) {
+      const dlgt = getDelegateKey(walletClient, storageKey);
+      if (dlgt) {
+        return createWalletClient({
+          account: privateKeyToAccount(dlgt as Address),
+          chain: walletClient.chain,
+          transport: custom(window.ethereum),
+        });
+      }
     }
-  }, [walletClient, is1CTEnabled]);
+    return walletClient;
+  }, [walletClient, storageKey, is1CTEnabled]);
 
   const [orderInfo] = useAtom(orderInfoAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
