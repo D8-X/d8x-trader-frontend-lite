@@ -10,8 +10,10 @@ import {
   selectedPoolAtom,
 } from 'store/pools.store';
 import { OrderBlockE } from 'types/enums';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const selectedCurrencyAtom = atom('');
+export const inputValueAtom = atom('');
 
 export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
@@ -45,14 +47,36 @@ export const setSizeFromSliderAtom = atom(
   },
   async (get, set, percent: number) => {
     const max = get(maxOrderSizeAtom);
+    const selectedPool = get(selectedPoolAtom);
+    const selectedPerpetual = get(selectedPerpetualAtom);
     const perpetualStaticInfo = get(perpetualStaticInfoAtom);
-    if (!max || !perpetualStaticInfo) return;
+
+    if (!max || !selectedPool || !selectedPerpetual || !perpetualStaticInfo) return;
+
+    const selectedCurrency = get(selectedCurrencyAtom);
 
     const orderSize = (max * percent) / 100;
+
+    const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
+    let currentMultiplier = 1;
+    if (selectedCurrency === selectedPerpetual.quoteCurrency) {
+      currentMultiplier = selectedPerpetual.indexPrice;
+    } else if (selectedCurrency === selectedPool.poolSymbol) {
+      currentMultiplier = indexPrice / collToQuoteIndexPrice;
+    }
+
+    let inputValue = '0';
+    if (currentMultiplier === 1 || orderSize === 0) {
+      inputValue = orderSize.toString();
+    } else {
+      const numberDigits = valueToFractionDigits(orderSize * currentMultiplier);
+      inputValue = (orderSize * currentMultiplier).toFixed(numberDigits);
+    }
 
     const roundedValueBase = Number(roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC));
 
     set(orderSizeAtom, roundedValueBase);
+    set(inputValueAtom, inputValue);
 
     return orderSize;
   }

@@ -20,7 +20,7 @@ import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency'
 import commonStyles from '../../OrderBlock.module.scss';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
-import { selectedCurrencyAtom } from './store';
+import { inputValueAtom, selectedCurrencyAtom } from './store';
 
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
@@ -36,7 +36,7 @@ export const OrderSize = memo(() => {
 
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
-  const [inputValue, setInputValue] = useState(`${orderSize}`);
+  const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
   const [maxOrderSize, setMaxOrderSize] = useState<number | undefined>(undefined);
   const [currentMultiplier, setCurrentMultiplier] = useState<number>(1);
@@ -49,29 +49,26 @@ export const OrderSize = memo(() => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const latestCurrency = useRef('');
 
-  const handleOrderSizeChange = useCallback(
-    (orderSizeValue: string) => {
-      if (orderSizeValue && perpetualStaticInfo) {
-        const roundedValueBase = (+roundToLotString(
-          +orderSizeValue / currentMultiplier,
-          perpetualStaticInfo.lotSizeBC
-        )).toString();
-        setOrderSize(+roundedValueBase);
-        setInputValue(orderSizeValue);
+  const onInputChange = useCallback(
+    (value: string) => {
+      if (value && perpetualStaticInfo) {
+        const roundedValueBase = +roundToLotString(+value / currentMultiplier, perpetualStaticInfo.lotSizeBC);
+        setOrderSize(roundedValueBase);
+        setInputValue(value);
       } else {
         setOrderSize(0);
         setInputValue('');
       }
       inputValueChangedRef.current = true;
     },
-    [setOrderSize, currentMultiplier, perpetualStaticInfo]
+    [setOrderSize, currentMultiplier, perpetualStaticInfo, setInputValue]
   );
 
   useEffect(() => {
     if (orderSize === 0) {
       setInputValue('0');
     }
-  }, [orderSize]);
+  }, [orderSize, setInputValue]);
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
@@ -91,15 +88,16 @@ export const OrderSize = memo(() => {
         updatedMultiplier = selectedPerpetual.indexPrice / selectedPerpetual.collToQuoteIndexPrice;
       }
       setCurrentMultiplier(updatedMultiplier);
-      const numberDigits = valueToFractionDigits(orderSize * updatedMultiplier);
-      setInputValue(
-        updatedMultiplier === 1 || orderSize === 0
-          ? orderSize.toString()
-          : (orderSize * updatedMultiplier).toFixed(numberDigits)
-      );
+
+      if (updatedMultiplier === 1 || orderSize === 0) {
+        setInputValue(orderSize.toString());
+      } else {
+        const numberDigits = valueToFractionDigits(orderSize * updatedMultiplier);
+        setInputValue((orderSize * updatedMultiplier).toFixed(numberDigits));
+      }
       latestCurrency.current = selectedCurrency;
     }
-  }, [selectedCurrency, selectedPool, selectedPerpetual, orderSize, setOrderSize]);
+  }, [selectedCurrency, selectedPool, selectedPerpetual, orderSize, setInputValue]);
 
   useEffect(() => {
     if (!selectedPerpetual || !selectedPool) {
@@ -117,16 +115,16 @@ export const OrderSize = memo(() => {
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
       const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-      const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
       setOrderSize(+roundedValueBase);
-      setInputValue(
-        currentMultiplier === 1 || orderSize === 0
-          ? (+roundedValueBase).toString()
-          : (+roundedValueBase * currentMultiplier).toFixed(numberDigits)
-      );
+      if (currentMultiplier === 1 || orderSize === 0) {
+        setInputValue(roundedValueBase);
+      } else {
+        const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
+        setInputValue((+roundedValueBase * currentMultiplier).toFixed(numberDigits));
+      }
       inputValueChangedRef.current = true;
     }
-  }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier]);
+  }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier, setInputValue]);
 
   const currencyOptions = useMemo(() => {
     if (!selectedPool || !selectedPerpetual) {
@@ -256,7 +254,7 @@ export const OrderSize = memo(() => {
         <ResponsiveInput
           id="order-size"
           inputValue={inputValue}
-          setInputValue={handleOrderSizeChange}
+          setInputValue={onInputChange}
           handleInputBlur={handleInputBlur}
           currency={
             <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
