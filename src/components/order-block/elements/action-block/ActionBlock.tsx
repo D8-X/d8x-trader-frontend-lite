@@ -407,7 +407,7 @@ export const ActionBlock = memo(() => {
     ) {
       return ValidityCheckE.BelowMinPosition;
     }
-    if (poolTokenBalance === undefined || poolTokenBalance < 1.1 * collateralDeposit) {
+    if (poolTokenBalance === undefined || poolTokenBalance < collateralDeposit) {
       return ValidityCheckE.InsufficientBalance;
       // return `${t('pages.trade.action-block.validity.insufficient-balance')} {' '} ${poolTokenBalance}`;
     }
