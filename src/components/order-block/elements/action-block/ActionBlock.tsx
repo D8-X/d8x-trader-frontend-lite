@@ -36,7 +36,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
 import styles from './ActionBlock.module.scss';
-import { createWalletClient, custom, http } from 'viem';
+import { createWalletClient, custom } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
 const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
