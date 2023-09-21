@@ -28,6 +28,12 @@ import {
   setInputFromOrderSizeAtom,
 } from './store';
 
+const roundMaxOrderSize = (value: number) => {
+  const numberDigits = valueToFractionDigits(value);
+  const multiplier = 10 ** numberDigits;
+  return Math.round(value * multiplier) / multiplier;
+};
+
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
@@ -226,7 +232,7 @@ export const OrderSize = memo(() => {
           }
           step={orderSizeStep}
           min={0}
-          max={maxOrderSize}
+          max={maxOrderSize && roundMaxOrderSize(maxOrderSize)}
           className={styles.inputHolder}
           adornmentAction={
             <div ref={anchorRef}>
