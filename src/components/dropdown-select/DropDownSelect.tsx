@@ -1,7 +1,7 @@
 import { type Dispatch, type PropsWithChildren, type ReactNode, type SetStateAction } from 'react';
 
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Button, Menu } from '@mui/material';
+import { Button, Menu, Typography } from '@mui/material';
 
 import styles from './DropDownSelect.module.scss';
 import classnames from 'classnames';
@@ -38,7 +38,9 @@ export const DropDownSelect = ({
         variant="outlined"
         disabled={disabled}
       >
-        <div className={styles.selectedValue}>{selectedValue}</div>
+        <Typography variant="bodyMedium" className={styles.selectedValue}>
+          {selectedValue}
+        </Typography>
         <div className={classnames(styles.arrowDropDown, { [styles.disabledHandle]: disabled })}>
           {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
         </div>

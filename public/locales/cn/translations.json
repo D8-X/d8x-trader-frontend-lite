@@ -556,11 +556,12 @@
       },
       "one-click-modal": {
         "title": "One-click trading",
+        "modal-button": "Setup",
         "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
         "create-delegate": {
           "title": "Create Delegate Account",
           "description": "As an initial step you need to create a Delegate Account.",
-          "create-success-result": "Delegate account is created."
+          "create-success-result": "Delegate account is created and One-click trading is activated."
         },
         "manage-delegate": {
           "title": "Manage Delegate Account",

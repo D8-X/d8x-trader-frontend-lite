@@ -39,7 +39,7 @@ import styles from './ActionBlock.module.scss';
 import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { getDelegateKey } from 'helpers/getDelegateKey';
-import { enabledOneClickTradingAtom } from 'store/app.store';
+import { activatedOneClickTradingAtom } from 'store/app.store';
 
 const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
 
@@ -109,7 +109,7 @@ export const ActionBlock = memo(() => {
     },
   });
 
-  const [enabledOneClickTrading] = useAtom(enabledOneClickTradingAtom);
+  const [activatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [storageKey] = useAtom(storageKeyAtom);
   const [orderInfo] = useAtom(orderInfoAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
@@ -135,7 +135,7 @@ export const ActionBlock = memo(() => {
   const validityCheckRef = useRef(false);
 
   const tradingClient = useMemo(() => {
-    if (enabledOneClickTrading && storageKey && walletClient?.chain && window?.ethereum) {
+    if (activatedOneClickTrading && storageKey && walletClient?.chain && window?.ethereum) {
       const dlgt = getDelegateKey(walletClient, storageKey);
       if (dlgt) {
         return createWalletClient({
@@ -146,7 +146,7 @@ export const ActionBlock = memo(() => {
       }
     }
     return walletClient;
-  }, [walletClient, storageKey, enabledOneClickTrading]);
+  }, [walletClient, storageKey, activatedOneClickTrading]);
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI) {

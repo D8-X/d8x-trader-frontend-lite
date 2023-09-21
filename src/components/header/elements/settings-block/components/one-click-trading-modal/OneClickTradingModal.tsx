@@ -5,7 +5,8 @@ import { toast } from 'react-toastify';
 import { type Address } from 'viem';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { Settings } from '@mui/icons-material';
+import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material';
 
 import { hasDelegate } from 'blockchain-api/contract-interactions/hasDelegate';
 import { generateDelegate } from 'blockchain-api/generateDelegate';
@@ -16,24 +17,20 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getDelegateKey } from 'helpers/getDelegateKey';
-import { enabledOneClickTradingAtom } from 'store/app.store';
+import { activatedOneClickTradingAtom } from 'store/app.store';
+import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
 import styles from './OneClickTradingDialog.module.scss';
-import { storageKeyAtom } from 'store/order-block.store';
 
-interface OneClickModalPropsI {
-  isSettingsOpen: boolean;
-}
-
-export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) => {
+export const OneClickTradingModal = () => {
   const { t } = useTranslation();
 
   const publicClient = usePublicClient();
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
-  const [enabledOneClickTrading] = useAtom(enabledOneClickTradingAtom);
+  const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const setStorageKey = useSetAtom(storageKeyAtom);
 
@@ -42,29 +39,21 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
   const [isActionLoading, setActionLoading] = useState(false);
   const [isDelegated, setDelegated] = useState<boolean | null>(null);
 
-  const isSettingsOpenRef = useRef(isSettingsOpen);
   const handleRemoveRef = useRef(false);
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
-
-  useEffect(() => {
-    isSettingsOpenRef.current = isSettingsOpen;
-  }, [isSettingsOpen]);
 
   useEffect(() => {
     if (!proxyAddr || !address) {
       return;
     }
 
-    if (enabledOneClickTrading && isSettingsOpenRef.current) {
-      setLoading(true);
+    setLoading(true);
 
-      hasDelegate(publicClient, proxyAddr as Address, address)
-        .then(setDelegated)
-        .finally(() => setLoading(false));
-      setModalOpen(true);
-    }
-  }, [enabledOneClickTrading, publicClient, proxyAddr, address]);
+    hasDelegate(publicClient, proxyAddr as Address, address)
+      .then(setDelegated)
+      .finally(() => setLoading(false));
+  }, [publicClient, proxyAddr, address]);
 
   const onClose = () => {
     setModalOpen(false);
@@ -78,12 +67,12 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
     handleCreateRef.current = true;
     setActionLoading(true);
 
-    // TODO: VOV: Check order with documentation. We don't have storageKey for generateDelegate to start with it.
     const storageKey = await getStorageKey(walletClient);
     setStorageKey(storageKey);
     const delegateAddr = await generateDelegate(walletClient, storageKey);
-    // TODO: VOV: Need to add try / catch blocks. Can't really test it
     await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
+    setDelegated(true);
+    setActivatedOneClickTrading(true);
 
     toast.success(
       <ToastContent title={t('common.settings.one-click-modal.create-delegate.create-success-result')} bodyLines={[]} />
@@ -107,13 +96,15 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
       const delegateKey = getDelegateKey(walletClient, storageKey);
       if (!delegateKey) {
         await generateDelegate(walletClient, storageKey);
-        toast.success(
-          <ToastContent
-            title={t('common.settings.one-click-modal.manage-delegate.activate-success-result')}
-            bodyLines={[]}
-          />
-        );
       }
+
+      setActivatedOneClickTrading(true);
+      toast.success(
+        <ToastContent
+          title={t('common.settings.one-click-modal.manage-delegate.activate-success-result')}
+          bodyLines={[]}
+        />
+      );
     } catch (error) {
       console.error(error);
       toast.error(
@@ -139,6 +130,8 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
     removeDelegate(walletClient, proxyAddr as Address)
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
+        setActivatedOneClickTrading(false);
+        setDelegated(false);
         toast.success(
           <ToastContent
             title={t('common.settings.one-click-modal.manage-delegate.remove-action-result')}
@@ -153,63 +146,77 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
   };
 
   return (
-    <Dialog open={isModalOpen} onClose={onClose}>
-      <Box className={styles.dialogContent}>
-        <Typography variant="h4" className={styles.title}>
-          {t('common.settings.one-click-modal.title')}
-        </Typography>
-        <Typography variant="bodyMedium">{t('common.settings.one-click-modal.description')}</Typography>
-      </Box>
-      <Separator />
-      <Box className={styles.dialogContent}>
-        {isLoading && isDelegated === null ? (
-          <div className={styles.spinnerContainer}>
-            <CircularProgress />
-          </div>
-        ) : (
-          <>
-            <Typography variant="h6">
-              {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
-            </Typography>
-            <Typography variant="bodyMedium">
-              {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}
-            </Typography>
-          </>
-        )}
-      </Box>
-      <Separator />
-      <Box className={styles.dialogContent}>
-        <Box className={styles.actionButtonsContainer}>
-          <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
-            {t('pages.refer.trader-tab.cancel')}
-          </Button>
-          {!isLoading && isDelegated === false && (
-            <Button variant="primary" className={styles.actionButton} onClick={handleCreate} disabled={isActionLoading}>
-              Create
-            </Button>
-          )}
-          {!isLoading && isDelegated === true && (
+    <>
+      <Tooltip title={t('common.settings.one-click-modal.modal-button')}>
+        <Button onClick={() => setModalOpen(true)} className={styles.modalButton} variant="outlined">
+          <Typography variant="bodyMedium">{t('common.settings.one-click-modal.modal-button')}</Typography>
+          <Settings />
+        </Button>
+      </Tooltip>
+
+      <Dialog open={isModalOpen} onClose={onClose}>
+        <Box className={styles.dialogContent}>
+          <Typography variant="h4" className={styles.title}>
+            {t('common.settings.one-click-modal.title')}
+          </Typography>
+          <Typography variant="bodyMedium">{t('common.settings.one-click-modal.description')}</Typography>
+        </Box>
+        <Separator />
+        <Box className={styles.dialogContent}>
+          {isLoading && isDelegated === null ? (
+            <div className={styles.spinnerContainer}>
+              <CircularProgress />
+            </div>
+          ) : (
             <>
-              <Button
-                variant="primary"
-                className={styles.actionButton}
-                onClick={handleActivate}
-                disabled={isActionLoading}
-              >
-                Activate
-              </Button>
-              <Button
-                variant="primary"
-                className={styles.actionButton}
-                onClick={handleRemove}
-                disabled={isActionLoading}
-              >
-                Remove
-              </Button>
+              <Typography variant="h6">
+                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
+              </Typography>
+              <Typography variant="bodyMedium">
+                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}
+              </Typography>
             </>
           )}
         </Box>
-      </Box>
-    </Dialog>
+        <Separator />
+        <Box className={styles.dialogContent}>
+          <Box className={styles.actionButtonsContainer}>
+            <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
+              {t('pages.refer.trader-tab.cancel')}
+            </Button>
+            {!isLoading && isDelegated === false && (
+              <Button
+                variant="primary"
+                className={styles.actionButton}
+                onClick={handleCreate}
+                disabled={isActionLoading}
+              >
+                Create
+              </Button>
+            )}
+            {!isLoading && isDelegated === true && (
+              <>
+                <Button
+                  variant="primary"
+                  className={styles.actionButton}
+                  onClick={handleActivate}
+                  disabled={isActionLoading || activatedOneClickTrading}
+                >
+                  Activate
+                </Button>
+                <Button
+                  variant="primary"
+                  className={styles.actionButton}
+                  onClick={handleRemove}
+                  disabled={isActionLoading}
+                >
+                  Remove
+                </Button>
+              </>
+            )}
+          </Box>
+        </Box>
+      </Dialog>
+    </>
   );
 };
