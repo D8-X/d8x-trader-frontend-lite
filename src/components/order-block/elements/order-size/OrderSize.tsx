@@ -33,10 +33,10 @@ export const OrderSize = memo(() => {
   const [orderBlock] = useAtom(orderBlockAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [defaultCurrency] = useAtom(defaultCurrencyAtom);
-
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
+
+  const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
   const [maxOrderSize, setMaxOrderSize] = useState<number | undefined>(undefined);
   const [currentMultiplier, setCurrentMultiplier] = useState<number>(1);
@@ -59,7 +59,7 @@ export const OrderSize = memo(() => {
         setInputValue('');
       }
     },
-    [setOrderSize, currentMultiplier, perpetualStaticInfo, setInputValue]
+    [setOrderSize, setInputValue, currentMultiplier, perpetualStaticInfo]
   );
 
   useEffect(() => {

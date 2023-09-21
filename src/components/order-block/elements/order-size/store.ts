@@ -1,7 +1,7 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
-import { leverageAtom, orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
 import {
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
@@ -11,6 +11,8 @@ import {
 } from 'store/pools.store';
 import { OrderBlockE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+
+import { leverageAtom } from '../leverage-selector/store';
 
 export const selectedCurrencyAtom = atom('');
 export const inputValueAtom = atom('');
@@ -40,7 +42,7 @@ export const maxOrderSizeAtom = atom((get) => {
   return ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
 });
 
-const setInputFromOrderSizeAtom = atom(null, async (get, set, orderSize: number) => {
+const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number) => {
   const selectedPool = get(selectedPoolAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
 
@@ -74,7 +76,7 @@ export const setSizeFromSliderAtom = atom(
 
     return (orderSize * 100) / max;
   },
-  async (get, set, percent: number) => {
+  (get, set, percent: number) => {
     const max = get(maxOrderSizeAtom);
     const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
