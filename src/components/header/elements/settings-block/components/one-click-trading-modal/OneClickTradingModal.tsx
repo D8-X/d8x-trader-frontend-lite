@@ -78,9 +78,9 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
 
     // TODO: VOV: Check order with documentation. We don't have storageKey for generateDelegate to start with it.
     const storageKey = await getStorageKey(walletClient);
-    await generateDelegate(walletClient, storageKey);
+    const delegateAddr = await generateDelegate(walletClient, storageKey);
     // TODO: VOV: Need to add try / catch blocks. Can't really test it
-    await setDelegate(walletClient, proxyAddr as Address, address);
+    await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
 
     toast.success(
       <ToastContent title={t('common.settings.one-click-modal.create-delegate.create-success-result')} bodyLines={[]} />
