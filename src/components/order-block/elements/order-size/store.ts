@@ -27,7 +27,9 @@ export const maxOrderSizeAtom = atom((get) => {
   const orderType = get(orderTypeAtom);
   const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0;
 
-  if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !maxTraderOrderSize) return;
+  if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !maxTraderOrderSize) {
+    return;
+  }
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
@@ -45,7 +47,6 @@ export const maxOrderSizeAtom = atom((get) => {
   }
 
   const personalMax = ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
-
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
 });
 
@@ -54,7 +55,9 @@ export const currentMultiplierAtom = atom((get) => {
 
   const selectedPool = get(selectedPoolAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
-  if (!selectedPool || !selectedPerpetual) return currentMultiplier;
+  if (!selectedPool || !selectedPerpetual) {
+    return currentMultiplier;
+  }
 
   const selectedCurrency = get(selectedCurrencyPrimitiveAtom);
 
@@ -70,7 +73,7 @@ export const currentMultiplierAtom = atom((get) => {
 export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number) => {
   const currentMultiplier = get(currentMultiplierAtom);
 
-  let inputValue = '0';
+  let inputValue;
   if (currentMultiplier === 1 || orderSize === 0) {
     inputValue = orderSize.toString();
   } else {
@@ -93,28 +96,32 @@ export const selectedCurrencyAtom = atom(
 export const setOrderSizeAtom = atom(null, (get, set, value: number) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
-  if (!perpetualStaticInfo) return 0;
+  if (!perpetualStaticInfo) {
+    return 0;
+  }
 
   const roundedValueBase = Number(roundToLotString(value, perpetualStaticInfo.lotSizeBC));
   set(orderSizeAtom, roundedValueBase);
-
   return roundedValueBase;
 });
 
 export const orderSizeSliderAtom = atom(
   (get) => {
     const max = get(maxOrderSizeAtom);
-    if (!max) return 0;
-    const orderSize = get(orderSizeAtom);
+    if (!max) {
+      return 0;
+    }
 
+    const orderSize = get(orderSizeAtom);
     return (orderSize * 100) / max;
   },
   (get, set, percent: number) => {
     const max = get(maxOrderSizeAtom);
-    if (!max) return;
+    if (!max) {
+      return;
+    }
 
     const orderSize = (max * percent) / 100;
-
     const roundedValueBase = set(setOrderSizeAtom, orderSize);
 
     set(setInputFromOrderSizeAtom, roundedValueBase);
