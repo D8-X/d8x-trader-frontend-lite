@@ -15,7 +15,7 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useDebounce } from 'helpers/useDebounce';
 import { getOpenOrders, getPositionRisk, orderDigest, positionRiskOnTrade } from 'network/network';
-import { clearInputsDataAtom, orderInfoAtom } from 'store/order-block.store';
+import { clearInputsDataAtom, orderInfoAtom, storageKeyAtom } from 'store/order-block.store';
 import {
   collateralDepositAtom,
   newPositionRiskAtom,
@@ -36,9 +36,10 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
 import styles from './ActionBlock.module.scss';
-import { createWalletClient, custom } from 'viem';
+import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { getDelegateKey } from 'helpers/getDelegateKey';
+import { enabledOneClickTradingAtom } from 'store/app.store';
 
 const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
 
@@ -108,24 +109,8 @@ export const ActionBlock = memo(() => {
     },
   });
 
-  const is1CTEnabled = true;
-
-  const storageKey = 'get this from the user when he enables 1ct';
-
-  const tradingClient = useMemo(() => {
-    if (is1CTEnabled && storageKey && walletClient?.chain && window?.ethereum) {
-      const dlgt = getDelegateKey(walletClient, storageKey);
-      if (dlgt) {
-        return createWalletClient({
-          account: privateKeyToAccount(dlgt as Address),
-          chain: walletClient.chain,
-          transport: custom(window.ethereum),
-        });
-      }
-    }
-    return walletClient;
-  }, [walletClient, storageKey, is1CTEnabled]);
-
+  const [enabledOneClickTrading] = useAtom(enabledOneClickTradingAtom);
+  const [storageKey] = useAtom(storageKeyAtom);
   const [orderInfo] = useAtom(orderInfoAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -148,6 +133,20 @@ export const ActionBlock = memo(() => {
 
   const requestSentRef = useRef(false);
   const validityCheckRef = useRef(false);
+
+  const tradingClient = useMemo(() => {
+    if (enabledOneClickTrading && storageKey && walletClient?.chain && window?.ethereum) {
+      const dlgt = getDelegateKey(walletClient, storageKey);
+      if (dlgt) {
+        return createWalletClient({
+          account: privateKeyToAccount(dlgt as Address),
+          chain: walletClient.chain,
+          transport: http(traderAPI?.config.nodeURL),
+        });
+      }
+    }
+    return walletClient;
+  }, [walletClient, storageKey, traderAPI?.config, enabledOneClickTrading]);
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI) {

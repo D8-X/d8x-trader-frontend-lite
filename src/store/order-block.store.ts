@@ -20,6 +20,7 @@ export const stopLossAtom = atom<StopLossE | null>(StopLossE.None);
 export const stopLossPriceAtom = atom<number | null>(null);
 export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
 export const takeProfitPriceAtom = atom<number | null>(null);
+export const storageKeyAtom = atom<string | null>(null);
 
 const limitPriceValueAtom = atom(-1);
 const triggerPriceValueAtom = atom(0);

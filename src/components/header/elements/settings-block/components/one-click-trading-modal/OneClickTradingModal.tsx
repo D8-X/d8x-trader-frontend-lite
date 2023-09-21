@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -20,6 +20,7 @@ import { enabledOneClickTradingAtom } from 'store/app.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
 import styles from './OneClickTradingDialog.module.scss';
+import { storageKeyAtom } from 'store/order-block.store';
 
 interface OneClickModalPropsI {
   isSettingsOpen: boolean;
@@ -34,6 +35,7 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
 
   const [enabledOneClickTrading] = useAtom(enabledOneClickTradingAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
+  const setStorageKey = useSetAtom(storageKeyAtom);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -78,6 +80,7 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
 
     // TODO: VOV: Check order with documentation. We don't have storageKey for generateDelegate to start with it.
     const storageKey = await getStorageKey(walletClient);
+    setStorageKey(storageKey);
     const delegateAddr = await generateDelegate(walletClient, storageKey);
     // TODO: VOV: Need to add try / catch blocks. Can't really test it
     await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
@@ -100,6 +103,7 @@ export const OneClickTradingModal = ({ isSettingsOpen }: OneClickModalPropsI) =>
 
     try {
       const storageKey = await getStorageKey(walletClient);
+      setStorageKey(storageKey);
       const delegateKey = getDelegateKey(walletClient, storageKey);
       if (!delegateKey) {
         await generateDelegate(walletClient, storageKey);
