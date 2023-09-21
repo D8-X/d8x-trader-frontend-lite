@@ -18,7 +18,7 @@ export const selectedCurrencyAtom = atom('');
 export const orderSizeAtom = atom(0);
 export const inputValueAtom = atom('0');
 
-const maxOrderSizeAtom = atom((get) => {
+export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
   const poolTokenBalance = get(poolTokenBalanceAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
@@ -74,7 +74,18 @@ export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number
   set(inputValueAtom, inputValue);
 });
 
-export const setSizeFromSliderAtom = atom(
+export const setOrderSizeAtom = atom(null, (get, set, value: number) => {
+  const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+
+  if (!perpetualStaticInfo) return 0;
+
+  const roundedValueBase = Number(roundToLotString(value, perpetualStaticInfo.lotSizeBC));
+  set(orderSizeAtom, roundedValueBase);
+
+  return roundedValueBase;
+});
+
+export const orderSizeSliderAtom = atom(
   (get) => {
     const max = get(maxOrderSizeAtom);
     if (!max) return 0;
@@ -84,16 +95,12 @@ export const setSizeFromSliderAtom = atom(
   },
   (get, set, percent: number) => {
     const max = get(maxOrderSizeAtom);
-    const perpetualStaticInfo = get(perpetualStaticInfoAtom);
-
-    if (!max || !perpetualStaticInfo) return;
+    if (!max) return;
 
     const orderSize = (max * percent) / 100;
-    const roundedValueBase = Number(roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC));
 
-    set(orderSizeAtom, roundedValueBase);
+    const roundedValueBase = set(setOrderSizeAtom, orderSize);
+
     set(setInputFromOrderSizeAtom, roundedValueBase);
-
-    return orderSize;
   }
 );

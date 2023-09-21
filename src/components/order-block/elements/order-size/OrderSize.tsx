@@ -26,6 +26,7 @@ import {
   orderSizeAtom,
   selectedCurrencyAtom,
   setInputFromOrderSizeAtom,
+  setOrderSizeAtom,
 } from './store';
 
 const roundMaxOrderSize = (value: number) => {
@@ -37,7 +38,7 @@ const roundMaxOrderSize = (value: number) => {
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
-  const [orderSize, setOrderSize] = useAtom(orderSizeAtom);
+  const [orderSize, setOrderSizeDirect] = useAtom(orderSizeAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -49,6 +50,7 @@ export const OrderSize = memo(() => {
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
   const [currentMultiplier] = useAtom(currentMultiplierAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
+  const setOrderSize = useSetAtom(setOrderSizeAtom);
 
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
@@ -62,16 +64,15 @@ export const OrderSize = memo(() => {
 
   const onInputChange = useCallback(
     (value: string) => {
-      if (value && perpetualStaticInfo) {
-        const roundedValueBase = +roundToLotString(+value / currentMultiplier, perpetualStaticInfo.lotSizeBC);
-        setOrderSize(roundedValueBase);
+      if (value) {
+        setOrderSize(Number(value));
         setInputValue(value);
       } else {
-        setOrderSize(0);
-        setInputValue('');
+        setOrderSizeDirect(0);
+        setInputValue('0');
       }
     },
-    [setOrderSize, setInputValue, currentMultiplier, perpetualStaticInfo]
+    [setOrderSizeDirect, setOrderSize, setInputValue]
   );
 
   useEffect(() => {
@@ -88,12 +89,8 @@ export const OrderSize = memo(() => {
   }, [selectedPerpetual, selectedPool, defaultCurrency, setSelectedCurrency]);
 
   const handleInputBlur = useCallback(() => {
-    if (perpetualStaticInfo) {
-      const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-      setOrderSize(Number(roundedValueBase));
-      setInputFromOrderSize(Number(roundedValueBase));
-    }
-  }, [perpetualStaticInfo, orderSize, setOrderSize, setInputFromOrderSize]);
+    setInputFromOrderSize(orderSize);
+  }, [orderSize, setInputFromOrderSize]);
 
   const currencyOptions = useMemo(() => {
     if (!selectedPool || !selectedPerpetual) {

@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
-import { orderSizeAtom } from 'components/order-block/elements/order-size/store';
+import { inputValueAtom, orderSizeAtom } from 'components/order-block/elements/order-size/store';
 import { createSymbol } from 'helpers/createSymbol';
 import { ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import { OrderInfoI } from 'types/types';
@@ -222,9 +222,10 @@ export const clearInputsDataAtom = atom(null, (_get, set) => {
   set(orderTypeValueAtom, OrderTypeE.Market);
 
   set(orderSizeAtom, 0);
+  set(inputValueAtom, '0');
+  set(setLeverageAtom, 1);
   set(limitPriceValueAtom, -1);
   set(triggerPriceValueAtom, 0);
-  set(setLeverageAtom, 1);
   set(slippageSliderAtom, 4);
   set(keepPositionLeverageAtom, false);
   set(reduceOnlyAtom, false);
