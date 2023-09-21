@@ -12,7 +12,7 @@ import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 import { collateralDepositAtom, newPositionRiskAtom, perpetualStatisticsAtom, poolFeeAtom } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
-export const slippageSliderAtom = atom(4);
+export const slippageSliderAtom = atom(3);
 export const keepPositionLeverageAtom = atom(false);
 export const reduceOnlyAtom = atom(false);
 export const expireDaysAtom = atom(ExpiryE['90D']);
@@ -226,7 +226,6 @@ export const clearInputsDataAtom = atom(null, (_get, set) => {
   set(setLeverageAtom, 1);
   set(limitPriceValueAtom, -1);
   set(triggerPriceValueAtom, 0);
-  set(slippageSliderAtom, 4);
   set(keepPositionLeverageAtom, false);
   set(reduceOnlyAtom, false);
   set(expireDaysAtom, ExpiryE['90D']);
