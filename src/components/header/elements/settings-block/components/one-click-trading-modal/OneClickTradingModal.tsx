@@ -8,7 +8,9 @@ import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
 import { hasDelegate } from 'blockchain-api/contract-interactions/hasDelegate';
+import { generateDelegate } from 'blockchain-api/generateDelegate';
 import { removeDelegate } from 'blockchain-api/contract-interactions/removeDelegate';
+import { setDelegate } from 'blockchain-api/contract-interactions/setDelegate';
 import { getStorageKey } from 'blockchain-api/getStorageKey';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
@@ -18,8 +20,6 @@ import { enabledOneClickTradingAtom } from 'store/app.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
 import styles from './OneClickTradingDialog.module.scss';
-import { generateDelegate } from '../../../../../../blockchain-api/generateDelegate';
-import { setDelegate } from '../../../../../../blockchain-api/contract-interactions/setDelegate';
 
 interface OneClickModalPropsI {
   isSettingsOpen: boolean;

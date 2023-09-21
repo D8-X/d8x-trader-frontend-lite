@@ -33,7 +33,7 @@ export const DropDownSelect = ({
   return (
     <>
       <Button
-        onClick={(event) => !disabled && setAnchorEl(event.currentTarget)}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
         className={classnames(styles.dropDownButton, { [styles.fullWidth]: fullWidth })}
         variant="outlined"
         disabled={disabled}
