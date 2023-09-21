@@ -23,6 +23,7 @@ import styles from './OrderSize.module.scss';
 import {
   currentMultiplierAtom,
   inputValueAtom,
+  maxTraderOrderSizeAtom,
   orderSizeAtom,
   selectedCurrencyAtom,
   setInputFromOrderSizeAtom,
@@ -51,10 +52,10 @@ export const OrderSize = memo(() => {
   const [currentMultiplier] = useAtom(currentMultiplierAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
+  const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
 
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
-  const [maxOrderSize, setMaxOrderSize] = useState<number | undefined>(undefined);
 
   const { address } = useAccount();
   const chainId = useChainId();
@@ -69,7 +70,7 @@ export const OrderSize = memo(() => {
         setInputValue(value);
       } else {
         setOrderSizeDirect(0);
-        setInputValue('0');
+        setInputValue('');
       }
     },
     [setOrderSizeDirect, setOrderSize, setInputValue]
@@ -175,7 +176,7 @@ export const OrderSize = memo(() => {
     if (maxOrderSizeInBase) {
       setMaxOrderSize(maxOrderSizeInBase * currentMultiplier);
     }
-  }, [maxOrderSizeInBase, currentMultiplier]);
+  }, [setMaxOrderSize, maxOrderSizeInBase, currentMultiplier]);
 
   const handleCurrencyChangeToggle = () => {
     setOpenCurrencySelector((prevOpen) => !prevOpen);

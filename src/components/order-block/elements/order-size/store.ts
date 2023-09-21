@@ -14,18 +14,20 @@ import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import { leverageAtom } from '../leverage-selector/store';
 
-export const selectedCurrencyAtom = atom('');
+const selectedCurrencyPrimitiveAtom = atom('');
 export const orderSizeAtom = atom(0);
 export const inputValueAtom = atom('0');
+export const maxTraderOrderSizeAtom = atom<number | undefined>(undefined);
 
 export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
   const poolTokenBalance = get(poolTokenBalanceAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
+  const maxTraderOrderSize = get(maxTraderOrderSizeAtom);
   const orderType = get(orderTypeAtom);
   const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0;
 
-  if (!poolTokenBalance || !selectedPool || !selectedPerpetual) return;
+  if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !maxTraderOrderSize) return;
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
@@ -42,7 +44,9 @@ export const maxOrderSizeAtom = atom((get) => {
     collateralCC = openPosition.collateralCC;
   }
 
-  return ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
+  const personalMax = ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
+
+  return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
 });
 
 export const currentMultiplierAtom = atom((get) => {
@@ -52,7 +56,7 @@ export const currentMultiplierAtom = atom((get) => {
   const selectedPerpetual = get(selectedPerpetualAtom);
   if (!selectedPool || !selectedPerpetual) return currentMultiplier;
 
-  const selectedCurrency = get(selectedCurrencyAtom);
+  const selectedCurrency = get(selectedCurrencyPrimitiveAtom);
 
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
   if (selectedCurrency === selectedPerpetual.quoteCurrency) {
@@ -75,6 +79,16 @@ export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number
   }
   set(inputValueAtom, inputValue);
 });
+
+export const selectedCurrencyAtom = atom(
+  (get) => get(selectedCurrencyPrimitiveAtom),
+  (get, set, currency: string) => {
+    const orderSize = get(orderSizeAtom);
+
+    set(selectedCurrencyPrimitiveAtom, currency);
+    set(setInputFromOrderSizeAtom, orderSize);
+  }
+);
 
 export const setOrderSizeAtom = atom(null, (get, set, value: number) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
