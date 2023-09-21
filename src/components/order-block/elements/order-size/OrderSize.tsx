@@ -55,7 +55,6 @@ export const OrderSize = memo(() => {
   const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
 
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
-  const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
 
   const { address } = useAccount();
   const chainId = useChainId();
@@ -66,14 +65,14 @@ export const OrderSize = memo(() => {
   const onInputChange = useCallback(
     (value: string) => {
       if (value) {
-        setOrderSize(Number(value));
+        setOrderSize(Number(value) / currentMultiplier);
         setInputValue(value);
       } else {
         setOrderSizeDirect(0);
         setInputValue('');
       }
     },
-    [setOrderSizeDirect, setOrderSize, setInputValue]
+    [setOrderSizeDirect, setOrderSize, setInputValue, currentMultiplier]
   );
 
   useEffect(() => {
@@ -167,16 +166,10 @@ export const OrderSize = memo(() => {
         perpetualStaticInfo.id,
         orderBlock === OrderBlockE.Long
       ).then((result) => {
-        setMaxOrderSizeInBase(result);
+        setMaxOrderSize(result);
       });
     }
-  }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize]);
-
-  useEffect(() => {
-    if (maxOrderSizeInBase) {
-      setMaxOrderSize(maxOrderSizeInBase * currentMultiplier);
-    }
-  }, [setMaxOrderSize, maxOrderSizeInBase, currentMultiplier]);
+  }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]);
 
   const handleCurrencyChangeToggle = () => {
     setOpenCurrencySelector((prevOpen) => !prevOpen);
@@ -208,7 +201,8 @@ export const OrderSize = memo(() => {
               <>
                 <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
                 <Typography>
-                  {t('pages.trade.order-block.order-size.body2')} {formatToCurrency(maxOrderSize, selectedCurrency)}.{' '}
+                  {t('pages.trade.order-block.order-size.body2')}{' '}
+                  {formatToCurrency(maxOrderSize && maxOrderSize * currentMultiplier, selectedCurrency)}.{' '}
                   {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
                   {t('pages.trade.order-block.order-size.body4')}{' '}
                   {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
