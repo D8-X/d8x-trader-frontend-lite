@@ -6,11 +6,12 @@ export async function hasDelegate(
   proxyAddr: Address,
   traderAddr: Address
 ): Promise<boolean> {
+  console.log('has delegate?');
   const res = await publicClient.readContract({
     address: proxyAddr as Address,
     abi: PROXY_ABI,
     functionName: 'isDelegate',
     args: [traderAddr, zeroAddress],
   });
-  return !(res[0] as boolean);
+  return !(res as unknown as boolean);
 }
