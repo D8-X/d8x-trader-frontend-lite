@@ -1,7 +1,7 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
-import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
+import { orderBlockAtom } from 'store/order-block.store';
 import {
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
@@ -15,9 +15,10 @@ import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { leverageAtom } from '../leverage-selector/store';
 
 export const selectedCurrencyAtom = atom('');
-export const inputValueAtom = atom('');
+export const orderSizeAtom = atom(0);
+export const inputValueAtom = atom('0');
 
-export const maxOrderSizeAtom = atom((get) => {
+const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
   const poolTokenBalance = get(poolTokenBalanceAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
@@ -35,28 +36,33 @@ export const maxOrderSizeAtom = atom((get) => {
   const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
   const orderBlockSide = orderBlock === OrderBlockE.Long ? 'BUY' : 'SELL';
 
-  if (orderBlockSide !== openPosition?.side) {
-    collateralCC = openPosition?.collateralCC || 0;
+  if (openPosition && openPosition.side !== orderBlockSide) {
+    collateralCC = openPosition.collateralCC;
   }
 
   return ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
 });
 
-const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number) => {
+export const currentMultiplierAtom = atom((get) => {
+  let currentMultiplier = 1;
+
   const selectedPool = get(selectedPoolAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
-
-  if (!selectedPool || !selectedPerpetual) return;
+  if (!selectedPool || !selectedPerpetual) return currentMultiplier;
 
   const selectedCurrency = get(selectedCurrencyAtom);
 
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
-  let currentMultiplier = 1;
   if (selectedCurrency === selectedPerpetual.quoteCurrency) {
     currentMultiplier = selectedPerpetual.indexPrice;
   } else if (selectedCurrency === selectedPool.poolSymbol) {
     currentMultiplier = indexPrice / collToQuoteIndexPrice;
   }
+  return currentMultiplier;
+});
+
+export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number) => {
+  const currentMultiplier = get(currentMultiplierAtom);
 
   let inputValue = '0';
   if (currentMultiplier === 1 || orderSize === 0) {

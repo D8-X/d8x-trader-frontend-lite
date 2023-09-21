@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
-import { orderInfoAtom, orderSizeAtom } from 'store/order-block.store';
+import { orderInfoAtom } from 'store/order-block.store';
 import { poolTokenBalanceAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
+import { orderSizeAtom } from '../order-size/store';
 import styles from './InfoBlock.module.scss';
 
 export const InfoBlock = memo(() => {

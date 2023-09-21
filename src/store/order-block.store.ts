@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
+import { orderSizeAtom } from 'components/order-block/elements/order-size/store';
 import { createSymbol } from 'helpers/createSymbol';
 import { ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import { OrderInfoI } from 'types/types';
@@ -11,7 +12,6 @@ import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 import { collateralDepositAtom, newPositionRiskAtom, perpetualStatisticsAtom, poolFeeAtom } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
-export const orderSizeAtom = atom(0);
 export const slippageSliderAtom = atom(4);
 export const keepPositionLeverageAtom = atom(false);
 export const reduceOnlyAtom = atom(false);

@@ -1,5 +1,5 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
@@ -11,7 +11,7 @@ import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { getMaxOrderSizeForTrader } from 'network/network';
 import { defaultCurrencyAtom } from 'store/app.store';
-import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
+import { orderBlockAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
@@ -20,12 +20,19 @@ import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency'
 import commonStyles from '../../OrderBlock.module.scss';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
-import { inputValueAtom, selectedCurrencyAtom } from './store';
+import {
+  currentMultiplierAtom,
+  inputValueAtom,
+  orderSizeAtom,
+  selectedCurrencyAtom,
+  setInputFromOrderSizeAtom,
+} from './store';
 
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
   const [orderSize, setOrderSize] = useAtom(orderSizeAtom);
+  const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
@@ -34,19 +41,18 @@ export const OrderSize = memo(() => {
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [defaultCurrency] = useAtom(defaultCurrencyAtom);
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [inputValue, setInputValue] = useAtom(inputValueAtom);
+  const [currentMultiplier] = useAtom(currentMultiplierAtom);
+  const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
 
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
   const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
   const [maxOrderSize, setMaxOrderSize] = useState<number | undefined>(undefined);
-  const [currentMultiplier, setCurrentMultiplier] = useState<number>(1);
 
   const { address } = useAccount();
   const chainId = useChainId();
 
   const fetchedMaxSizes = useRef(false);
   const anchorRef = useRef<HTMLDivElement>(null);
-  const latestCurrency = useRef('');
 
   const onInputChange = useCallback(
     (value: string) => {
@@ -61,30 +67,6 @@ export const OrderSize = memo(() => {
     },
     [setOrderSize, setInputValue, currentMultiplier, perpetualStaticInfo]
   );
-
-  useEffect(() => {
-    if (!selectedPool || !selectedPerpetual) {
-      return;
-    }
-
-    if (selectedCurrency !== latestCurrency.current) {
-      let updatedMultiplier = 1;
-      if (selectedCurrency === selectedPerpetual.quoteCurrency) {
-        updatedMultiplier = selectedPerpetual.indexPrice;
-      } else if (selectedCurrency === selectedPool.poolSymbol) {
-        updatedMultiplier = selectedPerpetual.indexPrice / selectedPerpetual.collToQuoteIndexPrice;
-      }
-      setCurrentMultiplier(updatedMultiplier);
-
-      if (updatedMultiplier === 1 || orderSize === 0) {
-        setInputValue(orderSize.toString());
-      } else {
-        const numberDigits = valueToFractionDigits(orderSize * updatedMultiplier);
-        setInputValue((orderSize * updatedMultiplier).toFixed(numberDigits));
-      }
-      latestCurrency.current = selectedCurrency;
-    }
-  }, [selectedCurrency, selectedPool, selectedPerpetual, orderSize, setInputValue]);
 
   useEffect(() => {
     if (!selectedPerpetual || !selectedPool) {
@@ -102,15 +84,10 @@ export const OrderSize = memo(() => {
   const handleInputBlur = useCallback(() => {
     if (perpetualStaticInfo) {
       const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-      setOrderSize(+roundedValueBase);
-      if (currentMultiplier === 1 || orderSize === 0) {
-        setInputValue(roundedValueBase);
-      } else {
-        const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
-        setInputValue((+roundedValueBase * currentMultiplier).toFixed(numberDigits));
-      }
+      setOrderSize(Number(roundedValueBase));
+      setInputFromOrderSize(Number(roundedValueBase));
     }
-  }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier, setInputValue]);
+  }, [perpetualStaticInfo, orderSize, setOrderSize, setInputFromOrderSize]);
 
   const currencyOptions = useMemo(() => {
     if (!selectedPool || !selectedPerpetual) {
