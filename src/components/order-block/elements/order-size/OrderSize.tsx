@@ -224,7 +224,7 @@ export const OrderSize = memo(() => {
           }
           step={orderSizeStep}
           min={0}
-          max={maxOrderSize && roundMaxOrderSize(maxOrderSize)}
+          max={maxOrderSize && roundMaxOrderSize(maxOrderSize * currentMultiplier)}
           className={styles.inputHolder}
           adornmentAction={
             <div ref={anchorRef}>
