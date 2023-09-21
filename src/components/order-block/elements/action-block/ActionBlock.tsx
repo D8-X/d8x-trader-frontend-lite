@@ -141,12 +141,12 @@ export const ActionBlock = memo(() => {
         return createWalletClient({
           account: privateKeyToAccount(dlgt as Address),
           chain: walletClient.chain,
-          transport: http(traderAPI?.config.nodeURL),
+          transport: http(),
         });
       }
     }
     return walletClient;
-  }, [walletClient, storageKey, traderAPI?.config, enabledOneClickTrading]);
+  }, [walletClient, storageKey, enabledOneClickTrading]);
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI) {
