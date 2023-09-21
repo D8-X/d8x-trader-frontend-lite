@@ -31,6 +31,10 @@
 .arrowDropDown {
   color: var(--d8x-color-purple);
   padding-top: 2 * $d8x-spacing;
+
+  &.disabledHandle {
+    color: var(--d8x-color-black-200);
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {

@@ -12,6 +12,7 @@ interface DropDownSelectPropsI extends PropsWithChildren {
   anchorEl: HTMLElement | null;
   setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export const DropDownSelect = ({
@@ -21,6 +22,7 @@ export const DropDownSelect = ({
   anchorEl,
   setAnchorEl,
   fullWidth,
+  disabled,
 }: DropDownSelectPropsI) => {
   const isOpen = Boolean(anchorEl);
 
@@ -31,12 +33,15 @@ export const DropDownSelect = ({
   return (
     <>
       <Button
-        onClick={(event) => setAnchorEl(event.currentTarget)}
+        onClick={(event) => !disabled && setAnchorEl(event.currentTarget)}
         className={classnames(styles.dropDownButton, { [styles.fullWidth]: fullWidth })}
         variant="outlined"
+        disabled={disabled}
       >
         <div className={styles.selectedValue}>{selectedValue}</div>
-        <div className={styles.arrowDropDown}>{isOpen ? <ArrowDropUp /> : <ArrowDropDown />}</div>
+        <div className={classnames(styles.arrowDropDown, { [styles.disabledHandle]: disabled })}>
+          {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
+        </div>
       </Button>
       <Menu
         anchorEl={anchorEl}

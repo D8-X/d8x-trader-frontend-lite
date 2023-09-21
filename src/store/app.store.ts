@@ -4,6 +4,7 @@ import { atomWithStorage } from 'jotai/utils';
 import { DefaultCurrencyE, LanguageE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
 
+const ENABLED_ONE_CLICK_TRADING_LS_KEY = 'd8x_enabledOneClickTrading';
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
 const SELECTED_LANGUAGE_LS_KEY = 'd8x_selectedLanguage';
@@ -16,6 +17,7 @@ export const orderBlockPositionAtom = atomWithStorage<OrderBlockPositionE>(
   ORDER_BLOCK_POSITION_LS_KEY,
   OrderBlockPositionE.Right
 );
+export const enabledOneClickTradingAtom = atomWithStorage<boolean>(ENABLED_ONE_CLICK_TRADING_LS_KEY, false);
 export const enabledDarkModeAtom = atomWithStorage<boolean>(ENABLED_DARK_MODE_LS_KEY, false);
 export const selectedLanguageAtom = atomWithStorage<LanguageE>(SELECTED_LANGUAGE_LS_KEY, LanguageE.EN);
 export const defaultCurrencyAtom = atomWithStorage<DefaultCurrencyE>(DEFAULT_CURRENCY_LS_KEY, DefaultCurrencyE.Base);

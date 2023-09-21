@@ -9,7 +9,7 @@ import { DefaultCurrencyE } from 'types/enums';
 
 const optionsArray = Object.values(DefaultCurrencyE);
 
-export const DefaultCurrencySwitcher = () => {
+export const DefaultCurrencySelect = () => {
   const { t } = useTranslation();
 
   const [defaultCurrency, setDefaultCurrency] = useAtom(defaultCurrencyAtom);

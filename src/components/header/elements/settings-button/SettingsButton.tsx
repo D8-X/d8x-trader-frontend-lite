@@ -8,6 +8,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { Separator } from 'components/separator/Separator';
 
+import { OneClickTradingModal } from '../settings-block/components/one-click-trading-modal/OneClickTradingModal';
 import { SettingsBlock } from '../settings-block/SettingsBlock';
 
 import styles from './SettingsButton.module.scss';
@@ -40,6 +41,8 @@ export const SettingsButton = memo(() => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <OneClickTradingModal isSettingsOpen={isModalOpen} />
     </>
   );
 });

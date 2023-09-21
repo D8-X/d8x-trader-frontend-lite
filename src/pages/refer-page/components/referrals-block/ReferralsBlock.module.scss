@@ -9,7 +9,7 @@
   display: flex;
   justify-content: flex-end;
 
-  .enterCodeButton {
+  .actionButton {
     width: 170px;
   }
 }
@@ -31,7 +31,7 @@
   .buttonContainer {
     display: block;
 
-    .enterCodeButton {
+    .actionButton {
       width: 100%;
     }
   }

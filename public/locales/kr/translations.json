@@ -532,21 +532,42 @@
       "title": "Settings",
       "ui-settings": {
         "title": "UI Settings",
+        "conditional-options": {
+          "on": "On",
+          "off": "Off"
+        },
+        "one-click-trading": {
+          "title": "One-click trading"
+        },
         "order-block": {
-          "title": "Order Block",
+          "title": "Order block",
           "left": "Left",
           "right": "Right"
         },
         "dark-mode": {
-          "title": "Coming soon",
-          "on": "On",
-          "off": "Off"
+          "title": "Coming soon"
         },
         "default-currency": {
-          "title": "Default Currency",
+          "title": "Default currency",
           "base": "Base",
           "quote": "Quote",
           "pool": "Pool"
+        }
+      },
+      "one-click-modal": {
+        "title": "One-click trading",
+        "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
+        "create-delegate": {
+          "title": "Create Delegate Account",
+          "description": "As an initial step you need to create a Delegate Account.",
+          "create-success-result": "Delegate account is created."
+        },
+        "manage-delegate": {
+          "title": "Manage Delegate Account",
+          "description": "You have an existing Delegate Account. You can choose to activate or remove your Delegate Account.",
+          "remove-action-result": "One-click trading is deactivated.",
+          "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
+          "activate-error-result": "Invalid wallet. Re-set your delegate and try again."
         }
       }
     },
