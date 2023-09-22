@@ -125,16 +125,20 @@ export const OneClickTradingModal = () => {
 
   const [isFundingModalOpen, setFundingModalOpen] = useState(false);
 
-  const delegateBalance = useBalance({
+  const { data: delegateBalance } = useBalance({
     address: delegateAddress as Address,
     enabled: delegateAddress !== '',
   });
 
   useEffect(() => {
-    if (delegateAddress !== '' && delegateBalance.data?.value === 0n) {
-      // popup
-      console.log(delegateAddress);
+    if (activatedOneClickTrading && delegateAddress !== '' && !!delegateBalance && delegateBalance.value === 0n) {
       setFundingModalOpen(true);
+    }
+  }, [activatedOneClickTrading, delegateBalance, delegateAddress]);
+
+  useEffect(() => {
+    if (delegateAddress !== '' && delegateBalance && delegateBalance.value > 0n) {
+      setFundingModalOpen(false);
     }
   }, [delegateBalance, delegateAddress]);
 
@@ -192,8 +196,7 @@ export const OneClickTradingModal = () => {
                 {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
               </Typography>
               <Typography variant="bodyMedium">
-                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}{' '}
-                {delegateAddress}
+                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}
               </Typography>
             </>
           )}
