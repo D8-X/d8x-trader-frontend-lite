@@ -256,7 +256,8 @@
         "info": {
           "balance": "Wallet balance",
           "order-size": "금액",
-          "fees": "수수료"
+          "fees": "수수료",
+          "approx-deposit": "Approx. deposit from wallet"
         },
         "review": {
           "title": "Review order"
@@ -306,11 +307,11 @@
         },
         "review": {
           "title": "Review order",
-          "deposit": "Deposit from wallet:",
-          "balance": "Wallet balance:",
+          "deposit": "Deposit from wallet",
+          "balance": "Wallet balance",
           "fee": "수수료:",
-          "max": "Max entry price:",
-          "min": "Min entry price:",
+          "max": "Max entry price",
+          "min": "Min entry price",
           "trigger-price": "Trigger price",
           "limit-price": "지정가",
           "stop-loss": "Stop-loss price",

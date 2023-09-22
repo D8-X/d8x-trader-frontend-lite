@@ -256,7 +256,8 @@
         "info": {
           "balance": "Wallet balance",
           "order-size": "Order size",
-          "fees": "Fees"
+          "fees": "Fees",
+          "approx-deposit": "Approx. deposit from wallet"
         },
         "review": {
           "title": "Review order"
@@ -306,11 +307,11 @@
         },
         "review": {
           "title": "Review order",
-          "deposit": "Deposit from wallet:",
-          "balance": "Wallet balance:",
-          "fee": "Trading fee:",
-          "max": "Max entry price:",
-          "min": "Min entry price:",
+          "deposit": "Deposit from wallet",
+          "balance": "Wallet balance",
+          "fee": "Trading fee",
+          "max": "Max entry price",
+          "min": "Min entry price",
           "trigger-price": "Trigger price",
           "limit-price": "Limit price",
           "stop-loss": "Stop-loss price",
