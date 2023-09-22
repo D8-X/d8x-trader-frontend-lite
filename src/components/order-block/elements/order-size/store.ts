@@ -1,7 +1,7 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
-import { orderBlockAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import {
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
@@ -25,13 +25,17 @@ export const maxOrderSizeAtom = atom((get) => {
   const selectedPerpetual = get(selectedPerpetualAtom);
   const maxTraderOrderSize = get(maxTraderOrderSizeAtom);
   const orderType = get(orderTypeAtom);
+  const orderInfo = get(orderInfoAtom);
   const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0;
 
   if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !maxTraderOrderSize) return;
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
-  const buffer = (1.001 + leverage * (0.01 + slippage)) * 1.01;
+  const orderFee = orderInfo?.tradingFee || 0;
+
+  const buffer = (1.001 + leverage * (0.009 + orderFee / 10000 + slippage)) * 1.01;
+
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
   let collateralCC = 0;
 
