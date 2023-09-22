@@ -562,14 +562,23 @@
         "create-delegate": {
           "title": "Create Delegate Account",
           "description": "As an initial step you need to create a Delegate Account.",
-          "create-success-result": "Delegate account is created and One-click trading is activated."
+          "create-success-result": "Delegate account is created and One-click trading is activated.",
+          "create": "Create"
         },
         "manage-delegate": {
           "title": "Manage Delegate Account",
-          "description": "You have an existing Delegate Account. You can choose to activate or remove your Delegate Account.",
+          "description": "You have an existing Delegate Account. You can choose to activate or remove your Delegate Account. Once activated, you can fund your account to pay for gas.",
           "remove-action-result": "One-click trading is deactivated.",
           "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
-          "activate-error-result": "Invalid wallet. Re-set your delegate and try again."
+          "activate-error-result": "Invalid wallet. Re-set your delegate and try again.",
+          "activate": "Activate",
+          "remove": "Remove",
+          "fund": "Fund" 
+        },
+        "funding-modal": {
+          "title": "Fund delegate wallet",
+          "description": "Fund your delegate wallet to pay for gas.",
+          "fund": "Fund"
         }
       }
     },

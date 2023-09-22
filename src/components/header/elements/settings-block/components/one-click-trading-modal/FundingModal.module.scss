@@ -21,11 +21,13 @@
 }
 
 .actionButton {
-  width: 220px;
+  width: 150px;
 }
 
 .buttonsBlock {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: $d8x-spacing * 2;
 }
 

@@ -24,7 +24,13 @@
 
 .actionButtonsContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 6 * $d8x-spacing;
+}
+
+.closeButtonsContainer {
+  display: flex;
+  justify-content: center;
   gap: 6 * $d8x-spacing;
 }
 

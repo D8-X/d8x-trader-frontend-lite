@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { Address, useBalance, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
@@ -34,12 +34,19 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
 
   const [inputValue, setInputValue] = useState('');
 
+  const { data: delegateBalance } = useBalance({
+    address: delegateAddress as Address,
+  });
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <div className={styles.dialogContent}>
         <Box className={styles.dialogContent}>
           <Typography variant="h4" className={styles.title}>
-            Fund delegate wallet
+            {t(`common.settings.one-click-modal.funding-modal.title`)}
+          </Typography>
+          <Typography variant="bodySmallPopup" className={styles.title}>
+            {t(`common.settings.one-click-modal.funding-modal.description`)}
           </Typography>
         </Box>
         <ResponsiveInput
@@ -47,7 +54,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
           className={styles.inputHolder}
           inputValue={inputValue}
           setInputValue={setInputValue}
-          currency=""
+          currency={delegateBalance?.symbol}
           min={0}
         />
         <Box className={styles.buttonsBlock}>
@@ -66,7 +73,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
             }}
             disabled={!!txHash}
           >
-            Fund
+            {t(`common.settings.one-click-modal.funding-modal.fund`)}
           </Button>
         </Box>
       </div>

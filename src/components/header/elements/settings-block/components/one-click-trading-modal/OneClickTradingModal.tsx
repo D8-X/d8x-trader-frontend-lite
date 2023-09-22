@@ -125,6 +125,10 @@ export const OneClickTradingModal = () => {
 
   const [isFundingModalOpen, setFundingModalOpen] = useState(false);
 
+  const handleFund = async () => {
+    setFundingModalOpen(true);
+  };
+
   const { data: delegateBalance } = useBalance({
     address: delegateAddress as Address,
     enabled: delegateAddress !== '',
@@ -201,12 +205,8 @@ export const OneClickTradingModal = () => {
             </>
           )}
         </Box>
-        <Separator />
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
-            <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
-              {t('pages.refer.trader-tab.cancel')}
-            </Button>
             {!isLoading && isDelegated === false && (
               <Button
                 variant="primary"
@@ -214,7 +214,7 @@ export const OneClickTradingModal = () => {
                 onClick={handleCreate}
                 disabled={isActionLoading}
               >
-                Create
+                {t(`common.settings.one-click-modal.create-delegate.create`)}
               </Button>
             )}
             {!isLoading && isDelegated === true && (
@@ -225,7 +225,7 @@ export const OneClickTradingModal = () => {
                   onClick={handleActivate}
                   disabled={isActionLoading || activatedOneClickTrading}
                 >
-                  Activate
+                  {t(`common.settings.one-click-modal.manage-delegate.activate`)}
                 </Button>
                 <Button
                   variant="primary"
@@ -233,10 +233,28 @@ export const OneClickTradingModal = () => {
                   onClick={handleRemove}
                   disabled={isActionLoading}
                 >
-                  Remove
+                  {t(`common.settings.one-click-modal.manage-delegate.remove`)}
                 </Button>
+                {activatedOneClickTrading && (
+                  <Button
+                    variant="primary"
+                    className={styles.actionButton}
+                    onClick={handleFund}
+                    disabled={isActionLoading}
+                  >
+                    {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                  </Button>
+                )}
               </>
             )}
+          </Box>
+        </Box>
+        <Separator />
+        <Box className={styles.dialogContent}>
+          <Box className={styles.closeButtonsContainer}>
+            <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
+              {t('common.info-modal.close')}
+            </Button>
           </Box>
         </Box>
       </Dialog>
