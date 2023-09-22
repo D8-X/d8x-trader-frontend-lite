@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useBalance, usePublicClient, useWalletClient } from 'wagmi';
 
 import { Settings } from '@mui/icons-material';
 import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material';
@@ -121,6 +121,18 @@ export const OneClickTradingModal = () => {
     handleActivateRef.current = false;
     setActionLoading(false);
   };
+
+  const delegateBalance = useBalance({
+    address: delegateAddress as Address,
+    enabled: delegateAddress !== '',
+  });
+
+  useEffect(() => {
+    if (delegateAddress !== '' && delegateBalance.data?.value === 0n) {
+      // popup
+      console.log(delegateAddress);
+    }
+  }, [delegateBalance, delegateAddress]);
 
   const handleRemove = () => {
     if (!walletClient || !proxyAddr || handleRemoveRef.current) {
