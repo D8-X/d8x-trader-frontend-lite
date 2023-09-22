@@ -4,7 +4,7 @@
   border-radius: $d8x-border-radius;
 }
 
-.dialogRoot {
+.dialogContent {
   display: flex;
   flex-direction: column;
   gap: 8 * $d8x-spacing;
@@ -13,6 +13,13 @@
 
 .title {
   text-align: center;
+}
+
+.spinnerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 0 0;
 }
 
 .actionButtonsContainer {
@@ -33,6 +40,17 @@
 .infoText {
   margin-top: -4 * $d8x-spacing;
   color: var(--d8x-color-black-400);
+}
+
+.modalButton {
+  justify-content: space-between;
+  align-items: center;
+  width: 40%;
+  height: 48px;
+  padding-left: 3 * $d8x-spacing;
+  padding-right: 3 * $d8x-spacing;
+  border-radius: $d8x-spacing;
+  gap: 3 * $d8x-spacing;
 }
 
 .cancelButton {

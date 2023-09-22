@@ -257,7 +257,8 @@
         "info": {
           "balance": "Balance de tu Cartera",
           "order-size": "Tamaño de tu orden",
-          "fees": "Comisiones"
+          "fees": "Comisiones",
+          "approx-deposit": "Aprox. depósito desde tu cartera"
         },
         "review": {
           "title": "Revisar orden"
@@ -307,11 +308,11 @@
         },
         "review": {
           "title": "Revisar Orden",
-          "deposit": "Depósito desde tu cartera:",
-          "balance": "Saldo en tu cartera:",
+          "deposit": "Depósito desde tu cartera",
+          "balance": "Saldo en tu cartera",
           "fee": "Comisión",
-          "max": "Precio de entrada maximo:",
-          "min": "Precio de entrada minimo:",
+          "max": "Precio de entrada maximo",
+          "min": "Precio de entrada minimo",
           "trigger-price": "Precio de Activación",
           "limit-price": "Precio Límite",
           "stop-loss": "Precio de Parada",
@@ -532,21 +533,43 @@
       "title": "Configuración",
       "ui-settings": {
         "title": "Configuración de UI",
+        "conditional-options": {
+          "on": "En",
+          "off": "Off"
+        },
+        "one-click-trading": {
+          "title": "One-click trading"
+        },
         "order-block": {
-          "title": "Bloque de Ordenes",
+          "title": "Bloque de ordenes",
           "left": "Izquierda",
           "right": "Derecha"
         },
         "dark-mode": {
-          "title": "Pronto",
-          "on": "En",
-          "off": "Off"
+          "title": "Pronto"
         },
         "default-currency": {
           "title": "Moneda por defecto",
           "base": "Base",
           "quote": "Quote",
           "pool": "Pool"
+        }
+      },
+      "one-click-modal": {
+        "title": "One-click trading",
+        "modal-button": "Setup",
+        "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
+        "create-delegate": {
+          "title": "Create Delegate Account",
+          "description": "As an initial step you need to create a Delegate Account.",
+          "create-success-result": "Delegate account is created and One-click trading is activated."
+        },
+        "manage-delegate": {
+          "title": "Manage Delegate Account",
+          "description": "You have an existing Delegate Account. You can choose to activate or remove your Delegate Account.",
+          "remove-action-result": "One-click trading is deactivated.",
+          "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
+          "activate-error-result": "Invalid wallet. Re-set your delegate and try again."
         }
       }
     },

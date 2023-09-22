@@ -12,5 +12,5 @@ export async function hasDelegate(
     functionName: 'isDelegate',
     args: [traderAddr, zeroAddress],
   });
-  return !(res[0] as boolean);
+  return !(res as unknown as boolean);
 }

@@ -69,10 +69,11 @@
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
-  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
     margin-bottom: 2 * $d8x-spacing;
+    margin-top: 2 * $d8x-spacing;
   }
 
   .labelHolder {

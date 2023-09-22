@@ -208,15 +208,7 @@ export function getMaxOrderSizeForTrader(
       params.append('t', '' + timestamp);
     }
 
-    return fetch(`${getApiUrlByChainId(chainId)}/max-order-size-for-trader?${params}`, getRequestOptions()).then(
-      (data) => {
-        if (!data.ok) {
-          console.error({ data });
-          throw new Error(data.statusText);
-        }
-        return data.json();
-      }
-    );
+    return fetchUrl(`max-order-size-for-trader?${params}`, chainId);
   }
 }
 

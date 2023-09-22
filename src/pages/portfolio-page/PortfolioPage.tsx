@@ -4,14 +4,15 @@ import { useEffect } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
 import { Container } from 'components/container/Container';
+import { Helmet } from 'components/helmet/Helmet';
 import { useFetchOpenRewards } from 'pages/refer-page/components/trader-tab/useFetchOpenRewards';
 import { traderAPIAtom } from 'store/pools.store';
 
-import styles from './PortfolioPage.module.scss';
 import { AccountValue } from './components/AccountValue/AccountValue';
 import { AssetsBlock } from './components/AssetsBlock/AssetsBlock';
 import { fetchPortfolioAtom } from './store/fetchPortfolio';
-import { Helmet } from '../../components/helmet/Helmet';
+
+import styles from './PortfolioPage.module.scss';
 
 export const PortfolioPage = () => {
   const { address } = useAccount();

@@ -7,7 +7,7 @@ export function getDelegateKey(walletClient: WalletClient, storageKey: string) {
   if (encoded === null) {
     return undefined;
   } else {
-    const bytes = CryptoJS.AES.decrypt(encoded as CryptoJS.lib.CipherParams, storageKey);
+    const bytes = CryptoJS.AES.decrypt(encoded as string, storageKey);
     try {
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (err) {

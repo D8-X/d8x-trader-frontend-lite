@@ -40,11 +40,11 @@ export enum OrderTypeE {
 }
 
 export enum ExpiryE {
-  '1D' = '1D',
-  '30D' = '30D',
-  '90D' = '90D',
-  '180D' = '180D',
-  '365D' = '365D',
+  '1D' = '1',
+  '30D' = '30',
+  '90D' = '90',
+  '180D' = '180',
+  '365D' = '365',
 }
 
 export enum StopLossE {

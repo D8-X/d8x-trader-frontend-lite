@@ -1,7 +1,7 @@
 import { type Dispatch, type PropsWithChildren, type ReactNode, type SetStateAction } from 'react';
 
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Button, Menu } from '@mui/material';
+import { Button, Menu, Typography } from '@mui/material';
 
 import styles from './DropDownSelect.module.scss';
 import classnames from 'classnames';
@@ -12,6 +12,7 @@ interface DropDownSelectPropsI extends PropsWithChildren {
   anchorEl: HTMLElement | null;
   setAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>;
   fullWidth?: boolean;
+  disabled?: boolean;
 }
 
 export const DropDownSelect = ({
@@ -21,6 +22,7 @@ export const DropDownSelect = ({
   anchorEl,
   setAnchorEl,
   fullWidth,
+  disabled,
 }: DropDownSelectPropsI) => {
   const isOpen = Boolean(anchorEl);
 
@@ -34,9 +36,14 @@ export const DropDownSelect = ({
         onClick={(event) => setAnchorEl(event.currentTarget)}
         className={classnames(styles.dropDownButton, { [styles.fullWidth]: fullWidth })}
         variant="outlined"
+        disabled={disabled}
       >
-        <div className={styles.selectedValue}>{selectedValue}</div>
-        <div className={styles.arrowDropDown}>{isOpen ? <ArrowDropUp /> : <ArrowDropDown />}</div>
+        <Typography variant="bodyMedium" className={styles.selectedValue}>
+          {selectedValue}
+        </Typography>
+        <div className={classnames(styles.arrowDropDown, { [styles.disabledHandle]: disabled })}>
+          {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
+        </div>
       </Button>
       <Menu
         anchorEl={anchorEl}

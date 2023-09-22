@@ -1,5 +1,5 @@
 import { etc } from '@noble/secp256k1';
-import { WalletClient, toHex } from 'viem';
+import { WalletClient, toHex, stringToBytes } from 'viem';
 
 export function getStorageKey(walletClient: WalletClient) {
   const account = walletClient.account;
@@ -8,5 +8,5 @@ export function getStorageKey(walletClient: WalletClient) {
   }
   return walletClient
     .signMessage({ message: 'Unlock Delegate', account: account })
-    .then((sig) => toHex(etc.hashToPrivateKey(sig)));
+    .then((sig) => toHex(etc.hashToPrivateKey(stringToBytes(sig))));
 }

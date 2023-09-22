@@ -4,32 +4,31 @@ import { useTranslation } from 'react-i18next';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
-import { orderBlockPositionAtom } from 'store/app.store';
-import { OrderBlockPositionE } from 'types/enums';
+import { enabledDarkModeAtom } from 'store/app.store';
 
-const optionsArray = Object.values(OrderBlockPositionE);
+const optionsArray = [true, false];
 
-export const OrderBlockSwitcher = () => {
+export const DarkModeSelect = () => {
   const { t } = useTranslation();
 
-  const [orderBlockPosition, setOrderBlockPosition] = useAtom(orderBlockPositionAtom);
+  const [enabledDarkMode, setEnabledDarkMode] = useAtom(enabledDarkModeAtom);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <DropDownSelect
-      id="order-block-dropdown"
-      selectedValue={t(`common.settings.ui-settings.order-block.${orderBlockPosition}`)}
+      id="dark-mode-dropdown"
+      selectedValue={t(`common.settings.ui-settings.conditional-options.${enabledDarkMode ? 'on' : 'off'}`)}
       anchorEl={anchorEl}
       setAnchorEl={setAnchorEl}
     >
       {optionsArray.map((option) => (
         <DropDownMenuItem
-          key={option}
-          option={t(`common.settings.ui-settings.order-block.${option}`)}
-          isActive={option === orderBlockPosition}
+          key={String(option)}
+          option={t(`common.settings.ui-settings.conditional-options.${option ? 'on' : 'off'}`)}
+          isActive={option === enabledDarkMode}
           onClick={() => {
-            setOrderBlockPosition(option);
+            setEnabledDarkMode(option);
             setAnchorEl(null);
           }}
         />

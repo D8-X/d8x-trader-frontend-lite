@@ -4,31 +4,32 @@ import { useTranslation } from 'react-i18next';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
-import { enabledDarkModeAtom } from 'store/app.store';
+import { defaultCurrencyAtom } from 'store/app.store';
+import { DefaultCurrencyE } from 'types/enums';
 
-const optionsArray = [true, false];
+const optionsArray = Object.values(DefaultCurrencyE);
 
-export const DarkModeSwitcher = () => {
+export const DefaultCurrencySelect = () => {
   const { t } = useTranslation();
 
-  const [enabledDarkMode, setEnabledDarkMode] = useAtom(enabledDarkModeAtom);
+  const [defaultCurrency, setDefaultCurrency] = useAtom(defaultCurrencyAtom);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <DropDownSelect
-      id="dark-mode-dropdown"
-      selectedValue={t(`common.settings.ui-settings.dark-mode.${enabledDarkMode ? 'on' : 'off'}`)}
+      id="default-curency-dropdown"
+      selectedValue={t(`common.settings.ui-settings.default-currency.${defaultCurrency}`)}
       anchorEl={anchorEl}
       setAnchorEl={setAnchorEl}
     >
       {optionsArray.map((option) => (
         <DropDownMenuItem
-          key={String(option)}
-          option={t(`common.settings.ui-settings.dark-mode.${option ? 'on' : 'off'}`)}
-          isActive={option === enabledDarkMode}
+          key={option}
+          option={t(`common.settings.ui-settings.default-currency.${option}`)}
+          isActive={option === defaultCurrency}
           onClick={() => {
-            setEnabledDarkMode(option);
+            setDefaultCurrency(option);
             setAnchorEl(null);
           }}
         />
