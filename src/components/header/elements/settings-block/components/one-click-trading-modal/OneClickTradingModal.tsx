@@ -22,6 +22,7 @@ import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
 import styles from './OneClickTradingDialog.module.scss';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const OneClickTradingModal = () => {
   const { t } = useTranslation();
@@ -38,6 +39,7 @@ export const OneClickTradingModal = () => {
   const [isLoading, setLoading] = useState(false);
   const [isActionLoading, setActionLoading] = useState(false);
   const [isDelegated, setDelegated] = useState<boolean | null>(null);
+  const [delegateAddress, setDelegateAddr] = useState<string>('');
 
   const handleRemoveRef = useRef(false);
   const handleActivateRef = useRef(false);
@@ -73,6 +75,7 @@ export const OneClickTradingModal = () => {
     await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
     setDelegated(true);
     setActivatedOneClickTrading(true);
+    setDelegateAddr(delegateAddr);
 
     toast.success(
       <ToastContent title={t('common.settings.one-click-modal.create-delegate.create-success-result')} bodyLines={[]} />
@@ -97,7 +100,7 @@ export const OneClickTradingModal = () => {
       if (!delegateKey) {
         await generateDelegate(walletClient, storageKey);
       }
-
+      setDelegateAddr(privateKeyToAccount(delegateKey as Address).address);
       setActivatedOneClickTrading(true);
       toast.success(
         <ToastContent
@@ -173,7 +176,8 @@ export const OneClickTradingModal = () => {
                 {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
               </Typography>
               <Typography variant="bodyMedium">
-                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}
+                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.description`)}{' '}
+                {delegateAddress}
               </Typography>
             </>
           )}
