@@ -4,7 +4,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 6 * $d8x-spacing;
 
   .label {
     display: flex;
@@ -27,6 +26,8 @@
 
 .currencyLabel {
   cursor: pointer;
+  display: block;
+  line-height: 3;
 }
 
 .menuItems {
@@ -54,5 +55,21 @@
 
   .root {
     margin-top: 2 * $d8x-spacing;
+  }
+}
+
+.sliderHolder {
+  margin: 0 9px;
+
+  @include media-desktop {
+    margin-bottom: 4px;
+  }
+
+  @include media-phone {
+    margin-bottom: 0;
+
+    :global(.MuiSlider-root) {
+      margin-bottom: 10px;
+    }
   }
 }

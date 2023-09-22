@@ -1,5 +1,7 @@
 import { atom } from 'jotai';
 
+import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
+import { inputValueAtom, orderSizeAtom } from 'components/order-block/elements/order-size/store';
 import { createSymbol } from 'helpers/createSymbol';
 import { ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import { OrderInfoI } from 'types/types';
@@ -10,12 +12,10 @@ import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 import { collateralDepositAtom, newPositionRiskAtom, perpetualStatisticsAtom, poolFeeAtom } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
-export const orderSizeAtom = atom(0);
-export const leverageAtom = atom(1);
-export const slippageSliderAtom = atom(4);
+export const slippageSliderAtom = atom(3);
 export const keepPositionLeverageAtom = atom(false);
 export const reduceOnlyAtom = atom(false);
-export const expireDaysAtom = atom(ExpiryE['90D']);
+export const expireDaysAtom = atom(Number(ExpiryE['90D']));
 export const stopLossAtom = atom<StopLossE | null>(StopLossE.None);
 export const stopLossPriceAtom = atom<number | null>(null);
 export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
@@ -223,13 +223,13 @@ export const clearInputsDataAtom = atom(null, (_get, set) => {
   set(orderTypeValueAtom, OrderTypeE.Market);
 
   set(orderSizeAtom, 0);
+  set(inputValueAtom, '0');
+  set(setLeverageAtom, 1);
   set(limitPriceValueAtom, -1);
   set(triggerPriceValueAtom, 0);
-  set(leverageAtom, 1);
-  set(slippageSliderAtom, 4);
   set(keepPositionLeverageAtom, false);
   set(reduceOnlyAtom, false);
-  set(expireDaysAtom, ExpiryE['90D']);
+  set(expireDaysAtom, Number(ExpiryE['90D']));
   set(stopLossAtom, StopLossE.None);
   set(takeProfitAtom, TakeProfitE.None);
 });

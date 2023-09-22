@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
-import { Suspense, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId, useNetwork } from 'wagmi';
@@ -199,28 +199,26 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
   }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
 
   useEffect(() => {
-    if (pools.length && isConnected && selectedPool?.poolId) {
+    if (pools.length && isConnected) {
       send(JSON.stringify({ type: 'unsubscribe' }));
 
-      pools
-        .filter((pool) => pool.poolId === selectedPool.poolId)
-        .forEach((pool) => {
-          pool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
-            const symbol = createSymbol({
-              baseCurrency,
-              quoteCurrency,
-              poolSymbol: pool.poolSymbol,
-            });
-            send(
-              JSON.stringify({
-                traderAddr: address ?? '',
-                symbol,
-              })
-            );
+      pools.forEach((pool) => {
+        pool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
+          const symbol = createSymbol({
+            baseCurrency,
+            quoteCurrency,
+            poolSymbol: pool.poolSymbol,
           });
+          send(
+            JSON.stringify({
+              traderAddr: address ?? '',
+              symbol,
+            })
+          );
         });
+      });
     }
-  }, [selectedPool?.poolId, pools, isConnected, send, address]);
+  }, [pools, isConnected, send, address]);
 
   useEffect(() => {
     if (updatePerpetual && selectedPerpetual && isConnectedCandlesWs) {

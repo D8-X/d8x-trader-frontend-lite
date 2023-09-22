@@ -257,7 +257,8 @@
         "info": {
           "balance": "Balance de tu Cartera",
           "order-size": "Tamaño de tu orden",
-          "fees": "Comisiones"
+          "fees": "Comisiones",
+          "approx-deposit": "Aprox. depósito desde tu cartera"
         },
         "review": {
           "title": "Revisar orden"
@@ -307,11 +308,11 @@
         },
         "review": {
           "title": "Revisar Orden",
-          "deposit": "Depósito desde tu cartera:",
-          "balance": "Saldo en tu cartera:",
+          "deposit": "Depósito desde tu cartera",
+          "balance": "Saldo en tu cartera",
           "fee": "Comisión",
-          "max": "Precio de entrada maximo:",
-          "min": "Precio de entrada minimo:",
+          "max": "Precio de entrada maximo",
+          "min": "Precio de entrada minimo",
           "trigger-price": "Precio de Activación",
           "limit-price": "Precio Límite",
           "stop-loss": "Precio de Parada",

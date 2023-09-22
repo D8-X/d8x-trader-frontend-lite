@@ -33,7 +33,6 @@ import { OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import type { OrderI, OrderInfoI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { mapExpiryToNumber } from 'utils/mapExpiryToNumber';
 
 import styles from './ActionBlock.module.scss';
 import { createWalletClient, http } from 'viem';
@@ -56,7 +55,7 @@ function createMainOrder(orderInfo: OrderInfoI) {
 
   let deadlineMultiplier = 200; // By default, is it set to 200 hours
   if (orderInfo.orderType !== OrderTypeE.Market && orderInfo.expireDays) {
-    deadlineMultiplier = 24 * mapExpiryToNumber(orderInfo.expireDays);
+    deadlineMultiplier = 24 * Number(orderInfo.expireDays);
   }
 
   return {
@@ -435,7 +434,7 @@ export const ActionBlock = memo(() => {
     ) {
       return ValidityCheckE.BelowMinPosition;
     }
-    if (poolTokenBalance === undefined || poolTokenBalance < 1.1 * collateralDeposit) {
+    if (poolTokenBalance === undefined || poolTokenBalance < collateralDeposit) {
       return ValidityCheckE.InsufficientBalance;
       // return `${t('pages.trade.action-block.validity.insufficient-balance')} {' '} ${poolTokenBalance}`;
     }
@@ -719,7 +718,7 @@ export const ActionBlock = memo(() => {
               }
               rightSide={
                 !isValidityCheckDone ? (
-                  <Box className={styles.loaderHolder}>
+                  <Box>
                     <CircularProgress color="primary" />
                   </Box>
                 ) : (

@@ -4,7 +4,6 @@ import type { ReactElement, ReactNode } from 'react';
 
 import {
   type AlignE,
-  type ExpiryE,
   type LanguageE,
   type OrderBlockE,
   type OrderTypeE,
@@ -154,7 +153,7 @@ export interface OrderInfoI {
   reduceOnly: boolean | null;
   limitPrice: number | null;
   triggerPrice: number | null;
-  expireDays: ExpiryE | null;
+  expireDays: number | null;
   stopLoss: StopLossE | null;
   stopLossPrice: number | null;
   takeProfit: TakeProfitE | null;

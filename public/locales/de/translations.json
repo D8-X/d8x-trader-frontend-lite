@@ -257,7 +257,8 @@
         "info": {
           "balance": "Wallet Guthaben",
           "order-size": "Ordergrösse",
-          "fees": "Gebühren"
+          "fees": "Gebühren",
+          "approx-deposit": "Einzahlung aus der Wallet (circa)"
         },
         "review": {
           "title": "Order überprüfen"
@@ -307,11 +308,11 @@
         },
         "review": {
           "title": "Order überprüfen",
-          "deposit": "Einzahlung aus der Wallet:",
-          "balance": "Wallet Guthaben:",
-          "fee": "Handelsgebühr:",
-          "max": "Max Einstiegspreis:",
-          "min": "Min Einstiegspreis:",
+          "deposit": "Einzahlung aus der Wallet",
+          "balance": "Wallet Guthaben",
+          "fee": "Handelsgebühr",
+          "max": "Max Einstiegspreis",
+          "min": "Min Einstiegspreis",
           "trigger-price": "Trigger Preis",
           "limit-price": "Limit Preis",
           "stop-loss": "Stop-loss Preis",

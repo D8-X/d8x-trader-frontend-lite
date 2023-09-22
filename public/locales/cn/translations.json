@@ -257,7 +257,8 @@
         "info": {
           "balance": "钱包余额",
           "order-size": "仓位大小",
-          "fees": "手续费"
+          "fees": "手续费",
+          "approx-deposit": "从钱包充值约为"
         },
         "review": {
           "title": "查看订单"
@@ -307,11 +308,11 @@
         },
         "review": {
           "title": "查看订单",
-          "deposit": "从钱包充值：",
-          "balance": "钱包余额：",
-          "fee": "手续费：",
-          "max": "最高开仓价：",
-          "min": "最低开仓价：",
+          "deposit": "从钱包充值",
+          "balance": "钱包余额",
+          "fee": "手续费",
+          "max": "最高开仓价",
+          "min": "最低开仓价",
           "trigger-price": "触发价",
           "limit-price": "限价",
           "stop-loss": "止损价",
