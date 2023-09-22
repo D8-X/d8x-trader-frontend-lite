@@ -3,15 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 import { useAccount, useBalance, usePublicClient, useWalletClient } from 'wagmi';
 
 import { Settings } from '@mui/icons-material';
 import { Box, Button, CircularProgress, Tooltip, Typography } from '@mui/material';
 
 import { hasDelegate } from 'blockchain-api/contract-interactions/hasDelegate';
-import { generateDelegate } from 'blockchain-api/generateDelegate';
 import { removeDelegate } from 'blockchain-api/contract-interactions/removeDelegate';
 import { setDelegate } from 'blockchain-api/contract-interactions/setDelegate';
+import { generateDelegate } from 'blockchain-api/generateDelegate';
 import { getStorageKey } from 'blockchain-api/getStorageKey';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
@@ -21,8 +22,8 @@ import { activatedOneClickTradingAtom } from 'store/app.store';
 import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
+import { FundingModal } from './FundingModal';
 import styles from './OneClickTradingDialog.module.scss';
-import { privateKeyToAccount } from 'viem/accounts';
 
 export const OneClickTradingModal = () => {
   const { t } = useTranslation();
@@ -122,6 +123,8 @@ export const OneClickTradingModal = () => {
     setActionLoading(false);
   };
 
+  const [isFundingModalOpen, setFundingModalOpen] = useState(false);
+
   const delegateBalance = useBalance({
     address: delegateAddress as Address,
     enabled: delegateAddress !== '',
@@ -131,6 +134,7 @@ export const OneClickTradingModal = () => {
     if (delegateAddress !== '' && delegateBalance.data?.value === 0n) {
       // popup
       console.log(delegateAddress);
+      setFundingModalOpen(true);
     }
   }, [delegateBalance, delegateAddress]);
 
@@ -233,6 +237,14 @@ export const OneClickTradingModal = () => {
           </Box>
         </Box>
       </Dialog>
+
+      {isFundingModalOpen && (
+        <FundingModal
+          isOpen={isFundingModalOpen}
+          onClose={() => setFundingModalOpen(false)}
+          delegateAddress={delegateAddress as Address}
+        />
+      )}
     </>
   );
 };
