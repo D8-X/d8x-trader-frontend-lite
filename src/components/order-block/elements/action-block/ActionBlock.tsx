@@ -14,12 +14,16 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useDebounce } from 'helpers/useDebounce';
-import { getOpenOrders, getPositionRisk, orderDigest, positionRiskOnTrade } from 'network/network';
-import { clearInputsDataAtom, orderInfoAtom, storageKeyAtom } from 'store/order-block.store';
+import { orderDigest, positionRiskOnTrade } from 'network/network';
+import {
+  clearInputsDataAtom,
+  latestOrderSentTimestampAtom,
+  orderInfoAtom,
+  storageKeyAtom,
+} from 'store/order-block.store';
 import {
   collateralDepositAtom,
   newPositionRiskAtom,
-  openOrdersAtom,
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
@@ -98,6 +102,7 @@ enum ValidityCheckE {
 
 export const ActionBlock = memo(() => {
   const { t } = useTranslation();
+
   const { address } = useAccount();
   const chainId = useChainId();
 
@@ -116,13 +121,13 @@ export const ActionBlock = memo(() => {
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
-  const [positions, setPositions] = useAtom(positionsAtom);
+  const [positions] = useAtom(positionsAtom);
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
-  const setOpenOrders = useSetAtom(openOrdersAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -254,6 +259,7 @@ export const ActionBlock = memo(() => {
   useWaitForTransaction({
     hash: txHash,
     onSuccess() {
+      setLatestOrderSentTimestamp(Date.now());
       toast.success(
         <ToastContent
           title={t('pages.trade.action-block.toasts.order-submitted.title')}
@@ -271,29 +277,7 @@ export const ActionBlock = memo(() => {
     },
     onSettled() {
       setTxHash(undefined);
-      getOpenOrders(chainId, traderAPI, address as Address)
-        .then(({ data: d }) => {
-          if (d?.length > 0) {
-            d.map(setOpenOrders);
-          }
-        })
-        .catch(console.error);
-      setTimeout(() => {
-        getOpenOrders(chainId, traderAPI, address as Address)
-          .then(({ data: d }) => {
-            if (d?.length > 0) {
-              d.map(setOpenOrders);
-            }
-          })
-          .catch(console.error);
-        getPositionRisk(chainId, traderAPI, address as Address, Date.now())
-          .then(({ data }) => {
-            if (data && data.length > 0) {
-              data.map(setPositions);
-            }
-          })
-          .catch(console.error);
-      }, 30_000);
+      setLatestOrderSentTimestamp(Date.now());
     },
     enabled: !!address && !!orderInfo && !!txHash,
   });

@@ -34,6 +34,7 @@ import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TraderPage.module.scss';
+import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
 export const TraderPage = () => {
   const { t } = useTranslation();
@@ -275,6 +276,7 @@ export const TraderPage = () => {
             )}
           </Container>
         )}
+        <TableDataFetcher />
       </Box>
     </>
   );

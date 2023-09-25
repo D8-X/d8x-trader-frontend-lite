@@ -22,6 +22,8 @@ export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
 export const takeProfitPriceAtom = atom<number | null>(null);
 export const storageKeyAtom = atom<string | null>(null);
 
+export const latestOrderSentTimestampAtom = atom(0);
+
 const limitPriceValueAtom = atom(-1);
 const triggerPriceValueAtom = atom(0);
 
