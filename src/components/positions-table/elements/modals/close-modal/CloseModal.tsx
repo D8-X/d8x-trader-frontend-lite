@@ -93,7 +93,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
       side: selectedPosition.side === 'BUY' ? 'SELL' : 'BUY',
       type: OrderTypeE.Market.toUpperCase(),
       quantity: selectedPosition.positionNotionalBaseCCY,
-      executionTimestamp: Math.floor(Date.now() / 1000 - 10),
+      executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       reduceOnly: true,
       leverage: selectedPosition.leverage,
     };
