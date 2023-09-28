@@ -578,7 +578,9 @@
     },
     "info-modal": {
       "close": "Close"
-    }
+    },
+    "refresh": "Refresh",
+    "filter": "필터"
   },
   "error": {
     "wrong-network": "Wrong network"

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Box, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 
 import { type SelectorItemI } from 'components/table-selector/TableSelector';
+import { Filter } from 'components/table-selector/elements/filter/Filter';
 import { Refresher } from 'components/table-selector/elements/refresher/Refresher';
 
 import styles from './TableSelectorMobile.module.scss';
@@ -27,7 +28,10 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
           </MenuItem>
         ))}
       </Select>
-      <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
+      <div className={styles.buttonsBlock}>
+        <Filter />
+        <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
+      </div>
       <Box>{selectorItems[selectedIndex].item}</Box>
     </Box>
   );

@@ -578,7 +578,9 @@
     },
     "info-modal": {
       "close": "Cerrar"
-    }
+    },
+    "refresh": "Actualizar",
+    "filter": "Filtrar"
   },
   "error": {
     "wrong-network": "Red Incorrecta"

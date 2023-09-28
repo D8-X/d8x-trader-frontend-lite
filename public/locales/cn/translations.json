@@ -578,7 +578,9 @@
     },
     "info-modal": {
       "close": "关闭"
-    }
+    },
+    "refresh": "刷新",
+    "filter": "筛选"
   },
   "error": {
     "wrong-network": "错误网络"

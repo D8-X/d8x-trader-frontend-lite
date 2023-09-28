@@ -1,15 +1,13 @@
 import classnames from 'classnames';
-import { useSetAtom } from 'jotai';
 import { type ReactNode } from 'react';
 
 import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
 
-import { filterPopupIsOpenAtom } from 'components/table/filter-popup/FilterPopup';
 import { type TableTypeE } from 'types/enums';
 
-import { Refresher } from './elements/refresher/Refresher';
-
 import styles from './TableSelector.module.scss';
+import { Filter } from './elements/filter/Filter';
+import { Refresher } from './elements/refresher/Refresher';
 
 export interface SelectorItemI {
   label: string;
@@ -24,8 +22,6 @@ interface TableSelectorPropsI {
 }
 
 export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: TableSelectorPropsI) => {
-  const setModalOpen = useSetAtom(filterPopupIsOpenAtom);
-
   return (
     <Card className={styles.root}>
       <CardHeader
@@ -44,7 +40,7 @@ export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: Ta
                 </Button>
               ))}
             </Box>
-            <button onClick={() => setModalOpen(true)}>Filter</button>
+            <Filter />
             <Refresher activeTableType={selectorItems[activeIndex].tableType} />
           </Box>
         }

@@ -1,0 +1,19 @@
+@import '~styles/theme/_theme.scss';
+
+.dialog {
+
+  :global(.MuiPaper-root) {
+    max-width: initial;
+  }
+}
+
+.filterBlock {
+  display: flex;
+  gap: $d8x-spacing * 2;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.modalActions {
+  margin: auto;
+}

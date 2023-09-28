@@ -16,3 +16,8 @@
     padding: 4 * $d8x-spacing;
   }
 }
+
+.buttonsBlock {
+  display: flex;
+  gap: 2 * $d8x-spacing;
+}

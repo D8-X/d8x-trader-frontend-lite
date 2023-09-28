@@ -26,6 +26,7 @@
 .headerWrapper {
   display: flex;
   align-items: center;
+  gap: 2 * $d8x-spacing;
 }
 
 .tableSelectorsWrapper {

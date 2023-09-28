@@ -1,9 +1,13 @@
 import { atom, useAtom } from 'jotai';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
 
+import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
+import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { TableHeaderI } from 'types/types';
+
+import styles from './FilterPopup.module.scss';
 
 export interface FilterI<T> {
   field?: keyof T;
@@ -22,32 +26,43 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
   const [isModalOpen, setModalOpen] = useAtom(filterPopupIsOpenAtom);
   // const [inputValue, setInputValue] = useState(filter.value);
 
+  const [fieldAnchorEl, setFieldAnchorEl] = useState<null | HTMLElement>(null);
+
   return (
-    <Dialog open={isModalOpen} onClose={() => setModalOpen(false)}>
+    <Dialog open={isModalOpen} onClose={() => setModalOpen(false)} className={styles.dialog}>
       <DialogTitle>Filter</DialogTitle>
-      <DialogContent>
+      <DialogContent className={styles.filterBlock}>
         Field:
-        <select
-          onChange={(e) =>
-            setFilter((v) => ({
-              field: e.target.value as keyof T,
-              value: v.value,
-            }))
-          }
-          value={(filter.field as string) || (headers[0].field as string)}
+        <DropDownSelect
+          id="field-dropdown"
+          selectedValue={(filter.field as string) || (headers[0].field as string)}
+          anchorEl={fieldAnchorEl}
+          setAnchorEl={setFieldAnchorEl}
         >
           {headers.map((header) => (
-            <option key={header.label.toString()} value={header.field as string}>
-              {header.label}
-            </option>
+            <DropDownMenuItem
+              key={header.label.toString()}
+              option={header.label as string}
+              isActive={header.field === filter.field}
+              onClick={() => {
+                setFilter((v) => ({
+                  field: header.field,
+                  value: v.value,
+                }));
+                setFieldAnchorEl(null);
+              }}
+            />
           ))}
-        </select>
+        </DropDownSelect>
         Type:
         <select>
           <option>=</option>
+          <option>{'>'}</option>
+          <option>{'<'}</option>
         </select>
         Value:
-        <input
+        <OutlinedInput
+          id="filter"
           type="text"
           placeholder="value to filter"
           onChange={(e) => {
@@ -59,9 +74,11 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           }}
           value={filter.value || ''}
         />
-        <button onClick={() => setFilter({})}>Clear Filter</button>
+        <Button onClick={() => setFilter({})} variant="outlined">
+          Clear Filter
+        </Button>
       </DialogContent>
-      <DialogActions>
+      <DialogActions className={styles.modalActions}>
         <Button onClick={() => setModalOpen(false)} variant="secondary" size="small">
           Close
         </Button>

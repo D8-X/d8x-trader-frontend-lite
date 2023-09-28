@@ -578,7 +578,9 @@
     },
     "info-modal": {
       "close": "Close"
-    }
+    },
+    "refresh": "Refresh",
+    "filter": "Filter"
   },
   "error": {
     "wrong-network": "Wrong network"
