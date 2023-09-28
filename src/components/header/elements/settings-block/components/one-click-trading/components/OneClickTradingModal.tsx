@@ -98,10 +98,13 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
       const strgKey = await getStorageKey(walletClient);
       setStorageKey(strgKey);
       const delegateKey = getDelegateKey(walletClient, strgKey);
+      let generatedAddress;
       if (!delegateKey) {
-        await generateDelegate(walletClient, strgKey);
+        generatedAddress = await generateDelegate(walletClient, strgKey);
+      } else {
+        generatedAddress = privateKeyToAccount(delegateKey as Address).address;
       }
-      setDelegateAddress(privateKeyToAccount(delegateKey as Address).address);
+      setDelegateAddress(generatedAddress);
       setActivatedOneClickTrading(true);
       toast.success(
         <ToastContent
