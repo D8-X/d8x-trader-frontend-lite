@@ -21,7 +21,7 @@ export const SettingsButton = memo(() => {
     <>
       <Tooltip title={t('common.settings.title')}>
         <Button onClick={() => setModalOpen(true)} className={styles.iconButton} variant="primary">
-          <Settings />
+          <Settings className={styles.icon} />
         </Button>
       </Tooltip>
 

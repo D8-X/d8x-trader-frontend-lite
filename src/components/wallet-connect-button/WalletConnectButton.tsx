@@ -202,7 +202,9 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
                         )}
                       </Box>
                     )}
-                    {!isMobileScreen && cutAddressName(account.address)}
+                    {!isMobileScreen && (
+                      <span className={styles.cutAddressName}>{cutAddressName(account.address)}</span>
+                    )}
                     {isMobileScreen && <WalletIcon className={styles.icon} />}
                   </Button>
                 </div>
