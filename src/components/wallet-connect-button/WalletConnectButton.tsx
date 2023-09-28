@@ -158,7 +158,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
                     variant="primary"
                     className={classnames(styles.connectWalletButton, buttonClassName)}
                   >
-                    {t('common.wallet-connect')}
+                    {<span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>}
                   </Button>
                 );
               }
