@@ -3,6 +3,7 @@ import { atomWithStorage } from 'jotai/utils';
 
 import { DefaultCurrencyE, LanguageE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
+import { WalletClient } from 'viem';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
@@ -48,3 +49,5 @@ export const showWelcomeModalAtom = atom(
     localStorage.setItem(SHOW_MODAl_LS_KEY, show ? SHOW_MODAL : HIDE_MODAL);
   }
 );
+
+export const tradingClientAtom = atom<WalletClient | null>(null);

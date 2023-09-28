@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address } from 'viem';
+import { createWalletClient, type Address, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { useAccount, useBalance, usePublicClient, useWalletClient } from 'wagmi';
 
@@ -17,7 +17,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getDelegateKey } from 'helpers/getDelegateKey';
-import { activatedOneClickTradingAtom, delegateAddressAtom } from 'store/app.store';
+import { activatedOneClickTradingAtom, delegateAddressAtom, tradingClientAtom } from 'store/app.store';
 import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom } from 'store/pools.store';
 
@@ -39,7 +39,8 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [delegateAddress, setDelegateAddress] = useAtom(delegateAddressAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
-  const setStorageKey = useSetAtom(storageKeyAtom);
+  const [storageKey, setStorageKey] = useAtom(storageKeyAtom);
+  const setTradingClient = useSetAtom(tradingClientAtom);
 
   const [isLoading, setLoading] = useState(false);
   const [isActionLoading, setActionLoading] = useState(false);
@@ -69,9 +70,9 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     handleCreateRef.current = true;
     setActionLoading(true);
 
-    const storageKey = await getStorageKey(walletClient);
-    setStorageKey(storageKey);
-    const delegateAddr = await generateDelegate(walletClient, storageKey);
+    const strgKey = await getStorageKey(walletClient);
+    setStorageKey(strgKey);
+    const delegateAddr = await generateDelegate(walletClient, strgKey);
     await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
     setDelegated(true);
     setActivatedOneClickTrading(true);
@@ -94,11 +95,11 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     setActionLoading(true);
 
     try {
-      const storageKey = await getStorageKey(walletClient);
-      setStorageKey(storageKey);
-      const delegateKey = getDelegateKey(walletClient, storageKey);
+      const strgKey = await getStorageKey(walletClient);
+      setStorageKey(strgKey);
+      const delegateKey = getDelegateKey(walletClient, strgKey);
       if (!delegateKey) {
-        await generateDelegate(walletClient, storageKey);
+        await generateDelegate(walletClient, strgKey);
       }
       setDelegateAddress(privateKeyToAccount(delegateKey as Address).address);
       setActivatedOneClickTrading(true);
@@ -170,6 +171,25 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
         setActionLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (address && activatedOneClickTrading && storageKey && walletClient?.chain) {
+      const dlgt = getDelegateKey(walletClient, storageKey);
+      if (dlgt) {
+        setTradingClient(
+          createWalletClient({
+            account: privateKeyToAccount(dlgt as Address),
+            chain: walletClient.chain,
+            transport: http(),
+          })
+        );
+        return;
+      }
+    }
+    if (walletClient) {
+      setTradingClient(walletClient);
+    }
+  }, [address, walletClient, storageKey, activatedOneClickTrading, setTradingClient]);
 
   return (
     <>

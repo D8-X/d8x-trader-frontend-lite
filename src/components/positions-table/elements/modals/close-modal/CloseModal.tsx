@@ -20,6 +20,7 @@ import { OrderTypeE } from 'types/enums';
 import { type MarginAccountI, type OrderI } from 'types/types';
 
 import styles from '../Modal.module.scss';
+import { tradingClientAtom } from 'store/app.store';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
+  const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -81,7 +83,15 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
       return;
     }
 
-    if (!selectedPosition || !address || !selectedPool || !proxyAddr || !walletClient || !poolTokenDecimals) {
+    if (
+      !selectedPosition ||
+      !address ||
+      !selectedPool ||
+      !proxyAddr ||
+      !walletClient ||
+      !tradingClient ||
+      !poolTokenDecimals
+    ) {
       return;
     }
 
@@ -103,7 +113,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         if (data.data.digests.length > 0) {
           approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(walletClient, signatures, data.data)
+            postOrder(tradingClient, signatures, data.data)
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);

@@ -8,8 +8,7 @@ export function cancelOrder(
   data: CancelOrderResponseI,
   orderId: string
 ): Promise<{ hash: Address }> {
-  const account = walletClient.account?.address;
-  if (!account) {
+  if (!walletClient.account) {
     throw new Error('account not connected');
   }
   return walletClient
@@ -21,7 +20,7 @@ export function cancelOrder(
       args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
       value: BigInt(data.priceUpdate.updateFee),
-      account: account,
+      account: walletClient.account,
     })
     .then((tx) => ({ hash: tx }));
 }

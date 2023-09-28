@@ -39,6 +39,7 @@ import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
+import { tradingClientAtom } from 'store/app.store';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
@@ -57,6 +58,7 @@ export const OpenOrdersTable = memo(() => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
+  const [tradingClient] = useAtom(tradingClientAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
 
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
@@ -172,7 +174,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !walletClient) {
+    if (isDisconnected || !walletClient || !tradingClient) {
       return;
     }
 
@@ -180,7 +182,7 @@ export const OpenOrdersTable = memo(() => {
     getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
-          cancelOrder(walletClient, HashZero, data.data, selectedOrder.id)
+          cancelOrder(tradingClient, HashZero, data.data, selectedOrder.id)
             .then((tx) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
