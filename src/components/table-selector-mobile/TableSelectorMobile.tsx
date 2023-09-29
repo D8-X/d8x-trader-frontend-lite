@@ -22,7 +22,7 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
     <Box className={styles.root}>
       <Select value={`${selectedIndex}`} onChange={handleChange} className={styles.select}>
         {selectorItems.map(({ label }, index) => (
-          <MenuItem key={label} value={index}>
+          <MenuItem key={label} value={index} className={styles.dropdown}>
             {label}
           </MenuItem>
         ))}
