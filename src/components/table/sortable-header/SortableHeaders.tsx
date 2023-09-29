@@ -41,6 +41,7 @@ function SortableHeadersComponent<T>({ headers, orderBy, order, setOrder, setOrd
           active={orderBy === header.field}
           direction={orderBy === header.field ? order : 'asc'}
           onClick={createSortHandler(header.field)}
+          className={styles.sortIcon}
         >
           <Typography variant="bodySmall">{header.label}</Typography>
           {orderBy === header.field ? (
