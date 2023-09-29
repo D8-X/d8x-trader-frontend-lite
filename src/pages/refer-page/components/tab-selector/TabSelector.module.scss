@@ -20,12 +20,12 @@
   }
 
   &.active {
-    background-color: var(--d8x-color-purple-200);
-    color: var(--d8x-color-purple);
+    background-color: var(--d8x-color-purple);
+    color: var(--d8x-color-white);
   }
 
   &.inactive {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: var(--d8x-color-black-150);
     color: var(--d8x-color-black-300);
     cursor: pointer;
   }

@@ -399,7 +399,7 @@ export const theme = createTheme({
           },
         },
         notchedOutline: {
-          borderColor: 'var(--d8x-color-black-opac)',
+          borderColor: 'var(--d8x-input-border-color)',
         },
       },
     },
