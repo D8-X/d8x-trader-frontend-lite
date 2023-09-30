@@ -46,6 +46,7 @@ export const DropDownSelect = ({
         </div>
       </Button>
       <Menu
+        className={styles.menuHolder}
         anchorEl={anchorEl}
         id={id}
         open={isOpen}

@@ -1,9 +1,9 @@
 @import '~styles/theme/_theme.scss';
 
-.selected {
-  background-color: var(--d8x-background-purple);
-}
-
 .menuItem {
   color: var(--d8x-color-black-maintext);
+
+  &.selected {
+    background-color: var(--d8x-background-purple);
+  }
 }

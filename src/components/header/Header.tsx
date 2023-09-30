@@ -252,6 +252,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               '& .MuiDrawer-paper': {
                 boxSizing: 'border-box',
                 width: isMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,
+                backgroundColor: 'var(--d8x-background)',
               },
             }}
           >
