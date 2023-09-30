@@ -20,7 +20,7 @@ import {
   webSocketReadyAtom,
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
-import { debounce_leading } from 'utils/debounce_leading';
+import { debounceLeading } from 'utils/debounceLeading';
 
 import {
   CommonWsMessageI,
@@ -75,7 +75,7 @@ function isExecutionFailedMessage(message: CommonWsMessageI): message is OnExecu
 }
 
 let allPerpetualStatisticsUpdates: Record<string, PerpetualStatisticsI> = {};
-const debouncePerpetualStatistics = debounce_leading((callback: () => void) => {
+const debouncePerpetualStatistics = debounceLeading((callback: () => void) => {
   callback();
 }, 5000);
 
