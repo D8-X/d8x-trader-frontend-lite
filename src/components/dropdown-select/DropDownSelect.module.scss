@@ -18,6 +18,7 @@
 .menuHolder {
 
   :global(.MuiPaper-root) {
+    color: var(--d8x-color-black-maintext);
     background-color: var(--d8x-background);
   }
 }

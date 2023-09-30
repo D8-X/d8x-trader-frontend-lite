@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-import { Box, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { Box, MenuItem } from '@mui/material';
 
+import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { type SelectorItemI } from 'components/table-selector/TableSelector';
 import { Refresher } from 'components/table-selector/elements/refresher/Refresher';
 
@@ -14,19 +15,33 @@ interface TableSelectorMobilePropsI {
 export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setSelectedIndex(+event.target.value);
-  };
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <Box className={styles.root}>
-      <Select value={`${selectedIndex}`} onChange={handleChange} className={styles.select}>
+      <DropDownSelect
+        id="table-selector-dropdown"
+        selectedValue={selectorItems[selectedIndex]?.label}
+        anchorEl={anchorEl}
+        setAnchorEl={setAnchorEl}
+        className={styles.dropdownSelect}
+        fullWidth
+      >
         {selectorItems.map(({ label }, index) => (
-          <MenuItem key={label} value={index} className={styles.dropdown}>
+          <MenuItem
+            key={label}
+            value={index}
+            className={styles.dropdown}
+            onClick={() => {
+              setSelectedIndex(index);
+              setAnchorEl(null);
+            }}
+          >
             {label}
           </MenuItem>
         ))}
-      </Select>
+      </DropDownSelect>
+
       <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
       <Box>{selectorItems[selectedIndex].item}</Box>
     </Box>
