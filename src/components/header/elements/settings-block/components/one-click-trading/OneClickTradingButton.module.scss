@@ -1,8 +1,10 @@
 @import '~styles/theme/_theme.scss';
 
-:global(.MuiDialog-paper) {
-  border-radius: $d8x-border-radius;
-  color: var(--d8x-color-black-maintext);
+.dialog {
+
+  :global(.MuiPaper-root) {
+    border-radius: $d8x-border-radius;
+  }
 }
 
 .dialogContent {

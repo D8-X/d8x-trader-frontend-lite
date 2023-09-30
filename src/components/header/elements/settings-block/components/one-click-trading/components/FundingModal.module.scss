@@ -5,6 +5,13 @@
   justify-content: center;
 }
 
+.dialog {
+
+  :global(.MuiPaper-root) {
+    border-radius: $d8x-border-radius;
+  }
+}
+
 .dialogContent {
   display: flex;
   flex-direction: column;

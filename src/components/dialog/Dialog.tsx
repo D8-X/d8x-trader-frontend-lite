@@ -1,3 +1,5 @@
+import classnames from 'classnames';
+
 import type { DialogProps } from '@mui/material';
 import { Box, CircularProgress, Dialog as MuiDialog } from '@mui/material';
 
@@ -11,9 +13,9 @@ interface DialogPropsI extends DialogProps {
   onCloseClick?: () => void;
 }
 
-export const Dialog = ({ open, loading, errorMsg, children, onCloseClick, ...rest }: DialogPropsI) => {
+export const Dialog = ({ open, loading, errorMsg, className, children, onCloseClick, ...rest }: DialogPropsI) => {
   return (
-    <MuiDialog open={open} className={styles.dialog} {...rest}>
+    <MuiDialog open={open} className={classnames(styles.dialog, className)} {...rest}>
       {loading && (
         <Box className={styles.loaderWrapper}>
           <CircularProgress />

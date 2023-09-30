@@ -39,7 +39,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   });
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={isOpen} onClose={onClose} className={styles.dialog}>
       <div className={styles.dialogContent}>
         <Box className={styles.dialogContent}>
           <Typography variant="h4" className={styles.title}>
