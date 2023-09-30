@@ -61,8 +61,10 @@ export const PositionRow = memo(
         // If no open SL orders (TP orders) exist, the TP/SL column displays "---" for the SL price (TP price)
         return ordersData;
       }
-
+      console.log('position.openOrders', position.openOrders);
       const takeProfitOrders = position.openOrders.filter((openOrder) => openOrder.type === OpenOrderTypeE.Limit);
+      console.log('takeProfitOrders', takeProfitOrders);
+
       if (takeProfitOrders.length > 0) {
         ordersData.takeProfit.className = styles.tpValue;
         if (takeProfitOrders.length > 1) {
@@ -85,16 +87,17 @@ export const PositionRow = memo(
         (openOrder) =>
           openOrder.type === OpenOrderTypeE.StopLimit &&
           ((openOrder.side === OrderSideE.Sell &&
-            openOrder.limitPrice &&
+            openOrder.limitPrice !== undefined &&
             openOrder.limitPrice === 0 &&
             openOrder.stopPrice &&
             openOrder.stopPrice <= position.entryPrice) ||
             (openOrder.side === OrderSideE.Buy &&
-              openOrder.limitPrice &&
+              openOrder.limitPrice !== undefined &&
               openOrder.limitPrice === Number.POSITIVE_INFINITY &&
               openOrder.stopPrice &&
               openOrder.stopPrice >= position.entryPrice))
       );
+      console.log('stopLossOrders', stopLossOrders);
       if (stopLossOrders.length > 0) {
         ordersData.stopLoss.className = styles.slValue;
         if (stopLossOrders.length > 1) {

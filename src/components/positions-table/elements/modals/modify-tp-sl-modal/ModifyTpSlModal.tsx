@@ -179,12 +179,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         // stopLoss openOrders
         (openOrder.type === OpenOrderTypeE.StopLimit &&
           ((openOrder.side === OrderSideE.Sell &&
-            openOrder.limitPrice &&
+            openOrder.limitPrice !== undefined &&
             openOrder.limitPrice === 0 &&
             openOrder.stopPrice &&
             openOrder.stopPrice <= selectedPosition.entryPrice) ||
             (openOrder.side === OrderSideE.Buy &&
-              openOrder.limitPrice &&
+              openOrder.limitPrice !== undefined &&
               openOrder.limitPrice === Number.POSITIVE_INFINITY &&
               openOrder.stopPrice &&
               openOrder.stopPrice >= selectedPosition.entryPrice)))
