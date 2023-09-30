@@ -29,6 +29,7 @@ import { SortableHeaders } from 'components/table/sortable-header/SortableHeader
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
+import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
@@ -60,6 +61,7 @@ export const OpenOrdersTable = memo(() => {
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithIdI | null>(null);
@@ -161,6 +163,7 @@ export const OpenOrdersTable = memo(() => {
     onSettled() {
       setTxHash(undefined);
       refreshOpenOrders().then();
+      setLatestOrderSentTimestamp(Date.now());
     },
     enabled: !!address && !!txHash,
   });
