@@ -11,6 +11,13 @@ export enum DefaultCurrencyE {
   Quote = 'quote',
 }
 
+export enum OrderValueTypeE {
+  Multiple = 'multiple',
+  Partial = 'partial',
+  Full = 'full',
+  None = 'none',
+}
+
 export enum OrderBlockPositionE {
   Left = 'left',
   Right = 'right',

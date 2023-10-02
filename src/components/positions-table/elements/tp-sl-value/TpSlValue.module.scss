@@ -1,0 +1,24 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  display: flex;
+  justify-items: flex-end;
+  align-items: center;
+  text-align: right;
+}
+
+.tpValue {
+  color: var(--d8x-color-buy) !important;
+}
+
+.slValue {
+  color: var(--d8x-color-sell) !important;
+}
+
+.iconButton {
+  margin-right: -12px;
+}
+
+.actionIcon {
+  color: var(--d8x-color-purple);
+}

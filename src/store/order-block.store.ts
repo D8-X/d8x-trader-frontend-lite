@@ -40,7 +40,6 @@ export const orderTypeAtom = atom(
       if (perpetualStatistics?.midPrice) {
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * step) / step;
-        console.log('initialLimit', initialLimit, 'step', step);
       } else {
         initialLimit = -1;
       }

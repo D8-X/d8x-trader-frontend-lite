@@ -16,23 +16,23 @@ import { CustomPriceSelector } from 'components/custom-price-selector/CustomPric
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { OrderSideE, TakeProfitE } from 'types/enums';
-import { MarginAccountWithLiqPriceI } from 'types/types';
+import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
+import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { getFractionDigits } from 'utils/formatToCurrency';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 
 import styles from './CommonSelector.module.scss';
 
 interface TakeProfitSelectorPropsI {
-  setTakeProfitPrice: Dispatch<SetStateAction<number | null>>;
-  position: MarginAccountWithLiqPriceI;
+  setTakeProfitPrice: Dispatch<SetStateAction<number | null | undefined>>;
+  position: MarginAccountWithAdditionalDataI;
 }
 
 export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakeProfitSelectorPropsI) => {
   const { t } = useTranslation();
 
   const [takeProfit, setTakeProfit] = useState<TakeProfitE | null>(null);
-  const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null>(null);
+  const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null | undefined>(undefined);
 
   const parsedSymbol = parseSymbol(position.symbol);
 
@@ -40,10 +40,10 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     const takeProfitPriceValue = event.target.value;
     if (takeProfitPriceValue !== '') {
       setTakeProfitInputPrice(+takeProfitPriceValue);
-      setTakeProfit(null);
     } else {
-      setTakeProfitInputPrice(null);
+      setTakeProfitInputPrice(undefined);
     }
+    setTakeProfit(null);
   };
 
   const handleTakeProfitChange = (takeProfitValue: TakeProfitE) => {
@@ -71,9 +71,8 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
   const validateTakeProfitPrice = useCallback(() => {
-    if (takeProfitInputPrice === null) {
-      setTakeProfitPrice(null);
-      setTakeProfit(TakeProfitE.None);
+    if (takeProfitInputPrice == null) {
+      setTakeProfitPrice(takeProfitInputPrice);
       return;
     }
 
@@ -91,7 +90,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     }
 
     setTakeProfitPrice(takeProfitInputPrice);
-  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfit, setTakeProfitPrice, fractionDigits]);
+  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfitPrice, fractionDigits]);
 
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None) {
@@ -108,6 +107,12 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
   useEffect(() => {
     setTakeProfitPrice(takeProfitInputPrice);
   }, [takeProfitInputPrice, setTakeProfitPrice]);
+
+  useEffect(() => {
+    if (position.takeProfit.valueType === OrderValueTypeE.Full && position.takeProfit.fullValue) {
+      setTakeProfitInputPrice(position.takeProfit.fullValue);
+    }
+  }, [position]);
 
   const translationMap: Record<TakeProfitE, string> = {
     [TakeProfitE.None]: t('pages.trade.order-block.take-profit.none'),

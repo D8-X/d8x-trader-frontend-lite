@@ -7,6 +7,7 @@ import {
   type LanguageE,
   type OrderBlockE,
   type OrderTypeE,
+  OrderValueTypeE,
   type StopLossE,
   type TakeProfitE,
 } from './enums';
@@ -121,9 +122,18 @@ export interface MarginAccountI {
   collToQuoteConversion: number;
 }
 
-export interface MarginAccountWithLiqPriceI extends MarginAccountI {
+export interface MarginAccountWithAdditionalDataI extends MarginAccountI {
   liqPrice: number;
-  openOrders: OrderWithIdI[];
+  takeProfit: {
+    orders: OrderWithIdI[];
+    fullValue: number | undefined;
+    valueType: OrderValueTypeE;
+  };
+  stopLoss: {
+    orders: OrderWithIdI[];
+    fullValue: number | undefined;
+    valueType: OrderValueTypeE;
+  };
 }
 
 export interface PerpetualOpenOrdersI {

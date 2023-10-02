@@ -13,13 +13,4 @@
 .tpSlCell {
   display: flex;
   justify-items: flex-end;
-  align-items: center;
-
-  .tpValue {
-    color: var(--d8x-color-buy) !important;
-  }
-
-  .slValue {
-    color: var(--d8x-color-sell) !important;
-  }
 }
