@@ -6,6 +6,7 @@ import {
   rabbyWallet,
   rainbowWallet,
   walletConnectWallet,
+  phantomWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { configureChains, createConfig } from 'wagmi';
 import { polygonZkEvmTestnet } from 'wagmi/chains';
@@ -63,6 +64,7 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Others',
     wallets: [
+      phantomWallet({ chains }),
       coinbaseWallet({ appName: 'D8X App', chains }),
       okxWallet({ projectId, chains }),
       rainbowWallet({ projectId, chains }),
