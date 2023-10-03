@@ -6,11 +6,11 @@ import IconButton from '@mui/material/IconButton';
 import { ModeEditOutlineOutlined } from '@mui/icons-material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
+import { OrderValueTypeE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TpSlValue.module.scss';
-import { OrderValueTypeE } from '../../../../types/enums';
 
 interface TpSlValuePropsI {
   position: MarginAccountWithAdditionalDataI;
