@@ -34,6 +34,7 @@ import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TraderPage.module.scss';
+import { CandlesWebSocketListener } from './components/candles-webSocket-listener/CandlesWebSocketListener';
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
 export const TraderPage = () => {
@@ -276,8 +277,10 @@ export const TraderPage = () => {
             )}
           </Container>
         )}
-        <TableDataFetcher />
       </Box>
+
+      <TableDataFetcher />
+      <CandlesWebSocketListener />
     </>
   );
 };

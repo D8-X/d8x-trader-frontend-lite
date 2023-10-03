@@ -23,7 +23,6 @@ import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
-import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
 import { usePoolSubscribe } from './usePoolSubscribe';
 import { useSetPerpetualInfo } from './useSetPerpetualInfo';
 
@@ -107,7 +106,6 @@ export const MarketSelect = memo(() => {
   }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
 
   usePoolSubscribe();
-  useCandleMarketsSubscribe();
   useSetPerpetualInfo();
 
   const handleChange = (newItem: PerpetualWithPoolAndMarketI) => {

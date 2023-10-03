@@ -1,13 +1,15 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 
-import { useCandlesWebSocketContext } from 'context/websocket-context/candles/useCandlesWebSocketContext';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { candlesDataReadyAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
 
-export const useCandleMarketsSubscribe = () => {
-  const { isConnected: isConnectedCandlesWs, send: sendToCandlesWs } = useCandlesWebSocketContext();
+interface UseCandleMarketsSubscribePropsI {
+  isConnected: boolean;
+  send: (message: string) => void;
+}
 
+export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarketsSubscribePropsI) => {
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const setNewCandle = useSetAtom(newCandleAtom);
@@ -17,20 +19,20 @@ export const useCandleMarketsSubscribe = () => {
   const topicRef = useRef('');
 
   useEffect(() => {
-    if (selectedPerpetual && isConnectedCandlesWs) {
-      if (isConnectedCandlesWs !== wsConnectedStateRef.current) {
-        sendToCandlesWs(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
+    if (selectedPerpetual && isConnected) {
+      if (wsConnectedStateRef.current === false) {
+        send(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
       }
 
-      wsConnectedStateRef.current = isConnectedCandlesWs;
+      wsConnectedStateRef.current = true;
 
       const topicInfo = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}:${selectedPeriod}`;
       if (topicInfo !== topicRef.current) {
         if (topicRef.current) {
-          sendToCandlesWs(JSON.stringify({ type: 'unsubscribe', topic: topicRef.current }));
+          send(JSON.stringify({ type: 'unsubscribe', topic: topicRef.current }));
         }
         topicRef.current = topicInfo;
-        sendToCandlesWs(
+        send(
           JSON.stringify({
             type: 'subscribe',
             topic: topicRef.current,
@@ -39,9 +41,9 @@ export const useCandleMarketsSubscribe = () => {
         setNewCandle(null);
         setCandlesDataReady(false);
       }
-    } else if (!isConnectedCandlesWs) {
+    } else if (!isConnected) {
       wsConnectedStateRef.current = false;
       topicRef.current = '';
     }
-  }, [selectedPerpetual, selectedPeriod, setNewCandle, setCandlesDataReady, isConnectedCandlesWs, sendToCandlesWs]);
+  }, [selectedPerpetual, selectedPeriod, setNewCandle, setCandlesDataReady, isConnected, send]);
 };

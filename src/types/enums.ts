@@ -113,3 +113,9 @@ export enum ReferralDialogActionE {
   CREATE,
   MODIFY,
 }
+
+export enum AssetTypeE {
+  Crypto = 'crypto',
+  Fx = 'fx',
+  Metal = 'metal',
+}

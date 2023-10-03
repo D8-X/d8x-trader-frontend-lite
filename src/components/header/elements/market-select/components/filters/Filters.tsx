@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AssetTypeE } from 'context/websocket-context/candles/types';
+import { AssetTypeE } from 'types/enums';
 
 import { assetTypeFilterAtom } from '../../collaterals.store';
 

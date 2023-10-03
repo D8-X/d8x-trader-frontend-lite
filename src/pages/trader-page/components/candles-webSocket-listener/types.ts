@@ -1,3 +1,5 @@
+import { AssetTypeE } from 'types/enums';
+
 export enum MessageTypeE {
   Connect = 'connect',
   Error = 'error',
@@ -7,12 +9,6 @@ export enum MessageTypeE {
 
 export enum MessageTopicE {
   Markets = 'markets',
-}
-
-export enum AssetTypeE {
-  Crypto = 'crypto',
-  Fx = 'fx',
-  Metal = 'metal',
 }
 
 export interface CommonWsMessageI {
