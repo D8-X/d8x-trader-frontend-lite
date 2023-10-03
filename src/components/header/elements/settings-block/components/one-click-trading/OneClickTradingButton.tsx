@@ -9,6 +9,7 @@ import { OneClickTradingModal } from './components/OneClickTradingModal';
 
 export const OneClickTradingButton = () => {
   const { t } = useTranslation();
+
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (

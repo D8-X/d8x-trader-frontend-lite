@@ -131,10 +131,10 @@ export const TradeHistoryTable = memo(() => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer>
+        <TableContainer className={styles.tableHolder}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow className={styles.tableHolder}>
+              <TableRow>
                 <SortableHeaders<TradeHistoryWithSymbolDataI>
                   headers={tradeHistoryHeaders}
                   order={order}

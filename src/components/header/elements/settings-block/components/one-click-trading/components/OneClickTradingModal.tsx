@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { createWalletClient, type Address, http } from 'viem';
+import { type Address, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { useAccount, useBalance, usePublicClient, useWalletClient } from 'wagmi';
 

@@ -52,12 +52,13 @@
   justify-content: center;
 }
 
-@media screen and ($d8x-breakpoint-min-md) and ($d8x-breakpoint-max-lg) {
+@media screen and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
 
   .tableHolder {
 
     :global(.MuiTableCell-root) {
       padding: 4px;
+      height: 48px;
     }
   }
 }

@@ -21,7 +21,7 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
     tradeHistory.realizedPnl > 0 ? 'rgba(var(--d8x-background-buy-rgb), 1)' : 'rgba(var(--d8x-background-sell-rgb), 1)';
 
   return (
-    <TableRow>
+    <TableRow key={tradeHistory.transactionHash}>
       <TableCell align={headers[0].align}>
         <Typography variant="cellSmall">{time}</Typography>
       </TableCell>
