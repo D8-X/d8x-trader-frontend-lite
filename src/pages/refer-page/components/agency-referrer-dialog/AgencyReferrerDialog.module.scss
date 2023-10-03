@@ -1,9 +1,5 @@
 @import '~styles/theme/_theme.scss';
 
-:global(.MuiDialog-paper) {
-  border-radius: $d8x-border-radius;
-}
-
 .dialogRoot {
   width: 100%;
   padding: 10 * $d8x-spacing 0 8 * $d8x-spacing 0;

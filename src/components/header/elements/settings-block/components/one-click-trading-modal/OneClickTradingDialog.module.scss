@@ -1,9 +1,5 @@
 @import '~styles/theme/_theme.scss';
 
-:global(.MuiDialog-paper) {
-  border-radius: $d8x-border-radius;
-}
-
 .dialogContent {
   display: flex;
   flex-direction: column;

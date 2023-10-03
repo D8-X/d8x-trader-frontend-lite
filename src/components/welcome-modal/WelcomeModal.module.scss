@@ -3,11 +3,8 @@
 .dialog {
 
   :global(.MuiPaper-root) {
-    background-color: var(--d8x-background);
-    color: var(--d8x-color-black-maintext);
     width: 100%;
     max-width: 650px;
-    border-radius: $d8x-border-radius;
   }
 }
 
