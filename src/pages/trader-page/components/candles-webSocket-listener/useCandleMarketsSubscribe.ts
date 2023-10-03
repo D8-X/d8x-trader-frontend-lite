@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { candlesDataReadyAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
+import { subscribingCheckAtom } from './subscribingCheckAtom';
 
 interface UseCandleMarketsSubscribePropsI {
   isConnected: boolean;
@@ -14,6 +15,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const setNewCandle = useSetAtom(newCandleAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
+  const subscribingCheck = useSetAtom(subscribingCheckAtom);
 
   const wsConnectedStateRef = useRef(false);
   const topicRef = useRef('');
@@ -38,6 +40,14 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
             topic: topicRef.current,
           })
         );
+        subscribingCheck(() => {
+          send(
+            JSON.stringify({
+              type: 'subscribe',
+              topic: topicInfo,
+            })
+          );
+        });
         setNewCandle(null);
         setCandlesDataReady(false);
       }
@@ -45,5 +55,5 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
       wsConnectedStateRef.current = false;
       topicRef.current = '';
     }
-  }, [selectedPerpetual, selectedPeriod, setNewCandle, setCandlesDataReady, isConnected, send]);
+  }, [selectedPerpetual, selectedPeriod, setNewCandle, setCandlesDataReady, isConnected, send, subscribingCheck]);
 };
