@@ -45,6 +45,7 @@ export const CollateralFilter = memo(() => {
       </Button>
 
       <Menu
+        className={styles.menuHolder}
         anchorEl={anchorEl}
         id="dropdown-collaterals"
         open={open}
