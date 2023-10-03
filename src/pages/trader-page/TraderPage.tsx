@@ -34,6 +34,8 @@ import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TraderPage.module.scss';
+import { PerpetualInfoFetcher } from './components/PerpetualInfoFetcher';
+import { PoolSubscription } from './components/PoolSubscription';
 import { CandlesWebSocketListener } from './components/candles-webSocket-listener/CandlesWebSocketListener';
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
@@ -280,6 +282,8 @@ export const TraderPage = () => {
       </Box>
 
       <TableDataFetcher />
+      <PerpetualInfoFetcher />
+      <PoolSubscription />
       <CandlesWebSocketListener />
     </>
   );

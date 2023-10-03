@@ -23,8 +23,6 @@ import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
-import { usePoolSubscribe } from './usePoolSubscribe';
-import { useSetPerpetualInfo } from './useSetPerpetualInfo';
 
 const OptionsHeader = () => {
   const { t } = useTranslation();
@@ -104,9 +102,6 @@ export const MarketSelect = memo(() => {
       });
     }
   }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
-
-  usePoolSubscribe();
-  useSetPerpetualInfo();
 
   const handleChange = (newItem: PerpetualWithPoolAndMarketI) => {
     setSelectedPool(newItem.poolSymbol);

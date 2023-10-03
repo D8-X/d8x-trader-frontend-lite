@@ -6,7 +6,7 @@ import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketC
 import { createSymbol } from 'helpers/createSymbol';
 import { poolsAtom } from 'store/pools.store';
 
-export const usePoolSubscribe = () => {
+export const PoolSubscription = () => {
   const { address } = useAccount();
 
   const { isConnected, send } = useWebSocketContext();
@@ -34,4 +34,6 @@ export const usePoolSubscribe = () => {
       });
     }
   }, [pools, isConnected, send, address]);
+
+  return null;
 };

@@ -6,7 +6,7 @@ import { createSymbol } from 'helpers/createSymbol';
 import { getPerpetualStaticInfo } from 'network/network';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 
-export const useSetPerpetualInfo = () => {
+export const PerpetualInfoFetcher = () => {
   const { chain } = useNetwork();
   const chainId = useChainId();
 
@@ -35,4 +35,6 @@ export const useSetPerpetualInfo = () => {
         .catch(console.error);
     }
   }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI]);
+
+  return null;
 };
