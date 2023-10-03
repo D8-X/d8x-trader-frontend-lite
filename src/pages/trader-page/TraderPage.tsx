@@ -232,7 +232,7 @@ export const TraderPage = () => {
             <PerpetualStats />
           </Box>
           <Box className={styles.rightBlock}>
-            <MarketSelect withNavigate={true} updatePerpetual={true} />
+            <MarketSelect />
           </Box>
         </Container>
         {!isSmallScreen && (

@@ -1,40 +1,31 @@
-import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useChainId, useNetwork } from 'wagmi';
 
 import { AccountBalanceOutlined, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Button, DialogActions, DialogContent, MenuItem, Typography } from '@mui/material';
+import { Button, DialogActions, DialogContent, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
-import { useCandlesWebSocketContext } from 'context/websocket-context/candles/useCandlesWebSocketContext';
-import { useWebSocketContext } from 'context/websocket-context/d8x/useWebSocketContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { getPerpetualStaticInfo } from 'network/network';
 import { clearInputsDataAtom } from 'store/order-block.store';
-import {
-  perpetualStaticInfoAtom,
-  perpetualStatisticsAtom,
-  poolsAtom,
-  selectedPerpetualAtom,
-  selectedPoolAtom,
-  traderAPIAtom,
-} from 'store/pools.store';
-import { candlesDataReadyAtom, marketsDataAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
-import { getDynamicLogo } from 'utils/tokens';
+import { perpetualStatisticsAtom, poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
+import { marketsDataAtom } from 'store/tv-chart.store';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
 import { Filters } from './components/filters/Filters';
+import { MarketOption } from './components/market-option/MarketOption';
 import { SearchInput } from './components/search-input/SearchInput';
 import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
+import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
+import { usePoolSubscribe } from './usePoolSubscribe';
+import { useSetPerpetualInfo } from './useSetPerpetualInfo';
 
 const OptionsHeader = () => {
   const { t } = useTranslation();
@@ -54,105 +45,22 @@ const OptionsHeader = () => {
   );
 };
 
-const Option = memo(
-  ({
-    option,
-    isSelected,
-    onClick,
-  }: {
-    isSelected: boolean;
-    option: SelectItemI<PerpetualWithPoolAndMarketI>;
-    onClick: () => void;
-  }) => {
-    const IconComponent = useMemo(
-      () => getDynamicLogo(option.item.baseCurrency.toLowerCase()),
-      [option.item.baseCurrency]
-    );
-    const { t } = useTranslation();
-
-    return (
-      <MenuItem
-        value={option.value}
-        selected={isSelected}
-        className={classnames({ [styles.selectedOption]: isSelected })}
-        onClick={onClick}
-      >
-        <div className={styles.optionHolder}>
-          <div className={styles.optionLeftBlock}>
-            <div className={styles.iconHolder}>
-              <Suspense fallback={null}>
-                <IconComponent width={24} height={24} />
-              </Suspense>
-            </div>
-            <Typography variant="bodySmall" className={styles.label}>
-              {option.item.baseCurrency}/{option.item.quoteCurrency}
-              <Typography variant="bodyTiny" component="div">
-                {option.item.poolSymbol}
-              </Typography>
-            </Typography>
-          </div>
-          <div className={styles.optionRightBlock}>
-            {option.item.marketData && option.item.marketData.isOpen ? (
-              <>
-                <Typography variant="bodySmall" className={styles.value}>
-                  {option.item.marketData.currentPx.toFixed(2)}
-                </Typography>
-                <Typography
-                  variant="bodyTiny"
-                  className={classnames(styles.priceChange, {
-                    [styles.buyPrice]: option.item.marketData.ret24hPerc > 0,
-                    [styles.sellPrice]: option.item.marketData.ret24hPerc < 0,
-                  })}
-                >
-                  {option.item.marketData.ret24hPerc.toFixed(2)}%
-                </Typography>
-              </>
-            ) : (
-              <Typography variant="bodySmall" className={styles.status}>
-                {t('common.select.market.closed')}
-              </Typography>
-            )}
-          </div>
-        </div>
-      </MenuItem>
-    );
-  }
-);
-
-interface MarketSelectPropsI {
-  withNavigate?: boolean;
-  updatePerpetual?: boolean;
-}
-
-export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelectPropsI) => {
+export const MarketSelect = memo(() => {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
-  const { chain } = useNetwork();
-  const chainId = useChainId();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { isConnected, send } = useWebSocketContext();
-  const { isConnected: isConnectedCandlesWs, send: sendToCandlesWs } = useCandlesWebSocketContext();
-
   const [pools] = useAtom(poolsAtom);
-  const [selectedPeriod] = useAtom(selectedPeriodAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  const setNewCandle = useSetAtom(newCandleAtom);
   const [marketsData] = useAtom(marketsDataAtom);
-  const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
-  const setPerpetualStaticInfo = useSetAtom(perpetualStaticInfoAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
 
   const [isModalOpen, setModalOpen] = useState(false);
 
   const urlChangesAppliedRef = useRef(false);
-  const topicRef = useRef('');
-  const wsConnectedStateRef = useRef(false);
 
   useEffect(() => {
     if (!location.hash || urlChangesAppliedRef.current || !pools.length) {
@@ -198,95 +106,17 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
     }
   }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
 
-  useEffect(() => {
-    if (pools.length && isConnected) {
-      send(JSON.stringify({ type: 'unsubscribe' }));
-
-      pools.forEach((pool) => {
-        pool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
-          const symbol = createSymbol({
-            baseCurrency,
-            quoteCurrency,
-            poolSymbol: pool.poolSymbol,
-          });
-          send(
-            JSON.stringify({
-              traderAddr: address ?? '',
-              symbol,
-            })
-          );
-        });
-      });
-    }
-  }, [pools, isConnected, send, address]);
-
-  useEffect(() => {
-    if (updatePerpetual && selectedPerpetual && isConnectedCandlesWs) {
-      if (isConnectedCandlesWs !== wsConnectedStateRef.current) {
-        sendToCandlesWs(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
-      }
-
-      wsConnectedStateRef.current = isConnectedCandlesWs;
-
-      const topicInfo = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}:${selectedPeriod}`;
-      if (topicInfo !== topicRef.current) {
-        if (topicRef.current) {
-          sendToCandlesWs(JSON.stringify({ type: 'unsubscribe', topic: topicRef.current }));
-        }
-        topicRef.current = topicInfo;
-        sendToCandlesWs(
-          JSON.stringify({
-            type: 'subscribe',
-            topic: topicRef.current,
-          })
-        );
-        setNewCandle(null);
-        setCandlesDataReady(false);
-      }
-    } else if (!isConnectedCandlesWs) {
-      wsConnectedStateRef.current = false;
-      topicRef.current = '';
-    }
-  }, [
-    updatePerpetual,
-    selectedPerpetual,
-    selectedPeriod,
-    setNewCandle,
-    setCandlesDataReady,
-    isConnectedCandlesWs,
-    sendToCandlesWs,
-  ]);
-
-  const symbol = useMemo(() => {
-    if (selectedPool && selectedPerpetual) {
-      return createSymbol({
-        baseCurrency: selectedPerpetual.baseCurrency,
-        quoteCurrency: selectedPerpetual.quoteCurrency,
-        poolSymbol: selectedPool.poolSymbol,
-      });
-    }
-    return '';
-  }, [selectedPool, selectedPerpetual]);
-
-  useEffect(() => {
-    if (updatePerpetual && symbol && chainId && chainId === chain?.id) {
-      getPerpetualStaticInfo(chainId, traderAPI, symbol)
-        .then(({ data }) => {
-          setPerpetualStaticInfo(data);
-        })
-        .catch(console.error);
-    }
-  }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI, updatePerpetual]);
+  usePoolSubscribe();
+  useCandleMarketsSubscribe();
+  useSetPerpetualInfo();
 
   const handleChange = (newItem: PerpetualWithPoolAndMarketI) => {
     setSelectedPool(newItem.poolSymbol);
     setSelectedPerpetual(newItem.id);
 
-    if (withNavigate) {
-      navigate(
-        `${location.pathname}${location.search}#${newItem.baseCurrency}-${newItem.quoteCurrency}-${newItem.poolSymbol}`
-      );
-    }
+    navigate(
+      `${location.pathname}${location.search}#${newItem.baseCurrency}-${newItem.quoteCurrency}-${newItem.poolSymbol}`
+    );
     clearInputsData();
     setModalOpen(false);
   };
@@ -348,7 +178,7 @@ export const MarketSelect = memo(({ withNavigate, updatePerpetual }: MarketSelec
         <DialogContent />
         <div className={styles.optionList}>
           {filteredMarkets.map((market) => (
-            <Option
+            <MarketOption
               key={market.value}
               option={market}
               isSelected={market.item.id === selectedPerpetual?.id}
