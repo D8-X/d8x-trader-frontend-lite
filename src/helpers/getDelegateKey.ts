@@ -3,7 +3,11 @@ import CryptoJS from 'crypto-js';
 import { WalletClient } from 'viem';
 
 export function getDelegateKey(walletClient: WalletClient, storageKey: string) {
-  const encoded = secureLocalStorage.getItem(`delegateKey-${walletClient.account}`);
+  const userAddress = walletClient.account?.address;
+  if (!userAddress) {
+    return undefined;
+  }
+  const encoded = secureLocalStorage.getItem(`delegateKey-${userAddress}`);
   if (encoded === null) {
     return undefined;
   } else {
@@ -11,7 +15,7 @@ export function getDelegateKey(walletClient: WalletClient, storageKey: string) {
     try {
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (err) {
-      throw new Error('Invalid storaget key');
+      return undefined;
     }
   }
 }

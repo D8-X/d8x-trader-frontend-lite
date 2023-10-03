@@ -33,7 +33,6 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const { t } = useTranslation();
 
   const publicClient = usePublicClient();
-  const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
@@ -50,6 +49,13 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
 
+  const { address } = useAccount({
+    onDisconnect: () => {
+      setActivatedOneClickTrading(false);
+      setStorageKey(null);
+    },
+  });
+
   useEffect(() => {
     if (!proxyAddr || !address) {
       return;
@@ -61,6 +67,13 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
       .then(setDelegated)
       .finally(() => setLoading(false));
   }, [publicClient, proxyAddr, address]);
+
+  useEffect(() => {
+    if (!isDelegated || (address && address !== walletClient?.account?.address)) {
+      setActivatedOneClickTrading(false);
+      setDelegateAddress('');
+    }
+  }, [setActivatedOneClickTrading, setDelegateAddress, isDelegated, address, walletClient]);
 
   const handleCreate = async () => {
     if (!walletClient || !proxyAddr || !address || handleActivateRef.current) {
@@ -87,7 +100,13 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   };
 
   const handleActivate = async () => {
-    if (!walletClient || !proxyAddr || handleActivateRef.current) {
+    if (
+      !walletClient ||
+      !address ||
+      walletClient.account.address !== address ||
+      !proxyAddr ||
+      handleActivateRef.current
+    ) {
       return;
     }
 
@@ -95,8 +114,11 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     setActionLoading(true);
 
     try {
-      const strgKey = await getStorageKey(walletClient);
-      setStorageKey(strgKey);
+      let strgKey = storageKey;
+      if (!strgKey) {
+        strgKey = await getStorageKey(walletClient);
+        setStorageKey(strgKey);
+      }
       const delegateKey = getDelegateKey(walletClient, strgKey);
       let generatedAddress;
       if (!delegateKey) {
