@@ -22,11 +22,7 @@ const enabledDarkModePrimitiveAtom = atomWithStorage<boolean>(
   window.matchMedia('(prefers-color-scheme: dark)').matches
 );
 export const enabledDarkModeAtom = atom(
-  (get) => {
-    const enabled = get(enabledDarkModePrimitiveAtom);
-    document.documentElement.dataset.theme = enabled ? 'dark' : 'light';
-    return enabled;
-  },
+  (get) => get(enabledDarkModePrimitiveAtom),
   (_get, set, value: boolean) => {
     set(enabledDarkModePrimitiveAtom, value);
   }

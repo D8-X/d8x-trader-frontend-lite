@@ -9,6 +9,7 @@ import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { StaticBackground } from 'components/static-background/StaticBackground';
+import { ThemeApplier } from 'components/theme-applier/ThemeApplier';
 import { GeoBlockingProvider } from 'context/geo-blocking-context/GeoBlockingContext';
 import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
 import { theme } from 'styles/theme/theme';
@@ -47,6 +48,7 @@ if (container) {
                   </RainbowKitProviderWrapper>
                 </WagmiConfig>
               </GeoBlockingProvider>
+              <ThemeApplier />
             </ThemeProvider>
           </StyledEngineProvider>
         </HelmetProvider>

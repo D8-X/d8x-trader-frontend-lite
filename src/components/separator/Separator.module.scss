@@ -1,16 +1,26 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  height: 0;
-  border-bottom: 1px solid var(--d8x-separator-border-color);
-  padding: 1 * $d8x-spacing;
+  padding: $d8x-spacing 0;
   background-color: var(--d8x-background-card-details);
+
+  .line {
+    height: 0;
+    border-bottom: 1px solid var(--d8x-separator-border-color);
+  }
+}
+
+:global(.MuiModal-root) {
+
+  .root {
+    background-color: var(--d8x-background);
+  }
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
-    padding: 0.5 * $d8x-spacing 0;
+    padding: $d8x-spacing * 0.5 0;
   }
 }
