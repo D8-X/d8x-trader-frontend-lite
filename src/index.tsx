@@ -7,17 +7,16 @@ import { WagmiConfig } from 'wagmi';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
-import 'polyfills';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { StaticBackground } from 'components/static-background/StaticBackground';
 import { GeoBlockingProvider } from 'context/geo-blocking-context/GeoBlockingContext';
-import { CandlesWebSocketContextProvider } from 'context/websocket-context/candles/CandlesWebSocketContextProvider';
 import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
 import { theme } from 'styles/theme/theme';
 
 import { App } from './App';
 import { RainbowKitProviderWrapper } from './RainbowKitProviderWrapper';
 import './i18n';
+import './polyfills';
 
 import '@rainbow-me/rainbowkit/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -40,12 +39,10 @@ if (container) {
                 <WagmiConfig config={wagmiConfig}>
                   <RainbowKitProviderWrapper>
                     <WebSocketContextProvider>
-                      <CandlesWebSocketContextProvider>
-                        <BrowserRouter>
-                          <StaticBackground />
-                          <App />
-                        </BrowserRouter>
-                      </CandlesWebSocketContextProvider>
+                      <BrowserRouter>
+                        <StaticBackground />
+                        <App />
+                      </BrowserRouter>
                     </WebSocketContextProvider>
                   </RainbowKitProviderWrapper>
                 </WagmiConfig>

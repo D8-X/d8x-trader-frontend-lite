@@ -15,7 +15,7 @@ interface CustomPriceSelectorPropsI<T extends string> {
   handleInputPriceChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   validateInputPrice: () => void;
   handlePriceChange: (key: T) => void;
-  selectedInputPrice: number | null;
+  selectedInputPrice: number | null | undefined;
   selectedPrice: T | null;
   currency?: string;
   stepSize: string;
@@ -49,7 +49,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
             </InputAdornment>
           }
           type="number"
-          value={selectedInputPrice || ''}
+          value={selectedInputPrice != null ? selectedInputPrice : ''}
           placeholder="-"
           onChange={handleInputPriceChange}
           onBlur={validateInputPrice}

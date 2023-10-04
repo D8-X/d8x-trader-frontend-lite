@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 
+import { MarketDataI } from 'pages/trader-page/components/candles-webSocket-listener/types';
 import { TvChartPeriodE } from 'types/enums';
 import { TvChartCandleI } from 'types/types';
-import { MarketDataI } from '../context/websocket-context/candles/types';
 
 export const candlesAtom = atom<TvChartCandleI[]>([]);
 export const newCandleAtom = atom<TvChartCandleI | null>(null);

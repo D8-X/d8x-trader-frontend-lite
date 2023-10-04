@@ -1,6 +1,5 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
@@ -20,8 +19,6 @@ import styles from './VaultPage.module.scss';
 export const VaultPage = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
-
-  const { t } = useTranslation();
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -57,11 +54,11 @@ export const VaultPage = () => {
       <Helmet title={`${selectedPool?.poolSymbol} Vault | D8X App`} />
       <Box className={styles.root}>
         <HeaderPortal>
-          <CollateralsSelect label={t('common.select.collateral.label2')} />
+          <CollateralsSelect />
         </HeaderPortal>
         {isSmallScreen && (
           <Box className={styles.mobileSelectBoxes}>
-            {<CollateralsSelect label={t('common.select.collateral.label2')} />}
+            <CollateralsSelect />
           </Box>
         )}
         <Container className={styles.container}>

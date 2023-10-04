@@ -20,7 +20,7 @@ import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
-import { MarginAccountWithLiqPriceI, OrderI, PoolWithIdI } from 'types/types';
+import { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { StopLossSelector } from './components/StopLossSelector';
@@ -30,11 +30,11 @@ import styles from '../Modal.module.scss';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
-  selectedPosition?: MarginAccountWithLiqPriceI | null;
+  selectedPosition?: MarginAccountWithAdditionalDataI | null;
   closeModal: () => void;
 }
 
-function createMainOrder(position: MarginAccountWithLiqPriceI) {
+function createMainOrder(position: MarginAccountWithAdditionalDataI) {
   const deadlineMultiplier = 200; // By default, is it set to 200 hours
 
   return {
@@ -73,8 +73,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
-  const [takeProfitPrice, setTakeProfitPrice] = useState<number | null>(null);
-  const [stopLossPrice, setStopLossPrice] = useState<number | null>(null);
+  const [takeProfitPrice, setTakeProfitPrice] = useState<number | null | undefined>(undefined);
+  const [stopLossPrice, setStopLossPrice] = useState<number | null | undefined>(undefined);
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [selectedPool, setSelectedPool] = useState<PoolWithIdI>();
@@ -172,25 +172,15 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     requestSentRef.current = true;
     setRequestSent(true);
 
-    const ordersToCancel = selectedPosition.openOrders.filter(
-      (openOrder) =>
-        // takeProfit openOrders
-        openOrder.type === OpenOrderTypeE.Limit ||
-        // stopLoss openOrders
-        (openOrder.type === OpenOrderTypeE.StopLimit &&
-          ((openOrder.side === OrderSideE.Sell &&
-            openOrder.limitPrice !== undefined &&
-            openOrder.limitPrice === 0 &&
-            openOrder.stopPrice &&
-            openOrder.stopPrice <= selectedPosition.entryPrice) ||
-            (openOrder.side === OrderSideE.Buy &&
-              openOrder.limitPrice !== undefined &&
-              openOrder.limitPrice === Number.POSITIVE_INFINITY &&
-              openOrder.stopPrice &&
-              openOrder.stopPrice >= selectedPosition.entryPrice)))
-    );
+    const ordersToCancel: OrderWithIdI[] = [];
+    if (takeProfitPrice !== selectedPosition.takeProfit.fullValue && selectedPosition.takeProfit.orders.length > 0) {
+      ordersToCancel.push(...selectedPosition.takeProfit.orders);
+    }
+    if (stopLossPrice !== selectedPosition.stopLoss.fullValue && selectedPosition.stopLoss.orders.length > 0) {
+      ordersToCancel.push(...selectedPosition.stopLoss.orders);
+    }
 
-    if (ordersToCancel.length > 0) {
+    if (ordersToCancel.length) {
       const cancelOrdersPromises: Promise<void>[] = [];
       for (const orderToCancel of ordersToCancel) {
         cancelOrdersPromises.push(
@@ -219,7 +209,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     }
 
     const parsedOrders: OrderI[] = [];
-    if (takeProfitPrice !== null) {
+    if (takeProfitPrice != null && takeProfitPrice !== selectedPosition.takeProfit.fullValue) {
       parsedOrders.push({
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
@@ -237,7 +227,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       });
     }
 
-    if (stopLossPrice !== null) {
+    if (stopLossPrice != null && stopLossPrice !== selectedPosition.stopLoss.fullValue) {
       parsedOrders.push({
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
@@ -309,7 +299,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     closeModal();
   };
 
-  const isDisabledConfirmButton = !selectedPool || requestSent || collateralDeposit === null;
+  const isDisabledCreateButton =
+    !selectedPool ||
+    requestSent ||
+    collateralDeposit === null ||
+    (takeProfitPrice === selectedPosition.takeProfit.fullValue &&
+      stopLossPrice === selectedPosition.stopLoss.fullValue);
 
   return (
     <Dialog open={isOpen} className={classnames(styles.root, styles.wide)}>
@@ -329,7 +324,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleModifyPositionConfirm} variant="primary" size="small" disabled={isDisabledConfirmButton}>
+        <Button onClick={handleModifyPositionConfirm} variant="primary" size="small" disabled={isDisabledCreateButton}>
           {t('pages.trade.positions-table.modify-modal.create')}
         </Button>
       </DialogActions>

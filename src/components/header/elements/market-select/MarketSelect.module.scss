@@ -98,7 +98,6 @@
   :global(.MuiPaper-root) {
     width: 100%;
     max-width: 350px;
-    border-radius: $d8x-border-radius;
   }
 }
 
@@ -122,63 +121,6 @@
     font-style: normal;
     font-weight: 600;
     line-height: 32px;
-  }
-}
-
-.optionHolder {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: $d8x-spacing;
-
-  .label {
-    font-weight: bold;
-  }
-
-  .value {
-    text-align: right;
-    font-weight: bold;
-  }
-
-  .status {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    font-weight: bold;
-  }
-}
-
-.selectedOption {
-  background-color: var(--d8x-background-purple);
-}
-
-.optionLeftBlock {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-
-  .iconHolder {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-.optionRightBlock {
-  display: flex;
-  flex-direction: column;
-}
-
-.priceChange {
-  text-align: right;
-  font-weight: bold;
-  font-size: 0.625rem;
-
-  &.buyPrice {
-    color: rgba(var(--d8x-background-buy-rgb), 1);
-  }
-
-  &.sellPrice {
-    color: rgba(var(--d8x-background-sell-rgb), 1);
   }
 }
 

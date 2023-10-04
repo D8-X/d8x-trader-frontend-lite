@@ -21,9 +21,9 @@ import {
 } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
+import { AlignE, OpenOrderTypeE, OrderSideE, OrderValueTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
-import { MarginAccountWithLiqPriceI } from 'types/types';
+import { MarginAccountWithAdditionalDataI } from 'types/types';
 
 import { CloseModal } from './elements/modals/close-modal/CloseModal';
 import { ModifyModal } from './elements/modals/modify-modal/ModifyModal';
@@ -56,23 +56,23 @@ export const PositionsTable = () => {
   const [isTpSlChangeModalOpen, setTpSlChangeModalOpen] = useState(false);
   const [isModifyModalOpen, setModifyModalOpen] = useState(false);
   const [isCloseModalOpen, setCloseModalOpen] = useState(false);
-  const [selectedPosition, setSelectedPosition] = useState<MarginAccountWithLiqPriceI | null>();
+  const [selectedPosition, setSelectedPosition] = useState<MarginAccountWithAdditionalDataI | null>();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
-  const [orderBy, setOrderBy] = useState<keyof MarginAccountWithLiqPriceI>('symbol');
+  const [orderBy, setOrderBy] = useState<keyof MarginAccountWithAdditionalDataI>('symbol');
 
-  const handleTpSlModify = useCallback((position: MarginAccountWithLiqPriceI) => {
+  const handleTpSlModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setTpSlChangeModalOpen(true);
     setSelectedPosition(position);
   }, []);
 
-  const handlePositionModify = useCallback((position: MarginAccountWithLiqPriceI) => {
+  const handlePositionModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setModifyModalOpen(true);
     setSelectedPosition(position);
   }, []);
 
-  const handlePositionClose = useCallback((position: MarginAccountWithLiqPriceI) => {
+  const handlePositionClose = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setCloseModalOpen(true);
     setSelectedPosition(position);
   }, []);
@@ -133,7 +133,7 @@ export const PositionsTable = () => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.POSITIONS]: refreshPositions }));
   }, [refreshPositions, setTableRefreshHandlers]);
 
-  const positionsHeaders: TableHeaderI<MarginAccountWithLiqPriceI>[] = useMemo(
+  const positionsHeaders: TableHeaderI<MarginAccountWithAdditionalDataI>[] = useMemo(
     () => [
       {
         field: 'symbol',
@@ -178,7 +178,7 @@ export const PositionsTable = () => {
         align: AlignE.Right,
       },
       {
-        field: 'openOrders',
+        field: 'takeProfit',
         numeric: true,
         label: t('pages.trade.positions-table.table-header.tp-sl'),
         align: AlignE.Right,
@@ -189,14 +189,71 @@ export const PositionsTable = () => {
 
   const positionsWithLiqPrice = useMemo(
     () =>
-      positions.map((position): MarginAccountWithLiqPriceI => {
+      positions.map((position): MarginAccountWithAdditionalDataI => {
         const filteredOpenOrders = openOrders.filter(
           (openOrder) => openOrder.symbol === position.symbol && openOrder.side !== position.side
         );
+
+        const takeProfitOrders = filteredOpenOrders.filter((openOrder) => openOrder.type === OpenOrderTypeE.Limit);
+        let takeProfitValueType = OrderValueTypeE.None;
+        let takeProfitFullValue;
+        if (takeProfitOrders.length > 0) {
+          if (takeProfitOrders.length > 1) {
+            // if >1 TP orders exist for the same position, display the string "multiple" for the TP price
+            takeProfitValueType = OrderValueTypeE.Multiple;
+          } else if (takeProfitOrders[0].quantity < position.positionNotionalBaseCCY) {
+            // if 1 TP order exists for an order size that is < position.size, the TP/SL column displays "partial" for the TP price
+            takeProfitValueType = OrderValueTypeE.Partial;
+          } else {
+            // if 1 SL order exists for an order size that is >= position.size, show limitPrice of that order for TP
+            takeProfitValueType = OrderValueTypeE.Full;
+            takeProfitFullValue = takeProfitOrders[0].limitPrice;
+          }
+        }
+
+        const stopLossOrders = filteredOpenOrders.filter(
+          (openOrder) =>
+            openOrder.type === OpenOrderTypeE.StopLimit &&
+            ((openOrder.side === OrderSideE.Sell &&
+              openOrder.limitPrice !== undefined &&
+              openOrder.limitPrice === 0 &&
+              openOrder.stopPrice &&
+              openOrder.stopPrice <= position.entryPrice) ||
+              (openOrder.side === OrderSideE.Buy &&
+                openOrder.limitPrice !== undefined &&
+                openOrder.limitPrice === Number.POSITIVE_INFINITY &&
+                openOrder.stopPrice &&
+                openOrder.stopPrice >= position.entryPrice))
+        );
+        let stopLossValueType = OrderValueTypeE.None;
+        let stopLossFullValue;
+        if (stopLossOrders.length > 0) {
+          if (stopLossOrders.length > 1) {
+            // if >1 SL orders exist for the same position, display the string "multiple" for the SL price
+            stopLossValueType = OrderValueTypeE.Multiple;
+          } else if (stopLossOrders[0].quantity < position.positionNotionalBaseCCY) {
+            // if 1 SL order exists for an order size that is < position.size, the TP/SL column displays "partial" for the SL price
+            stopLossValueType = OrderValueTypeE.Partial;
+          } else {
+            // if 1 TP order exists for an order size that is >= position.size, show stopPrice of that order for SL
+            stopLossValueType = OrderValueTypeE.Full;
+            stopLossFullValue = stopLossOrders[0].stopPrice;
+          }
+        }
+
         return {
           ...position,
           liqPrice: position.liquidationPrice[0],
-          openOrders: filteredOpenOrders,
+          takeProfit: {
+            orders: takeProfitOrders,
+            valueType: takeProfitValueType,
+            fullValue: takeProfitFullValue,
+          },
+          stopLoss: {
+            orders: stopLossOrders,
+            valueType: stopLossValueType,
+            fullValue: stopLossFullValue,
+          },
         };
       }),
     [positions, openOrders]
@@ -214,7 +271,7 @@ export const PositionsTable = () => {
           <MuiTable>
             <TableHead className={styles.tableHead}>
               <TableRow>
-                <SortableHeaders<MarginAccountWithLiqPriceI>
+                <SortableHeaders<MarginAccountWithAdditionalDataI>
                   headers={positionsHeaders}
                   order={order}
                   orderBy={orderBy}

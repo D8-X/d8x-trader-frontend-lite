@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useBalance, useChainId, useNetwork, type Address } from 'wagmi';
+import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -13,9 +13,9 @@ import { authPages, pages } from 'routes/pages';
 import {
   oracleFactoryAddrAtom,
   perpetualsAtom,
+  poolsAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
-  poolsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,

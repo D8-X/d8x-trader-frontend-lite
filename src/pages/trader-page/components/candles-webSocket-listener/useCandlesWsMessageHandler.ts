@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { useCallback } from 'react';
 import { UTCTimestamp } from 'lightweight-charts';
+import { useCallback } from 'react';
 
 import { timeToLocal } from 'helpers/timeToLocal';
 import { selectedPerpetualAtom } from 'store/pools.store';
@@ -11,8 +11,8 @@ import {
   newCandleAtom,
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
-import { PerpetualI } from 'types/types';
 import { TvChartPeriodE } from 'types/enums';
+import { PerpetualI } from 'types/types';
 
 import {
   CommonWsMessageI,
