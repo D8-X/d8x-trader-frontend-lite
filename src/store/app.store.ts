@@ -24,6 +24,7 @@ const enabledDarkModePrimitiveAtom = atomWithStorage<boolean>(
 export const enabledDarkModeAtom = atom(
   (get) => get(enabledDarkModePrimitiveAtom),
   (_get, set, value: boolean) => {
+    document.documentElement.dataset.theme = value ? 'dark' : 'light';
     set(enabledDarkModePrimitiveAtom, value);
   }
 );
