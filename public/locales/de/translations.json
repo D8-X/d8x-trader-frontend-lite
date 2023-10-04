@@ -329,8 +329,8 @@
           "leverage": "Hebel",
           "liq-price": "Liq. Preis",
           "validity-checks": "Gültigkeitsprüfungen",
-          "cancel": "stornieren",
-          "confirm": "bestätigen"
+          "cancel": "Stornieren",
+          "confirm": "Bestätigen"
         }
       }
     },

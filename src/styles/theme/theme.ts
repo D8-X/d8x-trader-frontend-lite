@@ -185,6 +185,7 @@ export const theme = createTheme({
           color: 'var(--d8x-color-purple)',
           lineHeight: '1.5',
           padding: '9px 8px 7px',
+          whiteSpace: 'nowrap',
           borderColor: 'var(--d8x-color-purple)',
           '&:hover': {
             borderColor: 'var(--d8x-color-purple)',
