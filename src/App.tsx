@@ -1,7 +1,6 @@
 import { useSetAtom } from 'jotai';
-import { memo, Suspense, useEffect } from 'react';
+import { Suspense, memo, useEffect } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import { ToastContainer } from 'react-toastify';
 
 import { Box, CircularProgress } from '@mui/material';
 
@@ -21,6 +20,7 @@ import 'core-js/es/promise';
 import 'core-js/es/string';
 
 import styles from './App.module.scss';
+import { ToastContainerWrapper } from './ToastContainerWrapper';
 
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
@@ -47,7 +47,7 @@ export const App = memo(() => {
         <Footer />
         <WelcomeModal />
         <ReferralConfirmModal />
-        <ToastContainer position="top-left" autoClose={10_000} />
+        <ToastContainerWrapper />
       </Box>
     </Box>
   );

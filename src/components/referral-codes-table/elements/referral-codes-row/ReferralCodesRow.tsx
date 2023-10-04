@@ -45,7 +45,7 @@ export const ReferralCodesRow = ({ isAgency, data }: ReferralCodesRowPropsI) => 
             {
               label: '',
               value: (
-                <a href={text} target="_blank" rel="noreferrer">
+                <a href={text} target="_blank" rel="noreferrer" style={{ color: 'var(--d8x-color-purple)' }}>
                   {text}
                 </a>
               ),
