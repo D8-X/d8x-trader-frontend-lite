@@ -20,10 +20,14 @@
 
 .dateInput {
   height: 48px;
+  cursor: pointer;
   transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  border-radius: 8px;
+  border-radius: 4px;
   border: 1px solid var(--d8x-color-black-opac);
   outline: none;
+  background-color: transparent;
+  color: var(--d8x-color-black-maintext);
+  padding: 0 3 * $d8x-spacing;
 
   &:focus,
   &:hover {

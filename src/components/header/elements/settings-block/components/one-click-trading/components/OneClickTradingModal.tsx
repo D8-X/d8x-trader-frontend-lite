@@ -218,7 +218,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
 
   return (
     <>
-      <Dialog open={isOpen} onClose={onClose} className={styles.dialog}>
+      <Dialog open={isOpen} onClose={onClose}>
         <Box className={styles.dialogContent}>
           <Typography variant="h4" className={styles.title}>
             {t('common.settings.one-click-modal.title')}

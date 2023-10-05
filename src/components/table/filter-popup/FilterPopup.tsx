@@ -1,8 +1,9 @@
 import { atom, useAtom } from 'jotai';
 import { Dispatch, SetStateAction, useState } from 'react';
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
+import { Button, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
 
+import { Dialog } from 'components/dialog/Dialog';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { FieldTypeE } from 'types/enums';
