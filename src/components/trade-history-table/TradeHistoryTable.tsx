@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { filterRows } from 'components/table/filter-popup/filter';
-import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-popup/useFilter';
+import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getTradesHistory } from 'network/history';
 import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
@@ -42,7 +42,6 @@ export const TradeHistoryTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof TradeHistoryWithSymbolDataI>('timestamp');
-  const [filter, setFilter] = useState<FilterI<TradeHistoryWithSymbolDataI>>({});
 
   const refreshTradesHistory = useCallback(() => {
     if (updateTradesHistoryRef.current || !address || !isConnected) {
@@ -128,7 +127,7 @@ export const TradeHistoryTable = memo(() => {
     });
   }, [tradesHistory, perpetuals]);
 
-  const filteredRows = useMemo(() => filterRows(tradesHistoryWithSymbol, filter), [tradesHistoryWithSymbol, filter]);
+  const { filter, setFilter, filteredRows } = useFilter(tradesHistoryWithSymbol, tradeHistoryHeaders);
 
   const visibleRows = useMemo(
     () =>

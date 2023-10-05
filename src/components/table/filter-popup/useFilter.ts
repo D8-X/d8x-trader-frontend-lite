@@ -1,4 +1,8 @@
+import { useMemo, useState } from 'react';
+
 import { FieldTypeE } from 'types/enums';
+import { TableHeaderI } from 'types/types';
+
 import { FilterI } from './FilterPopup';
 
 const filterFunction = <T>(field: number, comparator: string, filter: FilterI<T>): boolean => {
@@ -25,7 +29,7 @@ const filterFunction = <T>(field: number, comparator: string, filter: FilterI<T>
   return String(field).toLowerCase().includes(comparator);
 };
 
-export const filterRows = <T>(rows: T[], filter: FilterI<T>) => {
+const filterRows = <T>(rows: T[], filter: FilterI<T>) => {
   if (filter.field && filter.value) {
     const checkStr = filter.value.toLowerCase();
 
@@ -38,4 +42,14 @@ export const filterRows = <T>(rows: T[], filter: FilterI<T>) => {
     });
   }
   return rows;
+};
+
+export const useFilter = <T, G>(rows: T[], headers: TableHeaderI<G>[]) => {
+  const [filter, setFilter] = useState<FilterI<T>>({
+    fieldType: headers[0].fieldType,
+    filterType: '=',
+  });
+  const filteredRows = useMemo(() => filterRows(rows, filter), [rows, filter]);
+
+  return { filter, setFilter, filteredRows };
 };

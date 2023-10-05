@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { filterRows } from 'components/table/filter-popup/filter';
-import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-popup/useFilter';
+import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getFundingRatePayments } from 'network/history';
@@ -43,7 +43,6 @@ export const FundingTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof FundingWithSymbolDataI>('timestamp');
-  const [filter, setFilter] = useState<FilterI<FundingWithSymbolDataI>>({});
 
   const refreshFundingList = useCallback(() => {
     if (updateTradesHistoryRef.current || !address || !isConnected) {
@@ -105,7 +104,7 @@ export const FundingTable = memo(() => {
     });
   }, [fundingList, perpetuals]);
 
-  const filteredRows = useMemo(() => filterRows(fundingListWithSymbol, filter), [fundingListWithSymbol, filter]);
+  const { filter, setFilter, filteredRows } = useFilter(fundingListWithSymbol, fundingListHeaders);
 
   const visibleRows = useMemo(
     () =>

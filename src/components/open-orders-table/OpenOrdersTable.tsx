@@ -25,12 +25,13 @@ import { HashZero } from 'app-constants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
-import { filterRows } from 'components/table/filter-popup/filter';
+import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-popup/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
+import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
@@ -42,7 +43,6 @@ import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
-import { tradingClientAtom } from 'store/app.store';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
@@ -73,7 +73,6 @@ export const OpenOrdersTable = memo(() => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof OrderWithIdI>('executionTimestamp');
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
-  const [filter, setFilter] = useState<FilterI<OrderWithIdI>>({});
 
   const isAPIBusyRef = useRef(isAPIBusy);
 
@@ -269,7 +268,7 @@ export const OpenOrdersTable = memo(() => {
     [t]
   );
 
-  const filteredRows = useMemo(() => filterRows(openOrders, filter), [openOrders, filter]);
+  const { filter, setFilter, filteredRows } = useFilter(openOrders, openOrdersHeaders);
 
   const visibleRows = useMemo(
     () =>

@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
-import { filterRows } from 'components/table/filter-popup/filter';
+import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-popup/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { createSymbol } from 'helpers/createSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -23,7 +23,7 @@ import {
 } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { AlignE, OpenOrderTypeE, OrderSideE, OrderValueTypeE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
+import { AlignE, FieldTypeE, OpenOrderTypeE, OrderSideE, OrderValueTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 
@@ -63,7 +63,6 @@ export const PositionsTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
   const [orderBy, setOrderBy] = useState<keyof MarginAccountWithAdditionalDataI>('symbol');
-  const [filter, setFilter] = useState<FilterI<MarginAccountWithAdditionalDataI>>({});
 
   const handleTpSlModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setTpSlChangeModalOpen(true);
@@ -262,7 +261,7 @@ export const PositionsTable = () => {
     [positions, openOrders]
   );
 
-  const filteredRows = useMemo(() => filterRows(positionsWithLiqPrice, filter), [positionsWithLiqPrice, filter]);
+  const { filter, setFilter, filteredRows } = useFilter(positionsWithLiqPrice, positionsHeaders);
 
   const visibleRows = useMemo(
     () =>
