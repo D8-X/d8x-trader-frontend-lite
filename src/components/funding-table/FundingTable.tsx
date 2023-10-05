@@ -12,7 +12,7 @@ import { SortableHeaders } from 'components/table/sortable-header/SortableHeader
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getFundingRatePayments } from 'network/history';
 import { fundingListAtom, perpetualsAtom, positionsAtom } from 'store/pools.store';
-import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
+import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { FundingWithSymbolDataI, TableHeaderI } from 'types/types';
 
 import { FundingBlock } from './elements/funding-block/FundingBlock';
@@ -74,16 +74,19 @@ export const FundingTable = memo(() => {
         field: 'timestamp',
         label: t('pages.trade.funding-table.table-header.time'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.Date,
       },
       {
         field: 'symbol',
         label: t('pages.trade.funding-table.table-header.perpetual'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'amount',
         label: t('pages.trade.funding-table.table-header.funding-payment'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
     ],
     [t]
@@ -104,10 +107,34 @@ export const FundingTable = memo(() => {
   const filteredRows = useMemo(() => {
     if (filter.field && filter.value) {
       const checkStr = filter.value.toLowerCase();
-      return fundingListWithSymbol.filter((position) => {
+      const fieldType = filter.fieldType;
+
+      return fundingListWithSymbol.filter((fundingRecord) => {
         // eslint-disable-next-line
         // @ts-ignore
-        return String(position[filter.field]).toLowerCase().includes(checkStr);
+        const filterField = fundingRecord[filter.field];
+
+        if (fieldType === FieldTypeE.Number) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        } else if (fieldType === FieldTypeE.Date) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        }
+
+        return String(filterField).toLowerCase().includes(checkStr);
       });
     }
     return fundingListWithSymbol;

@@ -21,7 +21,7 @@ import {
 } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
+import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { MarginAccountI, TableHeaderI } from 'types/types';
 import { MarginAccountWithLiqPriceI } from 'types/types';
 
@@ -127,36 +127,43 @@ export const PositionsTable = () => {
         field: 'symbol',
         label: t('pages.trade.positions-table.table-header.symbol'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'positionNotionalBaseCCY',
         label: t('pages.trade.positions-table.table-header.size'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'side',
         label: t('pages.trade.positions-table.table-header.side'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'entryPrice',
         label: t('pages.trade.positions-table.table-header.entry-price'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'liqPrice',
         label: t('pages.trade.positions-table.table-header.liq-price'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'collateralCC',
         label: t('pages.trade.positions-table.table-header.margin'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'unrealizedPnlQuoteCCY',
         label: t('pages.trade.positions-table.table-header.pnl'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
     ],
     [t]
@@ -174,10 +181,34 @@ export const PositionsTable = () => {
   const filteredRows = useMemo(() => {
     if (filter.field && filter.value) {
       const checkStr = filter.value.toLowerCase();
+      const fieldType = filter.fieldType;
+
       return positionsWithLiqPrice.filter((position) => {
         // eslint-disable-next-line
         // @ts-ignore
-        return String(position[filter.field]).toLowerCase().includes(checkStr);
+        const filterField = position[filter.field];
+
+        if (fieldType === FieldTypeE.Number) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        } else if (fieldType === FieldTypeE.Date) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        }
+
+        return String(filterField).toLowerCase().includes(checkStr);
       });
     }
     return positionsWithLiqPrice;

@@ -114,3 +114,9 @@ export enum ReferralDialogActionE {
   CREATE,
   MODIFY,
 }
+
+export enum FieldTypeE {
+  String,
+  Number,
+  Date,
+}

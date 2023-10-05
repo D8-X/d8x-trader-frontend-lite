@@ -33,8 +33,8 @@ import { getCancelOrder, getOpenOrders } from 'network/network';
 import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
-import type { OrderWithIdI, TableHeaderI } from 'types/types';
+import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
+import { type OrderWithIdI, type TableHeaderI } from 'types/types';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
@@ -215,41 +215,49 @@ export const OpenOrdersTable = memo(() => {
         field: 'symbol',
         label: t('pages.trade.orders-table.table-header.symbol'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'side',
         label: t('pages.trade.orders-table.table-header.side'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'type',
         label: t('pages.trade.orders-table.table-header.type'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'quantity',
         label: t('pages.trade.orders-table.table-header.order-size'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'limitPrice',
         label: t('pages.trade.orders-table.table-header.limit-price'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'stopPrice',
         label: t('pages.trade.orders-table.table-header.stop-price'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'leverage',
         label: t('pages.trade.orders-table.table-header.leverage'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'deadline',
         label: t('pages.trade.orders-table.table-header.good-until'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.Date,
       },
     ],
     [t]
@@ -258,10 +266,34 @@ export const OpenOrdersTable = memo(() => {
   const filteredRows = useMemo(() => {
     if (filter.field && filter.value) {
       const checkStr = filter.value.toLowerCase();
-      return openOrders.filter((position) => {
+      const fieldType = filter.fieldType;
+
+      return openOrders.filter((openOrder) => {
         // eslint-disable-next-line
         // @ts-ignore
-        return String(position[filter.field]).toLowerCase().includes(checkStr);
+        const filterField = openOrder[filter.field];
+
+        if (fieldType === FieldTypeE.Number) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        } else if (fieldType === FieldTypeE.Date) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        }
+
+        return String(filterField).toLowerCase().includes(checkStr);
       });
     }
     return openOrders;

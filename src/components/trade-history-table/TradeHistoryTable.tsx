@@ -12,7 +12,7 @@ import { getComparator, stableSort } from 'helpers/tableSort';
 import { getTradesHistory } from 'network/history';
 import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
-import { AlignE, SortOrderE, TableTypeE } from 'types/enums';
+import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 
 import { TradeHistoryBlock } from './elements/trade-history-block/TradeHistoryBlock';
@@ -73,32 +73,43 @@ export const TradeHistoryTable = memo(() => {
         field: 'timestamp',
         label: t('pages.trade.history-table.table-header.time'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.Date,
       },
       {
         field: 'symbol',
         label: t('pages.trade.history-table.table-header.perpetual'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'side',
         label: t('pages.trade.history-table.table-header.side'),
         align: AlignE.Left,
+        fieldType: FieldTypeE.String,
       },
       {
         field: 'price',
         label: t('pages.trade.history-table.table-header.price'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'quantity',
         label: t('pages.trade.history-table.table-header.quantity'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
-      { field: 'fee', label: t('pages.trade.history-table.table-header.fee'), align: AlignE.Right },
+      {
+        field: 'fee',
+        label: t('pages.trade.history-table.table-header.fee'),
+        align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
+      },
       {
         field: 'realizedPnl',
         label: t('pages.trade.history-table.table-header.realized-profit'),
         align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
       },
     ],
     [t]
@@ -119,10 +130,34 @@ export const TradeHistoryTable = memo(() => {
   const filteredRows = useMemo(() => {
     if (filter.field && filter.value) {
       const checkStr = filter.value.toLowerCase();
-      return tradesHistoryWithSymbol.filter((position) => {
+      const fieldType = filter.fieldType;
+
+      return tradesHistoryWithSymbol.filter((historyRecord) => {
         // eslint-disable-next-line
         // @ts-ignore
-        return String(position[filter.field]).toLowerCase().includes(checkStr);
+        const filterField = historyRecord[filter.field];
+
+        if (fieldType === FieldTypeE.Number) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        } else if (fieldType === FieldTypeE.Date) {
+          const filterType = filter.filterType;
+          if (filterType === '=') {
+            return filterField === Number(checkStr);
+          } else if (filterType === '>') {
+            return filterField >= Number(checkStr);
+          } else if (filterType === '<') {
+            return filterField <= Number(checkStr);
+          }
+        }
+
+        return String(filterField).toLowerCase().includes(checkStr);
       });
     }
     return tradesHistoryWithSymbol;

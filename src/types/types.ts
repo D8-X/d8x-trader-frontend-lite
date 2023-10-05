@@ -3,6 +3,7 @@ import { type Time } from 'lightweight-charts';
 import type { ReactElement, ReactNode } from 'react';
 
 import {
+  type FieldTypeE,
   type AlignE,
   type ExpiryE,
   type LanguageE,
@@ -222,6 +223,7 @@ export interface TableHeaderI<T> {
   label: ReactElement | string;
   align: AlignE;
   field?: keyof T;
+  fieldType?: FieldTypeE;
 }
 
 export interface TvChartCandleI {
