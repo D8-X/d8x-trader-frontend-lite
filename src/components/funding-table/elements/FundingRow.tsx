@@ -16,7 +16,7 @@ export const FundingRow = ({ headers, funding }: FundingRowPropsI) => {
   const time = format(new Date(funding.timestamp), DATETIME_FORMAT);
 
   return (
-    <TableRow>
+    <TableRow key={funding.transactionHash}>
       <TableCell align={headers[0].align}>
         <Typography variant="cellSmall">{time}</Typography>
       </TableCell>

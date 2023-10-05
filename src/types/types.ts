@@ -5,10 +5,10 @@ import type { ReactElement, ReactNode } from 'react';
 import {
   type FieldTypeE,
   type AlignE,
-  type ExpiryE,
   type LanguageE,
   type OrderBlockE,
   type OrderTypeE,
+  OrderValueTypeE,
   type StopLossE,
   type TakeProfitE,
 } from './enums';
@@ -123,8 +123,18 @@ export interface MarginAccountI {
   collToQuoteConversion: number;
 }
 
-export interface MarginAccountWithLiqPriceI extends MarginAccountI {
+export interface MarginAccountWithAdditionalDataI extends MarginAccountI {
   liqPrice: number;
+  takeProfit: {
+    orders: OrderWithIdI[];
+    fullValue: number | undefined;
+    valueType: OrderValueTypeE;
+  };
+  stopLoss: {
+    orders: OrderWithIdI[];
+    fullValue: number | undefined;
+    valueType: OrderValueTypeE;
+  };
 }
 
 export interface PerpetualOpenOrdersI {
@@ -155,7 +165,7 @@ export interface OrderInfoI {
   reduceOnly: boolean | null;
   limitPrice: number | null;
   triggerPrice: number | null;
-  expireDays: ExpiryE | null;
+  expireDays: number | null;
   stopLoss: StopLossE | null;
   stopLossPrice: number | null;
   takeProfit: TakeProfitE | null;

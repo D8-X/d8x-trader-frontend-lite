@@ -7,20 +7,23 @@ import IconButton from '@mui/material/IconButton';
 
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { parseSymbol } from 'helpers/parseSymbol';
-import type { MarginAccountI, MarginAccountWithLiqPriceI, TableHeaderI } from 'types/types';
+import type { MarginAccountWithAdditionalDataI, TableHeaderI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+
+import { TpSlValue } from '../tp-sl-value/TpSlValue';
 
 import styles from './PositionBlock.module.scss';
 
 interface PositionRowPropsI {
-  headers: TableHeaderI<MarginAccountWithLiqPriceI>[];
-  position: MarginAccountWithLiqPriceI;
-  handlePositionClose: (position: MarginAccountI) => void;
-  handlePositionModify: (position: MarginAccountI) => void;
+  headers: TableHeaderI<MarginAccountWithAdditionalDataI>[];
+  position: MarginAccountWithAdditionalDataI;
+  handlePositionClose: (position: MarginAccountWithAdditionalDataI) => void;
+  handlePositionModify: (position: MarginAccountWithAdditionalDataI) => void;
+  handleTpSlModify: (position: MarginAccountWithAdditionalDataI) => void;
 }
 
 export const PositionBlock = memo(
-  ({ headers, position, handlePositionClose, handlePositionModify }: PositionRowPropsI) => {
+  ({ headers, position, handlePositionClose, handlePositionModify, handleTpSlModify }: PositionRowPropsI) => {
     const { t } = useTranslation();
 
     const parsedSymbol = parseSymbol(position.symbol);
@@ -30,7 +33,7 @@ export const PositionBlock = memo(
       <Box className={styles.root}>
         <Box className={styles.headerWrapper}>
           <Box className={styles.leftSection}>
-            <Typography variant="bodySmall" component="p">
+            <Typography variant="bodySmall" component="p" color={'var(--d8x-color-black-maintext)'}>
               {t('pages.trade.positions-table.position-block-mobile.symbol')}
             </Typography>
             <Typography variant="bodySmall" component="p" className={styles.symbol}>
@@ -98,6 +101,10 @@ export const PositionBlock = memo(
             rightSide={formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
             leftSideStyles={styles.dataLabel}
             rightSideStyles={pnlColor}
+          />
+          <SidesRow
+            leftSide={headers[7].label}
+            rightSide={<TpSlValue position={position} handleTpSlModify={handleTpSlModify} />}
           />
         </Box>
       </Box>

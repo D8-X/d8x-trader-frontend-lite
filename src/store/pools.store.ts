@@ -37,6 +37,13 @@ export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
+const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});
+export const allPerpetualStatisticsAtom = atom(null, (_get, set, updates: Record<string, PerpetualStatisticsI>) => {
+  set(allPerpetualStatisticsPrimitiveAtom, (prev) => ({
+    ...prev,
+    ...updates,
+  }));
+});
 const ordersAtom = atom<Record<string, OrderI>>({});
 
 const selectedPoolNameAtom = atom('');
@@ -108,7 +115,46 @@ export const selectedPerpetualAtom = atom(
 export const positionsAtom = atom(
   (get) => {
     const perpetualsStats = get(perpetualsStatsAtom);
-    return Object.values(perpetualsStats).filter(({ side }) => side !== 'CLOSED');
+
+    const stats = get(allPerpetualStatisticsPrimitiveAtom);
+    const pools = get(poolsAtom);
+
+    return Object.values(perpetualsStats)
+      .filter(({ side }) => side !== 'CLOSED')
+      .map((position) => {
+        const positionStats = stats[position.symbol];
+        const markPrice = positionStats?.markPrice;
+        if (!positionStats || !markPrice) {
+          return position;
+        }
+
+        const collToQuoteIndexPrice = pools
+          .find((pool) => pool.poolSymbol === positionStats.poolName)
+          ?.perpetuals.find(
+            (perpetual) =>
+              perpetual.baseCurrency === positionStats.baseCurrency &&
+              perpetual.quoteCurrency === positionStats.quoteCurrency
+          )?.collToQuoteIndexPrice;
+
+        if (!collToQuoteIndexPrice) {
+          return position;
+        }
+
+        let unrealizedPnL;
+        if (position.side === 'BUY') {
+          unrealizedPnL =
+            position.positionNotionalBaseCCY * (markPrice - position.entryPrice) +
+            position.unrealizedFundingCollateralCCY * collToQuoteIndexPrice;
+        } else {
+          unrealizedPnL =
+            -position.positionNotionalBaseCCY * (markPrice - position.entryPrice) +
+            position.unrealizedFundingCollateralCCY * collToQuoteIndexPrice;
+        }
+
+        position.unrealizedPnlQuoteCCY = unrealizedPnL;
+
+        return position;
+      });
   },
   (_get, set, position: MarginAccountI) => {
     set(perpetualsStatsAtom, (prev) => ({

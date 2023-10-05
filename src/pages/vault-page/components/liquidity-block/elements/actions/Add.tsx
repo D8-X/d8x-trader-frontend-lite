@@ -149,7 +149,9 @@ export const Add = memo(() => {
   return (
     <div className={styles.root}>
       <Box className={styles.infoBlock}>
-        <Typography variant="h5">{t('pages.vault.add.title')}</Typography>
+        <Typography variant="h5" color={'var(--d8x-color-black-maintext)'}>
+          {t('pages.vault.add.title')}
+        </Typography>
         <Typography variant="body2" className={styles.text}>
           {t('pages.vault.add.info1', { poolSymbol: selectedPool?.poolSymbol })}
         </Typography>
@@ -201,7 +203,9 @@ export const Add = memo(() => {
               id="expected-amount"
               endAdornment={
                 <InputAdornment position="end" className={styles.expectedAmountInput}>
-                  <Typography variant="adornment">d{selectedPool?.poolSymbol}</Typography>
+                  <Typography variant="adornment" color={'var(--d8x-color-black-opac2)'}>
+                    d{selectedPool?.poolSymbol}
+                  </Typography>
                 </InputAdornment>
               }
               type="text"

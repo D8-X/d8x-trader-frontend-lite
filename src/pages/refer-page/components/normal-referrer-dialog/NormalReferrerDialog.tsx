@@ -189,12 +189,7 @@ export const NormalReferrerDialog = (props: UpdatedNormalReferrerDialogPropsT) =
             {t('pages.refer.manage-code.cancel')}
           </Button>
           {props.type === ReferralDialogActionE.CREATE && (
-            <Button
-              variant="primary"
-              disabled={codeInputDisabled}
-              onClick={handleUpsertCode}
-              className={styles.enterCodeButton}
-            >
+            <Button variant="primary" disabled={codeInputDisabled} onClick={handleUpsertCode}>
               {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
               {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
               {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}

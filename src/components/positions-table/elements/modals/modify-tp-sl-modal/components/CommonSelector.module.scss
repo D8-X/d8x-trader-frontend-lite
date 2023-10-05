@@ -1,0 +1,12 @@
+@import '~styles/theme/_theme.scss';
+
+.actionIcon {
+  margin-bottom: 2.5px;
+}
+
+@media screen and ($d8x-breakpoint-max-md) {
+
+  .actionIcon {
+    margin-bottom: 0;
+  }
+}

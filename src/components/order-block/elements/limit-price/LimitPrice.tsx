@@ -6,8 +6,9 @@ import { Box, Typography } from '@mui/material';
 
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { calculateStepSize } from 'helpers/calculateStepSize';
 import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom, perpetualStatisticsAtom } from 'store/pools.store';
+import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
 import commonStyles from '../../OrderBlock.module.scss';
@@ -15,19 +16,20 @@ import styles from './LimitPrice.module.scss';
 
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
+
   const [orderType] = useAtom(orderTypeAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [inputValue, setInputValue] = useState(`${limitPrice}`);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
+
+  const [inputValue, setInputValue] = useState(limitPrice != null ? `${limitPrice}` : '');
+
   const inputValueChangedRef = useRef(false);
 
-  const stepSize = useMemo(() => {
-    if (!selectedPerpetual?.midPrice) {
-      return '1';
-    }
-    return `${Math.min(1, 1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.midPrice)))}`;
-  }, [selectedPerpetual?.midPrice]);
+  const stepSize = useMemo(
+    () => `${Math.min(1, +calculateStepSize(selectedPerpetual?.midPrice))}`,
+    [selectedPerpetual?.midPrice]
+  );
 
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
@@ -51,13 +53,13 @@ export const LimitPrice = memo(() => {
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
-      setInputValue(`${limitPrice}`);
+      setInputValue(limitPrice != null ? `${limitPrice}` : '');
     }
     inputValueChangedRef.current = false;
   }, [limitPrice]);
 
   const handleInputBlur = useCallback(() => {
-    setInputValue(`${limitPrice}`);
+    setInputValue(limitPrice != null ? `${limitPrice}` : '');
   }, [limitPrice]);
 
   if (orderType === OrderTypeE.Market) {

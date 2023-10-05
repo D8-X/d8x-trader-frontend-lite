@@ -9,7 +9,7 @@ import { OrderBlockPositionE } from 'types/enums';
 
 const optionsArray = Object.values(OrderBlockPositionE);
 
-export const OrderBlockSwitcher = () => {
+export const OrderBlockSelect = () => {
   const { t } = useTranslation();
 
   const [orderBlockPosition, setOrderBlockPosition] = useAtom(orderBlockPositionAtom);

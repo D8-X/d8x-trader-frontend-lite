@@ -8,12 +8,15 @@
   height: 48px;
 }
 
+.icon {
+  color: var(--d8x-color-white);
+}
+
 .dialog {
 
   :global(.MuiPaper-root) {
     width: 100%;
     max-width: 375px;
-    border-radius: $d8x-border-radius;
   }
 }
 

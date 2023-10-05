@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
+import { Separator } from 'components/separator/Separator';
 
 import { EnterCodeDialog } from '../enter-code-dialog/EnterCodeDialog';
 
@@ -40,7 +41,7 @@ export const ReferralCodeBlock = ({
           </Button>
         ) : null}
       </Box>
-      <div className={styles.divider} />
+      <Separator className={styles.divider} />
       <Typography variant="bodySmall" component="p" className={styles.dataTitle}>
         {t('pages.refer.trader-tab.your-active-code')}
       </Typography>

@@ -23,9 +23,19 @@
   color: var(--d8x-color-purple);
 }
 
+.inputAdornment {
+  color: var(--d8x-color-black-opac2);
+
+  :global(.MuiPaper-root) {
+    color: var(--d8x-color-black-maintext);
+    background-color: var(--d8x-background);
+  }
+}
+
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .inputAdornment {
+    color: var(--d8x-color-black-maintext);
     min-width: 65px;
   }
 
@@ -89,6 +99,11 @@
 
       > :global(.MuiTouchRipple-root) {
         display: none;
+      }
+
+      &:disabled {
+        color: var(--d8x-color-purple);
+        opacity: 0.3;
       }
     }
   }

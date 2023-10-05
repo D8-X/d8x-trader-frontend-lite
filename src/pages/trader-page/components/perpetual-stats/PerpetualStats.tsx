@@ -22,10 +22,6 @@ export const PerpetualStats = () => {
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
   const [showChartForMobile, setShowChartForMobile] = useAtom(showChartForMobileAtom);
 
-  const handleChartIconClick = () => {
-    setShowChartForMobile(!showChartForMobile);
-  };
-
   const midPrice: StatDataI = useMemo(
     () => ({
       id: 'midPrice',
@@ -93,9 +89,11 @@ export const PerpetualStats = () => {
             <span className={styles.statValue}>{midPrice.currencyOnly}</span>
           </div>
           <div>
-            <Box className={styles.viewChart} onClick={handleChartIconClick}>
+            <Box className={styles.viewChart} onClick={() => setShowChartForMobile(!showChartForMobile)}>
               <ViewChartIcon className={styles.viewChartIcon} />
-              <Typography variant="bodyTiny">{t('pages.trade.stats.view-graph')}</Typography>
+              <Typography variant="bodyTiny">
+                {t(showChartForMobile ? 'pages.trade.stats.hide-graph' : 'pages.trade.stats.view-graph')}
+              </Typography>
             </Box>
           </div>
         </div>

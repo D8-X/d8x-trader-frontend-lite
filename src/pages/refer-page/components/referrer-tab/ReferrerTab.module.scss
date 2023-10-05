@@ -2,16 +2,15 @@
 
 .root {
   display: flex;
-  background-color: var(--d8x-color-white);
   border-radius: $d8x-border-radius;
 }
 
 .divider {
-  border-right: 1px solid var(--d8x-color-black-100);
+  border-right: 1px solid var(--d8x-color-black-150);
   margin: 10 * $d8x-spacing 0;
 }
 
-@media screen and ($d8x-breakpoint-max-sm) {
+@media screen and ($d8x-breakpoint-max-md) {
 
   .root {
     flex-direction: column;

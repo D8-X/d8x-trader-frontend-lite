@@ -19,7 +19,7 @@ export const Footer = memo(() => {
       <Container>
         <Box className={styles.rootBox}>
           <Box component="nav">
-            <Typography color="textSecondary" variant="caption" gutterBottom={false}>
+            <Typography color={'var(--d8x-color-black-maintext)'} variant="caption" gutterBottom={false}>
               © Copyright 2023 D8X
             </Typography>
           </Box>

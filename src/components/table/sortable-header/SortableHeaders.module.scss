@@ -1,0 +1,12 @@
+@import '~styles/theme/_theme.scss';
+
+.headerLabel {
+  color: var(--d8x-color-black-maintext);
+}
+
+.sortIcon {
+
+  svg {
+    fill: var(--d8x-color-purple);
+  }
+}

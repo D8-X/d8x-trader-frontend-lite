@@ -1,6 +1,17 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
+  @include media-desktop {
+    height: 25px;
+  }
+
+  .circle {
+    fill: var(--d8x-icon-color);
+  }
+
+  .letter {
+    fill: var(--d8x-logo-second-color);
+  }
 
   .circle,
   .letter {
@@ -13,13 +24,5 @@
     .letter {
       transform: translateX(-35px);
     }
-  }
-}
-
-@media screen and ($d8x-breakpoint-max-md) {
-
-  .root {
-    width: 110px;
-    height: 25px;
   }
 }

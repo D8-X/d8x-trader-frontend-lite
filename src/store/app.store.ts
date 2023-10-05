@@ -1,12 +1,12 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
+import { type WalletClient } from 'viem';
 
-import { DefaultCurrencyE, LanguageE, OrderBlockPositionE } from 'types/enums';
+import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
-const SELECTED_LANGUAGE_LS_KEY = 'd8x_selectedLanguage';
 const DEFAULT_CURRENCY_LS_KEY = 'd8x_defaultCurrency';
 const SHOW_MODAl_LS_KEY = 'd8x_showWelcomeModal';
 const SHOW_MODAL = 'show';
@@ -16,11 +16,27 @@ export const orderBlockPositionAtom = atomWithStorage<OrderBlockPositionE>(
   ORDER_BLOCK_POSITION_LS_KEY,
   OrderBlockPositionE.Right
 );
-export const enabledDarkModeAtom = atomWithStorage<boolean>(ENABLED_DARK_MODE_LS_KEY, false);
-export const selectedLanguageAtom = atomWithStorage<LanguageE>(SELECTED_LANGUAGE_LS_KEY, LanguageE.EN);
+
+const enabledDarkModePrimitiveAtom = atomWithStorage<boolean>(
+  ENABLED_DARK_MODE_LS_KEY,
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+);
+export const enabledDarkModeAtom = atom(
+  (get) => {
+    const enabled = get(enabledDarkModePrimitiveAtom);
+    document.documentElement.dataset.theme = enabled ? 'dark' : 'light';
+    return enabled;
+  },
+  (_get, set, value: boolean) => {
+    set(enabledDarkModePrimitiveAtom, value);
+  }
+);
 export const defaultCurrencyAtom = atomWithStorage<DefaultCurrencyE>(DEFAULT_CURRENCY_LS_KEY, DefaultCurrencyE.Base);
 
 export const appDimensionsAtom = atom<AppDimensionsI>({});
+export const delegateAddressAtom = atom('');
+
+export const activatedOneClickTradingAtom = atom(false);
 
 export const showWelcomeModalAtom = atom(
   () => {
@@ -31,3 +47,5 @@ export const showWelcomeModalAtom = atom(
     localStorage.setItem(SHOW_MODAl_LS_KEY, show ? SHOW_MODAL : HIDE_MODAL);
   }
 );
+
+export const tradingClientAtom = atom<WalletClient | null>(null);

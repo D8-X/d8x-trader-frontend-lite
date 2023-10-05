@@ -3,7 +3,7 @@
 .mainBlock {
   padding: 32px;
   flex: 1;
-  background: white;
+  background: var(--d8x-background-white);
 
   @include media-tablet {
     border-radius: $d8x-border-radius;

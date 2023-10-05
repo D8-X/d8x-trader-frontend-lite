@@ -8,7 +8,7 @@ import { enabledDarkModeAtom } from 'store/app.store';
 
 const optionsArray = [true, false];
 
-export const DarkModeSwitcher = () => {
+export const DarkModeSelect = () => {
   const { t } = useTranslation();
 
   const [enabledDarkMode, setEnabledDarkMode] = useAtom(enabledDarkModeAtom);
@@ -17,15 +17,15 @@ export const DarkModeSwitcher = () => {
 
   return (
     <DropDownSelect
-      id="dark-mode-dropdown"
-      selectedValue={t(`common.settings.ui-settings.dark-mode.${enabledDarkMode ? 'on' : 'off'}`)}
+      id="theme-dropdown"
+      selectedValue={t(`common.settings.ui-settings.theme.${enabledDarkMode ? 'dark' : 'light'}`)}
       anchorEl={anchorEl}
       setAnchorEl={setAnchorEl}
     >
       {optionsArray.map((option) => (
         <DropDownMenuItem
           key={String(option)}
-          option={t(`common.settings.ui-settings.dark-mode.${option ? 'on' : 'off'}`)}
+          option={t(`common.settings.ui-settings.theme.${option ? 'dark' : 'light'}`)}
           isActive={option === enabledDarkMode}
           onClick={() => {
             setEnabledDarkMode(option);

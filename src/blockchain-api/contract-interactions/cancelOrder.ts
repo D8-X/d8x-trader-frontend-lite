@@ -2,14 +2,13 @@ import { LOB_ABI } from '@d8x/perpetuals-sdk';
 import { type CancelOrderResponseI } from 'types/types';
 import { type Address, type WalletClient } from 'viem';
 
-export async function cancelOrder(
+export function cancelOrder(
   walletClient: WalletClient,
   signature: string,
   data: CancelOrderResponseI,
   orderId: string
 ): Promise<{ hash: Address }> {
-  const account = walletClient.account?.address;
-  if (!account) {
+  if (!walletClient.account) {
     throw new Error('account not connected');
   }
   return walletClient
@@ -21,7 +20,7 @@ export async function cancelOrder(
       args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
       value: BigInt(data.priceUpdate.updateFee),
-      account: account,
+      account: walletClient.account,
     })
     .then((tx) => ({ hash: tx }));
 }

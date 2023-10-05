@@ -5,13 +5,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: 6 * $d8x-spacing;
 }
 
 .rowOne {
   height: 24px;
   display: flex;
   width: 100%;
-  flex-direction: row;
   margin-top: 0;
   align-items: flex-end;
   justify-content: space-between;
@@ -20,7 +20,6 @@
 .rowTwo {
   display: flex;
   width: 100%;
-  flex-direction: row;
   margin-top: 3 * $d8x-spacing;
   justify-content: space-between;
 }
@@ -71,5 +70,9 @@
 
   .sliderHolder {
     margin-bottom: 4px;
+  }
+
+  .root {
+    margin-top: 4 * $d8x-spacing;
   }
 }

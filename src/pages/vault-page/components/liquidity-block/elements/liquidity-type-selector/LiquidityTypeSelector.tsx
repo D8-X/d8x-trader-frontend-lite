@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { useAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ export const LiquidityTypeSelector = memo(() => {
       {Object.values(LiquidityTypeE).map((key) => (
         <Button
           key={key}
-          className={classNames({ [styles.selected]: key === liquidityType })}
+          className={classnames({ [styles.selected]: key === liquidityType })}
           variant="link"
           onClick={() => setLiquidityType(key)}
         >

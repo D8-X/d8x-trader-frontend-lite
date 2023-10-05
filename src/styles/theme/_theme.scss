@@ -28,7 +28,7 @@ $d8x-breakpoint-max-md: 'max-width: 1279px';
 $d8x-breakpoint-min-lg: 'min-width: 1280px';
 $d8x-breakpoint-max-lg: 'max-width: 1649px';
 $d8x-breakpoint-min-xl: 'min-width: 1650px';
-$d8x-breakpoint-height-max-md: 'max-height: 920px';
+$d8x-breakpoint-height-max-md: 'max-height: 1200px';
 $media: (
   sm: 599px,
   md: 967px,
@@ -60,6 +60,20 @@ $media: (
 
 @mixin media-desktop() {
   @include md('lg') {
+    @content;
+  }
+}
+
+@mixin theme-light() {
+
+  :root[data-theme='light'] {
+    @content;
+  }
+}
+
+@mixin theme-dark() {
+
+  :root[data-theme='dark'] {
     @content;
   }
 }

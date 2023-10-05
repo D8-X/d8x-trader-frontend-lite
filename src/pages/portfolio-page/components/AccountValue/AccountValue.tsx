@@ -1,12 +1,13 @@
 import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
+import { Typography } from '@mui/material';
 
+import { totalEstimatedEarningsAtom } from 'pages/portfolio-page/store/fetchEarnings';
 import { accountValueAtom, totalOpenRewardsAtom } from 'pages/portfolio-page/store/fetchPortfolio';
 import { poolShareTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolShare';
 import { poolTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolTokensUSDBalance';
 import { leverageAtom, totalUnrealizedPnLAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
 
-import { totalEstimatedEarningsAtom } from '../../store/fetchEarnings';
 import styles from './AccountValue.module.scss';
 
 const formatCurrency = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
@@ -24,6 +25,9 @@ export const AccountValue = () => {
 
   return (
     <div className={styles.sideBlock}>
+      <Typography variant="h5" className={styles.title}>
+        {t('pages.portfolio.account-value.main-title')}
+      </Typography>
       <div>
         <div className={styles.detailsHeader}>{t('pages.portfolio.account-value.title')}</div>
         <div className={styles.accountValue}>${formatCurrency(accountValue)}</div>

@@ -10,10 +10,11 @@
 }
 
 .tableHead {
-  background-color: var(--d8x-color-white);
+  background-color: var(--d8x-background-white);
 
   :global(.MuiTypography-root) {
     font-weight: 400;
+    color: var(--d8x-color-black-maintext);
   }
 }
 
@@ -25,10 +26,10 @@
   }
 
   tr {
-    background-color: var(--d8x-color-black-50);
+    background-color: var(--d8x-color-black-40);
 
     &:nth-child(2n) {
-      background-color: var(--d8x-color-white);
+      background-color: var(--d8x-background-white);
     }
   }
 }
@@ -44,12 +45,13 @@
   justify-content: center;
 }
 
-@media screen and ($d8x-breakpoint-min-md) and ($d8x-breakpoint-max-lg) {
+@media screen and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
 
   .tableHolder {
 
     :global(.MuiTableCell-root) {
       padding: 4px;
+      height: 48px;
     }
   }
 }

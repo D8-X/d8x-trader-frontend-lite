@@ -121,10 +121,10 @@ export const FundingTable = memo(() => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer className={styles.root}>
+        <TableContainer className={styles.tableHolder}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
-              <TableRow className={styles.tableHolder}>
+              <TableRow>
                 <SortableHeaders<FundingWithSymbolDataI>
                   headers={fundingListHeaders}
                   order={order}

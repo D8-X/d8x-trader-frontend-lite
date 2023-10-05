@@ -6,8 +6,9 @@ import { Box, Typography } from '@mui/material';
 
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom, perpetualStatisticsAtom } from 'store/pools.store';
+import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
 import commonStyles from '../../OrderBlock.module.scss';
@@ -15,20 +16,20 @@ import styles from './TriggerPrice.module.scss';
 
 export const TriggerPrice = memo(() => {
   const { t } = useTranslation();
+
   const [orderType] = useAtom(orderTypeAtom);
   const [triggerPrice, setTriggerPrice] = useAtom(triggerPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [inputValue, setInputValue] = useState(`${triggerPrice}`);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
+
+  const [inputValue, setInputValue] = useState(`${triggerPrice}`);
 
   const inputValueChangedRef = useRef(false);
 
-  const stepSize = useMemo(() => {
-    if (!selectedPerpetual?.markPrice) {
-      return '1';
-    }
-    return `${Math.min(1, 1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.markPrice)))}`;
-  }, [selectedPerpetual?.markPrice]);
+  const stepSize = useMemo(
+    () => `${Math.min(1, +calculateStepSize(selectedPerpetual?.markPrice))}`,
+    [selectedPerpetual?.markPrice]
+  );
 
   const handleTriggerPriceChange = useCallback(
     (targetValue: string) => {

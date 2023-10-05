@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { useAtom } from 'jotai';
 import { memo } from 'react';
 
@@ -19,7 +19,7 @@ export const PeriodSelector = memo(() => {
           <Button
             key={value}
             variant="outlined"
-            className={classNames({ [styles.selected]: value === period })}
+            className={classnames({ [styles.selected]: value === period })}
             onClick={() => setPeriod(value)}
           >
             {value}

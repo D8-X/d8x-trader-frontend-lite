@@ -8,6 +8,8 @@ import { genericMemo } from 'helpers/genericMemo';
 import { SortOrderE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
 
+import styles from './SortableHeaders.module.scss';
+
 interface SortableHeaderPropsI<T> {
   headers: TableHeaderI<T>[];
   order: SortOrderE;
@@ -29,6 +31,7 @@ function SortableHeadersComponent<T>({ headers, orderBy, order, setOrder, setOrd
 
   return headers.map((header) => (
     <TableCell
+      className={styles.headerLabel}
       key={header.label.toString()}
       align={header.align}
       sortDirection={orderBy === header.field ? order : false}
@@ -38,6 +41,7 @@ function SortableHeadersComponent<T>({ headers, orderBy, order, setOrder, setOrd
           active={orderBy === header.field}
           direction={orderBy === header.field ? order : 'asc'}
           onClick={createSortHandler(header.field)}
+          className={styles.sortIcon}
         >
           <Typography variant="bodySmall">{header.label}</Typography>
           {orderBy === header.field ? (

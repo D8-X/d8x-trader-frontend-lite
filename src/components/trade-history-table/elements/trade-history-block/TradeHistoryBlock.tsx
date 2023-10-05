@@ -25,7 +25,7 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
   return (
     <Box className={styles.root}>
       <Box className={styles.headerWrapper}>
-        <Box className={styles.leftSection}>
+        <Box>
           <Typography variant="bodySmall" component="p">
             {t('pages.trade.history-table.history-block-mobile.symbol')}
           </Typography>

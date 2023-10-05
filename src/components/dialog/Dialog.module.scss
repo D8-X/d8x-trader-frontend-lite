@@ -1,7 +1,21 @@
+@import '~styles/theme/_theme.scss';
+
 .loaderWrapper {
   height: 200px;
   width: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.dialog {
+
+  :global(.MuiPaper-root) {
+    background-color: var(--d8x-background);
+    color: var(--d8x-color-black-maintext);
+  }
+
+  :global(.MuiDialog-paper) {
+    border-radius: $d8x-border-radius;
+  }
 }

@@ -5,23 +5,19 @@
   flex-direction: column;
   gap: 6 * $d8x-spacing;
   box-sizing: content-box;
-  max-width: 250px;
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
+  background-color: var(--d8x-background-white);
 }
 
 .title {
   font-weight: 600;
+  color: var(--d8x-color-black-maintext);
+  max-width: 250px;
 }
 
 .text {
   color: var(--d8x-color-black-400);
-}
-
-@media screen and ($d8x-breakpoint-max-md) {
-
-  .root {
-    display: none;
-  }
+  max-width: 250px;
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {

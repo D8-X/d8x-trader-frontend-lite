@@ -11,7 +11,7 @@ export interface DropDownMenuItemPropsI {
 }
 
 export const DropDownMenuItem = ({ option, isActive, onClick }: DropDownMenuItemPropsI) => (
-  <MenuItem onClick={onClick} className={classnames('notranslate', { [styles.selected]: isActive })}>
+  <MenuItem onClick={onClick} className={classnames(styles.menuItem, { [styles.selected]: isActive })}>
     {option}
   </MenuItem>
 );

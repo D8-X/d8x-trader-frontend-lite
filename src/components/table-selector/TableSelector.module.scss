@@ -1,6 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
+  background-color: var(--d8x-background-white);
 
   &:global(.MuiPaper-root) {
     border-radius: $d8x-border-radius;

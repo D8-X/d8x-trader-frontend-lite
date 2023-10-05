@@ -59,7 +59,7 @@ export const EnterCodeDialog = ({ onClose, onCodeApplySuccess }: EnterCodeDialog
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
-          <Button variant="primary" disabled={inputDisabled} onClick={handleUseCode} className={styles.enterCodeButton}>
+          <Button variant="primary" disabled={inputDisabled} onClick={handleUseCode}>
             {codeState === CodeStateE.DEFAULT && t('pages.refer.trader-tab.enter-a-code')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.trader-tab.code-not-found')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.trader-tab.use-code')}

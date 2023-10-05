@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
 import { AttachMoneyOutlined } from '@mui/icons-material';
@@ -30,19 +30,13 @@ const OptionsHeader = () => {
   );
 };
 
-interface CollateralsSelectPropsI {
-  label?: string;
-  withNavigate?: boolean;
-}
-
-export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelectPropsI) => {
+export const CollateralsSelect = memo(() => {
   const { address } = useAccount();
 
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const location = useLocation();
 
   const { isConnected, send } = useWebSocketContext();
@@ -90,11 +84,6 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
     setSelectedPool(newItem.poolSymbol);
     setSelectedPerpetual(newItem.perpetuals[0].id);
 
-    if (withNavigate) {
-      navigate(
-        `${location.pathname}${location.search}#${newItem.perpetuals[0].baseCurrency}-${newItem.perpetuals[0].quoteCurrency}-${newItem.poolSymbol}`
-      );
-    }
     clearInputsData();
   };
 
@@ -109,7 +98,7 @@ export const CollateralsSelect = memo(({ label, withNavigate }: CollateralsSelec
       </Box>
       <HeaderSelect<PoolI>
         id="collaterals-select"
-        label={label ? label : t('common.select.collateral.label')}
+        label={t('common.select.collateral.label2')}
         native={isMobileScreen}
         items={selectItems}
         width="100%"

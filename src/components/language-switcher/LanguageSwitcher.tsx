@@ -1,9 +1,8 @@
-import { useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
-import { selectedLanguageAtom } from 'store/app.store';
 import { LanguageE } from 'types/enums';
 import type { LanguageMetaI } from 'types/types';
 
@@ -26,11 +25,12 @@ const languageMetaMap: Record<LanguageE, LanguageMetaI> = {
 };
 
 export const LanguageSwitcher = () => {
-  const [selectedLanguage] = useAtom(selectedLanguageAtom);
+  const { i18n } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const selectedLanguageMeta = languageMetaMap[selectedLanguage];
+  const selectedLanguageMeta =
+    languageMetaMap[(i18n.resolvedLanguage as LanguageE) || LanguageE.EN] || languageMetaMap[LanguageE.EN];
 
   const handleClose = useCallback(() => {
     setAnchorEl(null);

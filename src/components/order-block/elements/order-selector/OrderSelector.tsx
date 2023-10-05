@@ -1,5 +1,5 @@
+import classnames from 'classnames';
 import { useAtom } from 'jotai';
-import classNames from 'classnames';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +12,7 @@ import styles from './OrderSelector.module.scss';
 
 export const OrderSelector = memo(() => {
   const { t } = useTranslation();
+
   const [orderBlock, setOrderBlock] = useAtom(orderBlockAtom);
 
   return (
@@ -21,7 +22,7 @@ export const OrderSelector = memo(() => {
           {Object.values(OrderBlockE).map((key) => (
             <Button
               key={key}
-              className={classNames({ [styles.selected]: key === orderBlock })}
+              className={classnames({ [styles.selected]: key === orderBlock })}
               onClick={() => setOrderBlock(key)}
             >
               {t(`pages.trade.order-block.selector.${key.toLowerCase()}`)}

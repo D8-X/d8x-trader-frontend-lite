@@ -6,7 +6,9 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { parseSymbol } from 'helpers/parseSymbol';
+import { getOpenOrders } from 'network/network';
 import {
+  allPerpetualStatisticsAtom,
   failOrderAtom,
   openOrdersAtom,
   perpetualStatisticsAtom,
@@ -18,6 +20,7 @@ import {
   webSocketReadyAtom,
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
+import { debounceLeading } from 'utils/debounceLeading';
 
 import {
   CommonWsMessageI,
@@ -32,7 +35,6 @@ import {
   OnUpdateMarkPriceWsMessageI,
   SubscriptionWsMessageI,
 } from './types';
-import { getOpenOrders } from 'network/network';
 
 function isConnectMessage(message: CommonWsMessageI): message is ConnectWsMessageI {
   return message.type === MessageTypeE.Connect;
@@ -72,6 +74,11 @@ function isExecutionFailedMessage(message: CommonWsMessageI): message is OnExecu
   return message.type === MessageTypeE.OnExecutionFailed;
 }
 
+let allPerpetualStatisticsUpdates: Record<string, PerpetualStatisticsI> = {};
+const debouncePerpetualStatistics = debounceLeading((callback: () => void) => {
+  callback();
+}, 5000);
+
 export function useWsMessageHandler() {
   const { t } = useTranslation();
   const { address } = useAccount();
@@ -85,6 +92,7 @@ export function useWsMessageHandler() {
   const setOpenOrders = useSetAtom(openOrdersAtom);
   const removeOpenOrder = useSetAtom(removeOpenOrderAtom);
   const failOpenOrder = useSetAtom(failOrderAtom);
+  const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
 
   const updatePerpetualStats = useCallback(
@@ -150,7 +158,7 @@ export function useWsMessageHandler() {
           openInterest: openInterestBC,
         } = parsedMessage.data.obj;
 
-        updatePerpetualStats({
+        const perpetualStats = {
           id,
           baseCurrency: parsedSymbol.baseCurrency,
           quoteCurrency: parsedSymbol.quoteCurrency,
@@ -160,6 +168,14 @@ export function useWsMessageHandler() {
           indexPrice,
           currentFundingRateBps,
           openInterestBC,
+        };
+
+        updatePerpetualStats(perpetualStats);
+
+        allPerpetualStatisticsUpdates[parsedMessage.data.obj.symbol] = perpetualStats;
+        debouncePerpetualStatistics(() => {
+          setAllPerpetualStatistics(allPerpetualStatisticsUpdates);
+          allPerpetualStatisticsUpdates = {};
         });
       } else if (isUpdateMarginAccountMessage(parsedMessage)) {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
@@ -226,6 +242,7 @@ export function useWsMessageHandler() {
       setOpenOrders,
       removeOpenOrder,
       failOpenOrder,
+      setAllPerpetualStatistics,
       chainId,
       address,
       t,

@@ -1,29 +1,46 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { memo, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Box, ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
 
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { getMaxOrderSizeForTrader } from 'network/network';
 import { defaultCurrencyAtom } from 'store/app.store';
-import { orderBlockAtom, orderSizeAtom } from 'store/order-block.store';
+import { orderBlockAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
+import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
+import {
+  currencyMultiplierAtom,
+  inputValueAtom,
+  maxTraderOrderSizeAtom,
+  orderSizeAtom,
+  selectedCurrencyAtom,
+  setInputFromOrderSizeAtom,
+  setOrderSizeAtom,
+} from './store';
+
+const roundMaxOrderSize = (value: number) => {
+  const numberDigits = valueToFractionDigits(value);
+  const multiplier = 10 ** numberDigits;
+  return Math.round(value * multiplier) / multiplier;
+};
 
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
-  const [orderSize, setOrderSize] = useAtom(orderSizeAtom);
+  const [orderSize, setOrderSizeDirect] = useAtom(orderSizeAtom);
+  const [inputValue, setInputValue] = useAtom(inputValueAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
@@ -31,73 +48,32 @@ export const OrderSize = memo(() => {
   const [orderBlock] = useAtom(orderBlockAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [defaultCurrency] = useAtom(defaultCurrencyAtom);
+  const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
+  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
+  const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
+  const setOrderSize = useSetAtom(setOrderSizeAtom);
+  const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
 
-  const [selectedCurrency, setSelectedCurrency] = useState('');
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
-  const [inputValue, setInputValue] = useState(`${orderSize}`);
-  const [maxOrderSizeInBase, setMaxOrderSizeInBase] = useState<number | undefined>(undefined);
-  const [maxOrderSize, setMaxOrderSize] = useState<number | undefined>(undefined);
-  const [currentMultiplier, setCurrentMultiplier] = useState<number>(1);
 
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const inputValueChangedRef = useRef(false);
   const fetchedMaxSizes = useRef(false);
   const anchorRef = useRef<HTMLDivElement>(null);
-  const latestCurrency = useRef('');
 
-  const handleOrderSizeChange = useCallback(
-    (orderSizeValue: string) => {
-      if (orderSizeValue && perpetualStaticInfo) {
-        const roundedValueBase = (+roundToLotString(
-          +orderSizeValue / currentMultiplier,
-          perpetualStaticInfo.lotSizeBC
-        )).toString();
-        setOrderSize(+roundedValueBase);
-        setInputValue(orderSizeValue);
+  const onInputChange = useCallback(
+    (value: string) => {
+      if (value) {
+        setOrderSize(Number(value) / currencyMultiplier);
+        setInputValue(value);
       } else {
-        setOrderSize(0);
+        setOrderSizeDirect(0);
         setInputValue('');
       }
-      inputValueChangedRef.current = true;
     },
-    [setOrderSize, currentMultiplier, perpetualStaticInfo]
+    [setOrderSizeDirect, setOrderSize, setInputValue, currencyMultiplier]
   );
-
-  useEffect(() => {
-    if (orderSize === 0) {
-      setInputValue('0');
-    }
-  }, [orderSize]);
-
-  useEffect(() => {
-    if (!inputValueChangedRef.current) {
-      setInputValue(`${orderSize}`);
-    }
-    inputValueChangedRef.current = false;
-
-    if (!selectedPool || !selectedPerpetual) {
-      return;
-    }
-
-    if (selectedCurrency !== latestCurrency.current) {
-      let updatedMultiplier = 1;
-      if (selectedCurrency === selectedPerpetual.quoteCurrency) {
-        updatedMultiplier = selectedPerpetual.indexPrice;
-      } else if (selectedCurrency === selectedPool.poolSymbol) {
-        updatedMultiplier = selectedPerpetual.indexPrice / selectedPerpetual.collToQuoteIndexPrice;
-      }
-      setCurrentMultiplier(updatedMultiplier);
-      const numberDigits = valueToFractionDigits(orderSize * updatedMultiplier);
-      setInputValue(
-        updatedMultiplier === 1 || orderSize === 0
-          ? orderSize.toString()
-          : (orderSize * updatedMultiplier).toFixed(numberDigits)
-      );
-      latestCurrency.current = selectedCurrency;
-    }
-  }, [selectedCurrency, selectedPool, selectedPerpetual, orderSize, setOrderSize]);
 
   useEffect(() => {
     if (!selectedPerpetual || !selectedPool) {
@@ -110,21 +86,11 @@ export const OrderSize = memo(() => {
     } else {
       setSelectedCurrency(selectedPool.poolSymbol);
     }
-  }, [selectedPerpetual, selectedPool, defaultCurrency]);
+  }, [selectedPerpetual, selectedPool, defaultCurrency, setSelectedCurrency]);
 
   const handleInputBlur = useCallback(() => {
-    if (perpetualStaticInfo) {
-      const roundedValueBase = roundToLotString(orderSize, perpetualStaticInfo.lotSizeBC);
-      const numberDigits = valueToFractionDigits(+roundedValueBase * currentMultiplier);
-      setOrderSize(+roundedValueBase);
-      setInputValue(
-        currentMultiplier === 1 || orderSize === 0
-          ? (+roundedValueBase).toString()
-          : (+roundedValueBase * currentMultiplier).toFixed(numberDigits)
-      );
-      inputValueChangedRef.current = true;
-    }
-  }, [perpetualStaticInfo, orderSize, setOrderSize, currentMultiplier]);
+    setInputFromOrderSize(orderSize);
+  }, [orderSize, setInputFromOrderSize]);
 
   const currencyOptions = useMemo(() => {
     if (!selectedPool || !selectedPerpetual) {
@@ -140,24 +106,22 @@ export const OrderSize = memo(() => {
 
   const orderSizeStep = useMemo(() => {
     if (perpetualStaticInfo) {
-      const numberDigits = valueToFractionDigits(
-        +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
-      );
-      if (currentMultiplier === 1) {
+      if (currencyMultiplier === 1) {
         return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
       } else {
-        return (
-          +roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier
-        ).toFixed(numberDigits);
+        const roundedValueBase =
+          Number(roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC)) * currencyMultiplier;
+        const numberDigits = valueToFractionDigits(roundedValueBase);
+        return roundedValueBase.toFixed(numberDigits);
       }
     }
     return '0.1';
-  }, [perpetualStaticInfo, currentMultiplier]);
+  }, [perpetualStaticInfo, currencyMultiplier]);
 
   const minPositionString = useMemo(() => {
     if (perpetualStaticInfo) {
       return formatToCurrency(
-        +roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currentMultiplier,
+        +roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currencyMultiplier,
         '',
         false,
         undefined,
@@ -165,7 +129,7 @@ export const OrderSize = memo(() => {
       );
     }
     return '0.1';
-  }, [perpetualStaticInfo, currentMultiplier]);
+  }, [perpetualStaticInfo, currencyMultiplier]);
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
@@ -200,23 +164,19 @@ export const OrderSize = memo(() => {
         perpetualStaticInfo.id,
         orderBlock === OrderBlockE.Long
       ).then((result) => {
-        setMaxOrderSizeInBase(result);
+        if (result) {
+          setMaxOrderSize(result * 0.995);
+        }
       });
     }
-  }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize]);
-
-  useEffect(() => {
-    if (maxOrderSizeInBase) {
-      setMaxOrderSize(maxOrderSizeInBase * currentMultiplier);
-    }
-  }, [maxOrderSizeInBase, currentMultiplier]);
+  }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]);
 
   const handleCurrencyChangeToggle = () => {
     setOpenCurrencySelector((prevOpen) => !prevOpen);
   };
 
   const handleClose = (event: Event) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (anchorRef.current?.contains(event.target as HTMLElement)) {
       return;
     }
 
@@ -231,88 +191,93 @@ export const OrderSize = memo(() => {
     setOpenCurrencySelector(false);
   };
 
+  const maxOrderSizeCurrent = maxOrderSize && maxOrderSize * currencyMultiplier;
   return (
-    <Box className={styles.root}>
-      <Box className={styles.label}>
-        <InfoBlock
-          title={t('pages.trade.order-block.order-size.title')}
-          content={
-            <>
-              <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
-              <Typography>
-                {t('pages.trade.order-block.order-size.body2')} {formatToCurrency(maxOrderSize, selectedCurrency)}.{' '}
-                {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
-                {t('pages.trade.order-block.order-size.body4')}{' '}
-                {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
-              </Typography>
-            </>
+    <>
+      <Box className={styles.root}>
+        <Box className={styles.label}>
+          <InfoBlock
+            title={t('pages.trade.order-block.order-size.title')}
+            content={
+              <>
+                <Typography> {t('pages.trade.order-block.order-size.body1')} </Typography>
+                <Typography>
+                  {t('pages.trade.order-block.order-size.body2')}{' '}
+                  {formatToCurrency(maxOrderSizeCurrent, selectedCurrency)}.{' '}
+                  {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
+                  {t('pages.trade.order-block.order-size.body4')}{' '}
+                  {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
+                </Typography>
+              </>
+            }
+            classname={commonStyles.actionIcon}
+          />
+        </Box>
+        <ResponsiveInput
+          id="order-size"
+          inputValue={inputValue}
+          setInputValue={onInputChange}
+          handleInputBlur={handleInputBlur}
+          currency={
+            <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
+              {selectedCurrency}
+            </span>
           }
-          classname={commonStyles.actionIcon}
+          step={orderSizeStep}
+          min={0}
+          max={maxOrderSizeCurrent && roundMaxOrderSize(maxOrderSizeCurrent)}
+          className={styles.inputHolder}
+          adornmentAction={
+            <div ref={anchorRef}>
+              <IconButton
+                aria-label="change currency"
+                onClick={handleCurrencyChangeToggle}
+                edge="start"
+                size="small"
+                className={styles.selector}
+              >
+                {openCurrencySelector ? <ArrowDropUp /> : <ArrowDropDown />}
+              </IconButton>
+              <Popper
+                sx={{
+                  zIndex: 1,
+                }}
+                open={openCurrencySelector}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === 'bottom' ? 'left top' : 'left bottom',
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList id="split-button-menu" autoFocusItem className={styles.menuItems}>
+                          {currencyOptions.map((option) => (
+                            <MenuItem
+                              key={option}
+                              selected={option === selectedCurrency}
+                              onClick={(event) => handleCurrencySelect(event, option)}
+                            >
+                              {option}
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
+          }
         />
       </Box>
-      <ResponsiveInput
-        id="order-size"
-        inputValue={inputValue}
-        setInputValue={handleOrderSizeChange}
-        handleInputBlur={handleInputBlur}
-        currency={
-          <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
-            {selectedCurrency}
-          </span>
-        }
-        step={orderSizeStep}
-        min={0}
-        max={maxOrderSize}
-        className={styles.inputHolder}
-        adornmentAction={
-          <div ref={anchorRef}>
-            <IconButton
-              aria-label="change currency"
-              onClick={handleCurrencyChangeToggle}
-              edge="start"
-              size="small"
-              className={styles.selector}
-            >
-              <ArrowDropDownIcon />
-            </IconButton>
-            <Popper
-              sx={{
-                zIndex: 1,
-              }}
-              open={openCurrencySelector}
-              anchorEl={anchorRef.current}
-              role={undefined}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin: placement === 'bottom' ? 'left top' : 'left bottom',
-                  }}
-                >
-                  <Paper>
-                    <ClickAwayListener onClickAway={handleClose}>
-                      <MenuList id="split-button-menu" autoFocusItem className={styles.menuItems}>
-                        {currencyOptions.map((option) => (
-                          <MenuItem
-                            key={option}
-                            selected={option === selectedCurrency}
-                            onClick={(event) => handleCurrencySelect(event, option)}
-                          >
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </div>
-        }
-      />
-    </Box>
+      <OrderSizeSlider />
+    </>
   );
 });

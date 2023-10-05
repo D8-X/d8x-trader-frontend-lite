@@ -1,5 +1,5 @@
-import { useAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Slider, Typography } from '@mui/material';
@@ -7,12 +7,12 @@ import { Box, Slider, Typography } from '@mui/material';
 import { InfoBlock } from 'components/info-block/InfoBlock';
 import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
-import { leverageAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { type MarkI } from 'types/types';
 
 import commonStyles from '../../OrderBlock.module.scss';
 import styles from './LeverageSelector.module.scss';
+import { inputValueAtom, leverageAtom, setLeverageAtom } from './store';
 
 const multipliers = [0.25, 0.5, 0.75, 1];
 
@@ -23,24 +23,18 @@ function valueLabelFormat(value: number) {
 export const LeverageSelector = memo(() => {
   const { t } = useTranslation();
 
-  const [leverage, setLeverage] = useAtom(leverageAtom);
+  const [leverage] = useAtom(leverageAtom);
   const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
 
-  const [updatedLeverage, setUpdatedLeverage] = useState(leverage);
-  const [inputValue, setInputValue] = useState(`${leverage}`);
-
-  const inputValueChangedRef = useRef(false);
+  const [inputValue] = useAtom(inputValueAtom);
+  const setLeverage = useSetAtom(setLeverageAtom);
 
   const maxLeverage = useMemo(() => {
     if (perpetualStaticInfo) {
-      const newLeverage = Math.round(1 / perpetualStaticInfo.initialMarginRate);
-      if (newLeverage < leverage) {
-        setLeverage(newLeverage);
-      }
-      return newLeverage;
+      return Math.round(1 / perpetualStaticInfo.initialMarginRate);
     }
     return 10;
-  }, [perpetualStaticInfo, leverage, setLeverage]);
+  }, [perpetualStaticInfo]);
 
   const marks = useMemo(() => {
     const newMarks: MarkI[] = [{ value: 1, label: '1x' }];
@@ -51,32 +45,17 @@ export const LeverageSelector = memo(() => {
   }, [maxLeverage]);
 
   const handleLeverageInputChange = useCallback(
-    (targetValue: string) => {
-      if (targetValue) {
-        const numberValue = +targetValue;
-        setLeverage(numberValue < 1 ? 1 : numberValue);
-        setInputValue(numberValue < 1 ? '1' : `${numberValue}`);
-      } else {
-        setLeverage(1);
-        setInputValue('');
-      }
+    (value: string) => {
+      setLeverage(Number(value));
     },
     [setLeverage]
   );
 
   const handleInputBlur = useCallback(() => {
-    setInputValue(`${leverage}`);
-  }, [leverage]);
+    setLeverage(leverage);
+  }, [setLeverage, leverage]);
 
-  useEffect(() => {
-    if (!inputValueChangedRef.current) {
-      setLeverage(updatedLeverage);
-      setInputValue(`${updatedLeverage}`);
-    }
-    inputValueChangedRef.current = false;
-  }, [setLeverage, updatedLeverage]);
-
-  const leverageStep = useMemo(() => ((maxLeverage / 2) % 10 ? 0.5 : 1), [maxLeverage]);
+  const leverageStep = (maxLeverage / 2) % 10 ? 0.5 : 1;
 
   return (
     <Box className={styles.root}>
@@ -109,7 +88,7 @@ export const LeverageSelector = memo(() => {
             marks={marks}
             onChange={(_event, newValue) => {
               if (typeof newValue === 'number') {
-                setUpdatedLeverage(newValue);
+                setLeverage(newValue);
               }
             }}
           />

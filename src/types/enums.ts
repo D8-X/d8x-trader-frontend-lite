@@ -11,6 +11,13 @@ export enum DefaultCurrencyE {
   Quote = 'quote',
 }
 
+export enum OrderValueTypeE {
+  Multiple = 'multiple',
+  Partial = 'partial',
+  Full = 'full',
+  None = 'none',
+}
+
 export enum OrderBlockPositionE {
   Left = 'left',
   Right = 'right',
@@ -39,12 +46,24 @@ export enum OrderTypeE {
   Stop = 'Stop',
 }
 
+export enum OrderSideE {
+  Buy = 'BUY',
+  Sell = 'SELL',
+}
+
+export enum OpenOrderTypeE {
+  Market = 'MARKET',
+  Limit = 'LIMIT',
+  StopLimit = 'STOP_LIMIT',
+  StopMarket = 'STOP_MARKET',
+}
+
 export enum ExpiryE {
-  '1D' = '1D',
-  '30D' = '30D',
-  '90D' = '90D',
-  '180D' = '180D',
-  '365D' = '365D',
+  '1D' = '1',
+  '30D' = '30',
+  '90D' = '90',
+  '180D' = '180',
+  '365D' = '365',
 }
 
 export enum StopLossE {
@@ -61,19 +80,6 @@ export enum TakeProfitE {
   '100%' = '100%',
   '500%' = '500%',
   'None' = 'NONE',
-}
-
-export enum ToleranceE {
-  '0.5%' = 0.5,
-  '1%' = 1,
-  '1.5%' = 1.5,
-  '2%' = 2,
-  '2.5%' = 2.5,
-  '3%' = 3,
-  '3.5%' = 3.5,
-  '4%' = 4,
-  '4.5%' = 4.5,
-  '5%' = 5,
 }
 
 export enum AlignE {
@@ -113,6 +119,12 @@ export enum RebateTypeE {
 export enum ReferralDialogActionE {
   CREATE,
   MODIFY,
+}
+
+export enum AssetTypeE {
+  Crypto = 'crypto',
+  Fx = 'fx',
+  Metal = 'metal',
 }
 
 export enum FieldTypeE {

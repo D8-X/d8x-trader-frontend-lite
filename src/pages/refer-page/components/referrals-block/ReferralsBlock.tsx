@@ -28,7 +28,7 @@ export const ReferralsBlock = () => {
   return (
     <Box className={styles.root}>
       <Box className={styles.buttonContainer}>
-        <Button onClick={openDialog} variant="primary" disabled={!address} className={styles.enterCodeButton}>
+        <Button onClick={openDialog} variant="primary" disabled={!address}>
           {t('pages.refer.referrer-tab.create')}
         </Button>
       </Box>

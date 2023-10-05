@@ -302,19 +302,14 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
             {t('pages.refer.manage-code.cancel')}
           </Button>
           {props.type === ReferralDialogActionE.CREATE && (
-            <Button
-              variant="primary"
-              disabled={codeInputDisabled || !isAddressValid}
-              onClick={handleUpsertCode}
-              className={styles.enterCodeButton}
-            >
+            <Button variant="primary" disabled={codeInputDisabled || !isAddressValid} onClick={handleUpsertCode}>
               {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
               {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
               {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
             </Button>
           )}
           {props.type === ReferralDialogActionE.MODIFY && (
-            <Button variant="primary" onClick={handleUpsertCode} className={styles.enterCodeButton}>
+            <Button variant="primary" onClick={handleUpsertCode}>
               {t('pages.refer.manage-code.modify')}
             </Button>
           )}

@@ -3,13 +3,14 @@
 .root {
   height: 0;
   border-bottom: 1px solid var(--d8x-separator-border-color);
-  margin: 2 * $d8x-spacing 0;
+  padding: 1 * $d8x-spacing;
+  background-color: var(--d8x-background-card-details);
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
-  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
-    margin: 1 * $d8x-spacing 0;
+    padding: 0.5 * $d8x-spacing 0;
   }
 }

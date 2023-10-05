@@ -4,5 +4,7 @@ export const PERIOD_OF_4_DAYS = 4 * PERIOD_OF_1_DAY;
 
 export const DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';
 
+export const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
+
 export const HashZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const MaxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';

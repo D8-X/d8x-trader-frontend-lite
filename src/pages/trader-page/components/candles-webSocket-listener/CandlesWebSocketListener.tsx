@@ -1,20 +1,21 @@
-import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
 import { config } from 'config';
 
-import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
-import { useHandleMessage } from '../hooks/useHandleMessage';
-import { usePingPong } from '../hooks/usePingPong';
-import { useMessagesToSend } from '../hooks/useMessagesToSend';
-import { useSend } from '../hooks/useSend';
-import { WebSocketI } from '../types';
-import { CandlesWebSocketContext, CandlesWebSocketContextI } from './CandlesWebSocketContext';
+import { createWebSocketWithReconnect } from 'context/websocket-context/createWebSocketWithReconnect';
+import { useHandleMessage } from 'context/websocket-context/hooks/useHandleMessage';
+import { useMessagesToSend } from 'context/websocket-context/hooks/useMessagesToSend';
+import { usePingPong } from 'context/websocket-context/hooks/usePingPong';
+import { useSend } from 'context/websocket-context/hooks/useSend';
+import { WebSocketI } from 'context/websocket-context/types';
+
+import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
 import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 
 let client: WebSocketI;
 
-export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren) => {
+export const CandlesWebSocketListener = () => {
   const chainId = useChainId();
 
   const waitForPongRef = useRef(false);
@@ -67,13 +68,7 @@ export const CandlesWebSocketContextProvider = ({ children }: PropsWithChildren)
     };
   }, [chainId]);
 
-  const contextValue: CandlesWebSocketContextI = useMemo(
-    () => ({
-      isConnected,
-      send,
-    }),
-    [isConnected, send]
-  );
+  useCandleMarketsSubscribe({ isConnected, send });
 
-  return <CandlesWebSocketContext.Provider value={contextValue}>{children}</CandlesWebSocketContext.Provider>;
+  return null;
 };

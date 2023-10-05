@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import type { Dispatch, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +19,13 @@ interface ModifyTypeSelectorPropsI {
 
 export const ModifyTypeSelector = memo(({ modifyType, setModifyType }: ModifyTypeSelectorPropsI) => {
   const { t } = useTranslation();
+
   return (
     <Box className={styles.root}>
       {Object.values(ModifyTypeE).map((key) => (
         <Button
           key={key}
-          className={classNames({ [styles.selected]: key === modifyType })}
+          className={classnames({ [styles.selected]: key === modifyType })}
           variant={key === modifyType ? 'link' : 'link'}
           onClick={() => setModifyType(key)}
         >

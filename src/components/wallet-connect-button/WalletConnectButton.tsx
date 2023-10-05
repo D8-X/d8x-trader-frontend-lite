@@ -5,29 +5,24 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type PublicClient, useAccount, useChainId, useConnect, usePublicClient } from 'wagmi';
+import { useAccount, useChainId, useConnect, usePublicClient, type PublicClient } from 'wagmi';
 
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
-import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
 import { ReactComponent as WalletIcon } from 'assets/icons/walletIcon.svg';
+import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
+import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { config } from 'config';
 import { getTraderLoyalty } from 'network/network';
-import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { loyaltyScoreAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
+import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { cutAddressName } from 'utils/cutAddressName';
 
+import { OneClickTradingButton } from './OneClickTradingButton';
 import styles from './WalletConnectButton.module.scss';
 
-const loyaltyMap: Record<number, string> = {
-  1: 'Diamond',
-  2: 'Platinum',
-  3: 'Gold',
-  4: 'Silver',
-  5: '-',
-};
+const loyaltyMap = ['Diamond', 'Platinum', 'Gold', 'Silver', '-'];
 
 interface WalletConnectButtonPropsI {
   buttonClassName?: string;
@@ -163,7 +158,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
                     variant="primary"
                     className={classnames(styles.connectWalletButton, buttonClassName)}
                   >
-                    {t('common.wallet-connect')}
+                    {<span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>}
                   </Button>
                 );
               }
@@ -178,12 +173,13 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
 
               return (
                 <div className={styles.buttonsHolder}>
+                  <OneClickTradingButton />
                   <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                     <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                   </Button>
                   <Button onClick={openAccountModal} variant="primary" className={styles.addressButton}>
                     {!isMobileScreen && (
-                      <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore]}>
+                      <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore - 1]}>
                         {loyaltyScore < 5 ? (
                           <FilledStar width={12} height={12} />
                         ) : (
@@ -206,7 +202,9 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
                         )}
                       </Box>
                     )}
-                    {!isMobileScreen && cutAddressName(account.address)}
+                    {!isMobileScreen && (
+                      <span className={styles.cutAddressName}>{cutAddressName(account.address)}</span>
+                    )}
                     {isMobileScreen && <WalletIcon className={styles.icon} />}
                   </Button>
                 </div>

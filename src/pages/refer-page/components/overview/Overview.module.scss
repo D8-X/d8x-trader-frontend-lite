@@ -10,6 +10,7 @@
 
 .title {
   margin-bottom: 10 * $d8x-spacing;
+  color: var(--d8x-color-black-maintext);
 }
 
 .dataBlock {
@@ -19,7 +20,7 @@
   color: var(--d8x-color-purple-dark);
 
   .dataTitle {
-    color: var(--d8x-color-black-500);
+    color: var(--d8x-color-black-maintext);
     margin-bottom: $d8x-spacing;
   }
 
@@ -29,7 +30,7 @@
   }
 }
 
-@media screen and ($d8x-breakpoint-max-sm) {
+@media screen and ($d8x-breakpoint-max-md) {
 
   .root {
     border-radius: $d8x-border-radius $d8x-border-radius 0 0;

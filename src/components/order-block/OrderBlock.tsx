@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import { memo } from 'react';
 
 import { Card, CardContent } from '@mui/material';
@@ -10,9 +11,9 @@ import { LimitPrice } from './elements/limit-price/LimitPrice';
 import { OrderSelector } from './elements/order-selector/OrderSelector';
 import { OrderSize } from './elements/order-size/OrderSize';
 import { OrderTypeSelector } from './elements/order-type-selector/OrderTypeSelector';
-import { TriggerPrice } from './elements/trigger-price/TriggerPrice';
 import { StopLossSelector } from './elements/stop-loss-selector/StopLossSelector';
 import { TakeProfitSelector } from './elements/take-profit-selector/TakeProfitSelector';
+import { TriggerPrice } from './elements/trigger-price/TriggerPrice';
 
 import styles from './OrderBlock.module.scss';
 
@@ -22,16 +23,16 @@ export const OrderBlock = memo(() => {
       <OrderSelector />
       <CardContent className={styles.card}>
         <OrderTypeSelector />
-        <OrderSize />
-        <TriggerPrice />
-        <LimitPrice />
-      </CardContent>
-      <Separator />
-      <CardContent className={styles.card}>
         <LeverageSelector />
       </CardContent>
       <Separator />
       <CardContent className={styles.card}>
+        <TriggerPrice />
+        <LimitPrice />
+        <OrderSize />
+      </CardContent>
+      <Separator />
+      <CardContent className={classnames(styles.card, styles.selectors)}>
         <StopLossSelector />
         <TakeProfitSelector />
       </CardContent>

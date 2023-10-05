@@ -15,11 +15,18 @@
   }
 }
 
+.menuHolder {
+
+  :global(.MuiPaper-root) {
+    color: var(--d8x-color-black-maintext);
+    background-color: var(--d8x-background);
+  }
+}
+
 .selectedValue {
   display: flex;
   align-items: center;
   gap: 2 * $d8x-spacing;
-  font-size: 16px;
 
   svg {
     color: var(--d8x-color-purple);
@@ -31,6 +38,10 @@
 .arrowDropDown {
   color: var(--d8x-color-purple);
   padding-top: 2 * $d8x-spacing;
+
+  &.disabledHandle {
+    color: var(--d8x-color-black-200);
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {

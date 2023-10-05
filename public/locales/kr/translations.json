@@ -20,7 +20,8 @@
         "index-price": "지수 가격",
         "funding-rate": "펀딩 비율",
         "open-interest": "미결제약정",
-        "view-graph": "View Graph"
+        "view-graph": "View Graph",
+        "hide-graph": "Hide Graph"
       },
       "positions-table": {
         "table-title": "포지션 열기",
@@ -31,14 +32,17 @@
           "entry-price": "Entry Price",
           "liq-price": "청산 가격",
           "margin": "마진",
-          "pnl": "미실현손익"
+          "pnl": "미실현손익",
+          "tp-sl": "TP/SL"
         },
         "table-content": {
           "buy": "매수",
           "sell": "매도",
           "modify": "Modify",
           "connect": "지갑 연결",
-          "no-open": "열린 포지션이 없습니다."
+          "no-open": "열린 포지션이 없습니다.",
+          "multiple": "multiple",
+          "partial": "partial"
         },
         "position-block-mobile": {
           "symbol": "Symbol",
@@ -46,6 +50,8 @@
         },
         "modify-modal": {
           "title": "Modify Position",
+          "tp-sl-title": "TP/SL",
+          "tp-sl-position": "Set a TP/SL for your existing position of {{positionSize}}",
           "selector": {
             "close": "Close",
             "add": "Add",
@@ -62,7 +68,8 @@
             "liq-price": "청산 가격:"
           },
           "cancel": "Cancel",
-          "confirm": "Confirm"
+          "confirm": "Confirm",
+          "create": "Create"
         },
         "toasts": {
           "submit-close": {
@@ -256,7 +263,8 @@
         "info": {
           "balance": "Wallet balance",
           "order-size": "금액",
-          "fees": "수수료"
+          "fees": "수수료",
+          "approx-deposit": "Approx. deposit from wallet"
         },
         "review": {
           "title": "Review order"
@@ -306,11 +314,11 @@
         },
         "review": {
           "title": "Review order",
-          "deposit": "Deposit from wallet:",
-          "balance": "Wallet balance:",
+          "deposit": "Deposit from wallet",
+          "balance": "Wallet balance",
           "fee": "수수료:",
-          "max": "Max entry price:",
-          "min": "Min entry price:",
+          "max": "Max entry price",
+          "min": "Min entry price",
           "trigger-price": "Trigger price",
           "limit-price": "지정가",
           "stop-loss": "Stop-loss price",
@@ -497,6 +505,7 @@
       "perpetuals": "퍼페추얼",
       "vault": "볼트",
       "account-value": {
+        "main-title": "Your account",
         "title": "계정 가치",
         "details": {
           "wallet": {
@@ -531,21 +540,57 @@
       "title": "Settings",
       "ui-settings": {
         "title": "UI Settings",
+        "one-click-trading": {
+          "title": "One-click trading"
+        },
         "order-block": {
-          "title": "Order Block",
+          "title": "Order block",
           "left": "Left",
           "right": "Right"
         },
-        "dark-mode": {
-          "title": "Coming soon",
-          "on": "On",
-          "off": "Off"
+        "theme": {
+          "title": "주제",
+          "dark": "어두운",
+          "light": "빛"
         },
         "default-currency": {
-          "title": "Default Currency",
+          "title": "Default currency",
           "base": "Base",
           "quote": "Quote",
           "pool": "Pool"
+        }
+      },
+      "one-click-modal": {
+        "title": "One-click trading",
+        "modal-button": "Setup",
+        "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
+        "create-delegate": {
+          "title": "Create Delegate Account",
+          "description": "As an initial step you need to create a Delegate Account.",
+          "create-success-result": "Delegate account is created and One-click trading is activated.",
+          "create": "Create"
+        },
+        "manage-delegate": {
+          "title": "Manage Delegate Account",
+          "remove-action-result": "One-click trading is deactivated.",
+          "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
+          "activate-error-result": "Invalid wallet. Re-set your delegate and try again.",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "status": {
+            "title": "One-click trading status",
+            "active": "Active",
+            "inactive": "Inactive"
+          },
+          "address": "Delegate addr",
+          "amount": "Delegate wallet amount (gas)",
+          "remove": "Remove",
+          "fund": "Fund"
+        },
+        "funding-modal": {
+          "title": "Fund delegate wallet",
+          "description": "Fund your delegate wallet to pay for gas.",
+          "fund": "Fund"
         }
       }
     },

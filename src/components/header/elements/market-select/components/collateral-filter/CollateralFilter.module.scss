@@ -11,6 +11,14 @@
   border-radius: $d8x-spacing;
 }
 
+.menuHolder {
+
+  :global(.MuiPaper-root) {
+    color: var(--d8x-color-black-maintext);
+    background-color: var(--d8x-background);
+  }
+}
+
 .selectedCollateral {
   display: flex;
   align-items: center;
@@ -36,6 +44,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: $d8x-spacing * 2;
+  color: var(--d8x-color-black-maintext);
 
   &.selected {
     background-color: var(--d8x-background-purple);

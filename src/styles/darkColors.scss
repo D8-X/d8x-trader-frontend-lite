@@ -1,0 +1,49 @@
+@mixin dark-colors {
+  --d8x-color-purple: #7860E3;
+  --d8x-color-purple-dark: #C9CCFC;
+  --d8x-color-purple-50: #7860E333;
+  --d8x-color-purple-200: #C9CCFC;
+  --d8x-color-purple-300: #A8ABF9;
+  --d8x-color-purple-rgb: 102, 74, 223;
+  --d8x-color-yellow: #FFDA9F;
+  --d8x-color-rose: #FFBDBD;
+  --d8x-color-black: #FFF;
+  --d8x-color-black-maintext: #FFF;
+  --d8x-color-black-800: #F3F2F2;
+  --d8x-color-black-600: #C8C8C8;
+  --d8x-color-black-500: #AAA;
+  --d8x-color-black-400: #A4A4A4;
+  --d8x-color-black-300: #818181;
+  --d8x-color-black-200: #515151;
+  --d8x-color-black-150: #2E2E2E;
+  --d8x-color-black-100: #383838;
+  --d8x-color-black-50: #7860E333;
+  --d8x-color-black-40: #201D2D;
+  --d8x-color-black-opac: #E5E3E3;
+  --d8x-color-black-opac2: rgba(255, 255, 255, 0.6);
+  --d8x-color-black-opac3: rgba(255, 255, 255, 0.4);
+  --d8x-color-white: #F3F2F2;
+  --d8x-color-white-opac: rgba(255, 255, 255, 0.1);
+  --d8x-color-buy: #089981;
+  --d8x-color-sell: #F23645;
+  --d8x-background: #201B35;
+  --d8x-background-buy-rgb: 8, 153, 129;
+  --d8x-background-sell-rgb: 242, 54, 69;
+  --d8x-background-buy-inactive-rgb: 129, 129, 129;
+  --d8x-background-card-details: #111216;
+  --d8x-background-white: #111216;
+  --d8x-background-grey: #171717;
+  --d8x-background-purple: rgba(102, 74, 223, 0.1);
+  --d8x-background-loader: rgba(102, 74, 223, 0.1);
+  --d8x-icon-color: #7860E3;
+  --d8x-separator-border-color: #7860E333;
+  --d8x-input-border-color: #666;
+  --d8x-logo-second-color: white;
+
+  // Override colors for toastify
+  --toastify-color-progress-success: #664ADF;
+  --toastify-color-progress-error: #FFBDBD;
+  --toastify-color-progress-warning: #FFBDBD;
+  --toastify-color-progress-info: #FFBDBD;
+  --toastify-color-progress-light: linear-gradient(to right, #FFDA9F, #FFBDBD, #000);
+}

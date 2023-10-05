@@ -1,4 +1,4 @@
-import { MarketDataI } from 'context/websocket-context/candles/types';
+import { MarketDataI } from 'pages/trader-page/components/candles-webSocket-listener/types';
 import { PerpetualI } from 'types/types';
 
 export interface PerpetualWithPoolAndMarketI extends PerpetualI {

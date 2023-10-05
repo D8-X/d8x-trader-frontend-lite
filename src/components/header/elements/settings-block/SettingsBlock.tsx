@@ -5,9 +5,10 @@ import { Build } from '@mui/icons-material';
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import styles from './SettingsBlock.module.scss';
-import { DarkModeSwitcher } from './components/dark-mode/DarkModeSwitcher';
-import { DefaultCurrencySwitcher } from './components/default-currency/DefaultCurrencySwitcher';
-import { OrderBlockSwitcher } from './components/order-block/OrderBlockSwitcher';
+import { DarkModeSelect } from './components/dark-mode/DarkModeSelect';
+import { DefaultCurrencySelect } from './components/default-currency/DefaultCurrencySelect';
+import { OrderBlockSelect } from './components/order-block/OrderBlockSelect';
+import { OneClickTradingButton } from './components/one-click-trading/OneClickTradingButton';
 
 export const SettingsBlock = memo(() => {
   const { t } = useTranslation();
@@ -23,25 +24,31 @@ export const SettingsBlock = memo(() => {
           {t('common.settings.ui-settings.title')}
         </Typography>
       </Box>
+      <Box className={styles.optionRow}>
+        <Typography variant="bodyMedium" className={styles.setting}>
+          {t('common.settings.ui-settings.one-click-trading.title')}
+        </Typography>
+        <OneClickTradingButton />
+      </Box>
       {isBigScreen && (
         <Box className={styles.optionRow}>
           <Typography variant="bodyMedium" className={styles.setting}>
             {t('common.settings.ui-settings.order-block.title')}
           </Typography>
-          <OrderBlockSwitcher />
+          <OrderBlockSelect />
         </Box>
       )}
       <Box className={styles.optionRow}>
         <Typography variant="bodyMedium" className={styles.setting}>
-          {t('common.settings.ui-settings.dark-mode.title')}
+          {t('common.settings.ui-settings.theme.title')}
         </Typography>
-        <DarkModeSwitcher />
+        <DarkModeSelect />
       </Box>
       <Box className={styles.optionRow}>
         <Typography variant="bodyMedium" className={styles.setting}>
           {t('common.settings.ui-settings.default-currency.title')}
         </Typography>
-        <DefaultCurrencySwitcher />
+        <DefaultCurrencySelect />
       </Box>
     </Box>
   );

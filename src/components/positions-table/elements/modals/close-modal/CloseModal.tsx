@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -13,16 +13,11 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { getOpenOrders, getPositionRisk, orderDigest } from 'network/network';
-import {
-  openOrdersAtom,
-  poolTokenDecimalsAtom,
-  positionsAtom,
-  proxyAddrAtom,
-  selectedPoolAtom,
-  traderAPIAtom,
-} from 'store/pools.store';
-import { OrderTypeE } from 'types/enums';
+import { orderDigest } from 'network/network';
+import { tradingClientAtom } from 'store/app.store';
+import { latestOrderSentTimestampAtom } from 'store/order-block.store';
+import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom } from 'store/pools.store';
+import { OrderSideE, OrderTypeE } from 'types/enums';
 import { type MarginAccountI, type OrderI } from 'types/types';
 
 import styles from '../Modal.module.scss';
@@ -39,9 +34,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [, setOpenOrders] = useAtom(openOrdersAtom);
-  const [, setPositions] = useAtom(positionsAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
+  const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -79,22 +73,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     onSettled() {
       setTxHash(undefined);
       setSymbolForTx('');
-      setTimeout(() => {
-        getOpenOrders(chainId, traderAPI, address as Address)
-          .then(({ data: d }) => {
-            if (d?.length > 0) {
-              d.map(setOpenOrders);
-            }
-          })
-          .catch(console.error);
-        getPositionRisk(chainId, traderAPI, address as Address, Date.now())
-          .then(({ data }) => {
-            if (data && data.length > 0) {
-              data.map(setPositions);
-            }
-          })
-          .catch(console.error);
-      }, 30_000);
+      setLatestOrderSentTimestamp(Date.now());
     },
     enabled: !!address && !!txHash,
   });
@@ -104,7 +83,15 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
       return;
     }
 
-    if (!selectedPosition || !address || !selectedPool || !proxyAddr || !walletClient || !poolTokenDecimals) {
+    if (
+      !selectedPosition ||
+      !address ||
+      !selectedPool ||
+      !proxyAddr ||
+      !walletClient ||
+      !tradingClient ||
+      !poolTokenDecimals
+    ) {
       return;
     }
 
@@ -113,10 +100,10 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
 
     const closeOrder: OrderI = {
       symbol: selectedPosition.symbol,
-      side: selectedPosition.side === 'BUY' ? 'SELL' : 'BUY',
+      side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
       type: OrderTypeE.Market.toUpperCase(),
       quantity: selectedPosition.positionNotionalBaseCCY,
-      executionTimestamp: Math.floor(Date.now() / 1000 - 10),
+      executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       reduceOnly: true,
       leverage: selectedPosition.leverage,
     };
@@ -126,7 +113,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         if (data.data.digests.length > 0) {
           approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(walletClient, signatures, data.data)
+            postOrder(tradingClient, signatures, data.data)
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);

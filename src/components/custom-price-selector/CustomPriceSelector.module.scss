@@ -21,7 +21,14 @@
   gap: 8px;
 }
 
-.takeProfitOptions {
+.customPriceInput {
+
+  :global(.MuiOutlinedInput-input) {
+    padding: 8px 10px 6px;
+  }
+}
+
+.priceOptions {
   width: 100%;
   display: flex;
   justify-content: flex-start;
@@ -48,7 +55,7 @@
 
 @media screen and ($d8x-breakpoint-max-xs) {
 
-  .takeProfitOptions {
+  .priceOptions {
     width: 100%;
     display: flex;
     justify-content: flex-start;
@@ -63,7 +70,7 @@
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
-  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
     margin-bottom: 2 * $d8x-spacing;
@@ -74,7 +81,7 @@
     margin-bottom: 2 * $d8x-spacing;
   }
 
-  .takeProfitOptions {
+  .priceOptions {
 
     :global(.MuiButtonBase-root) {
       max-height: 30px;

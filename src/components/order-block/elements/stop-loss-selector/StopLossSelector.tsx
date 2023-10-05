@@ -1,25 +1,26 @@
-import classNames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
 import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
+import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoBlock } from 'components/info-block/InfoBlock';
+import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, StopLossE } from 'types/enums';
-import { mapCurrencyToFractionDigits } from 'utils/formatToCurrency';
+import { getFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
-import styles from './StopLossSelector.module.scss';
 
 export const StopLossSelector = memo(() => {
   const { t } = useTranslation();
+
   const [orderInfo] = useAtom(orderInfoAtom);
   const [stopLoss, setStopLoss] = useAtom(stopLossAtom);
-  const setStopLossPrice = useSetAtom(stopLossPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
+  const setStopLossPrice = useSetAtom(stopLossPriceAtom);
 
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null>(null);
 
@@ -59,20 +60,12 @@ export const StopLossSelector = memo(() => {
     }
   }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
 
-  const fractionDigits = useMemo(() => {
-    if (selectedPerpetual?.quoteCurrency) {
-      const foundFractionDigits = mapCurrencyToFractionDigits[selectedPerpetual.quoteCurrency];
-      return foundFractionDigits !== undefined ? foundFractionDigits : 2;
-    }
-    return 2;
-  }, [selectedPerpetual?.quoteCurrency]);
+  const fractionDigits = useMemo(
+    () => getFractionDigits(selectedPerpetual?.quoteCurrency),
+    [selectedPerpetual?.quoteCurrency]
+  );
 
-  const stepSize = useMemo(() => {
-    if (!selectedPerpetual?.indexPrice) {
-      return '1';
-    }
-    return `${1 / 10 ** Math.ceil(2.5 - Math.log10(selectedPerpetual.indexPrice))}`;
-  }, [selectedPerpetual?.indexPrice]);
+  const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
   const validateStopLossPrice = useCallback(() => {
     if (stopLossInputPrice === null) {
@@ -133,49 +126,30 @@ export const StopLossSelector = memo(() => {
   };
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.labelHolder}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title={t('pages.trade.order-block.stop-loss.title')}
-            content={
-              <>
-                <Typography>{t('pages.trade.order-block.stop-loss.body1')}</Typography>
-                <Typography>{t('pages.trade.order-block.stop-loss.body2')}</Typography>
-                <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
-              </>
-            }
-            classname={commonStyles.actionIcon}
-          />
-        </Box>
-        <OutlinedInput
-          id="custom-stop-loss-price"
-          className={styles.customPriceInput}
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">{selectedPerpetual?.quoteCurrency}</Typography>
-            </InputAdornment>
+    <CustomPriceSelector<StopLossE>
+      id="custom-stop-loss-price"
+      label={
+        <InfoBlock
+          title={t('pages.trade.order-block.stop-loss.title')}
+          content={
+            <>
+              <Typography>{t('pages.trade.order-block.stop-loss.body1')}</Typography>
+              <Typography>{t('pages.trade.order-block.stop-loss.body2')}</Typography>
+              <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
+            </>
           }
-          type="number"
-          value={stopLossInputPrice || ''}
-          placeholder="-"
-          onChange={handleStopLossPriceChange}
-          onBlur={validateStopLossPrice}
-          inputProps={{ step: stepSize }}
+          classname={commonStyles.actionIcon}
         />
-      </Box>
-      <Box className={styles.stopLossOptions}>
-        {Object.values(StopLossE).map((key) => (
-          <Button
-            key={key}
-            variant="outlined"
-            className={classNames({ [styles.selected]: key === stopLoss })}
-            onClick={() => handleStopLossChange(key)}
-          >
-            {translationMap[key]}
-          </Button>
-        ))}
-      </Box>
-    </Box>
+      }
+      options={Object.values(StopLossE)}
+      translationMap={translationMap}
+      handlePriceChange={handleStopLossChange}
+      handleInputPriceChange={handleStopLossPriceChange}
+      validateInputPrice={validateStopLossPrice}
+      selectedInputPrice={stopLossInputPrice}
+      selectedPrice={stopLoss}
+      currency={selectedPerpetual?.quoteCurrency}
+      stepSize={stepSize}
+    />
   );
 });

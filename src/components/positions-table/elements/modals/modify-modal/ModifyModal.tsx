@@ -46,6 +46,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
 import styles from '../Modal.module.scss';
+import { tradingClientAtom } from 'store/app.store';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -61,6 +62,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const [traderAPI] = useAtom(traderAPIAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -312,7 +314,15 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
       return;
     }
 
-    if (!selectedPosition || !address || !selectedPool || !proxyAddr || !walletClient || !poolTokenDecimals) {
+    if (
+      !selectedPosition ||
+      !address ||
+      !selectedPool ||
+      !proxyAddr ||
+      !walletClient ||
+      !tradingClient ||
+      !poolTokenDecimals
+    ) {
       return;
     }
 
@@ -328,7 +338,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
             addCollateral,
             poolTokenDecimals
           ).then(() => {
-            deposit(walletClient, data)
+            deposit(tradingClient, address, data)
               .then((tx) => {
                 console.log(`deposit tx hash: ${tx.hash}`);
                 setTxHashForAdd(tx.hash);
@@ -373,7 +383,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
       setRequestSent(true);
       getRemoveCollateral(chainId, traderAPI, selectedPosition.symbol, removeCollateral)
         .then(({ data }) => {
-          withdraw(walletClient, data)
+          withdraw(tradingClient, address, data)
             .then((tx) => {
               console.log(`withdraw tx hash: ${tx.hash}`);
               setTxHashForRemove(tx.hash);

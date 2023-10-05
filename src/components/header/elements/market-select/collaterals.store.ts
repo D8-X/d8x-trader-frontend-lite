@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-import { AssetTypeE } from 'context/websocket-context/candles/types';
+import { AssetTypeE } from 'types/enums';
 
 export const collateralFilterAtom = atom<string | null>(null);
 

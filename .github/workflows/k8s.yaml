@@ -40,11 +40,11 @@ jobs:
           VITE_PRICE_FEEDS:
           VITE_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
           VITE_GEONAMES_USERNAME: ${{ secrets.GEONAMES_USERNAME }}
-          VITE_API_URL: default::https://api.zktest.quantena.tech;80001::https://api.app.quantena.tech;1442::https://api.zktest.quantena.tech
-          VITE_HISTORY_URL: default::https://history.zktest.quantena.tech;80001::https://history.api.quantena.tech;1442::https://history.zktest.quantena.tech
-          VITE_REFERRAL_URL: default::https://referral.zktest.quantena.tech;80001::https://referral.app.quantena.tech;1442::https://referral.zktest.quantena.tech
-          VITE_WEBSOCKET_URL: default::wss://ws.zktest.quantena.tech/;80001::wss://ws.app.quantena.tech/;1442::wss://ws.zktest.quantena.tech/
-          VITE_CANDLES_WEBSOCKET_URL: default::wss://candles.zktest.quantena.tech
+          VITE_API_URL: default::https://api.zktest.quantena.tech;80001::https://api.app.quantena.tech;1442::https://api.zkdev.d8x.xyz
+          VITE_HISTORY_URL: default::https://history.zktest.quantena.tech;80001::https://history.api.quantena.tech;1442::https://history.zkdev.d8x.xyz
+          VITE_REFERRAL_URL: default::https://referral.zktest.quantena.tech;80001::https://referral.app.quantena.tech;1442::https://referral.zkdev.d8x.xyz
+          VITE_WEBSOCKET_URL: default::wss://ws.zktest.quantena.tech/;80001::wss://ws.app.quantena.tech/;1442::wss://ws.zkdev.d8x.xyz/
+          VITE_CANDLES_WEBSOCKET_URL: default::wss://candles.zktest.quantena.tech;1442::wss://candles.zkdev.d8x.xyz          
         run: |
           docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg VITE_PROJECT_ID=$VITE_PROJECT_ID --build-arg VITE_GEONAMES_USERNAME=$VITE_GEONAMES_USERNAME --build-arg VITE_HTTP_RPC=$VITE_HTTP_RPC --build-arg VITE_PRICE_FEEDS=$VITE_PRICE_FEEDS --build-arg VITE_API_URL=$VITE_API_URL --build-arg VITE_HISTORY_URL=$VITE_HISTORY_URL --build-arg VITE_REFERRAL_URL=$VITE_REFERRAL_URL --build-arg VITE_CANDLES_WEBSOCKET_URL=$VITE_CANDLES_WEBSOCKET_URL --build-arg VITE_WEBSOCKET_URL=$VITE_WEBSOCKET_URL .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
