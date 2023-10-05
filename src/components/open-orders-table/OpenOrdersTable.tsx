@@ -26,6 +26,7 @@ import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
 import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { filterRows } from 'components/table/filter-popup/filter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -263,41 +264,7 @@ export const OpenOrdersTable = memo(() => {
     [t]
   );
 
-  const filteredRows = useMemo(() => {
-    if (filter.field && filter.value) {
-      const checkStr = filter.value.toLowerCase();
-      const fieldType = filter.fieldType;
-
-      return openOrders.filter((openOrder) => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        const filterField = openOrder[filter.field];
-
-        if (fieldType === FieldTypeE.Number) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        } else if (fieldType === FieldTypeE.Date) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        }
-
-        return String(filterField).toLowerCase().includes(checkStr);
-      });
-    }
-    return openOrders;
-  }, [openOrders, filter]);
+  const filteredRows = useMemo(() => filterRows(openOrders, filter), [openOrders, filter]);
 
   const visibleRows = useMemo(
     () =>

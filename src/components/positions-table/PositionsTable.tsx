@@ -8,6 +8,7 @@ import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagi
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
 import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { filterRows } from 'components/table/filter-popup/filter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { createSymbol } from 'helpers/createSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -178,41 +179,7 @@ export const PositionsTable = () => {
     });
   }, [positions]);
 
-  const filteredRows = useMemo(() => {
-    if (filter.field && filter.value) {
-      const checkStr = filter.value.toLowerCase();
-      const fieldType = filter.fieldType;
-
-      return positionsWithLiqPrice.filter((position) => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        const filterField = position[filter.field];
-
-        if (fieldType === FieldTypeE.Number) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        } else if (fieldType === FieldTypeE.Date) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        }
-
-        return String(filterField).toLowerCase().includes(checkStr);
-      });
-    }
-    return positionsWithLiqPrice;
-  }, [positionsWithLiqPrice, filter]);
+  const filteredRows = useMemo(() => filterRows(positionsWithLiqPrice, filter), [positionsWithLiqPrice, filter]);
 
   const visibleRows = useMemo(
     () =>

@@ -7,6 +7,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { filterRows } from 'components/table/filter-popup/filter';
 import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getTradesHistory } from 'network/history';
@@ -127,41 +128,7 @@ export const TradeHistoryTable = memo(() => {
     });
   }, [tradesHistory, perpetuals]);
 
-  const filteredRows = useMemo(() => {
-    if (filter.field && filter.value) {
-      const checkStr = filter.value.toLowerCase();
-      const fieldType = filter.fieldType;
-
-      return tradesHistoryWithSymbol.filter((historyRecord) => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        const filterField = historyRecord[filter.field];
-
-        if (fieldType === FieldTypeE.Number) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        } else if (fieldType === FieldTypeE.Date) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        }
-
-        return String(filterField).toLowerCase().includes(checkStr);
-      });
-    }
-    return tradesHistoryWithSymbol;
-  }, [tradesHistoryWithSymbol, filter]);
+  const filteredRows = useMemo(() => filterRows(tradesHistoryWithSymbol, filter), [tradesHistoryWithSymbol, filter]);
 
   const visibleRows = useMemo(
     () =>

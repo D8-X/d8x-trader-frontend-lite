@@ -7,6 +7,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { filterRows } from 'components/table/filter-popup/filter';
 import { FilterI, FilterPopup } from 'components/table/filter-popup/FilterPopup';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -104,41 +105,7 @@ export const FundingTable = memo(() => {
     });
   }, [fundingList, perpetuals]);
 
-  const filteredRows = useMemo(() => {
-    if (filter.field && filter.value) {
-      const checkStr = filter.value.toLowerCase();
-      const fieldType = filter.fieldType;
-
-      return fundingListWithSymbol.filter((fundingRecord) => {
-        // eslint-disable-next-line
-        // @ts-ignore
-        const filterField = fundingRecord[filter.field];
-
-        if (fieldType === FieldTypeE.Number) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        } else if (fieldType === FieldTypeE.Date) {
-          const filterType = filter.filterType;
-          if (filterType === '=') {
-            return filterField === Number(checkStr);
-          } else if (filterType === '>') {
-            return filterField >= Number(checkStr);
-          } else if (filterType === '<') {
-            return filterField <= Number(checkStr);
-          }
-        }
-
-        return String(filterField).toLowerCase().includes(checkStr);
-      });
-    }
-    return fundingListWithSymbol;
-  }, [fundingListWithSymbol, filter]);
+  const filteredRows = useMemo(() => filterRows(fundingListWithSymbol, filter), [fundingListWithSymbol, filter]);
 
   const visibleRows = useMemo(
     () =>
