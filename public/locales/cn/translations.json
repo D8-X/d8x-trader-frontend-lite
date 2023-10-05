@@ -332,6 +332,13 @@
           "cancel": "取消",
           "confirm": "确认"
         }
+      },
+      "filter": {
+        "field": "场地:",
+        "type": "类型:",
+        "value": "价值:",
+        "value-placeholder": "要过滤的值",
+        "clear": "清除过滤器"
       }
     },
     "refer": {

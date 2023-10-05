@@ -332,6 +332,13 @@
           "cancel": "Cancelar",
           "confirm": "Confirmar"
         }
+      },
+      "filter": {
+        "field": "Campo:",
+        "type": "Tipo:",
+        "value": "Valor:",
+        "value-placeholder": "valor a filtrar",
+        "clear": "Filtro Claro"
       }
     },
     "refer": {

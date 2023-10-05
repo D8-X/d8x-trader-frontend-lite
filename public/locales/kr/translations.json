@@ -332,6 +332,13 @@
           "cancel": "Cancel",
           "confirm": "Confirm"
         }
+      },
+      "filter": {
+        "field": "필드:",
+        "type": "유형:",
+        "value": "값:",
+        "value-placeholder": "필터링할 값",
+        "clear": "필터 지우기"
       }
     },
     "refer": {

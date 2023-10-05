@@ -1,5 +1,6 @@
 import { atom, useAtom } from 'jotai';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
 
@@ -31,6 +32,8 @@ interface SortableHeaderPropsI<T> {
 export const filterPopupIsOpenAtom = atom(false);
 
 export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPropsI<T>) {
+  const { t } = useTranslation();
+
   const [isModalOpen, setModalOpen] = useAtom(filterPopupIsOpenAtom);
 
   const [fieldAnchorEl, setFieldAnchorEl] = useState<null | HTMLElement>(null);
@@ -38,9 +41,9 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
 
   return (
     <Dialog open={isModalOpen} onClose={() => setModalOpen(false)} className={styles.dialog}>
-      <DialogTitle>Filter</DialogTitle>
+      <DialogTitle>{t('common.filter')}</DialogTitle>
       <DialogContent className={styles.filterBlock}>
-        Field:
+        {t('pages.trade.filter.field')}
         <DropDownSelect
           id="field-dropdown"
           selectedValue={(filter.field as string) || (headers[0].field as string)}
@@ -65,7 +68,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
         </DropDownSelect>
         {(filter.fieldType === FieldTypeE.Number || filter.fieldType === FieldTypeE.Date) && (
           <>
-            Type:
+            {t('pages.trade.filter.type')}
             <DropDownSelect
               id="type-dropdown"
               selectedValue={(filter.filterType as string) || filterTypes[0]}
@@ -89,12 +92,11 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
             </DropDownSelect>
           </>
         )}
-        Value:
+        {t('pages.trade.filter.value')}
         {filter.fieldType === FieldTypeE.Date ? (
           <input
             type="datetime-local"
             className={styles.dateInput}
-            placeholder="date here"
             onChange={(e) =>
               setFilter((v) => ({
                 ...v,
@@ -107,7 +109,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           <OutlinedInput
             id="filter"
             type="text"
-            placeholder="value to filter"
+            placeholder={t('pages.trade.filter.value-placeholder')}
             onChange={(e) => {
               setFilter((v) => ({
                 ...v,
@@ -119,12 +121,12 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           />
         )}
         <Button onClick={() => setFilter({})} variant="outlined">
-          Clear Filter
+          {t('pages.trade.filter.clear')}
         </Button>
       </DialogContent>
       <DialogActions className={styles.modalActions}>
         <Button onClick={() => setModalOpen(false)} variant="secondary" size="small">
-          Close
+          {t('common.info-modal.close')}
         </Button>
       </DialogActions>
     </Dialog>

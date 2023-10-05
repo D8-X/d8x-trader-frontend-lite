@@ -15,7 +15,7 @@ export const Filter = () => {
     <div className={styles.root} onClick={() => setModalOpen(true)}>
       <FilterIcon className={styles.actionIcon} isActive={false} />
       <Typography variant="bodySmall" className={styles.refreshLabel}>
-        {t('Filter')}
+        {t('common.filter')}
       </Typography>
     </div>
   );
