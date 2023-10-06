@@ -9,20 +9,28 @@ const filterFunction = <T>(field: number, comparator: string, filter: FilterI<T>
   const { fieldType, filterType } = filter;
 
   if (fieldType === FieldTypeE.Number) {
+    const comparatorNumber = Number(comparator);
     if (filterType === '=') {
-      return field === Number(comparator);
+      return field === comparatorNumber;
     } else if (filterType === '>') {
-      return field >= Number(comparator);
+      return field >= comparatorNumber;
     } else if (filterType === '<') {
-      return field <= Number(comparator);
+      return field <= comparatorNumber;
     }
   } else if (fieldType === FieldTypeE.Date) {
+    const comparatorNumber = Number(comparator);
+    let fieldConverted;
+    if (typeof field === 'number') {
+      fieldConverted = field;
+    } else {
+      fieldConverted = new Date(field).getTime() / 1000;
+    }
     if (filterType === '=') {
-      return field === Number(comparator);
+      return fieldConverted === comparatorNumber;
     } else if (filterType === '>') {
-      return field >= Number(comparator);
+      return fieldConverted >= comparatorNumber;
     } else if (filterType === '<') {
-      return field <= Number(comparator);
+      return fieldConverted <= comparatorNumber;
     }
   }
 
