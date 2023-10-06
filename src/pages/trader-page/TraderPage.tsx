@@ -205,6 +205,7 @@ export const TraderPage = () => {
     setActiveAllIndex(index + positionItems.length);
     setActiveHistoryIndex(index);
   };
+
   return (
     <>
       <Helmet

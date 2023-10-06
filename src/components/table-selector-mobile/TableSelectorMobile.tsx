@@ -6,6 +6,7 @@ import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { type SelectorItemI } from 'components/table-selector/TableSelector';
 import { Filter } from 'components/table-selector/elements/filter/Filter';
 import { Refresher } from 'components/table-selector/elements/refresher/Refresher';
+import { FilterPopupProvider } from 'components/table/filter-popup/FilterPopupContext';
 
 import styles from './TableSelectorMobile.module.scss';
 
@@ -19,35 +20,37 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
-    <Box className={styles.root}>
-      <DropDownSelect
-        id="table-selector-dropdown"
-        selectedValue={selectorItems[selectedIndex]?.label}
-        anchorEl={anchorEl}
-        setAnchorEl={setAnchorEl}
-        className={styles.dropdownSelect}
-        fullWidth
-      >
-        {selectorItems.map(({ label }, index) => (
-          <MenuItem
-            key={label}
-            value={index}
-            className={styles.dropdown}
-            onClick={() => {
-              setSelectedIndex(index);
-              setAnchorEl(null);
-            }}
-          >
-            {label}
-          </MenuItem>
-        ))}
-      </DropDownSelect>
+    <FilterPopupProvider>
+      <Box className={styles.root}>
+        <DropDownSelect
+          id="table-selector-dropdown"
+          selectedValue={selectorItems[selectedIndex]?.label}
+          anchorEl={anchorEl}
+          setAnchorEl={setAnchorEl}
+          className={styles.dropdownSelect}
+          fullWidth
+        >
+          {selectorItems.map(({ label }, index) => (
+            <MenuItem
+              key={label}
+              value={index}
+              className={styles.dropdown}
+              onClick={() => {
+                setSelectedIndex(index);
+                setAnchorEl(null);
+              }}
+            >
+              {label}
+            </MenuItem>
+          ))}
+        </DropDownSelect>
 
-      <div className={styles.buttonsBlock}>
-        <Filter />
-        <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
-      </div>
-      <Box>{selectorItems[selectedIndex].item}</Box>
-    </Box>
+        <div className={styles.buttonsBlock}>
+          <Filter />
+          <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
+        </div>
+        <Box>{selectorItems[selectedIndex].item}</Box>
+      </Box>
+    </FilterPopupProvider>
   );
 };
