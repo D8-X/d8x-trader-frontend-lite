@@ -41,30 +41,32 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
     <Dialog open={isModalOpen} onClose={() => setModalOpen?.(false)} className={styles.dialog}>
       <DialogTitle>{t('common.filter')}</DialogTitle>
       <DialogContent className={styles.filterBlock}>
-        {t('pages.trade.filter.field')}
-        <DropDownSelect
-          id="field-dropdown"
-          selectedValue={headers.find((header) => header.field === filter.field)?.label || headers[0].label}
-          anchorEl={fieldAnchorEl}
-          setAnchorEl={setFieldAnchorEl}
-          className={styles.fieldDropdown}
-        >
-          {headers.map((header) => (
-            <DropDownMenuItem
-              key={header.label.toString()}
-              option={header.label as string}
-              isActive={header.field === filter.field}
-              onClick={() => {
-                setFilter((v) => ({
-                  ...v,
-                  field: header.field,
-                  fieldType: header.fieldType,
-                }));
-                setFieldAnchorEl(null);
-              }}
-            />
-          ))}
-        </DropDownSelect>
+        <span className={styles.controlBlock}>
+          {t('pages.trade.filter.field')}
+          <DropDownSelect
+            id="field-dropdown"
+            selectedValue={headers.find((header) => header.field === filter.field)?.label || headers[0].label}
+            anchorEl={fieldAnchorEl}
+            setAnchorEl={setFieldAnchorEl}
+            className={styles.fieldDropdown}
+          >
+            {headers.map((header) => (
+              <DropDownMenuItem
+                key={header.label.toString()}
+                option={header.label as string}
+                isActive={header.field === filter.field}
+                onClick={() => {
+                  setFilter((v) => ({
+                    ...v,
+                    field: header.field,
+                    fieldType: header.fieldType,
+                  }));
+                  setFieldAnchorEl(null);
+                }}
+              />
+            ))}
+          </DropDownSelect>
+        </span>
         {(filter.fieldType === FieldTypeE.Number || filter.fieldType === FieldTypeE.Date) && (
           <span className={styles.controlBlock}>
             {t('pages.trade.filter.type')}
@@ -73,6 +75,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
               selectedValue={(filter.filterType as string) || filterTypes[0]}
               anchorEl={typeAnchorEl}
               setAnchorEl={setTypeAnchorEl}
+              className={styles.fieldDropdown}
             >
               {filterTypes.map((filterType) => (
                 <DropDownMenuItem
@@ -123,7 +126,6 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           )}
         </span>
         <Button
-          className={styles.input}
           onClick={() =>
             setFilter({
               fieldType: headers[0].fieldType,

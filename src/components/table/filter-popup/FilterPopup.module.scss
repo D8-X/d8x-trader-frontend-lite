@@ -10,8 +10,7 @@
 .filterBlock {
   display: flex;
   gap: $d8x-spacing * 2;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
 }
 
 .modalActions {
@@ -22,14 +21,20 @@
   display: flex;
   gap: $d8x-spacing * 2;
   align-items: center;
+  justify-content: space-between;
 }
 
 .fieldDropdown {
-  width: 250px;
+  width: 175px;
 }
 
 .input {
   height: 48px;
+  width: 175px;
+
+  :global(.MuiOutlinedInput-input) {
+    font-size: 14px;
+  }
 }
 
 .dateInput {
@@ -42,6 +47,10 @@
   background-color: transparent;
   color: var(--d8x-color-black-maintext);
   padding: 0 3 * $d8x-spacing;
+
+  :global(.MuiTypography-root) {
+    font-size: 14px;
+  }
 
   &:focus,
   &:hover {
