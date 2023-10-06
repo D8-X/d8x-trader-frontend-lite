@@ -49,6 +49,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           selectedValue={(filter.field as string) || (headers[0].field as string)}
           anchorEl={fieldAnchorEl}
           setAnchorEl={setFieldAnchorEl}
+          className={styles.fieldDropdown}
         >
           {headers.map((header) => (
             <DropDownMenuItem
@@ -67,7 +68,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           ))}
         </DropDownSelect>
         {(filter.fieldType === FieldTypeE.Number || filter.fieldType === FieldTypeE.Date) && (
-          <>
+          <span className={styles.controlBlock}>
             {t('pages.trade.filter.type')}
             <DropDownSelect
               id="type-dropdown"
@@ -90,37 +91,49 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
                 />
               ))}
             </DropDownSelect>
-          </>
+          </span>
         )}
-        {t('pages.trade.filter.value')}
-        {filter.fieldType === FieldTypeE.Date ? (
-          <input
-            type="datetime-local"
-            className={styles.dateInput}
-            onChange={(e) =>
-              setFilter((v) => ({
-                ...v,
-                field: v.field || headers[0].field,
-                value: String(e.target.valueAsNumber / 1000),
-              }))
-            }
-          />
-        ) : (
-          <OutlinedInput
-            id="filter"
-            type="text"
-            placeholder={t('pages.trade.filter.value-placeholder')}
-            onChange={(e) => {
-              setFilter((v) => ({
-                ...v,
-                field: v.field || headers[0].field,
-                value: e.target.value,
-              }));
-            }}
-            value={filter.value || ''}
-          />
-        )}
-        <Button onClick={() => setFilter({})} variant="outlined">
+        <span className={styles.controlBlock}>
+          {t('pages.trade.filter.value')}
+          {filter.fieldType === FieldTypeE.Date ? (
+            <input
+              type="datetime-local"
+              className={styles.dateInput}
+              onChange={(e) =>
+                setFilter((v) => ({
+                  ...v,
+                  field: v.field || headers[0].field,
+                  value: String(e.target.valueAsNumber / 1000),
+                }))
+              }
+            />
+          ) : (
+            <OutlinedInput
+              id="filter"
+              type="text"
+              className={styles.input}
+              placeholder={t('pages.trade.filter.value-placeholder')}
+              onChange={(e) => {
+                setFilter((v) => ({
+                  ...v,
+                  field: v.field || headers[0].field,
+                  value: e.target.value,
+                }));
+              }}
+              value={filter.value || ''}
+            />
+          )}
+        </span>
+        <Button
+          className={styles.input}
+          onClick={() =>
+            setFilter({
+              fieldType: headers[0].fieldType,
+              filterType: '=',
+            })
+          }
+          variant="outlined"
+        >
           {t('pages.trade.filter.clear')}
         </Button>
       </DialogContent>
