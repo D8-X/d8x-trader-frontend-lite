@@ -467,16 +467,16 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                   </FormControl>
                 }
               />
-              <SidesRow
-                leftSide=" "
-                rightSide={
-                  maxCollateral && (
+              {!!maxCollateral && (
+                <SidesRow
+                  leftSide=" "
+                  rightSide={
                     <Typography className={styles.helperText} variant="bodyTiny">
                       Max: <Link onClick={handleMaxCollateral}>{formatNumber(maxCollateral)}</Link>
                     </Typography>
-                  )
-                }
-              />
+                  }
+                />
+              )}
             </Box>
           )}
         </Box>

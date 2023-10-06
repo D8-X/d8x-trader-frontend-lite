@@ -1,5 +1,5 @@
 import { Box, FormControl, InputLabel, Select, type SelectChangeEvent } from '@mui/material';
-import { useMemo, type HTMLAttributes, type JSXElementConstructor, type ReactNode } from 'react';
+import { type HTMLAttributes, type JSXElementConstructor, type ReactNode, useMemo } from 'react';
 
 import { genericMemo } from 'helpers/genericMemo';
 
@@ -65,7 +65,18 @@ function HeaderSelectComponent<T>(props: HeaderSelectI<T>) {
         <InputLabel id={`${id}-label`}>{label}</InputLabel>
         <Select
           id={id}
-          sx={{ width: width ?? 300 }}
+          sx={{
+            width: width ?? 300,
+          }}
+          inputProps={{
+            MenuProps: {
+              PaperProps: {
+                sx: {
+                  backgroundColor: 'var(--d8x-background)',
+                },
+              },
+            },
+          }}
           value={value}
           onChange={onChange}
           renderValue={renderValue}

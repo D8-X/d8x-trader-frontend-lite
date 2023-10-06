@@ -19,7 +19,9 @@ export const EmptyHeader = () => (
               </a>
             </Typography>
           </Box>
-          <LanguageSwitcher />
+          <Box className={styles.rightSide}>
+            <LanguageSwitcher />
+          </Box>
         </Toolbar>
       </PageAppBar>
     </Box>
