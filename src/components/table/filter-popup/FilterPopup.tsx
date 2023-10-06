@@ -1,5 +1,4 @@
-import { atom, useAtom } from 'jotai';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
@@ -11,6 +10,7 @@ import { FieldTypeE } from 'types/enums';
 import { TableHeaderI } from 'types/types';
 
 import styles from './FilterPopup.module.scss';
+import { FilterPopupContext } from './FilterPopupContext';
 
 type FilterTypeT = '=' | '>' | '<';
 
@@ -29,18 +29,16 @@ interface SortableHeaderPropsI<T> {
   setFilter: Dispatch<SetStateAction<FilterI<T>>>;
 }
 
-export const filterPopupIsOpenAtom = atom(false);
-
 export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPropsI<T>) {
   const { t } = useTranslation();
 
-  const [isModalOpen, setModalOpen] = useAtom(filterPopupIsOpenAtom);
+  const [isModalOpen, setModalOpen] = useContext(FilterPopupContext);
 
   const [fieldAnchorEl, setFieldAnchorEl] = useState<null | HTMLElement>(null);
   const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
-    <Dialog open={isModalOpen} onClose={() => setModalOpen(false)} className={styles.dialog}>
+    <Dialog open={isModalOpen} onClose={() => setModalOpen?.(false)} className={styles.dialog}>
       <DialogTitle>{t('common.filter')}</DialogTitle>
       <DialogContent className={styles.filterBlock}>
         {t('pages.trade.filter.field')}
@@ -138,7 +136,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
         </Button>
       </DialogContent>
       <DialogActions className={styles.modalActions}>
-        <Button onClick={() => setModalOpen(false)} variant="secondary" size="small">
+        <Button onClick={() => setModalOpen?.(false)} variant="secondary" size="small">
           {t('common.info-modal.close')}
         </Button>
       </DialogActions>

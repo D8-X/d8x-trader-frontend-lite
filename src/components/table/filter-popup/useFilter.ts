@@ -52,7 +52,7 @@ const filterRows = <T>(rows: T[], filter: FilterI<T>) => {
   return rows;
 };
 
-export const useFilter = <T, G>(rows: T[], headers: TableHeaderI<G>[]) => {
+export const useFilter = <T>(rows: T[], headers: TableHeaderI<T>[]) => {
   const [filter, setFilter] = useState<FilterI<T>>({
     fieldType: headers[0].fieldType,
     filterType: '=',

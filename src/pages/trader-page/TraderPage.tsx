@@ -185,33 +185,26 @@ export const TraderPage = () => {
     [positionItems, historyItems]
   );
 
-  const handleActiveAllIndex = useCallback(
-    (index: number) => {
-      setActiveAllIndex(index);
+  const handleActiveAllIndex = (index: number) => {
+    setActiveAllIndex(index);
 
-      const firstTableItems = positionItems.length;
-      if (index < firstTableItems) {
-        setActivePositionIndex(index);
-      } else {
-        setActiveHistoryIndex(index - firstTableItems);
-      }
-    },
-    [positionItems]
-  );
+    const firstTableItems = positionItems.length;
+    if (index < firstTableItems) {
+      setActivePositionIndex(index);
+    } else {
+      setActiveHistoryIndex(index - firstTableItems);
+    }
+  };
 
-  const handlePositionsIndex = useCallback((index: number) => {
+  const handlePositionsIndex = (index: number) => {
     setActiveAllIndex(index);
     setActivePositionIndex(index);
-  }, []);
+  };
 
-  const handleHistoryIndex = useCallback(
-    (index: number) => {
-      setActiveAllIndex(index + positionItems.length);
-      setActiveHistoryIndex(index);
-    },
-    [positionItems]
-  );
-
+  const handleHistoryIndex = (index: number) => {
+    setActiveAllIndex(index + positionItems.length);
+    setActiveHistoryIndex(index);
+  };
   return (
     <>
       <Helmet

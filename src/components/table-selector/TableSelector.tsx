@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 
 import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
 
+import { FilterPopupProvider } from 'components/table/filter-popup/FilterPopupContext';
 import { type TableTypeE } from 'types/enums';
 
 import styles from './TableSelector.module.scss';
@@ -23,29 +24,31 @@ interface TableSelectorPropsI {
 
 export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: TableSelectorPropsI) => {
   return (
-    <Card className={styles.root}>
-      <CardHeader
-        className={styles.headerRoot}
-        title={
-          <Box className={styles.headerWrapper}>
-            <Box className={styles.tableSelectorsWrapper}>
-              {selectorItems.map(({ label }, index) => (
-                <Button
-                  key={label}
-                  variant="link"
-                  onClick={() => setActiveIndex(index)}
-                  className={classnames({ [styles.selected]: activeIndex === index })}
-                >
-                  {label}
-                </Button>
-              ))}
+    <FilterPopupProvider>
+      <Card className={styles.root}>
+        <CardHeader
+          className={styles.headerRoot}
+          title={
+            <Box className={styles.headerWrapper}>
+              <Box className={styles.tableSelectorsWrapper}>
+                {selectorItems.map(({ label }, index) => (
+                  <Button
+                    key={label}
+                    variant="link"
+                    onClick={() => setActiveIndex(index)}
+                    className={classnames({ [styles.selected]: activeIndex === index })}
+                  >
+                    {label}
+                  </Button>
+                ))}
+              </Box>
+              <Filter />
+              <Refresher activeTableType={selectorItems[activeIndex].tableType} />
             </Box>
-            <Filter />
-            <Refresher activeTableType={selectorItems[activeIndex].tableType} />
-          </Box>
-        }
-      />
-      <CardContent className={styles.content}>{selectorItems[activeIndex].item}</CardContent>
-    </Card>
+          }
+        />
+        <CardContent className={styles.content}>{selectorItems[activeIndex].item}</CardContent>
+      </Card>
+    </FilterPopupProvider>
   );
 };

@@ -1,18 +1,18 @@
 import { Typography } from '@mui/material';
-import { useSetAtom } from 'jotai';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FilterIcon } from 'assets/icons/Filter';
-import { filterPopupIsOpenAtom } from 'components/table/filter-popup/FilterPopup';
+import { FilterPopupContext } from 'components/table/filter-popup/FilterPopupContext';
 
 import styles from './Filter.module.scss';
 
 export const Filter = () => {
   const { t } = useTranslation();
-  const setModalOpen = useSetAtom(filterPopupIsOpenAtom);
+  const [, setModalOpen] = useContext(FilterPopupContext);
 
   return (
-    <div className={styles.root} onClick={() => setModalOpen(true)}>
+    <div className={styles.root} onClick={() => setModalOpen?.(true)}>
       <FilterIcon className={styles.actionIcon} isActive={false} />
       <Typography variant="bodySmall" className={styles.refreshLabel}>
         {t('common.filter')}
