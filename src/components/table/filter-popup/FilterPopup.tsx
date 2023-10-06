@@ -46,7 +46,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
         {t('pages.trade.filter.field')}
         <DropDownSelect
           id="field-dropdown"
-          selectedValue={(filter.field as string) || (headers[0].field as string)}
+          selectedValue={headers.find((header) => header.field === filter.field)?.label || headers[0].label}
           anchorEl={fieldAnchorEl}
           setAnchorEl={setFieldAnchorEl}
           className={styles.fieldDropdown}
