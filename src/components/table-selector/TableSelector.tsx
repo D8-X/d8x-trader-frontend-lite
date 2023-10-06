@@ -3,7 +3,7 @@ import { type ReactNode } from 'react';
 
 import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
 
-import { FilterPopupProvider } from 'components/table/filter-modal/FilterModalContext';
+import { FilterModalProvider } from 'components/table/filter-modal/FilterModalContext';
 import { type TableTypeE } from 'types/enums';
 
 import styles from './TableSelector.module.scss';
@@ -24,7 +24,7 @@ interface TableSelectorPropsI {
 
 export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: TableSelectorPropsI) => {
   return (
-    <FilterPopupProvider>
+    <FilterModalProvider>
       <Card className={styles.root}>
         <CardHeader
           className={styles.headerRoot}
@@ -49,6 +49,6 @@ export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: Ta
         />
         <CardContent className={styles.content}>{selectorItems[activeIndex].item}</CardContent>
       </Card>
-    </FilterPopupProvider>
+    </FilterModalProvider>
   );
 };

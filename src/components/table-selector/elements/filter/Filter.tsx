@@ -25,9 +25,9 @@ export const Filter = ({ activeTableType }: FilterPropsI) => {
   return (
     <div className={styles.root} onClick={() => setModalOpen(true)}>
       {isFilterApplied ? (
-        <FilterAltOffOutlined className={styles.actionIcon} />
-      ) : (
         <FilterAltOutlined className={styles.actionIcon} />
+      ) : (
+        <FilterAltOffOutlined className={styles.actionIcon} />
       )}
       <Typography variant="bodySmall" className={styles.refreshLabel}>
         {t('common.filter')}
