@@ -6,7 +6,7 @@ import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { type SelectorItemI } from 'components/table-selector/TableSelector';
 import { Filter } from 'components/table-selector/elements/filter/Filter';
 import { Refresher } from 'components/table-selector/elements/refresher/Refresher';
-import { FilterPopupProvider } from 'components/table/filter-popup/FilterPopupContext';
+import { FilterPopupProvider } from 'components/table/filter-modal/FilterModalContext';
 
 import styles from './TableSelectorMobile.module.scss';
 
@@ -46,7 +46,7 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
         </DropDownSelect>
 
         <div className={styles.buttonsBlock}>
-          <Filter />
+          <Filter activeTableType={selectorItems[selectedIndex].tableType} />
           <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
         </div>
         <Box>{selectorItems[selectedIndex].item}</Box>

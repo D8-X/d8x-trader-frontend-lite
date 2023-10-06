@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { useFilter } from 'components/table/filter-popup/useFilter';
-import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-modal/useFilter';
+import { FilterModal } from 'components/table/filter-modal/FilterModal';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getTradesHistory } from 'network/history';
 import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
@@ -212,7 +212,7 @@ export const TradeHistoryTable = memo(() => {
           />
         </Box>
       )}
-      <FilterPopup headers={tradeHistoryHeaders} filter={filter} setFilter={setFilter} />
+      <FilterModal headers={tradeHistoryHeaders} filter={filter} setFilter={setFilter} />
     </div>
   );
 });

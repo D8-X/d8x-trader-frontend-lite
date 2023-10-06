@@ -3,7 +3,7 @@ import { type ReactNode } from 'react';
 
 import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
 
-import { FilterPopupProvider } from 'components/table/filter-popup/FilterPopupContext';
+import { FilterPopupProvider } from 'components/table/filter-modal/FilterModalContext';
 import { type TableTypeE } from 'types/enums';
 
 import styles from './TableSelector.module.scss';
@@ -42,7 +42,7 @@ export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: Ta
                   </Button>
                 ))}
               </Box>
-              <Filter />
+              <Filter activeTableType={selectorItems[activeIndex].tableType} />
               <Refresher activeTableType={selectorItems[activeIndex].tableType} />
             </Box>
           }

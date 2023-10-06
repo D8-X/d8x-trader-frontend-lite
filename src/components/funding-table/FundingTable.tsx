@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { useFilter } from 'components/table/filter-popup/useFilter';
-import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
+import { useFilter } from 'components/table/filter-modal/useFilter';
+import { FilterModal } from 'components/table/filter-modal/FilterModal';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getFundingRatePayments } from 'network/history';
@@ -193,7 +193,7 @@ export const FundingTable = memo(() => {
           />
         </Box>
       )}
-      <FilterPopup headers={fundingListHeaders} filter={filter} setFilter={setFilter} />
+      <FilterModal headers={fundingListHeaders} filter={filter} setFilter={setFilter} />
     </div>
   );
 });

@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { FieldTypeE } from 'types/enums';
 import { TableHeaderI } from 'types/types';
 
-import { FilterI } from './FilterPopup';
+import { FilterI } from './FilterModal';
 
 const filterFunction = <T>(field: number, comparator: string, filter: FilterI<T>): boolean => {
   const { fieldType, filterType } = filter;

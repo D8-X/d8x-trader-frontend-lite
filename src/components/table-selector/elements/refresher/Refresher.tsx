@@ -2,8 +2,7 @@ import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
-
-import { ReactComponent as RefreshIcon } from 'assets/icons/refreshIcon.svg';
+import AutorenewOutlinedIcon from '@mui/icons-material/AutorenewOutlined';
 
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
@@ -21,7 +20,7 @@ export const Refresher = ({ activeTableType }: RefresherPropsI) => {
 
   return (
     <Box className={styles.root} onClick={tableRefreshHandlers[activeTableType] ?? undefined}>
-      <RefreshIcon className={styles.actionIcon} />
+      <AutorenewOutlinedIcon className={styles.actionIcon} />
       <Typography variant="bodySmall" className={styles.refreshLabel}>
         {t('common.refresh')}
       </Typography>

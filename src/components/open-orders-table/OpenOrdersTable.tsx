@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
-import { decodeEventLog, encodeEventTopics, type Address } from 'viem';
+import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
 import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
@@ -25,8 +25,8 @@ import { HashZero } from 'app-constants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
-import { useFilter } from 'components/table/filter-popup/useFilter';
+import { FilterModal } from 'components/table/filter-modal/FilterModal';
+import { useFilter } from 'components/table/filter-modal/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -355,7 +355,7 @@ export const OpenOrdersTable = memo(() => {
         </Box>
       )}
 
-      <FilterPopup headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
+      <FilterModal headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
       <Dialog open={isCancelModalOpen} className={styles.dialog}>
         <DialogTitle>{t('pages.trade.orders-table.cancel-modal.title')}</DialogTitle>
         <DialogContent className={styles.dialogContent}>

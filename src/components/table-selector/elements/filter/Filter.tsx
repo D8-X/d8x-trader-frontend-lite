@@ -1,19 +1,34 @@
 import { Typography } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FilterIcon } from 'assets/icons/Filter';
-import { FilterPopupContext } from 'components/table/filter-popup/FilterPopupContext';
+import { FilterAltOffOutlined, FilterAltOutlined } from '@mui/icons-material';
+
+import { FilterModalContext } from 'components/table/filter-modal/FilterModalContext';
+import { TableTypeE } from 'types/enums';
 
 import styles from './Filter.module.scss';
 
-export const Filter = () => {
+interface FilterPropsI {
+  activeTableType: TableTypeE;
+}
+
+export const Filter = ({ activeTableType }: FilterPropsI) => {
   const { t } = useTranslation();
-  const [, setModalOpen] = useContext(FilterPopupContext);
+
+  const { setModalOpen, isFilterApplied, setFilterApplied } = useContext(FilterModalContext);
+
+  useEffect(() => {
+    setFilterApplied(false);
+  }, [activeTableType, setFilterApplied]);
 
   return (
-    <div className={styles.root} onClick={() => setModalOpen?.(true)}>
-      <FilterIcon className={styles.actionIcon} isActive={false} />
+    <div className={styles.root} onClick={() => setModalOpen(true)}>
+      {isFilterApplied ? (
+        <FilterAltOffOutlined className={styles.actionIcon} />
+      ) : (
+        <FilterAltOutlined className={styles.actionIcon} />
+      )}
       <Typography variant="bodySmall" className={styles.refreshLabel}>
         {t('common.filter')}
       </Typography>

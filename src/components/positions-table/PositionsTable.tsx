@@ -7,8 +7,8 @@ import { useAccount, useChainId } from 'wagmi';
 import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
-import { FilterPopup } from 'components/table/filter-popup/FilterPopup';
-import { useFilter } from 'components/table/filter-popup/useFilter';
+import { FilterModal } from 'components/table/filter-modal/FilterModal';
+import { useFilter } from 'components/table/filter-modal/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { createSymbol } from 'helpers/createSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
@@ -354,7 +354,7 @@ export const PositionsTable = () => {
         </Box>
       )}
 
-      <FilterPopup headers={positionsHeaders} filter={filter} setFilter={setFilter} />
+      <FilterModal headers={positionsHeaders} filter={filter} setFilter={setFilter} />
       <ModifyTpSlModal isOpen={isTpSlChangeModalOpen} selectedPosition={selectedPosition} closeModal={closeTpSlModal} />
       <ModifyModal isOpen={isModifyModalOpen} selectedPosition={selectedPosition} closeModal={closeModifyModal} />
       <CloseModal isOpen={isCloseModalOpen} selectedPosition={selectedPosition} closeModal={closeCloseModal} />

@@ -9,8 +9,8 @@ import { DropDownMenuItem } from 'components/dropdown-select/components/DropDown
 import { FieldTypeE } from 'types/enums';
 import { TableHeaderI } from 'types/types';
 
-import styles from './FilterPopup.module.scss';
-import { FilterPopupContext } from './FilterPopupContext';
+import styles from './FilterModal.module.scss';
+import { FilterModalContext } from './FilterModalContext';
 
 type FilterTypeT = '=' | '>' | '<';
 
@@ -29,10 +29,10 @@ interface SortableHeaderPropsI<T> {
   setFilter: Dispatch<SetStateAction<FilterI<T>>>;
 }
 
-export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPropsI<T>) {
+export function FilterModal<T>({ headers, filter, setFilter }: SortableHeaderPropsI<T>) {
   const { t } = useTranslation();
 
-  const [isModalOpen, setModalOpen] = useContext(FilterPopupContext);
+  const { isModalOpen, setModalOpen, setFilterApplied } = useContext(FilterModalContext);
 
   const [fieldAnchorEl, setFieldAnchorEl] = useState<null | HTMLElement>(null);
   const [typeAnchorEl, setTypeAnchorEl] = useState<null | HTMLElement>(null);
@@ -56,6 +56,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
                 option={header.label as string}
                 isActive={header.field === filter.field}
                 onClick={() => {
+                  setFilterApplied(true);
                   setFilter((v) => ({
                     ...v,
                     field: header.field,
@@ -83,6 +84,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
                   option={filterType}
                   isActive={filterType === filter.filterType}
                   onClick={() => {
+                    setFilterApplied(true);
                     setFilter((v) => ({
                       ...v,
                       filterType: filterType,
@@ -100,13 +102,14 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
             <input
               type="datetime-local"
               className={styles.dateInput}
-              onChange={(e) =>
+              onChange={(e) => {
+                setFilterApplied(true);
                 setFilter((v) => ({
                   ...v,
                   field: v.field || headers[0].field,
                   value: String(e.target.valueAsNumber / 1000),
-                }))
-              }
+                }));
+              }}
             />
           ) : (
             <OutlinedInput
@@ -115,6 +118,7 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
               className={styles.input}
               placeholder={t('pages.trade.filter.value-placeholder')}
               onChange={(e) => {
+                setFilterApplied(true);
                 setFilter((v) => ({
                   ...v,
                   field: v.field || headers[0].field,
@@ -126,12 +130,13 @@ export function FilterPopup<T>({ headers, filter, setFilter }: SortableHeaderPro
           )}
         </span>
         <Button
-          onClick={() =>
+          onClick={() => {
+            setFilterApplied(false);
             setFilter({
               fieldType: headers[0].fieldType,
               filterType: '=',
-            })
-          }
+            });
+          }}
           variant="outlined"
         >
           {t('pages.trade.filter.clear')}
