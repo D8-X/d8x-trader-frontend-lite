@@ -9,6 +9,8 @@
 
 .actionIcon {
   transition: opacity linear 200ms;
+  position: relative;
+  bottom: 2px;
 
   &:hover {
     opacity: 0.7;
