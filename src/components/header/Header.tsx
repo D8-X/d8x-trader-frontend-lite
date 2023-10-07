@@ -42,7 +42,7 @@ interface HeaderPropsI {
   window?: () => Window;
 }
 
-const DRAWER_WIDTH_FOR_TABLETS = 300;
+const DRAWER_WIDTH_FOR_TABLETS = 340;
 
 export const Header = memo(({ window }: HeaderPropsI) => {
   const theme = useTheme();

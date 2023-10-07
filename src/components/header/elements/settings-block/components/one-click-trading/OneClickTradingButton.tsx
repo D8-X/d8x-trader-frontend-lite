@@ -16,7 +16,9 @@ export const OneClickTradingButton = () => {
     <>
       <Tooltip title={t('common.settings.one-click-modal.modal-button')}>
         <Button onClick={() => setModalOpen(true)} className={styles.modalButton} variant="outlined">
-          <Typography variant="bodyMedium">{t('common.settings.one-click-modal.modal-button')}</Typography>
+          <Typography variant="bodyMedium" className={styles.modalButtonText}>
+            {t('common.settings.one-click-modal.modal-button')}
+          </Typography>
           <Settings />
         </Button>
       </Tooltip>
