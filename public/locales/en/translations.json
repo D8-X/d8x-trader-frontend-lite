@@ -564,7 +564,7 @@
           "title": "Default currency",
           "base": "Base",
           "quote": "Quote",
-          "pool": "Pool"
+          "pool": "Collateral"
         }
       },
       "one-click-modal": {
