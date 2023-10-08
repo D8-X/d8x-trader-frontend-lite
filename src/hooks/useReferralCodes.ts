@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { getReferralCodes } from 'network/referral';
+import { getMyReferrals } from 'network/referral';
 import { Address } from 'wagmi';
 
 export const useReferralCodes = (address: Address | undefined, chainId: number) => {
@@ -9,13 +9,12 @@ export const useReferralCodes = (address: Address | undefined, chainId: number) 
 
   const getReferralCodesAsync = useCallback(async () => {
     if (address) {
-      const referralCodesResponse = await getReferralCodes(chainId, address);
-      const traderReferralDataExists = !!Object.keys(referralCodesResponse.data.trader).length;
+      const referralCodesResponse = await getMyReferrals(chainId, address);
 
-      if (traderReferralDataExists) {
-        const { code, traderRebatePercFinal } = referralCodesResponse.data.trader;
-        setReferralCode(code);
-        setTraderRebatePercentage(traderRebatePercFinal ?? 0);
+      if (referralCodesResponse.data.length) {
+        const { referral, PassOnPerc } = referralCodesResponse.data[0];
+        setReferralCode(referral);
+        setTraderRebatePercentage(PassOnPerc ?? 0);
       }
     }
   }, [address, chainId]);

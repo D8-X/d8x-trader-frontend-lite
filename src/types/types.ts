@@ -3,8 +3,8 @@ import { type Time } from 'lightweight-charts';
 import type { ReactElement, ReactNode } from 'react';
 
 import {
-  type FieldTypeE,
   type AlignE,
+  type FieldTypeE,
   type LanguageE,
   type OrderBlockE,
   type OrderTypeE,
@@ -80,10 +80,13 @@ export interface PoolWithIdI extends PoolI {
   poolId: number;
 }
 
-export interface ValidatedResponseI<T> {
+export interface ReferralResponseI<T> {
   type: string;
-  msg: string;
   data: T;
+}
+
+export interface ValidatedResponseI<T> extends ReferralResponseI<T> {
+  msg: string;
 }
 
 export interface ExchangeInfoI {
@@ -293,6 +296,11 @@ export interface OpenWithdrawalsI {
   withdrawals: OpenWithdrawalI[];
 }
 
+export interface ReferralCutI {
+  isAgency: boolean;
+  passed_on_percent: number;
+}
+
 export interface ReferralVolumeI {
   poolId: number;
   quantityCC: number;
@@ -332,6 +340,18 @@ export interface ReferralCodeI {
   trader: TraderDataI;
   referrer: ReferrerDataI[];
   agency: ReferrerDataI[];
+}
+
+export interface ReferralTableDataI {
+  referralCode: string;
+  isPartner: boolean;
+  commission: number;
+  discount: number;
+}
+
+export interface ReferralDataI {
+  referral: string;
+  PassOnPerc: number;
 }
 
 export interface OverviewPoolItemI {

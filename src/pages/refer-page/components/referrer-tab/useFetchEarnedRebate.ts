@@ -2,10 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
 import { getEarnedRebate } from 'network/referral';
-import { RebateTypeE } from 'types/enums';
 import type { EarnedRebateI } from 'types/types';
 
-export const useFetchEarnedRebate = (rebateType: RebateTypeE) => {
+export const useFetchEarnedRebate = () => {
   const chainId = useChainId();
   const { address } = useAccount();
 
@@ -21,7 +20,7 @@ export const useFetchEarnedRebate = (rebateType: RebateTypeE) => {
 
       earnedRebateRequestRef.current = true;
 
-      getEarnedRebate(chainId, address, rebateType)
+      getEarnedRebate(chainId, address)
         .then(({ data }) => {
           setEarnedRebates(data);
         })
@@ -32,7 +31,7 @@ export const useFetchEarnedRebate = (rebateType: RebateTypeE) => {
     } else {
       setEarnedRebates([]);
     }
-  }, [address, chainId, rebateType]);
+  }, [address, chainId]);
 
   return { earnedRebates };
 };

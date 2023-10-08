@@ -12,11 +12,11 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 
 import { postUpsertReferralCode } from 'network/referral';
 
-import { CodeStateE, ReferrerRoleE, useCodeInput, useRebateRate } from 'pages/refer-page/hooks';
+import { CodeStateE, useCodeInput } from 'pages/refer-page/hooks';
 
 import { replaceSymbols } from 'utils/replaceInvalidSymbols';
 
-import { referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
+import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
 import { ReferralDialogActionE } from 'types/enums';
 
@@ -39,7 +39,11 @@ type UpdatedNormalReferrerDialogPropsT = NormalReferrerDialogCreatePropsI | Norm
 
 export const NormalReferrerDialog = (props: UpdatedNormalReferrerDialogPropsT) => {
   const { t } = useTranslation();
+
+  const [kickbackRateInputValue, setKickbackRateInputValue] = useState('0');
+
   const [referralCodesRefetchHandler] = useAtom(referralCodesRefetchHandlerRefAtom);
+  const [commissionRate] = useAtom(commissionRateAtom);
 
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
@@ -48,34 +52,30 @@ export const NormalReferrerDialog = (props: UpdatedNormalReferrerDialogPropsT) =
   const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
   const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
 
-  const baseRebate = useRebateRate(chainId, address, ReferrerRoleE.NORMAL);
-
-  const [kickbackRateInputValue, setKickbackRateInputValue] = useState('0');
-
   useEffect(() => {
     let kickbackRate;
     if (props.type === ReferralDialogActionE.MODIFY) {
       kickbackRate = props.traderRebatePercent;
     } else {
-      kickbackRate = 0.25 * baseRebate;
+      kickbackRate = 0.25 * commissionRate;
     }
     setKickbackRateInputValue(kickbackRate.toFixed(2));
-  }, [baseRebate, props]);
+  }, [commissionRate, props]);
 
   const sidesRowValues = useMemo(() => {
     const traderRate = +kickbackRateInputValue;
-    const userRate = baseRebate > 0 ? baseRebate - traderRate : 0;
+    const userRate = commissionRate > 0 ? commissionRate - traderRate : 0;
 
     return { userRate: userRate.toFixed(2), traderRate: traderRate.toFixed(2) };
-  }, [baseRebate, kickbackRateInputValue]);
+  }, [commissionRate, kickbackRateInputValue]);
 
   const handleKickbackRateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     const filteredValue = replaceSymbols(value);
 
-    if (+filteredValue > baseRebate) {
-      setKickbackRateInputValue(baseRebate.toFixed(2));
+    if (+filteredValue > commissionRate) {
+      setKickbackRateInputValue(commissionRate.toFixed(2));
       return;
     }
     setKickbackRateInputValue(filteredValue);
@@ -132,7 +132,7 @@ export const NormalReferrerDialog = (props: UpdatedNormalReferrerDialogPropsT) =
             {t('pages.refer.manage-code.base')}
           </Typography>
           <Typography variant="bodyMedium" fontWeight={600}>
-            {baseRebate}%
+            {commissionRate}%
           </Typography>
         </Box>
         <Box className={styles.paddedContainer}>
@@ -153,7 +153,7 @@ export const NormalReferrerDialog = (props: UpdatedNormalReferrerDialogPropsT) =
           <OutlinedInput
             type="text"
             value={kickbackRateInputValue}
-            inputProps={{ min: 0, max: baseRebate }}
+            inputProps={{ min: 0, max: commissionRate }}
             onChange={handleKickbackRateChange}
             className={styles.kickbackInput}
             endAdornment="%"

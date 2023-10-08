@@ -5,9 +5,8 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
-import { getReferralVolume } from 'network/referral';
+// import { getReferralVolume } from 'network/referral';
 import { poolsAtom } from 'store/pools.store';
-import { RebateTypeE } from 'types/enums';
 import type { OverviewItemI, OverviewPoolItemI, ReferralVolumeI } from 'types/types';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
@@ -42,20 +41,20 @@ export const ReferrerTab = memo(() => {
 
       referralVolumeRequestRef.current = true;
 
-      getReferralVolume(chainId, address)
-        .then(({ data }) => {
-          setReferralVolumes(data);
-        })
-        .catch(console.error)
-        .finally(() => {
-          referralVolumeRequestRef.current = false;
-        });
+      // getReferralVolume(chainId, address)
+      //   .then(({ data }) => {
+      //     setReferralVolumes(data);
+      //   })
+      //   .catch(console.error)
+      //   .finally(() => {
+      //     referralVolumeRequestRef.current = false;
+      //   });
     } else {
       setReferralVolumes([]);
     }
   }, [address, chainId]);
 
-  const { earnedRebates } = useFetchEarnedRebate(RebateTypeE.Referrer);
+  const { earnedRebates } = useFetchEarnedRebate();
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
     const referralVolumesByPools: OverviewPoolItemI[] = [];

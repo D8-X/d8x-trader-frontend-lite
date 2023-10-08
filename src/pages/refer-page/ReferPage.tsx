@@ -7,8 +7,13 @@ import { Box } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { useQuery } from 'hooks/useQuery';
-import { getIsAgency, getReferralCodes } from 'network/referral';
-import { isAgencyAtom, referralCodeAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
+import { getMyReferrals, getReferCut } from 'network/referral';
+import {
+  commissionRateAtom,
+  isAgencyAtom,
+  referralCodesAtom,
+  referralCodesRefetchHandlerRefAtom,
+} from 'store/refer.store';
 
 import { ReferrerTab } from './components/referrer-tab/ReferrerTab';
 import { TabSelector } from './components/tab-selector/TabSelector';
@@ -38,7 +43,8 @@ export const ReferPage = () => {
   const [activeTabId, setActiveTabId] = useState(ReferTabIdE.Trader);
 
   const setIsAgency = useSetAtom(isAgencyAtom);
-  const setReferralCode = useSetAtom(referralCodeAtom);
+  const setCommissionRate = useSetAtom(commissionRateAtom);
+  const setReferralCodes = useSetAtom(referralCodesAtom);
   const setReferralCodesRefetchHandler = useSetAtom(referralCodesRefetchHandlerRefAtom);
 
   const chainId = useChainId();
@@ -72,15 +78,15 @@ export const ReferPage = () => {
 
     referralCodesRequestRef.current = true;
 
-    getReferralCodes(chainId, address)
+    getMyReferrals(chainId, address)
       .then(({ data }) => {
-        setReferralCode(data);
+        setReferralCodes(data);
       })
       .catch(console.error)
       .finally(() => {
         referralCodesRequestRef.current = false;
       });
-  }, [address, chainId, setReferralCode]);
+  }, [address, chainId, setReferralCodes]);
 
   useEffect(() => {
     setReferralCodesRefetchHandler({ handleRefresh: refreshReferralCodes });
@@ -95,17 +101,18 @@ export const ReferPage = () => {
       return;
     }
 
-    isAgencyRequestRef.current = false;
+    isAgencyRequestRef.current = true;
 
-    getIsAgency(chainId, address)
+    getReferCut(chainId, address)
       .then(({ data }) => {
         setIsAgency(data.isAgency);
+        setCommissionRate(data.passed_on_percent);
       })
       .catch(console.error)
       .finally(() => {
         isAgencyRequestRef.current = false;
       });
-  }, [chainId, address, setIsAgency]);
+  }, [chainId, address, setIsAgency, setCommissionRate]);
 
   useEffect(() => {
     const tabId = query.get(QueryParamE.Tab);

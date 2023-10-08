@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useMemo, useState, useRef } from 'react';
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAtom } from 'jotai';
@@ -10,14 +10,14 @@ import { Dialog } from 'components/dialog/Dialog';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 
-import { CodeStateE, ReferrerRoleE, useCodeInput, useRebateRate } from 'pages/refer-page/hooks';
+import { CodeStateE, useCodeInput } from 'pages/refer-page/hooks';
 
 import { postUpsertReferralCode } from 'network/referral';
 
 import { isValidAddress } from 'utils/isValidAddress';
 import { replaceSymbols } from 'utils/replaceInvalidSymbols';
 
-import { referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
+import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
 import { ReferralDialogActionE } from 'types/enums';
 
@@ -47,7 +47,12 @@ type UpdatedAgencyReferrerDialogPropsT = NormalReferrerDialogCreatePropsI | Norm
 
 export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) => {
   const { t } = useTranslation();
+
+  const [referrersKickbackRate, setReferrersKickbackRate] = useState('0');
+  const [tradersKickbackRate, setTradersKickbackRate] = useState('0');
+
   const [referralCodesRefetchHandler] = useAtom(referralCodesRefetchHandlerRefAtom);
+  const [commissionRate] = useAtom(commissionRateAtom);
 
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
@@ -56,23 +61,18 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
   const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
   const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
 
-  const baseRebate = useRebateRate(chainId, address, ReferrerRoleE.AGENCY);
-
-  const [referrersKickbackRate, setReferrersKickbackRate] = useState('0');
-  const [tradersKickbackRate, setTradersKickbackRate] = useState('0');
-
   useEffect(() => {
     let traderKickbackRate, referrerKickbackRate;
     if (props.type === ReferralDialogActionE.MODIFY) {
       referrerKickbackRate = props.referrerRebatePercent;
       traderKickbackRate = props.traderRebatePercent;
     } else {
-      referrerKickbackRate = 0.33 * baseRebate;
-      traderKickbackRate = 0.33 * baseRebate;
+      referrerKickbackRate = 0.33 * commissionRate;
+      traderKickbackRate = 0.33 * commissionRate;
     }
     setReferrersKickbackRate(referrerKickbackRate.toFixed(2));
     setTradersKickbackRate(traderKickbackRate.toFixed(2));
-  }, [baseRebate, props]);
+  }, [commissionRate, props]);
 
   const [referrerAddressInputValue, setReferrerAddressInputValue] = useState(
     props.type === ReferralDialogActionE.CREATE ? '' : props.referrerAddr
@@ -83,16 +83,16 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
   const [boxChecked, setBoxChecked] = useState(false);
 
   const sidesRowValues = useMemo(() => {
-    const agencyRate = baseRebate - Number(referrersKickbackRate) - Number(tradersKickbackRate);
-    const referrerRate = baseRebate - agencyRate - Number(tradersKickbackRate);
-    const traderRate = baseRebate - agencyRate - Number(referrersKickbackRate);
+    const agencyRate = commissionRate - Number(referrersKickbackRate) - Number(tradersKickbackRate);
+    const referrerRate = commissionRate - agencyRate - Number(tradersKickbackRate);
+    const traderRate = commissionRate - agencyRate - Number(referrersKickbackRate);
 
     return {
       agencyRate: agencyRate.toFixed(2),
       referrerRate: referrerRate.toFixed(2),
       traderRate: traderRate.toFixed(2),
     };
-  }, [baseRebate, referrersKickbackRate, tradersKickbackRate]);
+  }, [commissionRate, referrersKickbackRate, tradersKickbackRate]);
 
   const handleKickbackRateChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -102,8 +102,8 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
     const filteredValue = replaceSymbols(value);
 
     if (type === KickbackRateTypeE.REFERRER) {
-      if (+filteredValue + Number(tradersKickbackRate) > baseRebate) {
-        setReferrersKickbackRate(baseRebate.toFixed(2));
+      if (+filteredValue + Number(tradersKickbackRate) > commissionRate) {
+        setReferrersKickbackRate(commissionRate.toFixed(2));
         setTradersKickbackRate('0');
         return;
       }
@@ -112,8 +112,8 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
     }
 
     if (type === KickbackRateTypeE.TRADER) {
-      if (+filteredValue + Number(referrersKickbackRate) > baseRebate) {
-        setTradersKickbackRate(baseRebate.toFixed(2));
+      if (+filteredValue + Number(referrersKickbackRate) > commissionRate) {
+        setTradersKickbackRate(commissionRate.toFixed(2));
         setReferrersKickbackRate('0');
         return;
       }
@@ -192,7 +192,7 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
             {t('pages.refer.manage-code.base')}
           </Typography>
           <Typography variant="bodyMedium" fontWeight={600}>
-            {baseRebate}%
+            {commissionRate}%
           </Typography>
         </Box>
         <Box className={styles.paddedContainer}>
@@ -217,7 +217,7 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
           <Typography variant="bodySmall">{t('pages.refer.manage-code.referrer-kickback')}</Typography>
           <OutlinedInput
             type="text"
-            inputProps={{ min: 0, max: baseRebate }}
+            inputProps={{ min: 0, max: commissionRate }}
             value={referrersKickbackRate}
             onChange={(event) => handleKickbackRateChange(event, KickbackRateTypeE.REFERRER)}
             className={styles.kickbackInput}
@@ -228,7 +228,7 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
           <Typography variant="bodySmall">{t('pages.refer.manage-code.trader-kickback')}</Typography>
           <OutlinedInput
             type="text"
-            inputProps={{ min: 0, max: baseRebate }}
+            inputProps={{ min: 0, max: commissionRate }}
             value={tradersKickbackRate}
             onChange={(event) => handleKickbackRateChange(event, KickbackRateTypeE.TRADER)}
             className={styles.kickbackInput}

@@ -1,13 +1,10 @@
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Box } from '@mui/material';
-
-import { useReferralCodes } from 'hooks/useReferralCodes';
 import { poolsAtom } from 'store/pools.store';
-import { RebateTypeE } from 'types/enums';
 import type { OverviewItemI, OverviewPoolItemI } from 'types/types';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
@@ -24,16 +21,22 @@ export const TraderTab = () => {
   const [pools] = useAtom(poolsAtom);
 
   const { address } = useAccount();
-  const chainId = useChainId();
+  // TODO: Revert
+  // const chainId = useChainId();
 
-  const { referralCode, traderRebatePercentage, getReferralCodesAsync } = useReferralCodes(address, chainId);
+  // TODO: Revert
+  // const { referralCode, traderRebatePercentage, getReferralCodesAsync } = useReferralCodes(address, chainId);
+  // TODO: Remove !!!
+  const referralCode = null;
+  const traderRebatePercentage = 0;
+  const getReferralCodesAsync = () => {};
 
   const disclaimerTextBlocks = useMemo(
     () => [t('pages.refer.trader-tab.disclaimer-text-block1'), t('pages.refer.trader-tab.disclaimer-text-block2')],
     [t]
   );
 
-  const { earnedRebates } = useFetchEarnedRebate(RebateTypeE.Trader);
+  const { earnedRebates } = useFetchEarnedRebate();
   const { openRewards } = useFetchOpenRewards();
 
   const overviewItems: OverviewItemI[] = useMemo(() => {

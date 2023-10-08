@@ -7,10 +7,9 @@ import { useAccount, useChainId, useWalletClient } from 'wagmi';
 import { Box, Button, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
-// import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useQuery } from 'hooks/useQuery';
-import { useReferralCodes } from 'hooks/useReferralCodes';
+// import { useReferralCodes } from 'hooks/useReferralCodes';
 import { getReferralCodeExists, postUseReferralCode } from 'network/referral';
 import { QueryParamE, ReferTabIdE } from 'pages/refer-page/constants';
 import { RoutesE } from 'routes/RoutesE';
@@ -37,7 +36,10 @@ export const ReferralConfirmModal = memo(() => {
 
   const query = useQuery();
 
-  const { referralCode } = useReferralCodes(address, chainId);
+  // TODO: Revert
+  // const { referralCode } = useReferralCodes(address, chainId);
+  // TODO: Remove!!!
+  const referralCode = null;
 
   const refId = query.get(REF_ID_QUERY_PARAM);
 

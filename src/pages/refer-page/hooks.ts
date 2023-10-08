@@ -1,44 +1,6 @@
-import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-
-import { getAgencyRebate, getReferralRebate } from 'network/referral';
+import { type ChangeEvent, useCallback, useRef, useState } from 'react';
 
 import { checkCodeExists } from './helpers';
-
-export enum ReferrerRoleE {
-  NORMAL,
-  AGENCY,
-}
-
-export const useRebateRate = (chainId: number, address: string | undefined, referrerRole: ReferrerRoleE) => {
-  const [baseRebate, setBaseRebate] = useState(0);
-
-  const getBaseRebateAsync = useCallback(async () => {
-    if (address) {
-      const baseRebateResponse =
-        referrerRole === ReferrerRoleE.NORMAL
-          ? await getReferralRebate(chainId, address)
-          : await getAgencyRebate(chainId);
-
-      if (baseRebateResponse.type === 'error') {
-        return 0;
-      } else {
-        return baseRebateResponse.data.percentageCut;
-      }
-    }
-
-    return 0;
-  }, [address, chainId, referrerRole]);
-
-  useEffect(() => {
-    getBaseRebateAsync()
-      .then((percentageCut: number) => {
-        setBaseRebate(percentageCut);
-      })
-      .catch(console.error);
-  }, [getBaseRebateAsync, baseRebate]);
-
-  return baseRebate;
-};
 
 /**
  * @member DEFAULT
