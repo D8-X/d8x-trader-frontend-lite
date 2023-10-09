@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
 import { config } from 'config';
@@ -9,26 +10,28 @@ import { useMessagesToSend } from 'context/websocket-context/hooks/useMessagesTo
 import { usePingPong } from 'context/websocket-context/hooks/usePingPong';
 import { useSend } from 'context/websocket-context/hooks/useSend';
 import { WebSocketI } from 'context/websocket-context/types';
+import { candlesLatestMessageTimeAtom } from 'store/tv-chart.store';
 
 import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
 import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 
-let client: WebSocketI;
-
-export const CandlesWebSocketListener = () => {
+export const CandlesWebSocketListener = memo(() => {
   const chainId = useChainId();
 
-  const waitForPongRef = useRef(false);
+  const [latestMessageTime] = useAtom(candlesLatestMessageTimeAtom);
 
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
+  const wsRef = useRef<WebSocketI>();
+  const waitForPongRef = useRef(false);
+
   const handleWsMessage = useCandlesWsMessageHandler();
 
   usePingPong({
-    client,
+    client: wsRef.current,
     isConnected,
-    messages,
+    latestMessageTime,
     waitForPongRef,
   });
 
@@ -39,36 +42,34 @@ export const CandlesWebSocketListener = () => {
   });
 
   const { setMessagesToSend } = useMessagesToSend({
-    client,
+    client: wsRef.current,
     isConnected,
   });
 
   const send = useSend({
-    client,
+    client: wsRef.current,
     isConnected,
     setMessagesToSend,
     waitForPongRef,
   });
 
   useEffect(() => {
-    if (client) {
-      client.close();
-    }
-    const candlesWsUrl = config.candlesWsUrl[`${chainId}`] || config.candlesWsUrl.default;
+    wsRef.current?.close();
 
-    client = createWebSocketWithReconnect(candlesWsUrl);
-    client.onStateChange(setIsConnected);
+    const candlesWsUrl = config.candlesWsUrl[`${chainId}`] || config.candlesWsUrl.default;
+    wsRef.current = createWebSocketWithReconnect(candlesWsUrl);
+    wsRef.current.onStateChange(setIsConnected);
 
     const handleMessage = (message: string) => {
       setMessages((prevState) => [...prevState, message]);
     };
-    client.on(handleMessage);
+    wsRef.current.on(handleMessage);
     return () => {
-      client.off(handleMessage);
+      wsRef.current?.off(handleMessage);
     };
   }, [chainId]);
 
   useCandleMarketsSubscribe({ isConnected, send });
 
   return null;
-};
+});

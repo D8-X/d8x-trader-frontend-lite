@@ -1,3 +1,5 @@
+import { debounceLeading } from 'utils/debounceLeading';
+
 import { ReactDispatchT, WebSocketI } from './types';
 
 const RECONNECT_TIMEOUT = 5000;
@@ -9,6 +11,10 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
   let reconnectOnClose = true;
   let messageListeners: Array<(message: string) => void> = [];
   let stateChangeListeners: ReactDispatchT[] = [];
+
+  const debounceWsReconnect = debounceLeading((callback: () => void) => {
+    callback();
+  }, RECONNECT_TIMEOUT);
 
   const on = (fn: (message: string) => void) => {
     messageListeners.push(fn);
@@ -40,8 +46,8 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
       reconnectOnClose = false;
       if (isConnected && !isDisconnecting) {
         isDisconnecting = true;
-        close.call(client);
       }
+      close.call(client);
     };
 
     client.onmessage = (event) => {
@@ -57,7 +63,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
       if (!reconnectOnClose) {
         return;
       }
-      setTimeout(start, RECONNECT_TIMEOUT);
+      debounceWsReconnect(start);
     };
   };
 
@@ -74,10 +80,10 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
     reconnect: () => {
       client.close();
       stateChangeListeners.forEach((fn) => fn(false));
-      setTimeout(() => {
+      debounceWsReconnect(() => {
         reconnectOnClose = true;
         start();
-      }, RECONNECT_TIMEOUT);
+      });
     },
     send: (message: string) => {
       if (client.readyState === client.OPEN) {

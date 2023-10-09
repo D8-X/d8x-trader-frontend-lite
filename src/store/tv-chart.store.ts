@@ -9,3 +9,4 @@ export const newCandleAtom = atom<TvChartCandleI | null>(null);
 export const marketsDataAtom = atom<MarketDataI[]>([]);
 export const selectedPeriodAtom = atom<TvChartPeriodE>(TvChartPeriodE['1Hour']);
 export const candlesDataReadyAtom = atom(false);
+export const candlesLatestMessageTimeAtom = atom(Date.now());

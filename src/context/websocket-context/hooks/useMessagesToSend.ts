@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { WebSocketI } from '../types';
 
 interface MessagesToSendPropsI {
-  client: WebSocketI;
+  client?: WebSocketI;
   isConnected: boolean;
 }
 
