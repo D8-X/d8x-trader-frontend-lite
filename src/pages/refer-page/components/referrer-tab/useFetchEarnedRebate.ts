@@ -22,7 +22,7 @@ export const useFetchEarnedRebate = () => {
 
       getEarnedRebate(chainId, address)
         .then(({ data }) => {
-          setEarnedRebates(data);
+          setEarnedRebates(data ?? []);
         })
         .catch(console.error)
         .finally(() => {

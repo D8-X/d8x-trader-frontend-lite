@@ -123,7 +123,7 @@ export function getReferralVolume(chainId: number, address: string): Promise<Ref
   return fetchUrl(`referral-volume?referrerAddr=${address}`, chainId);
 }
 
-export function getEarnedRebate(chainId: number, address: string): Promise<ReferralResponseI<EarnedRebateI[]>> {
+export function getEarnedRebate(chainId: number, address: string): Promise<ReferralResponseI<EarnedRebateI[] | null>> {
   return fetchUrl(`earnings?addr=${address}`, chainId);
 }
 
