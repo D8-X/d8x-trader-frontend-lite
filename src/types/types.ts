@@ -296,6 +296,16 @@ export interface OpenWithdrawalsI {
   withdrawals: OpenWithdrawalI[];
 }
 
+export interface RebateI {
+  cutPerc: number;
+  holding: number;
+}
+
+export interface TokenInfoI {
+  tokenAddr: string;
+  rebates: RebateI[];
+}
+
 export interface ReferralCutI {
   isAgency: boolean;
   passed_on_percent: number;

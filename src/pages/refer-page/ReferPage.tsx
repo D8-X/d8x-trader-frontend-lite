@@ -1,18 +1,20 @@
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useChainId } from 'wagmi';
+import { Address, useAccount, useBalance, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
 import { Container } from 'components/container/Container';
+import { Helmet } from 'components/helmet/Helmet';
 import { useQuery } from 'hooks/useQuery';
-import { getMyReferrals, getReferCut } from 'network/referral';
+import { getMyReferrals, getReferCut, getTokenInfo } from 'network/referral';
 import {
   commissionRateAtom,
   isAgencyAtom,
   referralCodesAtom,
   referralCodesRefetchHandlerRefAtom,
+  tokenInfoAtom,
 } from 'store/refer.store';
 
 import { ReferrerTab } from './components/referrer-tab/ReferrerTab';
@@ -21,7 +23,6 @@ import { TraderTab } from './components/trader-tab/TraderTab';
 import { QueryParamE, ReferTabIdE } from './constants';
 
 import styles from './ReferPage.module.scss';
-import { Helmet } from '../../components/helmet/Helmet';
 
 const tabComponents = [
   {
@@ -42,6 +43,7 @@ const queryParamToReferTabIdMap: Record<string, ReferTabIdE> = {
 export const ReferPage = () => {
   const [activeTabId, setActiveTabId] = useState(ReferTabIdE.Trader);
 
+  const [tokenInfo, setTokenInfo] = useAtom(tokenInfoAtom);
   const setIsAgency = useSetAtom(isAgencyAtom);
   const setCommissionRate = useSetAtom(commissionRateAtom);
   const setReferralCodes = useSetAtom(referralCodesAtom);
@@ -54,8 +56,16 @@ export const ReferPage = () => {
 
   const query = useQuery();
 
+  const tokenInfoRequestRef = useRef(false);
   const referralCodesRequestRef = useRef(false);
   const isAgencyRequestRef = useRef(false);
+
+  const { data: tokenBalance } = useBalance({
+    address,
+    token: tokenInfo?.tokenAddr as Address,
+    chainId: chainId,
+    enabled: !!address && !!chainId && !!tokenInfo?.tokenAddr,
+  });
 
   const handleTabChange = useCallback(
     (tabId: ReferTabIdE) => {
@@ -97,13 +107,28 @@ export const ReferPage = () => {
   }, [refreshReferralCodes]);
 
   useEffect(() => {
-    if (isAgencyRequestRef.current || !chainId || !address) {
+    if (tokenInfoRequestRef.current || !chainId) {
+      return;
+    }
+
+    tokenInfoRequestRef.current = true;
+
+    getTokenInfo(chainId)
+      .then(({ data }) => setTokenInfo(data))
+      .catch(console.error)
+      .finally(() => {
+        isAgencyRequestRef.current = false;
+      });
+  }, [chainId, setTokenInfo]);
+
+  useEffect(() => {
+    if (isAgencyRequestRef.current || !chainId || !address || tokenBalance === undefined) {
       return;
     }
 
     isAgencyRequestRef.current = true;
 
-    getReferCut(chainId, address)
+    getReferCut(chainId, address, tokenBalance.value)
       .then(({ data }) => {
         setIsAgency(data.isAgency);
         setCommissionRate(data.passed_on_percent);
@@ -112,7 +137,7 @@ export const ReferPage = () => {
       .finally(() => {
         isAgencyRequestRef.current = false;
       });
-  }, [chainId, address, setIsAgency, setCommissionRate]);
+  }, [chainId, address, tokenBalance, setIsAgency, setCommissionRate]);
 
   useEffect(() => {
     const tabId = query.get(QueryParamE.Tab);

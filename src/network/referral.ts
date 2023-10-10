@@ -7,7 +7,7 @@ import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
 import type { EarnedRebateI, OpenTraderRebateI, ReferralResponseI, ReferralVolumeI } from 'types/types';
-import { ReferralCutI, ReferralDataI } from 'types/types';
+import { ReferralCutI, ReferralDataI, TokenInfoI } from 'types/types';
 
 function getReferralUrlByChainId(chainId: number) {
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
@@ -114,8 +114,16 @@ export function getReferralCodeExists(
   return fetchUrl(`code-info?code=${code}`, chainId);
 }
 
-export function getReferCut(chainId: number, address: string): Promise<ReferralResponseI<ReferralCutI>> {
-  return fetchUrl(`refer-cut?addr=${address}`, chainId);
+export function getTokenInfo(chainId: number): Promise<ReferralResponseI<TokenInfoI>> {
+  return fetchUrl('token-info', chainId);
+}
+
+export function getReferCut(
+  chainId: number,
+  address: string,
+  holdings: bigint
+): Promise<ReferralResponseI<ReferralCutI>> {
+  return fetchUrl(`refer-cut?addr=${address}&holdings=${holdings}`, chainId);
 }
 
 // TODO: CHANGE
