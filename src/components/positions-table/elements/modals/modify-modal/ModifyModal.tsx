@@ -120,8 +120,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
   useWaitForTransaction({
     hash: txHashForRemove,
-    onSuccess(data) {
-      console.log({ data });
+    onSuccess() {
       toast.success(
         <ToastContent
           title={t('pages.trade.positions-table.toasts.collateral-removed.title')}

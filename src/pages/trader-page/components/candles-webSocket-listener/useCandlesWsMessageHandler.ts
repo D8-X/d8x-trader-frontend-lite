@@ -7,12 +7,14 @@ import { selectedPerpetualAtom } from 'store/pools.store';
 import {
   candlesAtom,
   candlesDataReadyAtom,
+  candlesLatestMessageTimeAtom,
   marketsDataAtom,
   newCandleAtom,
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
 import { TvChartPeriodE } from 'types/enums';
 import { PerpetualI } from 'types/types';
+import { debounceLeading } from 'utils/debounceLeading';
 
 import {
   CommonWsMessageI,
@@ -73,6 +75,10 @@ function createPairWithPeriod(perpetual: PerpetualI, period: TvChartPeriodE) {
   return `${perpetual.baseCurrency}-${perpetual.quoteCurrency}:${period}`.toLowerCase();
 }
 
+const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
+  callback();
+}, 1000);
+
 export function useCandlesWsMessageHandler() {
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPeriod] = useAtom(selectedPeriodAtom);
@@ -80,10 +86,15 @@ export function useCandlesWsMessageHandler() {
   const setNewCandle = useSetAtom(newCandleAtom);
   const setMarketsData = useSetAtom(marketsDataAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
+  const setCandlesWsLatestMessageTime = useSetAtom(candlesLatestMessageTimeAtom);
 
   return useCallback(
     (message: string) => {
       const parsedMessage = JSON.parse(message);
+
+      debounceLatestMessageTime(() => {
+        setCandlesWsLatestMessageTime(Date.now());
+      });
 
       if (isConnectMessage(parsedMessage)) {
         setCandlesDataReady(true);
@@ -141,6 +152,14 @@ export function useCandlesWsMessageHandler() {
         setMarketsData(parsedMessage.data);
       }
     },
-    [setCandles, setNewCandle, setMarketsData, setCandlesDataReady, selectedPerpetual, selectedPeriod]
+    [
+      setCandles,
+      setNewCandle,
+      setMarketsData,
+      setCandlesDataReady,
+      setCandlesWsLatestMessageTime,
+      selectedPerpetual,
+      selectedPeriod,
+    ]
   );
 }

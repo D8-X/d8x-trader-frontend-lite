@@ -3,7 +3,7 @@ import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { useChainId } from 'wagmi';
 
 import { config } from 'config';
-import { webSocketReadyAtom } from 'store/pools.store';
+import { mainWsLatestMessageTimeAtom, webSocketReadyAtom } from 'store/pools.store';
 
 import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
 import { useHandleMessage } from '../hooks/useHandleMessage';
@@ -14,12 +14,12 @@ import { WebSocketI } from '../types';
 import { useWsMessageHandler } from './useWsMessageHandler';
 import { WebSocketContext, WebSocketContextI } from './WebSocketContext';
 
-let client: WebSocketI;
-
 export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
+  const [latestMessageTime] = useAtom(mainWsLatestMessageTimeAtom);
   const chainId = useChainId();
 
+  const wsRef = useRef<WebSocketI>();
   const waitForPongRef = useRef(false);
 
   const [messages, setMessages] = useState<string[]>([]);
@@ -28,9 +28,9 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const handleWsMessage = useWsMessageHandler();
 
   usePingPong({
-    client,
+    client: wsRef.current,
     isConnected,
-    messages,
+    latestMessageTime,
     waitForPongRef,
   });
 
@@ -41,31 +41,30 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   });
 
   const { setMessagesToSend } = useMessagesToSend({
-    client,
+    client: wsRef.current,
     isConnected,
   });
 
   const send = useSend({
-    client,
+    client: wsRef.current,
     isConnected,
     setMessagesToSend,
     waitForPongRef,
   });
 
   useEffect(() => {
-    if (client) {
-      client.close();
-    }
+    wsRef.current?.close();
+
     const wsUrl = config.wsUrl[`${chainId}`] || config.wsUrl.default;
-    client = createWebSocketWithReconnect(wsUrl);
-    client.onStateChange(setIsConnected);
+    wsRef.current = createWebSocketWithReconnect(wsUrl);
+    wsRef.current.onStateChange(setIsConnected);
 
     const handleMessage = (message: string) => {
       setMessages((prevState) => [...prevState, message]);
     };
-    client.on(handleMessage);
+    wsRef.current.on(handleMessage);
     return () => {
-      client.off(handleMessage);
+      wsRef.current?.off(handleMessage);
     };
   }, [chainId]);
 

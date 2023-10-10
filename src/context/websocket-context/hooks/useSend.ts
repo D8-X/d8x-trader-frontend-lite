@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { WebSocketI } from '../types';
 
 interface SendPropsI {
-  client: WebSocketI;
+  client?: WebSocketI;
   isConnected: boolean;
   setMessagesToSend: Dispatch<SetStateAction<string[]>>;
   waitForPongRef: MutableRefObject<boolean>;
@@ -17,7 +17,6 @@ export const useSend = ({ client, isConnected, setMessagesToSend, waitForPongRef
         if (!client.send(message)) {
           client.reconnect();
           waitForPongRef.current = false;
-          setMessagesToSend([]);
         }
       } else {
         setMessagesToSend((prevState) => [...prevState, message]);

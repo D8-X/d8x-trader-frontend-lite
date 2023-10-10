@@ -22,7 +22,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
 
   useEffect(() => {
     if (selectedPerpetual && isConnected) {
-      if (wsConnectedStateRef.current === false) {
+      if (!wsConnectedStateRef.current) {
         send(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
       }
 
@@ -47,7 +47,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
               topic: topicInfo,
             })
           );
-        });
+        }).then();
         setNewCandle(null);
         setCandlesDataReady(false);
       }

@@ -10,6 +10,7 @@ import { getOpenOrders } from 'network/network';
 import {
   allPerpetualStatisticsAtom,
   failOrderAtom,
+  mainWsLatestMessageTimeAtom,
   openOrdersAtom,
   perpetualStatisticsAtom,
   positionsAtom,
@@ -25,7 +26,6 @@ import { debounceLeading } from 'utils/debounceLeading';
 import {
   CommonWsMessageI,
   ConnectWsMessageI,
-  // ErrorWsMessageI,
   MessageTypeE,
   OnExecutionFailedWsMessageI,
   OnLimitOrderCreatedWsMessageI,
@@ -39,10 +39,6 @@ import {
 function isConnectMessage(message: CommonWsMessageI): message is ConnectWsMessageI {
   return message.type === MessageTypeE.Connect;
 }
-
-// function isErrorMessage(message: CommonWsMessageI): message is ErrorWsMessageI {
-//   return message.type === MessageTypeE.Error;
-// }
 
 function isSubscriptionMessage(message: CommonWsMessageI): message is SubscriptionWsMessageI {
   return message.type === MessageTypeE.Subscription;
@@ -79,6 +75,10 @@ const debouncePerpetualStatistics = debounceLeading((callback: () => void) => {
   callback();
 }, 5000);
 
+const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
+  callback();
+}, 1000);
+
 export function useWsMessageHandler() {
   const { t } = useTranslation();
   const { address } = useAccount();
@@ -87,6 +87,7 @@ export function useWsMessageHandler() {
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
+  const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
   const setPositions = useSetAtom(positionsAtom);
   const setOpenOrders = useSetAtom(openOrdersAtom);
@@ -123,6 +124,10 @@ export function useWsMessageHandler() {
   return useCallback(
     (message: string) => {
       const parsedMessage = JSON.parse(message);
+
+      debounceLatestMessageTime(() => {
+        setMainWsLatestMessageTime(Date.now());
+      });
 
       if (isConnectMessage(parsedMessage)) {
         setWebSocketReady(true);
@@ -243,6 +248,7 @@ export function useWsMessageHandler() {
       removeOpenOrder,
       failOpenOrder,
       setAllPerpetualStatistics,
+      setMainWsLatestMessageTime,
       chainId,
       address,
       t,
