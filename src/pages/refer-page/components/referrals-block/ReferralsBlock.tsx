@@ -15,6 +15,7 @@ import { ReferralTableDataI } from 'types/types';
 
 import styles from './ReferralsBlock.module.scss';
 import { useMemo } from 'react';
+import { isValidAddress } from '../../../../utils/isValidAddress';
 
 export const ReferralsBlock = () => {
   const { t } = useTranslation();
@@ -30,14 +31,21 @@ export const ReferralsBlock = () => {
 
   const referralTableRows: ReferralTableDataI[] = useMemo(
     () =>
-      referralCodes.map((referral) => ({
-        referralCode: referral.referral,
-        // TODO: VOV: Apply logic based on isAgency and code regexp
-        isPartner: false,
-        commission: referral.PassOnPerc,
-        discount: commissionRate - referral.PassOnPerc,
-      })),
-    [referralCodes, commissionRate]
+      referralCodes.map((referral) => {
+        const commission = (referral.passOnPerc * commissionRate) / 100;
+        let isPartner = false;
+        if (isAgency) {
+          isPartner = isValidAddress(referral.referral);
+        }
+
+        return {
+          referralCode: referral.referral,
+          isPartner,
+          commission,
+          discount: commissionRate - commission,
+        };
+      }),
+    [referralCodes, commissionRate, isAgency]
   );
 
   return (

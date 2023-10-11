@@ -83,19 +83,7 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
 
     const { userRate, partnerRate } = sidesRowValues;
 
-    const rateSum = Number(userRate) + Number(partnerRate);
-
-    const referrerRebatePercent = (100 * Number(userRate)) / rateSum;
-    const partnerRebatePercent = (100 * Number(partnerRate)) / rateSum;
-
-    await postRefer(
-      chainId,
-      partnerAddressInputValue,
-      referrerRebatePercent,
-      partnerRebatePercent,
-      walletClient,
-      onClose
-    );
+    await postRefer(chainId, partnerAddressInputValue, Number(userRate), Number(partnerRate), walletClient, onClose);
     toast.success(<ToastContent title={t('pages.refer.toast.success-add-partner')} bodyLines={[]} />);
     referralCodesRefetchHandler.handleRefresh();
   };

@@ -37,7 +37,7 @@ export async function postUpsertCode(
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
-    passOnPercTDF: Math.round(traderRebatePerc * (referrerRebatePerc + traderRebatePerc)),
+    passOnPercTDF: Math.round((100 * 100 * traderRebatePerc) / (referrerRebatePerc + traderRebatePerc)),
     createdOn: Math.round(Date.now() / 1000),
     signature: '',
   };
@@ -76,7 +76,7 @@ export async function postRefer(
   const payload: APIReferPayload = {
     parentAddr: walletClient.account.address,
     referToAddr,
-    passOnPercTDF: Math.round(partnerRebatePerc * (partnerRebatePerc + referrerRebatePerc)),
+    passOnPercTDF: Math.round((100 * 100 * partnerRebatePerc) / (partnerRebatePerc + referrerRebatePerc)),
     createdOn: Math.round(Date.now() / 1000),
     signature: '',
   };

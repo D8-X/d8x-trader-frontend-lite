@@ -361,7 +361,7 @@ export interface ReferralTableDataI {
 
 export interface ReferralDataI {
   referral: string;
-  PassOnPerc: number;
+  passOnPerc: number;
 }
 
 export interface OverviewPoolItemI {

@@ -13,6 +13,8 @@
 }
 
 .codeCell {
+  display: flex;
+  justify-content: space-between;
   border-radius: $d8x-border-radius 0 0 $d8x-border-radius;
 }
 

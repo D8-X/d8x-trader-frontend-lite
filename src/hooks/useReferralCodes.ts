@@ -12,9 +12,9 @@ export const useReferralCodes = (address: Address | undefined, chainId: number) 
       const referralCodesResponse = await getMyReferrals(chainId, address);
 
       if (referralCodesResponse.data.length) {
-        const { referral, PassOnPerc } = referralCodesResponse.data[0];
+        const { referral, passOnPerc } = referralCodesResponse.data[0];
         setReferralCode(referral);
-        setTraderRebatePercentage(PassOnPerc ?? 0);
+        setTraderRebatePercentage(passOnPerc ?? 0);
       }
     }
   }, [address, chainId]);
