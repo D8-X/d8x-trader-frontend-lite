@@ -368,15 +368,15 @@
       },
       "manage-code": {
         "title-create": "Crear Código de Remisión",
+        "title-add": "Add partner",
         "commission-rate": "Your commission rate:",
         "you-receive": "Recibes",
         "trader-receives": "Usuarios remitidos reciben",
-        "agency": "Agencia",
-        "referrer": "Remitor",
-        "trader": "Usuario",
+        "you": "You",
+        "partner": "Partner",
         "trader-kickback": "Incresar la tasa de kickback para usuarios:",
-        "referrer-kickback": "Ingresar la tasa de kickback para remitir:",
-        "referrer-addr": "Ingresar una dirección para remitir:",
+        "partner-kickback": "Set partner's commission:",
+        "partner-address": "Partner Address:",
         "enter-code": "Ingresar un código",
         "code-taken": "Código ya esta en uso",
         "create-code": "Crear Código",
@@ -391,6 +391,7 @@
       },
       "toast": {
         "success-create": "Código Creado",
+        "success-add-partner": "Partner added successfully",
         "success-modify": "Código Modificado",
         "success-apply": "Código Aplicado"
       },

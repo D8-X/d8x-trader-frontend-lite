@@ -368,15 +368,15 @@
       },
       "manage-code": {
         "title-create": "创建邀请码",
+        "title-add": "Add partner",
         "commission-rate": "Your commission rate:",
         "you-receive": "您将收到",
         "trader-receives": "交易员将收到",
-        "agency": "代理",
-        "referrer": "邀请人",
-        "trader": "交易员",
+        "you": "You",
+        "partner": "Partner",
         "trader-kickback": "设置交易员返佣比例：",
-        "referrer-kickback": "设置推荐人返佣比例：",
-        "referrer-addr": "输入邀请人地址：:",
+        "partner-kickback": "Set partner's commission:",
+        "partner-address": "Partner Address:",
         "enter-code": "输入专属码",
         "code-taken": "专属码已被使用",
         "create-code": "创建专属码",
@@ -391,6 +391,7 @@
       },
       "toast": {
         "success-create": "专属码创建成功",
+        "success-add-partner": "Partner added successfully",
         "success-modify": "专属码修改成功",
         "success-apply": "专属码申请成功"
       },

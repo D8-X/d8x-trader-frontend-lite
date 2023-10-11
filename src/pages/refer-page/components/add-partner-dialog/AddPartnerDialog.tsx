@@ -1,7 +1,7 @@
+import { useAtom } from 'jotai';
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAtom } from 'jotai';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Box, Button, OutlinedInput, Typography } from '@mui/material';
@@ -9,20 +9,12 @@ import { Box, Button, OutlinedInput, Typography } from '@mui/material';
 import { Dialog } from 'components/dialog/Dialog';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { useCodeInput } from 'pages/refer-page/hooks';
-import { postUpsertCode } from 'network/referral';
+import { postRefer } from 'network/referral';
 import { isValidAddress } from 'utils/isValidAddress';
 import { replaceSymbols } from 'utils/replaceInvalidSymbols';
 import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
-import { CodeStateE } from '../../enums';
-
 import styles from './AddPartnerDialog.module.scss';
-
-enum KickbackRateTypeE {
-  REFERRER,
-  TRADER,
-}
 
 interface AddPartnerDialogPropsI {
   isOpen: boolean;
@@ -32,8 +24,8 @@ interface AddPartnerDialogPropsI {
 export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) => {
   const { t } = useTranslation();
 
-  const [referrersKickbackRate, setReferrersKickbackRate] = useState('0');
-  const [tradersKickbackRate, setTradersKickbackRate] = useState('0');
+  const [partnerRateInputValue, setPartnerRateInputValue] = useState('0');
+  const [partnerAddressInputValue, setPartnerAddressInputValue] = useState('');
 
   const [referralCodesRefetchHandler] = useAtom(referralCodesRefetchHandlerRefAtom);
   const [commissionRate] = useAtom(commissionRateAtom);
@@ -42,101 +34,69 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
-  const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
+  const partnerAddressInputTouchedRef = useRef(false);
 
   useEffect(() => {
-    const referrerKickbackRate = 0.33 * commissionRate;
-    const traderKickbackRate = 0.33 * commissionRate;
-    setReferrersKickbackRate(referrerKickbackRate.toFixed(2));
-    setTradersKickbackRate(traderKickbackRate.toFixed(2));
+    const partnerKickbackRate = 0.25 * commissionRate;
+    setPartnerRateInputValue(partnerKickbackRate.toFixed(2));
   }, [commissionRate]);
 
-  const [referrerAddressInputValue, setReferrerAddressInputValue] = useState('');
-
-  const referrerAddressInputTouchedRef = useRef(false);
-
   const sidesRowValues = useMemo(() => {
-    const agencyRate = commissionRate - Number(referrersKickbackRate) - Number(tradersKickbackRate);
-    const referrerRate = commissionRate - agencyRate - Number(tradersKickbackRate);
-    const traderRate = commissionRate - agencyRate - Number(referrersKickbackRate);
+    const partnerRate = +partnerRateInputValue;
+    const userRate = commissionRate > 0 ? commissionRate - partnerRate : 0;
 
-    return {
-      agencyRate: agencyRate.toFixed(2),
-      referrerRate: referrerRate.toFixed(2),
-      traderRate: traderRate.toFixed(2),
-    };
-  }, [commissionRate, referrersKickbackRate, tradersKickbackRate]);
+    return { userRate: userRate.toFixed(2), partnerRate: partnerRate.toFixed(2) };
+  }, [commissionRate, partnerRateInputValue]);
 
-  const handleKickbackRateChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    type: KickbackRateTypeE
-  ) => {
+  const handleKickbackRateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
+
     const filteredValue = replaceSymbols(value);
 
-    if (type === KickbackRateTypeE.REFERRER) {
-      if (+filteredValue + Number(tradersKickbackRate) > commissionRate) {
-        setReferrersKickbackRate(commissionRate.toFixed(2));
-        setTradersKickbackRate('0');
-        return;
-      }
-      setReferrersKickbackRate(filteredValue);
+    if (+filteredValue > commissionRate) {
+      setPartnerRateInputValue(commissionRate.toFixed(2));
       return;
     }
-
-    if (type === KickbackRateTypeE.TRADER) {
-      if (+filteredValue + Number(referrersKickbackRate) > commissionRate) {
-        setTradersKickbackRate(commissionRate.toFixed(2));
-        setReferrersKickbackRate('0');
-        return;
-      }
-      setTradersKickbackRate(filteredValue);
-      return;
-    }
+    setPartnerRateInputValue(filteredValue);
   };
 
-  const handleReferrerAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!referrerAddressInputTouchedRef.current) {
-      referrerAddressInputTouchedRef.current = true;
+  const handlePartnerAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!partnerAddressInputTouchedRef.current) {
+      partnerAddressInputTouchedRef.current = true;
     }
 
     const { value } = event.target;
-    setReferrerAddressInputValue(value);
+    setPartnerAddressInputValue(value);
   };
 
   const isAddressValid = useMemo(() => {
-    if (referrerAddressInputValue.length > 42) {
+    if (partnerAddressInputValue.length > 42) {
       return false;
     }
-    return isValidAddress(referrerAddressInputValue);
-  }, [referrerAddressInputValue]);
+    return isValidAddress(partnerAddressInputValue);
+  }, [partnerAddressInputValue]);
 
-  const handleUpsertCode = async () => {
-    if (!address || !walletClient) {
+  const handleReferPost = async () => {
+    if (!address || !walletClient || !isAddressValid) {
       return;
     }
-    const { agencyRate, referrerRate, traderRate } = sidesRowValues;
 
-    const rateSum = Number(agencyRate) + Number(referrerRate) + Number(traderRate);
+    const { userRate, partnerRate } = sidesRowValues;
 
-    const traderRebatePercent = (100 * Number(traderRate)) / rateSum;
+    const rateSum = Number(userRate) + Number(partnerRate);
 
-    // const agencyRebatePercent = (100 * Number(agencyRate)) / rateSum;
+    const referrerRebatePercent = (100 * Number(userRate)) / rateSum;
+    const partnerRebatePercent = (100 * Number(partnerRate)) / rateSum;
 
-    const referrerRebatePercent = (100 * Number(referrerRate)) / rateSum;
-
-    // TODO: MJO: Check - What are the possible return types? What if `type` === 'error'?
-    await postUpsertCode(
+    await postRefer(
       chainId,
-      referrerAddressInputValue,
-      codeInputValue,
-      traderRebatePercent,
+      partnerAddressInputValue,
       referrerRebatePercent,
+      partnerRebatePercent,
       walletClient,
       onClose
     );
-    toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
+    toast.success(<ToastContent title={t('pages.refer.toast.success-add-partner')} bodyLines={[]} />);
     referralCodesRefetchHandler.handleRefresh();
   };
 
@@ -144,7 +104,7 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
     <Dialog open={isOpen} onClose={onClose}>
       <Box className={styles.dialogRoot}>
         <Typography variant="h5" className={styles.title}>
-          {t('pages.refer.manage-code.title-create')}
+          {t('pages.refer.manage-code.title-add')}
         </Typography>
         <Box className={styles.baseRebateContainer}>
           <Typography variant="bodyMedium" fontWeight={600}>
@@ -156,40 +116,24 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
         </Box>
         <Box className={styles.paddedContainer}>
           <SidesRow
-            leftSide={t('pages.refer.manage-code.agency')}
-            rightSide={`${sidesRowValues.agencyRate}%`}
+            leftSide={t('pages.refer.manage-code.you')}
+            rightSide={`${sidesRowValues.userRate}%`}
             rightSideStyles={styles.sidesRowValue}
           />
           <SidesRow
-            leftSide={t('pages.refer.manage-code.referrer')}
-            rightSide={`${sidesRowValues.referrerRate}%`}
-            rightSideStyles={styles.sidesRowValue}
-          />
-          <SidesRow
-            leftSide={t('pages.refer.manage-code.trader')}
-            rightSide={`${sidesRowValues.traderRate}%`}
+            leftSide={t('pages.refer.manage-code.partner')}
+            rightSide={`${sidesRowValues.partnerRate}%`}
             rightSideStyles={styles.sidesRowValue}
           />
         </Box>
         <div className={styles.divider} />
         <Box className={styles.referrerKickbackInputContainer}>
-          <Typography variant="bodySmall">{t('pages.refer.manage-code.referrer-kickback')}</Typography>
+          <Typography variant="bodySmall">{t('pages.refer.manage-code.partner-kickback')}</Typography>
           <OutlinedInput
             type="text"
             inputProps={{ min: 0, max: commissionRate }}
-            value={referrersKickbackRate}
-            onChange={(event) => handleKickbackRateChange(event, KickbackRateTypeE.REFERRER)}
-            className={styles.kickbackInput}
-            endAdornment="%"
-          />
-        </Box>
-        <Box className={styles.traderKickbackInputContainer}>
-          <Typography variant="bodySmall">{t('pages.refer.manage-code.trader-kickback')}</Typography>
-          <OutlinedInput
-            type="text"
-            inputProps={{ min: 0, max: commissionRate }}
-            value={tradersKickbackRate}
-            onChange={(event) => handleKickbackRateChange(event, KickbackRateTypeE.TRADER)}
+            value={partnerRateInputValue}
+            onChange={handleKickbackRateChange}
             className={styles.kickbackInput}
             endAdornment="%"
           />
@@ -197,40 +141,26 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
         <div className={styles.divider} />
         <Box className={styles.codeInputContainer}>
           <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
-            {t('pages.refer.manage-code.referrer-addr')}
+            {t('pages.refer.manage-code.partner-address')}
           </Typography>
           <OutlinedInput
             placeholder={t('pages.refer.manage-code.enter-addr')}
-            value={referrerAddressInputValue}
-            onChange={handleReferrerAddressChange}
+            value={partnerAddressInputValue}
+            onChange={handlePartnerAddressChange}
             className={styles.codeInput}
           />
-          {!isAddressValid && referrerAddressInputTouchedRef.current && (
+          {!isAddressValid && partnerAddressInputTouchedRef.current && (
             <Typography variant="bodySmall" color="red" component="p" mt={1}>
               {t('pages.refer.manage-code.error')}
             </Typography>
           )}
         </Box>
-        <div className={styles.divider} />
-        <Box className={styles.codeInputContainer}>
-          <OutlinedInput
-            placeholder="Enter a code"
-            value={codeInputValue}
-            onChange={handleCodeChange}
-            className={styles.codeInput}
-          />
-        </Box>
-        <Typography variant="bodyTiny" component="p" className={styles.infoText}>
-          {t('pages.refer.manage-code.instructions')}
-        </Typography>
         <Box className={styles.dialogActionsContainer}>
           <Button variant="secondary" onClick={onClose} className={styles.cancelButton}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
-          <Button variant="primary" disabled={codeInputDisabled || !isAddressValid} onClick={handleUpsertCode}>
-            {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
-            {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
-            {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
+          <Button variant="primary" disabled={!isAddressValid} onClick={handleReferPost}>
+            {t('pages.refer.manage-code.add-partner')}
           </Button>
         </Box>
       </Box>

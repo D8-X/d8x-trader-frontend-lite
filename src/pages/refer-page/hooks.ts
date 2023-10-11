@@ -1,30 +1,12 @@
 import { type ChangeEvent, useCallback, useState } from 'react';
 
 import { getCodeRebate } from 'network/referral';
-import { debounceLeading } from 'utils/debounceLeading';
 
 import { CodeStateE } from './enums';
-
-const DEBOUNCE_TIMEOUT = 1000;
-
-const debounceCodeCheck = debounceLeading((callback: () => void) => {
-  callback();
-}, DEBOUNCE_TIMEOUT);
 
 export const useCodeInput = (chainId: number) => {
   const [codeInputValue, setCodeInputValue] = useState('');
   const [codeState, setCodeState] = useState(CodeStateE.DEFAULT);
-
-  const checkCodeExists = useCallback(
-    (code: string) => {
-      debounceCodeCheck(() => {
-        getCodeRebate(chainId, code)
-          .then(() => setCodeState(CodeStateE.CODE_TAKEN))
-          .catch(() => setCodeState(CodeStateE.CODE_AVAILABLE));
-      });
-    },
-    [chainId]
-  );
 
   const handleCodeChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -40,9 +22,12 @@ export const useCodeInput = (chainId: number) => {
         return;
       }
 
-      checkCodeExists(filteredValue);
+      // TODO: VOV: Need to use debounce
+      getCodeRebate(chainId, filteredValue)
+        .then(() => setCodeState(CodeStateE.CODE_TAKEN))
+        .catch(() => setCodeState(CodeStateE.CODE_AVAILABLE));
     },
-    [checkCodeExists]
+    [chainId]
   );
 
   return { codeInputValue, handleCodeChange, codeState };

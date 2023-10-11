@@ -71,10 +71,18 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
 
     const rateSum = Number(userRate) + Number(traderRate);
 
-    const referrerRebatePerc = (100 * Number(userRate)) / rateSum;
-    const traderRebatePerc = (100 * Number(traderRate)) / rateSum;
+    const referrerRebatePercent = (100 * Number(userRate)) / rateSum;
+    const traderRebatePercent = (100 * Number(traderRate)) / rateSum;
 
-    await postUpsertCode(chainId, address, codeInputValue, referrerRebatePerc, traderRebatePerc, walletClient, onClose);
+    await postUpsertCode(
+      chainId,
+      address,
+      codeInputValue,
+      referrerRebatePercent,
+      traderRebatePercent,
+      walletClient,
+      onClose
+    );
     toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
     referralCodesRefetchHandler.handleRefresh();
   };

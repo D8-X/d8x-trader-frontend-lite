@@ -368,15 +368,15 @@
       },
       "manage-code": {
         "title-create": "Create Referral Code",
+        "title-add": "Add partner",
         "commission-rate": "Your commission rate:",
         "you-receive": "You receive",
         "trader-receives": "Trader receives",
-        "agency": "Agency",
-        "referrer": "Referrer",
-        "trader": "Trader",
+        "you": "You",
+        "partner": "Partner",
         "trader-kickback": "Set trader's kickback rate:",
-        "referrer-kickback": "Set Referrer's Kickback Rate:",
-        "referrer-addr": "Enter Referrer Address:",
+        "partner-kickback": "Set partner's commission:",
+        "partner-address": "Partner Address:",
         "enter-code": "Enter a code",
         "code-taken": "Code already taken",
         "create-code": "Create code",
@@ -391,6 +391,7 @@
       },
       "toast": {
         "success-create": "Code created successfully",
+        "success-add-partner": "Partner added successfully",
         "success-modify": "Code modified successfully",
         "success-apply": "Code applied successfully"
       },

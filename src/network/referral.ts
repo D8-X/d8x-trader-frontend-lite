@@ -1,4 +1,4 @@
-import type { APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
+import type { APIReferPayload, APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
 import { ReferralCodeSigner } from '@d8x/perpetuals-sdk';
 import type { Account, Address, Transport } from 'viem';
 import type { Chain, WalletClient } from 'wagmi';
@@ -37,8 +37,8 @@ export async function postUpsertCode(
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
-    createdOn: Date.now(),
-    passOnPercTDF: Math.round(100 * 100 * traderRebatePerc * (referrerRebatePerc + traderRebatePerc)),
+    passOnPercTDF: Math.round(traderRebatePerc * (referrerRebatePerc + traderRebatePerc)),
+    createdOn: Math.round(Date.now() / 1000),
     signature: '',
   };
 
@@ -57,10 +57,44 @@ export async function postUpsertCode(
         console.error({ data });
         throw new Error(data.statusText);
       }
-
       return;
     });
   }
+}
+
+export async function postRefer(
+  chainId: number,
+  referToAddr: string,
+  referrerRebatePerc: number,
+  partnerRebatePerc: number,
+  walletClient: WalletClient<Transport, Chain, Account>,
+  onSignatureSuccess: () => void
+) {
+  const signingFun = (x: string | Uint8Array) =>
+    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
+
+  const payload: APIReferPayload = {
+    parentAddr: walletClient.account.address,
+    referToAddr,
+    passOnPercTDF: Math.round(partnerRebatePerc * (partnerRebatePerc + referrerRebatePerc)),
+    createdOn: Math.round(Date.now() / 1000),
+    signature: '',
+  };
+
+  const codeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
+  payload.signature = await codeSigner.getSignatureForNewReferral(payload);
+
+  onSignatureSuccess();
+  return fetch(`${getReferralUrlByChainId(chainId)}/refer`, {
+    ...getRequestOptions(RequestMethodE.Post),
+    body: JSON.stringify(payload),
+  }).then((data) => {
+    if (!data.ok) {
+      console.error({ data });
+      throw new Error(data.statusText);
+    }
+    return;
+  });
 }
 
 // TODO: CHANGE

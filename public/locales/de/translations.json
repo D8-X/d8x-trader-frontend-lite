@@ -368,15 +368,15 @@
       },
       "manage-code": {
         "title-create": "Empfehlungscode erstellen",
+        "title-add": "Add partner",
         "commission-rate": "Your commission rate:",
         "you-receive": "Sie bekommen",
         "trader-receives": "Händler bekommt",
-        "agency": "Agentur",
-        "referrer": "Empfehlungsgeber",
-        "trader": "Händler",
+        "you": "You",
+        "partner": "Partner",
         "trader-kickback": "Kickback-Rate des Händlers:",
-        "referrer-kickback": "Kickback-Rate des Empfehlungsgeber:",
-        "referrer-addr": "Addresse des Empfehlungsgeber:",
+        "partner-kickback": "Set partner's commission:",
+        "partner-address": "Partner Address:",
         "enter-code": "Code eingeben",
         "code-taken": "Code bereits vergeben",
         "create-code": "Code generieren",
@@ -391,6 +391,7 @@
       },
       "toast": {
         "success-create": "Code erfolgreich erstellt",
+        "success-add-partner": "Partner added successfully",
         "success-modify": "Code erfolgreich geändert",
         "success-apply": "Code erfolgreich angewendet"
       },
