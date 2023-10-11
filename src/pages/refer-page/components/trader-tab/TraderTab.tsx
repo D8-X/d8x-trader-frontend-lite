@@ -14,6 +14,7 @@ import { useFetchEarnedRebate } from '../referrer-tab/useFetchEarnedRebate';
 
 import styles from './TraderTab.module.scss';
 import { useFetchOpenRewards } from './useFetchOpenRewards';
+import { useFetchCodeAndRebate } from './useFetchCodeAndRebate';
 
 export const TraderTab = () => {
   const { t } = useTranslation();
@@ -21,14 +22,7 @@ export const TraderTab = () => {
   const [pools] = useAtom(poolsAtom);
 
   const { address } = useAccount();
-  // TODO: Revert
-  // const chainId = useChainId();
 
-  // TODO: Revert
-  // const { referralCode, traderRebatePercentage, getReferralCodesAsync } = useReferralCodes(address, chainId);
-  // TODO: Remove !!!
-  const referralCode = null;
-  const traderRebatePercentage = 0;
   const getReferralCodesAsync = () => {};
 
   const disclaimerTextBlocks = useMemo(
@@ -36,6 +30,7 @@ export const TraderTab = () => {
     [t]
   );
 
+  const { activeCode, rebateRate } = useFetchCodeAndRebate();
   const { earnedRebates } = useFetchEarnedRebate();
   const { openRewards } = useFetchOpenRewards();
 
@@ -74,8 +69,8 @@ export const TraderTab = () => {
       <Disclaimer title={t('pages.refer.trader-tab.title2')} textBlocks={disclaimerTextBlocks} />
       <div className={styles.divider} />
       <ReferralCodeBlock
-        referralCode={referralCode}
-        traderRebatePercentage={traderRebatePercentage}
+        referralCode={activeCode}
+        traderRebatePercentage={rebateRate}
         onCodeApplySuccess={getReferralCodesAsync}
       />
     </Box>

@@ -354,7 +354,8 @@
         "title1": "Empfehlungen",
         "title2": "Empfehlen & Verdienen",
         "codes": "Ihre Codes",
-        "create": "Code generieren",
+        "add-partner": "Add partner",
+        "create-code": "Code generieren",
         "na": "N/A",
         "referrer-rebate-rate": "Rabattsatz Empfehlungsgeber",
         "trader-rebate-rate": "Rabattsatz Händler",
@@ -367,7 +368,7 @@
       },
       "manage-code": {
         "title-create": "Empfehlungscode erstellen",
-        "base": "Ihr Basis-Rabattsatz:",
+        "commission-rate": "Your commission rate:",
         "you-receive": "Sie bekommen",
         "trader-receives": "Händler bekommt",
         "agency": "Agentur",

@@ -7,9 +7,10 @@
   border-radius: 0 $d8x-border-radius $d8x-border-radius 0;
 }
 
-.buttonContainer {
+.buttonsContainer {
   display: flex;
   justify-content: flex-end;
+  gap: $d8x-spacing * 4;
 
   .actionButton {
     width: 170px;

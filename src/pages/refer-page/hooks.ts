@@ -1,53 +1,48 @@
-import { type ChangeEvent, useCallback, useRef, useState } from 'react';
+import { type ChangeEvent, useCallback, useState } from 'react';
 
-import { checkCodeExists } from './helpers';
+import { getCodeRebate } from 'network/referral';
+import { debounceLeading } from 'utils/debounceLeading';
 
-/**
- * @member DEFAULT
- * @member CODE_TAKEN signifies that the code does already exist - can be redeemed
- * @member CODE_AVAILABLE signifies that the code does not exist - cannot be redeemed
- */
-export enum CodeStateE {
-  DEFAULT,
-  CODE_TAKEN,
-  CODE_AVAILABLE,
-}
+import { CodeStateE } from './enums';
+
+const DEBOUNCE_TIMEOUT = 1000;
+
+const debounceCodeCheck = debounceLeading((callback: () => void) => {
+  callback();
+}, DEBOUNCE_TIMEOUT);
 
 export const useCodeInput = (chainId: number) => {
   const [codeInputValue, setCodeInputValue] = useState('');
   const [codeState, setCodeState] = useState(CodeStateE.DEFAULT);
 
-  const checkedCodesRef = useRef<Record<string, boolean>>({});
+  const checkCodeExists = useCallback(
+    (code: string) => {
+      debounceCodeCheck(() => {
+        getCodeRebate(chainId, code)
+          .then(() => setCodeState(CodeStateE.CODE_TAKEN))
+          .catch(() => setCodeState(CodeStateE.CODE_AVAILABLE));
+      });
+    },
+    [chainId]
+  );
 
   const handleCodeChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
 
       // clean up string and transform to uppercase
       const filteredValue = value.replace(/[^a-zA-Z0-9\-_]/g, '').toUpperCase();
 
       setCodeInputValue(filteredValue);
+      setCodeState(CodeStateE.DEFAULT);
 
-      // if user resets input reset code state to default
       if (filteredValue === '') {
-        setCodeState(CodeStateE.DEFAULT);
         return;
       }
 
-      // if input is filled
-      // only check code on every keystroke if code has not been checked before (ref)
-      if (!(filteredValue in checkedCodesRef.current)) {
-        checkedCodesRef.current[filteredValue] = await checkCodeExists(chainId, filteredValue);
-      }
-
-      if (!checkedCodesRef.current[filteredValue]) {
-        setCodeState(CodeStateE.CODE_AVAILABLE);
-        return;
-      }
-
-      setCodeState(CodeStateE.CODE_TAKEN);
+      checkCodeExists(filteredValue);
     },
-    [chainId]
+    [checkCodeExists]
   );
 
   return { codeInputValue, handleCodeChange, codeState };

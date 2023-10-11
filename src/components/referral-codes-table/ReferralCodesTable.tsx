@@ -14,11 +14,10 @@ import { ReferralCodesRow } from './elements/referral-codes-row/ReferralCodesRow
 import styles from './ReferralCodesTable.module.scss';
 
 interface ReferralCodesTablePropsI {
-  isAgency: boolean;
   codes: ReferralTableDataI[];
 }
 
-export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTablePropsI) => {
+export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(0);
@@ -66,7 +65,7 @@ export const ReferralCodesTable = memo(({ isAgency, codes }: ReferralCodesTableP
         </TableHead>
         <TableBody>
           {visibleRows.map((data) => (
-            <ReferralCodesRow key={data.referralCode} data={data} isAgency={isAgency} />
+            <ReferralCodesRow key={data.referralCode} data={data} />
           ))}
           {codes.length === 0 && (
             <EmptyRow colSpan={referralCodesHeaders.length} text={t('pages.refer.referrer-tab.no-codes')} />

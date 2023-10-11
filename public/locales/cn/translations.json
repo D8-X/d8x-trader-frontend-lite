@@ -354,7 +354,8 @@
         "title1": "邀请人数",
         "title2": "邀请 & 赚取",
         "codes": "专属码",
-        "create": "创建专属码",
+        "add-partner": "Add partner",
+        "create-code": "创建专属码",
         "na": "无",
         "referrer-rebate-rate": "邀请人返佣比例",
         "trader-rebate-rate": "交易员返佣比例",
@@ -367,7 +368,7 @@
       },
       "manage-code": {
         "title-create": "创建邀请码",
-        "base": "基础返佣比例：",
+        "commission-rate": "Your commission rate:",
         "you-receive": "您将收到",
         "trader-receives": "交易员将收到",
         "agency": "代理",

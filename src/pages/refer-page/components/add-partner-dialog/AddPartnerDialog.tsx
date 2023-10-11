@@ -4,48 +4,32 @@ import { toast } from 'react-toastify';
 import { useAtom } from 'jotai';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
-import { Box, Button, Checkbox, OutlinedInput, Typography } from '@mui/material';
+import { Box, Button, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-
-import { CodeStateE, useCodeInput } from 'pages/refer-page/hooks';
-
-import { postUpsertReferralCode } from 'network/referral';
-
+import { useCodeInput } from 'pages/refer-page/hooks';
+import { postUpsertCode } from 'network/referral';
 import { isValidAddress } from 'utils/isValidAddress';
 import { replaceSymbols } from 'utils/replaceInvalidSymbols';
-
 import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
-import { ReferralDialogActionE } from 'types/enums';
+import { CodeStateE } from '../../enums';
 
-import styles from './AgencyReferrerDialog.module.scss';
+import styles from './AddPartnerDialog.module.scss';
 
 enum KickbackRateTypeE {
   REFERRER,
   TRADER,
 }
 
-interface NormalReferrerDialogCreatePropsI {
-  type: ReferralDialogActionE.CREATE;
+interface AddPartnerDialogPropsI {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-interface NormalReferrerDialogModifyPropsI {
-  type: ReferralDialogActionE.MODIFY;
-  code: string;
-  referrerAddr: string;
-  onClose: () => void;
-  referrerRebatePercent: number;
-  traderRebatePercent: number;
-  agencyRebatePercent: number;
-}
-
-type UpdatedAgencyReferrerDialogPropsT = NormalReferrerDialogCreatePropsI | NormalReferrerDialogModifyPropsI;
-
-export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) => {
+export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) => {
   const { t } = useTranslation();
 
   const [referrersKickbackRate, setReferrersKickbackRate] = useState('0');
@@ -62,25 +46,15 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
   const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
 
   useEffect(() => {
-    let traderKickbackRate, referrerKickbackRate;
-    if (props.type === ReferralDialogActionE.MODIFY) {
-      referrerKickbackRate = props.referrerRebatePercent;
-      traderKickbackRate = props.traderRebatePercent;
-    } else {
-      referrerKickbackRate = 0.33 * commissionRate;
-      traderKickbackRate = 0.33 * commissionRate;
-    }
+    const referrerKickbackRate = 0.33 * commissionRate;
+    const traderKickbackRate = 0.33 * commissionRate;
     setReferrersKickbackRate(referrerKickbackRate.toFixed(2));
     setTradersKickbackRate(traderKickbackRate.toFixed(2));
-  }, [commissionRate, props]);
+  }, [commissionRate]);
 
-  const [referrerAddressInputValue, setReferrerAddressInputValue] = useState(
-    props.type === ReferralDialogActionE.CREATE ? '' : props.referrerAddr
-  );
+  const [referrerAddressInputValue, setReferrerAddressInputValue] = useState('');
 
   const referrerAddressInputTouchedRef = useRef(false);
-
-  const [boxChecked, setBoxChecked] = useState(false);
 
   const sidesRowValues = useMemo(() => {
     const agencyRate = commissionRate - Number(referrersKickbackRate) - Number(tradersKickbackRate);
@@ -148,48 +122,33 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
 
     const traderRebatePercent = (100 * Number(traderRate)) / rateSum;
 
-    const agencyRebatePercent = (100 * Number(agencyRate)) / rateSum;
+    // const agencyRebatePercent = (100 * Number(agencyRate)) / rateSum;
 
     const referrerRebatePercent = (100 * Number(referrerRate)) / rateSum;
 
-    const code = props.type === ReferralDialogActionE.MODIFY ? props.code : codeInputValue;
-
     // TODO: MJO: Check - What are the possible return types? What if `type` === 'error'?
-    await postUpsertReferralCode(
+    await postUpsertCode(
       chainId,
       referrerAddressInputValue,
-      address,
-      code,
+      codeInputValue,
       traderRebatePercent,
-      agencyRebatePercent,
       referrerRebatePercent,
       walletClient,
-      props.onClose
+      onClose
     );
-    toast.success(
-      <ToastContent
-        title={
-          props.type === ReferralDialogActionE.CREATE
-            ? t('pages.refer.toast.success-create')
-            : t('pages.refer.toast.success-modify')
-        }
-        bodyLines={[]}
-      />
-    );
+    toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
     referralCodesRefetchHandler.handleRefresh();
   };
 
   return (
-    <Dialog open={true} onClose={props.onClose}>
+    <Dialog open={isOpen} onClose={onClose}>
       <Box className={styles.dialogRoot}>
         <Typography variant="h5" className={styles.title}>
-          {props.type === ReferralDialogActionE.CREATE
-            ? t('pages.refer.manage-code.title-create')
-            : t('pages.refer.manage-code.title-modify')}
+          {t('pages.refer.manage-code.title-create')}
         </Typography>
         <Box className={styles.baseRebateContainer}>
           <Typography variant="bodyMedium" fontWeight={600}>
-            {t('pages.refer.manage-code.base')}
+            {t('pages.refer.manage-code.commission-rate')}
           </Typography>
           <Typography variant="bodyMedium" fontWeight={600}>
             {commissionRate}%
@@ -236,83 +195,43 @@ export const AgencyReferrerDialog = (props: UpdatedAgencyReferrerDialogPropsT) =
           />
         </Box>
         <div className={styles.divider} />
-        {props.type === ReferralDialogActionE.CREATE && (
-          <Box className={styles.codeInputContainer}>
-            <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
-              {t('pages.refer.manage-code.referrer-addr')}
+        <Box className={styles.codeInputContainer}>
+          <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
+            {t('pages.refer.manage-code.referrer-addr')}
+          </Typography>
+          <OutlinedInput
+            placeholder={t('pages.refer.manage-code.enter-addr')}
+            value={referrerAddressInputValue}
+            onChange={handleReferrerAddressChange}
+            className={styles.codeInput}
+          />
+          {!isAddressValid && referrerAddressInputTouchedRef.current && (
+            <Typography variant="bodySmall" color="red" component="p" mt={1}>
+              {t('pages.refer.manage-code.error')}
             </Typography>
-            <OutlinedInput
-              placeholder={t('pages.refer.manage-code.enter-addr')}
-              value={referrerAddressInputValue}
-              onChange={handleReferrerAddressChange}
-              className={styles.codeInput}
-            />
-            {!isAddressValid && referrerAddressInputTouchedRef.current && (
-              <Typography variant="bodySmall" color="red" component="p" mt={1}>
-                {t('pages.refer.manage-code.error')}
-              </Typography>
-            )}
-          </Box>
-        )}
-        {props.type === ReferralDialogActionE.MODIFY && (
-          <Box className={styles.referrerChangeContainer}>
-            <Box className={styles.referrerChangeFlexWrapper}>
-              <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
-                {t('pages.refer.manage-code.change-addr')}
-              </Typography>
-              <Checkbox checked={boxChecked} onChange={() => setBoxChecked((prev) => !prev)} />
-            </Box>
-            <OutlinedInput
-              placeholder={t('pages.refer.manage-code.enter-addr')}
-              value={referrerAddressInputValue}
-              onChange={handleReferrerAddressChange}
-              disabled={!boxChecked}
-              className={styles.codeInput}
-            />
-            {!isAddressValid && referrerAddressInputTouchedRef.current && (
-              <Typography variant="bodySmall" color="red" component="p" mt={1}>
-                {t('pages.refer.manage-code.error')}
-              </Typography>
-            )}
-          </Box>
-        )}
+          )}
+        </Box>
         <div className={styles.divider} />
-        {props.type === ReferralDialogActionE.CREATE && (
-          <>
-            <Box className={styles.codeInputContainer}>
-              <OutlinedInput
-                placeholder="Enter a code"
-                value={codeInputValue}
-                onChange={handleCodeChange}
-                className={styles.codeInput}
-              />
-            </Box>
-            <Typography variant="bodyTiny" component="p" className={styles.infoText}>
-              {t('pages.refer.manage-code.instructions')}
-            </Typography>
-          </>
-        )}
-        {props.type === ReferralDialogActionE.MODIFY && (
-          <Box className={styles.paddedContainer}>
-            <SidesRow leftSide="Your code" rightSide={props.code} rightSideStyles={styles.sidesRowValue} />
-          </Box>
-        )}
+        <Box className={styles.codeInputContainer}>
+          <OutlinedInput
+            placeholder="Enter a code"
+            value={codeInputValue}
+            onChange={handleCodeChange}
+            className={styles.codeInput}
+          />
+        </Box>
+        <Typography variant="bodyTiny" component="p" className={styles.infoText}>
+          {t('pages.refer.manage-code.instructions')}
+        </Typography>
         <Box className={styles.dialogActionsContainer}>
-          <Button variant="secondary" onClick={props.onClose} className={styles.cancelButton}>
+          <Button variant="secondary" onClick={onClose} className={styles.cancelButton}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
-          {props.type === ReferralDialogActionE.CREATE && (
-            <Button variant="primary" disabled={codeInputDisabled || !isAddressValid} onClick={handleUpsertCode}>
-              {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
-              {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
-              {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
-            </Button>
-          )}
-          {props.type === ReferralDialogActionE.MODIFY && (
-            <Button variant="primary" onClick={handleUpsertCode}>
-              {t('pages.refer.manage-code.modify')}
-            </Button>
-          )}
+          <Button variant="primary" disabled={codeInputDisabled || !isAddressValid} onClick={handleUpsertCode}>
+            {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
+            {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
+            {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
+          </Button>
         </Box>
       </Box>
     </Dialog>

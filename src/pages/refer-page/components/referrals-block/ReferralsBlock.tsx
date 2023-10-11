@@ -9,10 +9,8 @@ import { ReferralCodesTable } from 'components/referral-codes-table/ReferralCode
 import { useDialog } from 'hooks/useDialog';
 import { commissionRateAtom, isAgencyAtom, referralCodesAtom } from 'store/refer.store';
 
-import { NormalReferrerDialog } from '../normal-referrer-dialog/NormalReferrerDialog';
-import { AgencyReferrerDialog } from '../agency-referrer-dialog/AgencyReferrerDialog';
-
-import { ReferralDialogActionE } from 'types/enums';
+import { CreateReferrerCodeDialog } from '../create-referrer-code-dialog/CreateReferrerCodeDialog';
+import { AddPartnerDialog } from '../add-partner-dialog/AddPartnerDialog';
 import { ReferralTableDataI } from 'types/types';
 
 import styles from './ReferralsBlock.module.scss';
@@ -27,7 +25,8 @@ export const ReferralsBlock = () => {
 
   const { address } = useAccount();
 
-  const { dialogOpen, openDialog, closeDialog } = useDialog();
+  const { dialogOpen: createDialogOpen, openDialog: openCreateDialog, closeDialog: closeCreateDialog } = useDialog();
+  const { dialogOpen: addDialogOpen, openDialog: openAddDialog, closeDialog: closeAddDialog } = useDialog();
 
   const referralTableRows: ReferralTableDataI[] = useMemo(
     () =>
@@ -35,7 +34,6 @@ export const ReferralsBlock = () => {
         referralCode: referral.referral,
         // TODO: VOV: Apply logic based on isAgency and code regexp
         isPartner: false,
-        // TODO: VOV: Review logic
         commission: referral.PassOnPerc,
         discount: commissionRate - referral.PassOnPerc,
       })),
@@ -44,14 +42,19 @@ export const ReferralsBlock = () => {
 
   return (
     <Box className={styles.root}>
-      <Box className={styles.buttonContainer}>
-        <Button onClick={openDialog} variant="primary" disabled={!address}>
-          {t('pages.refer.referrer-tab.create')}
+      <Box className={styles.buttonsContainer}>
+        {isAgency && (
+          <Button onClick={openAddDialog} variant="primary" disabled={!address}>
+            {t('pages.refer.referrer-tab.add-partner')}
+          </Button>
+        )}
+        <Button onClick={openCreateDialog} variant="primary" disabled={!address}>
+          {t('pages.refer.referrer-tab.create-code')}
         </Button>
       </Box>
       <Separator className={styles.divider} />
       {address && referralCodes.length ? (
-        <ReferralCodesTable isAgency={isAgency} codes={referralTableRows} />
+        <ReferralCodesTable codes={referralTableRows} />
       ) : (
         <>
           <Typography variant="bodySmall" component="p" className={styles.dataTitle}>
@@ -62,8 +65,8 @@ export const ReferralsBlock = () => {
           </Typography>
         </>
       )}
-      {dialogOpen && !isAgency && <NormalReferrerDialog type={ReferralDialogActionE.CREATE} onClose={closeDialog} />}
-      {dialogOpen && isAgency && <AgencyReferrerDialog type={ReferralDialogActionE.CREATE} onClose={closeDialog} />}
+      <CreateReferrerCodeDialog isOpen={createDialogOpen} onClose={closeCreateDialog} />
+      {isAgency && <AddPartnerDialog isOpen={addDialogOpen} onClose={closeAddDialog} />}
     </Box>
   );
 };

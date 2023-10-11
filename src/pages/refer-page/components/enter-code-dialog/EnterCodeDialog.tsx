@@ -7,7 +7,9 @@ import { Box, Button, OutlinedInput, Typography } from '@mui/material';
 import { Dialog } from 'components/dialog/Dialog';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { postUseReferralCode } from 'network/referral';
-import { CodeStateE, useCodeInput } from 'pages/refer-page/hooks';
+import { useCodeInput } from 'pages/refer-page/hooks';
+
+import { CodeStateE } from '../../enums';
 
 import styles from './EnterCodeDialog.module.scss';
 

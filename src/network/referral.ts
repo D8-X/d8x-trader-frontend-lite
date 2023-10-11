@@ -22,39 +22,34 @@ const fetchUrl = async (url: string, chainId: number) => {
   return data.json();
 };
 
-// TODO: CHANGE
-export async function postUpsertReferralCode(
+export async function postUpsertCode(
   chainId: number,
   referrerAddr: string,
-  agencyAddr: string,
   code: string,
-  traderRebatePerc: number,
-  agencyRebatePerc: number,
   referrerRebatePerc: number,
+  traderRebatePerc: number,
   walletClient: WalletClient<Transport, Chain, Account>,
   onSignatureSuccess: () => void
 ) {
   const signingFun = (x: string | Uint8Array) =>
     walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
-  const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
+
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
-    agencyAddr,
     createdOn: Date.now(),
-    traderRebatePerc,
-    agencyRebatePerc,
-    referrerRebatePerc,
+    passOnPercTDF: Math.round(100 * 100 * traderRebatePerc * (referrerRebatePerc + traderRebatePerc)),
     signature: '',
   };
 
-  payload.signature = await referralCodeSigner.getSignatureForNewCode(payload);
+  const codeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
+  payload.signature = await codeSigner.getSignatureForNewCode(payload);
 
   if (!(await ReferralCodeSigner.checkNewCodeSignature(payload))) {
-    throw new Error('signature not valid');
+    throw new Error('Signature not valid');
   } else {
     onSignatureSuccess();
-    return fetch(`${getReferralUrlByChainId(chainId)}/upsert-referral-code`, {
+    return fetch(`${getReferralUrlByChainId(chainId)}/upsert-code`, {
       ...getRequestOptions(RequestMethodE.Post),
       body: JSON.stringify(payload),
     }).then((data) => {
@@ -104,6 +99,14 @@ export async function postUseReferralCode(
       return;
     });
   }
+}
+
+export function getMyCodeSelection(chainId: number, address: string): Promise<ReferralResponseI<string>> {
+  return fetchUrl(`my-code-selection?traderAddr=${address}`, chainId);
+}
+
+export function getCodeRebate(chainId: number, code: string): Promise<ReferralResponseI<number>> {
+  return fetchUrl(`code-rebate?code=${code}`, chainId);
 }
 
 // TODO: CHANGE
