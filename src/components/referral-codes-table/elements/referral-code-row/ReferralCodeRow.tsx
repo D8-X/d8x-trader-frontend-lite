@@ -10,14 +10,14 @@ import type { ReferralTableDataI } from 'types/types';
 import { copyToClipboard } from 'utils/copyToClipboard';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import styles from './ReferralCodesRow.module.scss';
+import styles from './ReferralCodeRow.module.scss';
 
-interface ReferralCodesRowPropsI {
+interface ReferralCodeRowPropsI {
   fullWidth: number | undefined;
   data: ReferralTableDataI;
 }
 
-export const ReferralCodesRow = ({ data, fullWidth }: ReferralCodesRowPropsI) => {
+export const ReferralCodeRow = ({ data, fullWidth }: ReferralCodeRowPropsI) => {
   const { t } = useTranslation();
 
   const onCopyClick = async () => {
