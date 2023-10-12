@@ -9,12 +9,12 @@ import { Box, Button, DialogActions, DialogTitle, Typography } from '@mui/materi
 import { Dialog } from 'components/dialog/Dialog';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useQuery } from 'hooks/useQuery';
-// import { useReferralCodes } from 'hooks/useReferralCodes';
-import { getReferralCodeExists, postUseReferralCode } from 'network/referral';
+import { getCodeRebate, getMyCodeSelection, postUseReferralCode } from 'network/referral';
 import { QueryParamE, ReferTabIdE } from 'pages/refer-page/constants';
 import { RoutesE } from 'routes/RoutesE';
 
 import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
+
 import styles from './ReferralConfirmModal.module.scss';
 
 const REF_ID_QUERY_PARAM = 'ref';
@@ -24,23 +24,20 @@ export const ReferralConfirmModal = memo(() => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { address } = useAccount();
   const chainId = useChainId();
+  const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const [showModal, setShowModal] = useState(true);
   const [requestSent, setRequestSent] = useState(false);
+  const [hasActiveCode, setHasActiveCode] = useState<boolean | null>(null);
   const [refIdTraderRebate, setRefIdTraderRebate] = useState<number | null>(0);
 
   const requestSentRef = useRef(false);
+  const activeCodeRequestRef = useRef(false);
+  const codeRebateRequestRef = useRef(false);
 
   const query = useQuery();
-
-  // TODO: Revert
-  // const { referralCode } = useReferralCodes(address, chainId);
-  // TODO: Remove!!!
-  const referralCode = null;
-
   const refId = query.get(REF_ID_QUERY_PARAM);
 
   const handleModalClose = () => {
@@ -76,11 +73,34 @@ export const ReferralConfirmModal = memo(() => {
   };
 
   useEffect(() => {
-    if (chainId && refId) {
-      getReferralCodeExists(chainId, refId).then((response) => {
-        setRefIdTraderRebate(response.data.length ? response.data[0].traderRebatePerc : null);
-      });
+    if (activeCodeRequestRef.current || !chainId || !address || !refId) {
+      return;
     }
+
+    activeCodeRequestRef.current = true;
+
+    getMyCodeSelection(chainId, address)
+      .then(({ data }) => setHasActiveCode(data !== ''))
+      .catch(console.error)
+      .finally(() => {
+        activeCodeRequestRef.current = false;
+      });
+  }, [refId, chainId, address]);
+
+  useEffect(() => {
+    if (codeRebateRequestRef.current || !chainId || !refId) {
+      return;
+    }
+
+    codeRebateRequestRef.current = true;
+    getCodeRebate(chainId, refId)
+      .then(({ data }) => {
+        setRefIdTraderRebate(data.rebate_percent);
+      })
+      .catch(() => setRefIdTraderRebate(null))
+      .finally(() => {
+        codeRebateRequestRef.current = false;
+      });
   }, [chainId, refId]);
 
   if (!refId) {
@@ -88,8 +108,8 @@ export const ReferralConfirmModal = memo(() => {
   }
 
   const hasAddress = !!address;
-  const hasReferralCode = referralCode !== '' && referralCode !== null;
-  const noReferralCode = referralCode === '';
+  const hasReferralCode = hasActiveCode;
+  const noReferralCode = hasActiveCode !== null && !hasActiveCode;
   const refIdIsValid = refIdTraderRebate !== null;
 
   return (

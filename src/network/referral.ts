@@ -148,14 +148,6 @@ export function getCodeRebate(chainId: number, code: string): Promise<ReferralRe
   return fetchUrl(`code-rebate?code=${code}`, chainId);
 }
 
-// TODO: CHANGE
-export function getReferralCodeExists(
-  chainId: number,
-  code: string
-): Promise<ReferralResponseI<{ code: string; traderRebatePerc: number }[]>> {
-  return fetchUrl(`code-info?code=${code}`, chainId);
-}
-
 export function getTokenInfo(chainId: number): Promise<ReferralResponseI<TokenInfoI>> {
   return fetchUrl('token-info', chainId);
 }
