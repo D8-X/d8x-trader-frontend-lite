@@ -51,7 +51,11 @@ export const ReferralCodeBlock = ({
       <Typography variant="bodyLarge" className={styles.dataValue}>
         {address && referralCode ? referralCode : 'N/A'}
       </Typography>
-      {dialogOpen && <EnterCodeDialog onClose={() => setDialogOpen(false)} onCodeApplySuccess={onCodeApplySuccess} />}
+      <EnterCodeDialog
+        isOpen={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onCodeApplySuccess={onCodeApplySuccess}
+      />
     </Box>
   );
 };

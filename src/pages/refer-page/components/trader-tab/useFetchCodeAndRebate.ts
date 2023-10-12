@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
 import { getCodeRebate, getMyCodeSelection } from 'network/referral';
@@ -13,8 +13,8 @@ export const useFetchCodeAndRebate = () => {
   const activeCodeRequestRef = useRef(false);
   const rebateRateRequestRef = useRef(false);
 
-  useEffect(() => {
-    if (activeCodeRequestRef.current || !chainId || !address) {
+  const fetchMyCodeSelection = useCallback(() => {
+    if (!chainId || !address) {
       return;
     }
 
@@ -29,7 +29,14 @@ export const useFetchCodeAndRebate = () => {
   }, [chainId, address]);
 
   useEffect(() => {
-    if (rebateRateRequestRef.current || !chainId || !activeCode) {
+    if (activeCodeRequestRef.current) {
+      return;
+    }
+    fetchMyCodeSelection();
+  }, [fetchMyCodeSelection]);
+
+  const fetchCodeRebate = useCallback(() => {
+    if (!chainId || !activeCode) {
       return;
     }
 
@@ -43,8 +50,21 @@ export const useFetchCodeAndRebate = () => {
       });
   }, [activeCode, chainId]);
 
+  useEffect(() => {
+    if (rebateRateRequestRef.current) {
+      return;
+    }
+    fetchCodeRebate();
+  }, [fetchCodeRebate]);
+
+  const fetchCodeAndRebate = useCallback(() => {
+    fetchMyCodeSelection();
+    fetchCodeRebate();
+  }, [fetchMyCodeSelection, fetchCodeRebate]);
+
   return {
     activeCode,
     rebateRate,
+    fetchCodeAndRebate,
   };
 };
