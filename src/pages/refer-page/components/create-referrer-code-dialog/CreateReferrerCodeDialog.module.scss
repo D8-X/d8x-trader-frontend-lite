@@ -26,7 +26,6 @@
 
 .sidesRowValue {
   font-weight: 600;
-  font-size: 16px;
 }
 
 .divider {
@@ -43,6 +42,7 @@
 .kickbackInput {
   max-width: 110px;
   color: var(--d8x-color-black-400);
+  font-size: 14px;
 
   input {
     width: 100%;
@@ -64,6 +64,7 @@
 
   input {
     width: 100%;
+    font-size: 14px;
   }
 }
 

@@ -81,10 +81,10 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
           {t('pages.refer.manage-code.title-create')}
         </Typography>
         <Box className={styles.baseRebateContainer}>
-          <Typography variant="bodyMedium" fontWeight={600}>
+          <Typography variant="bodySmall" fontWeight={600}>
             {t('pages.refer.manage-code.commission-rate')}
           </Typography>
-          <Typography variant="bodyMedium" fontWeight={600}>
+          <Typography variant="bodySmall" fontWeight={600}>
             {commissionRate}%
           </Typography>
         </Box>

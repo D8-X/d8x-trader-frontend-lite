@@ -1,6 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .dialogRoot {
+  min-width: 450px;
   width: 100%;
   padding: 10 * $d8x-spacing 0 8 * $d8x-spacing 0;
 }
@@ -26,7 +27,6 @@
 
 .sidesRowValue {
   font-weight: 600;
-  font-size: 16px;
 }
 
 .divider {
@@ -76,6 +76,7 @@
   width: 100%;
 
   input {
+    font-size: 14px;
     width: 100%;
   }
 }
@@ -108,6 +109,10 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
+
+  .dialogRoot {
+    min-width: 300px;
+  }
 
   .referrerKickbackInputContainer,
   .traderKickbackInputContainer {
