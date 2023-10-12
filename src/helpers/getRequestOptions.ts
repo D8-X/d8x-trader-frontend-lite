@@ -1,6 +1,6 @@
 import { RequestMethodE } from 'types/enums';
 
-export function getRequestOptions(method?: RequestMethodE): RequestInit {
+export function getRequestOptions(method?: RequestMethodE) {
   return {
     method: method ? method : RequestMethodE.Get,
     headers: {
