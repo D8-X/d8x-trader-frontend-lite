@@ -349,8 +349,8 @@
       "referrer-tab": {
         "disclaimer-text-block1": "Earn rebates by inviting traders to trade on D8X. Rebates are airdropped to your wallet weekly.",
         "disclaimer-text-block2": "Check out details on the D8X referral program.",
-        "volume": "Total referred trading volume",
-        "rebates": "Total earned rebates",
+        "total-earned-commission": "Total earned commission",
+        "commission-rate": "Your commission rate",
         "title1": "Your referrals",
         "title2": "Refer & Earn",
         "codes": "Your codes",

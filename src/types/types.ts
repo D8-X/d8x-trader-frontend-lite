@@ -311,16 +311,12 @@ export interface ReferralCutI {
   passed_on_percent: number;
 }
 
-export interface ReferralVolumeI {
-  poolId: number;
-  quantityCC: number;
-  code: string;
-}
-
 export interface EarnedRebateI {
   poolId: number;
-  amountCC: number;
   code: string;
+  earnings: number;
+  asTrader: boolean;
+  tokenName: string;
 }
 
 export interface TraderDataI {
@@ -331,7 +327,13 @@ export interface TraderDataI {
 
 export interface OpenTraderRebateI {
   poolId: number;
-  amountCC: number;
+  earnings: number;
+  tokenName: string;
+}
+
+export interface OpenEarningsI {
+  code: string;
+  openEarnings: OpenTraderRebateI[];
 }
 
 export interface ReferrerDataI {
@@ -366,7 +368,7 @@ export interface ReferralDataI {
 
 export interface OverviewPoolItemI {
   value: number | string;
-  poolSymbol: PoolI['poolSymbol'];
+  symbol: PoolI['poolSymbol'];
 }
 
 export interface OverviewItemI {

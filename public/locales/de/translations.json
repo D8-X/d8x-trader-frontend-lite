@@ -349,8 +349,8 @@
       "referrer-tab": {
         "disclaimer-text-block1": "Verdienen Sie Rabatte, indem Sie Händler zum Handeln auf D8X einladen. Rabatte werden wöchentlich per Airdrop auf Ihre Wallet übertragen.",
         "disclaimer-text-block2": "Schauen Sie sich die Details zum Empfehlungsprogramm an.",
-        "volume": "Gesamtes empfohlenes Handelsvolumen",
-        "rebates": "Insgesamt verdiente Rabatte",
+        "total-earned-commission": "Total earned commission",
+        "commission-rate": "Your commission rate",
         "title1": "Empfehlungen",
         "title2": "Empfehlen & Verdienen",
         "codes": "Ihre Codes",

@@ -1,89 +1,65 @@
 import { useAtom } from 'jotai';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Box } from '@mui/material';
 
-// import { getReferralVolume } from 'network/referral';
 import { poolsAtom } from 'store/pools.store';
-import type { OverviewItemI, OverviewPoolItemI, ReferralVolumeI } from 'types/types';
+import { commissionRateAtom } from 'store/refer.store';
+import type { OverviewItemI, OverviewPoolItemI } from 'types/types';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { Overview } from '../overview/Overview';
 import { ReferralsBlock } from '../referrals-block/ReferralsBlock';
+import { useFetchEarnedRebate } from './useFetchEarnedRebate';
 
 import styles from './ReferrerTab.module.scss';
-import { useFetchEarnedRebate } from './useFetchEarnedRebate';
 
 export const ReferrerTab = memo(() => {
   const { t } = useTranslation();
 
   const [pools] = useAtom(poolsAtom);
+  const [commissionRate] = useAtom(commissionRateAtom);
 
-  const chainId = useChainId();
   const { address } = useAccount();
-
-  const [referralVolumes, setReferralVolumes] = useState<ReferralVolumeI[]>([]);
-
-  const referralVolumeRequestRef = useRef(false);
 
   const disclaimerTextBlocks = useMemo(
     () => [t('pages.refer.referrer-tab.disclaimer-text-block1'), t('pages.refer.referrer-tab.disclaimer-text-block2')],
     [t]
   );
 
-  useEffect(() => {
-    if (address && chainId) {
-      if (referralVolumeRequestRef.current) {
-        return;
-      }
-
-      referralVolumeRequestRef.current = true;
-
-      // getReferralVolume(chainId, address)
-      //   .then(({ data }) => {
-      //     setReferralVolumes(data);
-      //   })
-      //   .catch(console.error)
-      //   .finally(() => {
-      //     referralVolumeRequestRef.current = false;
-      //   });
-    } else {
-      setReferralVolumes([]);
-    }
-  }, [address, chainId]);
-
   const { earnedRebates } = useFetchEarnedRebate();
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
-    const referralVolumesByPools: OverviewPoolItemI[] = [];
-    const earnedRebatesByPools: OverviewPoolItemI[] = [];
+    const totalEarnedCommission: OverviewPoolItemI[] = [];
 
     pools.forEach((pool) => {
-      const referralVolumesAmount = referralVolumes
-        .filter((volume) => volume.poolId === pool.poolId)
-        .reduce((accumulator, currentValue) => accumulator + currentValue.quantityCC, 0);
+      const earnedCommissionAmount = earnedRebates
+        .filter((rebate) => !rebate.asTrader && rebate.poolId === pool.poolId)
+        .reduce((accumulator, currentValue) => accumulator + currentValue.earnings, 0);
 
-      const earnedRebatesAmount = earnedRebates
-        .filter((rebate) => rebate.poolId === pool.poolId)
-        .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
-
-      referralVolumesByPools.push({ poolSymbol: pool.poolSymbol, value: referralVolumesAmount });
-      earnedRebatesByPools.push({ poolSymbol: pool.poolSymbol, value: earnedRebatesAmount });
+      totalEarnedCommission.push({ symbol: pool.poolSymbol, value: earnedCommissionAmount });
     });
 
     return [
       {
-        title: t('pages.refer.referrer-tab.volume'),
-        poolsItems: address ? referralVolumesByPools : [],
+        title: t('pages.refer.referrer-tab.total-earned-commission'),
+        poolsItems: address ? totalEarnedCommission : [],
       },
       {
-        title: t('pages.refer.referrer-tab.rebates'),
-        poolsItems: address ? earnedRebatesByPools : [],
+        title: t('pages.refer.referrer-tab.commission-rate'),
+        poolsItems: address
+          ? [
+              {
+                value: `${commissionRate}%`,
+                symbol: '',
+              },
+            ]
+          : [],
       },
     ];
-  }, [pools, referralVolumes, earnedRebates, address, t]);
+  }, [pools, commissionRate, earnedRebates, address, t]);
 
   return (
     <Box className={styles.root}>

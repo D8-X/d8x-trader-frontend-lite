@@ -36,19 +36,19 @@ export const TraderTab = () => {
 
   const overviewItems: OverviewItemI[] = useMemo(() => {
     const earnedRebatesByPools: OverviewPoolItemI[] = [];
-    const openRewardsByPools: OverviewPoolItemI[] = [];
+    const openEarningsByPools: OverviewPoolItemI[] = [];
 
     pools.forEach((pool) => {
       const earnedRebatesAmount = earnedRebates
-        .filter((rebate) => rebate.poolId === pool.poolId)
-        .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
+        .filter((rebate) => rebate.asTrader && rebate.poolId === pool.poolId)
+        .reduce((accumulator, currentValue) => accumulator + currentValue.earnings, 0);
 
-      const openRewardsAmount = openRewards
+      const openEarningsAmount = openRewards
         .filter((volume) => volume.poolId === pool.poolId)
-        .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
+        .reduce((accumulator, currentValue) => accumulator + currentValue.earnings, 0);
 
-      earnedRebatesByPools.push({ poolSymbol: pool.poolSymbol, value: earnedRebatesAmount });
-      openRewardsByPools.push({ poolSymbol: pool.poolSymbol, value: openRewardsAmount });
+      earnedRebatesByPools.push({ symbol: pool.poolSymbol, value: earnedRebatesAmount });
+      openEarningsByPools.push({ symbol: pool.poolSymbol, value: openEarningsAmount });
     });
 
     return [
@@ -58,7 +58,7 @@ export const TraderTab = () => {
       },
       {
         title: t('pages.refer.trader-tab.open-rewards'),
-        poolsItems: address ? openRewardsByPools : [],
+        poolsItems: address ? openEarningsByPools : [],
       },
     ];
   }, [pools, openRewards, earnedRebates, address, t]);

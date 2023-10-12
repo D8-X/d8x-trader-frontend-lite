@@ -349,8 +349,8 @@
       "referrer-tab": {
         "disclaimer-text-block1": "通过邀请交易员在D8X上交易赚取返佣。返佣将每周结算一次，自动到账。",
         "disclaimer-text-block2": "从D8X邀请计划查看详情",
-        "volume": "总交易量",
-        "rebates": "总返佣",
+        "total-earned-commission": "Total earned commission",
+        "commission-rate": "Your commission rate",
         "title1": "邀请人数",
         "title2": "邀请 & 赚取",
         "codes": "专属码",

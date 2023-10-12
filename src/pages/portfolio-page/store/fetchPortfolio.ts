@@ -67,7 +67,7 @@ export const fetchPortfolioAtom = atom(
 
       const openRewardsAmount = openRewards
         .filter((volume) => volume.poolId === pool.poolId)
-        .reduce((accumulator, currentValue) => accumulator + currentValue.amountCC, 0);
+        .reduce((accumulator, currentValue) => accumulator + currentValue.earnings, 0);
       totalReferralRewards += openRewardsAmount * poolUSDPrice.collateral;
     }
     set(poolUsdPriceAtom, poolUsdPriceMap);

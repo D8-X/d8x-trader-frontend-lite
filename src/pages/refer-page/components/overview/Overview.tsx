@@ -22,9 +22,9 @@ export const Overview = ({ title, items }: OverviewPropsI) => {
             <Typography variant="bodyTiny" component="p" className={styles.dataTitle}>
               {itemTitle}
             </Typography>
-            {poolsItems.map(({ poolSymbol, value }) => (
-              <Typography variant="bodyMedium" className={styles.dataValue} key={poolSymbol}>
-                {typeof value === 'string' ? value : formatToCurrency(value, poolSymbol, true)}
+            {poolsItems.map(({ symbol, value }) => (
+              <Typography variant="bodyMedium" className={styles.dataValue} key={symbol}>
+                {typeof value === 'string' ? value : formatToCurrency(value, symbol, true)}
               </Typography>
             ))}
           </Box>

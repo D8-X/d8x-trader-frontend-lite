@@ -6,8 +6,14 @@ import type { Chain, WalletClient } from 'wagmi';
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
-import type { EarnedRebateI, OpenTraderRebateI, ReferralResponseI, ReferralVolumeI } from 'types/types';
-import { ReferralCutI, ReferralDataI, TokenInfoI } from 'types/types';
+import type {
+  EarnedRebateI,
+  OpenEarningsI,
+  ReferralCutI,
+  ReferralDataI,
+  ReferralResponseI,
+  TokenInfoI,
+} from 'types/types';
 
 function getReferralUrlByChainId(chainId: number) {
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
@@ -163,11 +169,6 @@ export function getReferCut(
   return fetchUrl(`refer-cut?addr=${address}&holdings=${holdings}`, chainId);
 }
 
-// TODO: CHANGE
-export function getReferralVolume(chainId: number, address: string): Promise<ReferralResponseI<ReferralVolumeI[]>> {
-  return fetchUrl(`referral-volume?referrerAddr=${address}`, chainId);
-}
-
 export function getEarnedRebate(chainId: number, address: string): Promise<ReferralResponseI<EarnedRebateI[] | null>> {
   return fetchUrl(`earnings?addr=${address}`, chainId);
 }
@@ -176,10 +177,6 @@ export function getMyReferrals(chainId: number, address: string): Promise<Referr
   return fetchUrl(`my-referrals?addr=${address}`, chainId);
 }
 
-// TODO: CHANGE
-export function getOpenTraderRebate(
-  chainId: number,
-  traderAddr: string
-): Promise<ReferralResponseI<OpenTraderRebateI[]>> {
-  return fetchUrl(`open-trader-rebate?addr=${traderAddr}`, chainId);
+export function getOpenRewards(chainId: number, traderAddr: string): Promise<ReferralResponseI<OpenEarningsI>> {
+  return fetchUrl(`open-pay?traderAddr=${traderAddr}`, chainId);
 }

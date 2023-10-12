@@ -349,8 +349,8 @@
       "referrer-tab": {
         "disclaimer-text-block1": "Gana rebates invitando a otros usuarios a probar D8X. Los rebates son enviados a tu cartera cada semana via airdrop.",
         "disclaimer-text-block2": "Infórmate sobre los detalles del programa de rebates de D8X.",
-        "volume": "Volumen total referido",
-        "rebates": "Rebates ganados",
+        "total-earned-commission": "Total earned commission",
+        "commission-rate": "Your commission rate",
         "title1": "Tus remisiones",
         "title2": "Refiere & Gana",
         "codes": "Tus Códigos",
