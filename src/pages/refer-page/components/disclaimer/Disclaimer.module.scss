@@ -7,6 +7,7 @@
   box-sizing: content-box;
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
   background-color: var(--d8x-background-white);
+  min-width: 200px;
 }
 
 .title {
