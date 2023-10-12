@@ -44,24 +44,22 @@ export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => 
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down('md'));
 
-  const referralCodesHeaders = useMemo(() => {
-    const headers: TableHeaderI<ReferralTableDataI>[] = [
+  const referralCodesHeaders: TableHeaderI<ReferralTableDataI>[] = useMemo(
+    () => [
       { field: 'referralCode', label: t('pages.refer.referrer-tab.codes'), align: AlignE.Left },
-    ];
-
-    headers.push({
-      field: 'commission',
-      label: t('pages.refer.referrer-tab.referrer-rebate-rate'),
-      align: AlignE.Right,
-    });
-    headers.push({
-      field: 'discount',
-      label: t('pages.refer.referrer-tab.trader-rebate-rate'),
-      align: AlignE.Right,
-    });
-
-    return headers;
-  }, [t]);
+      {
+        field: 'commission',
+        label: t('pages.refer.referrer-tab.referrer-rebate-rate'),
+        align: AlignE.Right,
+      },
+      {
+        field: 'discount',
+        label: t('pages.refer.referrer-tab.trader-rebate-rate'),
+        align: AlignE.Right,
+      },
+    ],
+    [t]
+  );
 
   const visibleRows = stableSort(codes, getComparator(order, orderBy)).slice(
     page * rowsPerPage,
