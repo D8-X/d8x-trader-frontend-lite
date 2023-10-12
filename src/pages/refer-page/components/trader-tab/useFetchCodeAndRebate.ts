@@ -36,7 +36,7 @@ export const useFetchCodeAndRebate = () => {
     rebateRateRequestRef.current = true;
 
     getCodeRebate(chainId, activeCode)
-      .then(({ data }) => setRebateRate(data))
+      .then(({ data }) => setRebateRate(data.rebate_percent))
       .catch(console.error)
       .finally(() => {
         rebateRateRequestRef.current = false;

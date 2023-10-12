@@ -2,15 +2,15 @@ import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
 import { type Time } from 'lightweight-charts';
 import type { ReactElement, ReactNode } from 'react';
 
-import {
-  type AlignE,
-  type FieldTypeE,
-  type LanguageE,
-  type OrderBlockE,
-  type OrderTypeE,
+import type {
+  AlignE,
+  FieldTypeE,
+  LanguageE,
+  OrderBlockE,
+  OrderTypeE,
   OrderValueTypeE,
-  type StopLossE,
-  type TakeProfitE,
+  StopLossE,
+  TakeProfitE,
 } from './enums';
 
 export interface LanguageMetaI {
@@ -333,7 +333,7 @@ export interface OpenTraderRebateI {
 
 export interface OpenEarningsI {
   code: string;
-  openEarnings: OpenTraderRebateI[];
+  openEarnings: OpenTraderRebateI[] | null;
 }
 
 export interface ReferrerDataI {

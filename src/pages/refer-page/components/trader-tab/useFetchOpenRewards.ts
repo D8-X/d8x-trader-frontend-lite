@@ -22,7 +22,7 @@ export const useFetchOpenRewards = () => {
 
       getOpenRewards(chainId, address)
         .then(({ data }) => {
-          setOpenRewards(data.openEarnings);
+          setOpenRewards(data.openEarnings ?? []);
         })
         .catch(console.error)
         .finally(() => {
