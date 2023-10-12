@@ -32,7 +32,7 @@ export const ReferralsBlock = () => {
   const referralTableRows: ReferralTableDataI[] = useMemo(
     () =>
       referralCodes.map((referral) => {
-        const commission = (referral.passOnPerc * commissionRate) / 100;
+        const discount = (referral.passOnPerc * commissionRate) / 100;
         let isPartner = false;
         if (isAgency) {
           isPartner = isValidAddress(referral.referral);
@@ -41,8 +41,8 @@ export const ReferralsBlock = () => {
         return {
           referralCode: referral.referral,
           isPartner,
-          commission,
-          discount: commissionRate - commission,
+          commission: commissionRate - discount,
+          discount,
         };
       }),
     [referralCodes, commissionRate, isAgency]
