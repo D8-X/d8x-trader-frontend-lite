@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-import { ReferralDataI, TokenInfoI } from 'types/types';
+import type { ReferralDataI, TokenInfoI } from 'types/types';
 
 export const isAgencyAtom = atom(false);
 export const commissionRateAtom = atom(0);

@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
-import { useAccount } from 'wagmi';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -8,14 +9,13 @@ import { Separator } from 'components/separator/Separator';
 import { ReferralCodesTable } from 'components/referral-codes-table/ReferralCodesTable';
 import { useDialog } from 'hooks/useDialog';
 import { commissionRateAtom, isAgencyAtom, referralCodesAtom } from 'store/refer.store';
+import { type ReferralTableDataI } from 'types/types';
+import { isValidAddress } from 'utils/isValidAddress';
 
-import { CreateReferrerCodeDialog } from '../create-referrer-code-dialog/CreateReferrerCodeDialog';
 import { AddPartnerDialog } from '../add-partner-dialog/AddPartnerDialog';
-import { ReferralTableDataI } from 'types/types';
+import { CreateReferrerCodeDialog } from '../create-referrer-code-dialog/CreateReferrerCodeDialog';
 
 import styles from './ReferralsBlock.module.scss';
-import { useMemo } from 'react';
-import { isValidAddress } from '../../../../utils/isValidAddress';
 
 export const ReferralsBlock = () => {
   const { t } = useTranslation();
