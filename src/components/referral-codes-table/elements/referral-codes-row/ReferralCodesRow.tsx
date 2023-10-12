@@ -13,10 +13,11 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import styles from './ReferralCodesRow.module.scss';
 
 interface ReferralCodesRowPropsI {
+  fullWidth: number | undefined;
   data: ReferralTableDataI;
 }
 
-export const ReferralCodesRow = ({ data }: ReferralCodesRowPropsI) => {
+export const ReferralCodesRow = ({ data, fullWidth }: ReferralCodesRowPropsI) => {
   const { t } = useTranslation();
 
   const onCopyClick = async () => {
@@ -46,7 +47,13 @@ export const ReferralCodesRow = ({ data }: ReferralCodesRowPropsI) => {
   return (
     <TableRow className={styles.root}>
       <TableCell className={classnames(styles.bodyCell, styles.codeCell)}>
-        {data.referralCode}
+        <div
+          className={styles.referralCode}
+          style={{ width: fullWidth ? `${fullWidth * 0.25 + (data.isPartner ? 100 : 0)}px` : '100%' }}
+          title={data.referralCode}
+        >
+          {data.referralCode}
+        </div>
         {!data.isPartner && (
           <Button variant="primary" size="tableSmall" onClick={onCopyClick}>
             <Typography variant="bodyTiny">{t('pages.refer.referrer-tab.share')}</Typography>

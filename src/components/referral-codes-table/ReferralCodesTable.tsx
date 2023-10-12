@@ -12,6 +12,7 @@ import type { ReferralTableDataI, TableHeaderI } from 'types/types';
 import { ReferralCodesRow } from './elements/referral-codes-row/ReferralCodesRow';
 
 import styles from './ReferralCodesTable.module.scss';
+import { useResizeDetector } from 'react-resize-detector';
 
 interface ReferralCodesTablePropsI {
   codes: ReferralTableDataI[];
@@ -19,6 +20,8 @@ interface ReferralCodesTablePropsI {
 
 export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => {
   const { t } = useTranslation();
+
+  const { width, ref } = useResizeDetector();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -50,7 +53,7 @@ export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => 
   );
 
   return (
-    <TableContainer>
+    <TableContainer ref={ref}>
       <Table>
         <TableHead>
           <TableRow className={styles.headerLabel}>
@@ -65,7 +68,7 @@ export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => 
         </TableHead>
         <TableBody>
           {visibleRows.map((data) => (
-            <ReferralCodesRow key={data.referralCode} data={data} />
+            <ReferralCodesRow key={data.referralCode} data={data} fullWidth={width} />
           ))}
           {codes.length === 0 && (
             <EmptyRow colSpan={referralCodesHeaders.length} text={t('pages.refer.referrer-tab.no-codes')} />

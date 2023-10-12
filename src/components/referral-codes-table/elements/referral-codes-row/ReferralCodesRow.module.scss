@@ -15,7 +15,16 @@
 .codeCell {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: $d8x-spacing * 4;
   border-radius: $d8x-border-radius 0 0 $d8x-border-radius;
+}
+
+.referralCode {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .buttonCell {
