@@ -250,14 +250,14 @@
           "title": "Stop loss",
           "body1": "You can specify a stop loss order to go along with your main order.",
           "body2": "If you select e.g. -50%, you create a second order, that will be triggered if your loss on your main order reaches -50%.",
-          "body3": "Technically, you are specifying a stop-market order, of the opposing side (if your main order is a BUY order, you are specifying a stop-market SELL order). The trigger price is automatically calculated such that your overall loss is as per your selection, assuming you entered at the worst price your slippage settings allow.",
+          "body3": "Technically, you are specifying a stop-market order, of the opposing side (if your main order is a BUY order, you are specifying a stop-market SELL order). The trigger price is automatically calculated such that your overall loss is as per your selection.",
           "none": "NONE"
         },
         "take-profit": {
           "title": "Take profit",
           "body1": "You can specify a take profit order to go along with your main order.",
           "body2": "If you select e.g., 100%, you create a second order, that will be triggered if your profit on your main order reaches 100%.",
-          "body3": "Technically, you are specifying a limit order of the opposing side (if your main order is a BUY order, you are specifying a limit SELL order). The limit price is automatically calculated such that your overall profit is as per your selection, assuming you entered at the worst price your slippage settings allow.",
+          "body3": "Technically, you are specifying a limit order of the opposing side (if your main order is a BUY order, you are specifying a limit SELL order). The limit price is automatically calculated such that your overall profit is as per your selection.",
           "none": "NONE"
         },
         "info": {
