@@ -2,7 +2,7 @@
     "navigation": {
       "trade": "Trader",
       "refer": "Parrainage",
-      "vault": "Coffre",
+      "vault": "Coffre-fort",
       "portfolio": "Portefeuille"
     },
     "pages": {
@@ -422,219 +422,219 @@
       },
       "vault": {
         "personal-stats": {
-          "title": "Your stats",
+          "title": "Vos statistiques",
           "amount": {
-            "title": "Amount",
-            "info": "Amount of d{{poolSymbol}} you own."
+            "title": "Montant",
+            "info": "Montant de d{{poolSymbol}} que vous possédez."
           },
           "earnings": {
-            "title": "Estimated earnings",
-            "info1": "Estimated earnings are an approximation of how much you've earned.",
-            "info2": "Estimated earnings = d{{poolSymbol}} balance at market value + total {{poolSymbol}} withdrawn - total {{poolSymbol}} deposited"
+            "title": "Gains estimés",
+            "info1": "Les gains estimés sont une approximation de combien vous avez gagné.",
+            "info2": "Gains estimés = solde de d{{poolSymbol}} à la valeur marchande + total {{poolSymbol}} retiré - total {{poolSymbol}} déposé"
           },
           "initiated": {
-            "title": "Withdrawal initiated?",
-            "info1": "Indicates if you have initated a withdrawal request for the {{poolSymbol}} pool."
+            "title": "Retrait initié?",
+            "info1": "Indique si vous avez initié une demande de retrait pour le pool {{poolSymbol}}."
           },
           "withdrawal-amount": {
-            "title": "Withdrawal amount",
-            "info1": "The amount of d{{poolSymbol}} you initiated to withdraw.",
-            "info2": "Your liquidity continues to participate in the PnL and fee revenue of the pool until you withdraw."
+            "title": "Montant du retrait",
+            "info1": "Le montant de d{{poolSymbol}} que vous avez initié à retirer.",
+            "info2": "Votre liquidité continue de participer au PnL et aux revenus des frais du pool jusqu'à ce que vous retiriez."
           },
           "date": {
-            "title": "Can be withdrawn on",
-            "info1": "You can withdraw your liquidity two days after initializing withdrawal.",
-            "info2": "If you do not withdraw your funds within four days after they are ready to be withdrawn, anyone can execute the withdrawal on your behalf. In this case the funds are sent to your address, and the executor will earn a small fee paid out of your funds."
+            "title": "Peut être retiré le",
+            "info1": "Vous pouvez retirer votre liquidité deux jours après avoir initié le retrait.",
+            "info2": "Si vous ne retirez pas vos fonds dans les quatre jours après qu'ils soient prêts à être retirés, n'importe qui peut exécuter le retrait en votre nom. Dans ce cas, les fonds sont envoyés à votre adresse, et l'exécuteur gagnera une petite commission prélevée sur vos fonds."
           }
         },
         "global-stats": {
-          "apy": "All Time APY",
+          "apy": "APY Total",
           "tvl": "TVL",
-          "price": "d{{poolSymbol}} Price",
-          "supply": "d{{poolSymbol}} Supply"
+          "price": "Prix de d{{poolSymbol}}",
+          "supply": "Approvisionnement de d{{poolSymbol}}"
         },
         "add": {
-          "title": "Add Liquidity",
-          "info1": "Add {{poolSymbol}} liquidity to the pool and receive d{{poolSymbol}}, an ERC-20 token that represents your ownership in the liquidity pool.",
-          "info2": "As a liquidity provider, you'll earn trading fees and funding rate payments on all trades collateralized in the collateral currency. You'll also participate in the PnL of the pool. d{{poolSymbol}} accumulates fees, funding rate payments and PnL in real-time.",
+          "title": "Ajouter de la Liquidité",
+          "info1": "Ajoutez de la liquidité {{poolSymbol}} au pool et recevez d{{poolSymbol}}, un token ERC-20 qui représente votre propriété dans le pool de liquidité.",
+          "info2": "En tant que fournisseur de liquidité, vous gagnerez des frais de transaction et des paiements de taux de financement. Vous participerez également au PnL du pool. d{{poolSymbol}} accumule les frais, les paiements de taux de financement et le PnL en temps réel.",
           "amount": {
-            "title": "Amount of {{poolSymbol}}",
-            "info1": "Specify the amount of {{poolSymbol}} you want to add to the pool."
+            "title": "Montant de {{poolSymbol}}",
+            "info1": "Indiquez le montant de {{poolSymbol}} que vous souhaitez ajouter au pool."
           },
-          "receive": "You receive d{{poolSymbol}}",
+          "receive": "Vous recevez d{{poolSymbol}}",
           "max": "Max:",
-          "button": "Add"
+          "button": "Ajouter"
         },
         "withdraw": {
-          "title": "Withdraw Liquidity",
-          "info1": "To withdraw liquidity you first initiate your withdrawal. Keep in mind that it takes 48 hours to process your request and you can only have one withdrawal request at a time.",
-          "info2": "After 48 hours, a withdrawable amount of d{{poolSymbol}} can be exchanged for {{poolSymbol}} at the d{{poolSymbol}} Price.",
+          "title": "Retirer la Liquidité",
+          "info1": "Pour retirer la liquidité, vous devez d'abord initier votre retrait. Gardez à l'esprit que cela prend 48 heures pour traiter votre demande et vous ne pouvez avoir qu'une demande de retrait à la fois.",
+          "info2": "Après 48 heures, un montant retirable de d{{poolSymbol}} peut être échangé contre {{poolSymbol}} au prix de d{{poolSymbol}}.",
           "initiate": {
-            "title": "1. Initiate withdrawal of {{poolSymbol}}",
-            "info1": "Specify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
-            "info2": "After 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
-            "button": "Initiate withdrawal"
+            "title": "1. Initier le retrait de {{poolSymbol}}",
+            "info1": "Indiquez le montant de d{{poolSymbol}} que vous souhaitez échanger contre {{poolSymbol}}.",
+            "info2": "Après 48 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool.",
+            "button": "Initier le retrait"
           },
           "action": {
-            "title": "Withdraw {{poolSymbol}}",
-            "info1": "This amount can be converted to {{poolSymbol}}, which can be withdrawn from the pool.",
-            "date": "Can be withdrawn on:",
-            "receive": "You receive:",
-            "button": "Withdraw"
+            "title": "Retirer {{poolSymbol}}",
+            "info1": "Ce montant peut être converti en {{poolSymbol}}, qui peut être retiré du pool.",
+            "date": "Peut être retiré le:",
+            "receive": "Vous recevez:",
+            "button": "Retirer"
           }
         },
-        "na": "N/A",
-        "overdue": "Overdue",
-        "now": "Now",
+        "na": "N/A", 
+        "overdue": "En retard",
+        "now": "Maintenant",
         "toast": {
-          "adding": "Adding Liquidity",
-          "added": "Liquidity Added",
+          "adding": "Ajout de Liquidité",
+          "added": "Liquidité ajoutée",
           "error": {
-            "title": "Error Adding Liquidity",
-            "body": "Reason"
+            "title": "Erreur lors de l'ajout de liquidité",
+            "body": "Raison"
           },
-          "withdrawing": "Withdrawing liquidity",
-          "withdrawn": "Liquidity withdrawn",
+          "withdrawing": "Retrait de liquidité",
+          "withdrawn": "Liquidité retirée",
           "error-withdrawing": {
-            "title": "Error Withdrawing Liquidity",
-            "body": "Reason"
+            "title": "Erreur lors du retrait de liquidité",
+            "body": "Raison"
           },
-          "initiating": "Initiating liquidity withdrawal",
-          "initiated": "Liquidity withdrawal initiated",
+          "initiating": "Initiation du retrait de liquidité",
+          "initiated": "Retrait de liquidité initié",
           "error-initiating": {
-            "title": "Error initiating withdrawal",
-            "body": "Reason"
+            "title": "Erreur lors de l'initiation du retrait",
+            "body": "Raison"
           }
-        }
+        } 
       },
       "portfolio": {
-        "perpetuals": "Perpetuals",
-        "vault": "Vault",
+        "perpetuals": "Perpétuels",
+        "vault": "Coffre-fort",
         "account-value": {
-          "main-title": "Your account",
-          "title": "Account Value",
+          "main-title": "Votre compte",
+          "title": "Valeur du compte",
           "details": {
             "wallet": {
-              "title": "Wallet details",
-              "funds": "Funds"
+              "title": "Détails du portefeuille",
+              "funds": "Fonds"
             },
             "perps": {
-              "title": "Perps details",
-              "leverage": "Leverage",
-              "unrealized": "Unrealized PnL",
-              "realized": "Realized PnL",
-              "referral": "Referral earnings"
+              "title": "Détails des Perpétuels",
+              "leverage": "Effet de levier",
+              "unrealized": "PnL non réalisé",
+              "realized": "PnL réalisé",
+              "referral": "Gains de parrainage"
             },
             "vault": {
-              "title": "Vault details",
-              "assets": "Assets",
-              "assets-pool": "Assets in pools",
-              "earnings-pool": "Earnings per pool",
-              "total": "Total estim. Earnings"
+              "title": "Détails du coffre-fort",
+              "assets": "Actifs",
+              "assets-pool": "Actifs dans les pools",
+              "earnings-pool": "Gains par pool",
+              "total": "Gains estimés totaux"
             }
           }
         }
       }
     },
     "common": {
-      "change-language": "Change Language",
-      "wallet-connect": "Connect",
+      "change-language": "Changer de langue",
+      "wallet-connect": "Connecter",
       "pagination": {
-        "per-page": "Per page"
+        "per-page": "Par page"
       },
       "settings": {
-        "title": "Settings",
+        "title": "Paramètres",
         "ui-settings": {
-          "title": "UI Settings",
+          "title": "Paramètres de l'interface",
           "one-click-trading": {
-            "title": "One-click trading"
+            "title": "Trading en un clic"
           },
           "order-block": {
-            "title": "Order block",
-            "left": "Left",
-            "right": "Right"
+            "title": "Bloc de commande",
+            "left": "Gauche",
+            "right": "Droite"
           },
           "theme": {
-            "title": "Theme",
-            "dark": "Dark",
-            "light": "Light"
+            "title": "Thème",
+            "dark": "Sombre",
+            "light": "Clair"
           },
           "default-currency": {
-            "title": "Default currency",
+            "title": "Devise par défaut",
             "base": "Base",
-            "quote": "Quote",
-            "pool": "Collateral"
+            "quote": "Cotation",
+            "pool": "Collatéral"
           }
         },
         "one-click-modal": {
-          "title": "One-click trading",
-          "modal-button": "Setup",
-          "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
+          "title": "Trading en un clic",
+          "modal-button": "Config",
+          "description": "Le trading en un clic vous permet de passer et d'annuler des ordres en déléguant ces actions à un compte secondaire vous appartenant.",
           "create-delegate": {
-            "title": "Create Delegate Account",
-            "description": "As an initial step you need to create a Delegate Account.",
-            "create-success-result": "Delegate account is created and One-click trading is activated.",
-            "create": "Create"
+            "title": "Créer un compte délégué",
+            "description": "Comme première étape, vous devez créer un compte délégué.",
+            "create-success-result": "Le compte délégué est créé et le trading en un clic est activé.",
+            "create": "Créer"
           },
           "manage-delegate": {
-            "title": "Manage Delegate Account",
-            "remove-action-result": "One-click trading is deactivated.",
-            "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
-            "activate-error-result": "Invalid wallet. Re-set your delegate and try again.",
-            "activate": "Activate",
-            "deactivate": "Deactivate",
+            "title": "Gérer le compte délégué",
+            "remove-action-result": "Le trading en un clic est désactivé.",
+            "activate-success-result": "Trading en un clic activé. Si vous rechargez ou quittez la page, vous devrez réactiver le trading en un clic.",
+            "activate-error-result": "Portefeuille invalide. Réinitialisez votre délégué et réessayez.",
+            "activate": "Activer",
+            "deactivate": "Désactiver",
             "status": {
-              "title": "One-click trading status",
-              "active": "Active",
-              "inactive": "Inactive"
+              "title": "Statut du trading en un clic",
+              "active": "Actif",
+              "inactive": "Inactif"
             },
-            "address": "Delegate addr",
-            "amount": "Delegate wallet amount (gas)",
-            "remove": "Remove",
-            "fund": "Fund"
+            "address": "Adresse déléguée",
+            "amount": "Montant du portefeuille délégué (pour le gaz)",
+            "remove": "Supprimer",
+            "fund": "Financer"
           },
           "funding-modal": {
-            "title": "Fund delegate wallet",
-            "description": "Fund your delegate wallet to pay for gas.",
-            "fund": "Fund"
+            "title": "Financer le portefeuille délégué",
+            "description": "Déposer dans votre portefeuille délégué pour payer le gaz.",
+            "fund": "Financer"
           }
         }
       },
       "select": {
-        "option-all": "ALL",
+        "option-all": "TOUT",
         "collateral": {
-          "label": "Collateral:",
-          "label2": "Liquidity pool:",
+          "label": "Collatéral:",
+          "label2": "Pool de liquidité:",
           "headers": {
-            "collateral": "Collateral",
-            "num-of-perps": "No. of perps"
+            "collateral": "Collatéral",
+            "num-of-perps": "Nb. de perpétuels"
           }
         },
         "market": {
-          "label": "Market",
-          "header": "Choose Market",
+          "label": "Marché",
+          "header": "Choisir un marché",
           "crypto": "Crypto",
-          "fx": "FX",
-          "commodity": "Commodity",
-          "closed": "Closed"
+          "fx": "Devises",
+          "commodity": "Matières premières",
+          "closed": "Fermé"
         },
-        "search": "Search...",
+        "search": "Rechercher...",
         "perpetual": {
-          "label": "Perpetual:",
+          "label": "Perpétuel:",
           "headers": {
-            "pair": "Pair",
-            "status": "Status"
+            "pair": "Paire",
+            "status": "Statut"
           }
         }
       },
       "info-modal": {
-        "close": "Close"
+        "close": "Fermer"
       },
-      "refresh": "Refresh",
-      "filter": "Filter"
+      "refresh": "Actualiser",
+      "filter": "Filtrer"
     },
     "error": {
-      "wrong-network": "Wrong network"
+      "wrong-network": "Chaine incorrecte"
     }
   }
   

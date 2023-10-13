@@ -3,6 +3,7 @@ export enum LanguageE {
   CN = 'cn',
   DE = 'de',
   ES = 'es',
+  FR = 'fr',
 }
 
 export enum DefaultCurrencyE {
