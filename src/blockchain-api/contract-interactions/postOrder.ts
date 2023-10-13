@@ -1,15 +1,23 @@
-import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { LOB_ABI, TraderInterface, TypeSafeOrder } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 import { type OrderDigestI } from 'types/types';
 
 export function postOrder(
   walletClient: WalletClient,
   signatures: string[],
-  data: OrderDigestI
+  data: OrderDigestI,
+  doChain = true
 ): Promise<{ hash: Address }> {
-  const orders = TraderInterface.chainOrders(data.SCOrders, data.orderIds).map(
-    TraderInterface.fromClientOrderToTypeSafeOrder
-  );
+  let orders: TypeSafeOrder[];
+  if (doChain) {
+    orders = TraderInterface.chainOrders(data.SCOrders, data.orderIds).map(
+      TraderInterface.fromClientOrderToTypeSafeOrder
+    );
+  } else {
+    orders = data.SCOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o)).map(
+      TraderInterface.fromClientOrderToTypeSafeOrder
+    );
+  }
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
