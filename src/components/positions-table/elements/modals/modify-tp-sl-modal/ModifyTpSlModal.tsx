@@ -260,7 +260,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               .then(() => {
                 // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                 const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                postOrder(tradingClient, signatures, data.data)
+                postOrder(tradingClient, signatures, data.data, false)
                   .then((tx) => {
                     // success submitting order to the node
                     console.log(`postOrder tx hash: ${tx.hash}`);
