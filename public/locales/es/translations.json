@@ -366,6 +366,25 @@
         "modify": "Modificar",
         "no-codes": "No tienes códigos de rebate"
       },
+      "manage-code": {
+        "title-create": "Crear Código de Remisión",
+        "title-add": "Add partner",
+        "commission-rate": "Your commission rate:",
+        "you-receive": "Recibes",
+        "trader-receives": "Usuarios remitidos reciben",
+        "you": "You",
+        "partner": "Partner",
+        "trader-kickback": "Incresar la tasa de kickback para usuarios:",
+        "partner-kickback": "Set partner's commission:",
+        "partner-address": "Partner Address:",
+        "enter-code": "Ingresar un código",
+        "code-taken": "Código ya esta en uso",
+        "create-code": "Crear Código",
+        "instructions": "Sólo letras MAYUSCULAS, números, guiones bajos (_) y guiones (-) están permitidos.",
+        "cancel": "Cancelar",
+        "enter-addr": "Ingresa tu dirección",
+        "error": "Por favor ingresar una dirección valida"
+      },
       "toast": {
         "success-create": "Código Creado",
         "success-add-partner": "Partner added successfully",

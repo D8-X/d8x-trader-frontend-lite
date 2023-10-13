@@ -366,6 +366,25 @@
         "modify": "Modifizieren",
         "no-codes": "Keine Empfehlungscode"
       },
+      "manage-code": {
+        "title-create": "Empfehlungscode erstellen",
+        "title-add": "Partner hinzufügen",
+        "commission-rate": "Ihre Provisionsrate",
+        "you-receive": "Sie bekommen",
+        "trader-receives": "Händler bekommt",
+        "you": "Sie",
+        "partner": "Partner",
+        "trader-kickback": "Kickback-Rate des Händlers:",
+        "partner-kickback": "Partnerprovision setzen",
+        "partner-address": "Partner Adresse:",
+        "enter-code": "Code eingeben",
+        "code-taken": "Code bereits vergeben",
+        "create-code": "Code generieren",
+        "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
+        "cancel": "Abbrechen",
+        "enter-addr": "Adresse eingeben",
+        "error": "Bitte geben Sie eine gültige Adresse ein"
+      },
       "toast": {
         "success-create": "Code erfolgreich erstellt",
         "success-add-partner": "Partner erfolgreich hinzugefügt",
