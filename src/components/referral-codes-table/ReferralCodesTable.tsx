@@ -29,7 +29,7 @@ interface ReferralCodesTablePropsI {
   codes: ReferralTableDataI[];
 }
 
-const MIN_WIDTH_FOR_TABLE = 678;
+const MIN_WIDTH_FOR_TABLE = 800;
 
 export const ReferralCodesTable = memo(({ codes }: ReferralCodesTablePropsI) => {
   const { t } = useTranslation();
