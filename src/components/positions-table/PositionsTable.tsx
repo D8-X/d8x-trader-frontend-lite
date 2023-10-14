@@ -180,7 +180,6 @@ export const PositionsTable = () => {
         fieldType: FieldTypeE.Number,
       },
       {
-        field: 'takeProfit',
         numeric: true,
         label: t('pages.trade.positions-table.table-header.tp-sl'),
         align: AlignE.Right,
