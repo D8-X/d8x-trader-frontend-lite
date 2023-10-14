@@ -109,6 +109,8 @@ export const StopLossSelector = memo(() => {
   useEffect(() => {
     if (stopLoss && stopLoss !== StopLossE.None && orderInfo?.stopLossPrice) {
       setStopLossInputPrice(+orderInfo.stopLossPrice.toFixed(valueToFractionDigits(+orderInfo.stopLossPrice)));
+    } else if (stopLoss && stopLoss === StopLossE.None) {
+      setStopLossInputPrice(null);
     }
   }, [stopLoss, orderInfo?.stopLossPrice]);
 

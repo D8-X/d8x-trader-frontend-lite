@@ -108,6 +108,8 @@ export const TakeProfitSelector = memo(() => {
       setTakeProfitInputPrice(
         Math.max(0, +orderInfo.takeProfitPrice.toFixed(valueToFractionDigits(+orderInfo.takeProfitPrice)))
       );
+    } else if (takeProfit && takeProfit === TakeProfitE.None) {
+      setTakeProfitInputPrice(null);
     }
   }, [takeProfit, orderInfo?.takeProfitPrice]);
 
