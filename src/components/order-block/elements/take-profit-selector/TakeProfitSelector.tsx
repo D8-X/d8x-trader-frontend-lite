@@ -10,7 +10,7 @@ import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, takeProfitAtom, takeProfitPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, TakeProfitE } from 'types/enums';
-import { getFractionDigits } from 'utils/formatToCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
 
@@ -57,11 +57,6 @@ export const TakeProfitSelector = memo(() => {
     return undefined;
   }, [orderInfo?.midPrice, orderInfo?.orderBlock]);
 
-  const fractionDigits = useMemo(
-    () => getFractionDigits(selectedPerpetual?.quoteCurrency),
-    [selectedPerpetual?.quoteCurrency]
-  );
-
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
   const validateTakeProfitPrice = useCallback(() => {
@@ -72,20 +67,20 @@ export const TakeProfitSelector = memo(() => {
     }
 
     if (maxTakeProfitPrice && takeProfitInputPrice > maxTakeProfitPrice) {
-      const maxTakeProfitPriceRounded = +maxTakeProfitPrice.toFixed(fractionDigits);
+      const maxTakeProfitPriceRounded = +maxTakeProfitPrice;
       setTakeProfitPrice(maxTakeProfitPriceRounded);
       setTakeProfitInputPrice(maxTakeProfitPriceRounded);
       return;
     }
     if (takeProfitInputPrice < minTakeProfitPrice) {
-      const minTakeProfitPriceRounded = +minTakeProfitPrice.toFixed(fractionDigits);
+      const minTakeProfitPriceRounded = +minTakeProfitPrice;
       setTakeProfitPrice(minTakeProfitPriceRounded);
       setTakeProfitInputPrice(minTakeProfitPriceRounded);
       return;
     }
 
     setTakeProfitPrice(takeProfitInputPrice);
-  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfit, setTakeProfitPrice, fractionDigits]);
+  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfit, setTakeProfitPrice]);
 
   useEffect(() => {
     if (currentOrderBlockRef.current !== orderInfo?.orderBlock) {
@@ -110,9 +105,11 @@ export const TakeProfitSelector = memo(() => {
 
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None && orderInfo?.takeProfitPrice) {
-      setTakeProfitInputPrice(Math.max(0, +orderInfo.takeProfitPrice.toFixed(fractionDigits)));
+      setTakeProfitInputPrice(
+        Math.max(0, +orderInfo.takeProfitPrice.toFixed(valueToFractionDigits(+orderInfo.takeProfitPrice)))
+      );
     }
-  }, [takeProfit, orderInfo?.takeProfitPrice, fractionDigits]);
+  }, [takeProfit, orderInfo?.takeProfitPrice]);
 
   const translationMap: Record<TakeProfitE, string> = {
     [TakeProfitE.None]: t('pages.trade.order-block.take-profit.none'),

@@ -10,7 +10,7 @@ import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, StopLossE } from 'types/enums';
-import { getFractionDigits } from 'utils/formatToCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import commonStyles from '../../OrderBlock.module.scss';
 
@@ -60,11 +60,6 @@ export const StopLossSelector = memo(() => {
     }
   }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
 
-  const fractionDigits = useMemo(
-    () => getFractionDigits(selectedPerpetual?.quoteCurrency),
-    [selectedPerpetual?.quoteCurrency]
-  );
-
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
   const validateStopLossPrice = useCallback(() => {
@@ -75,20 +70,20 @@ export const StopLossSelector = memo(() => {
     }
 
     if (maxStopLossPrice && stopLossInputPrice > maxStopLossPrice) {
-      const maxStopLossPriceRounded = +maxStopLossPrice.toFixed(fractionDigits);
+      const maxStopLossPriceRounded = +maxStopLossPrice;
       setStopLossPrice(maxStopLossPriceRounded);
       setStopLossInputPrice(maxStopLossPriceRounded);
       return;
     }
     if (stopLossInputPrice < minStopLossPrice) {
-      const minStopLossPriceRounded = +minStopLossPrice.toFixed(fractionDigits);
+      const minStopLossPriceRounded = +minStopLossPrice;
       setStopLossPrice(minStopLossPriceRounded);
       setStopLossInputPrice(minStopLossPriceRounded);
       return;
     }
 
     setStopLossPrice(stopLossInputPrice);
-  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLoss, setStopLossPrice, fractionDigits]);
+  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLoss, setStopLossPrice]);
 
   useEffect(() => {
     if (currentOrderBlockRef.current !== orderInfo?.orderBlock) {
@@ -113,9 +108,9 @@ export const StopLossSelector = memo(() => {
 
   useEffect(() => {
     if (stopLoss && stopLoss !== StopLossE.None && orderInfo?.stopLossPrice) {
-      setStopLossInputPrice(+orderInfo.stopLossPrice.toFixed(fractionDigits));
+      setStopLossInputPrice(+orderInfo.stopLossPrice.toFixed(valueToFractionDigits(+orderInfo.stopLossPrice)));
     }
-  }, [stopLoss, orderInfo?.stopLossPrice, fractionDigits]);
+  }, [stopLoss, orderInfo?.stopLossPrice]);
 
   const translationMap: Record<StopLossE, string> = {
     [StopLossE.None]: t('pages.trade.order-block.stop-loss.none'),

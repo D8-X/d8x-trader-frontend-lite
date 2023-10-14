@@ -18,7 +18,7 @@ import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
-import { getFractionDigits } from 'utils/formatToCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 
 import styles from './CommonSelector.module.scss';
@@ -66,8 +66,6 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     return undefined;
   }, [position]);
 
-  const fractionDigits = useMemo(() => getFractionDigits(parsedSymbol?.quoteCurrency), [parsedSymbol?.quoteCurrency]);
-
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
   const validateTakeProfitPrice = useCallback(() => {
@@ -77,20 +75,20 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     }
 
     if (maxTakeProfitPrice && takeProfitInputPrice > maxTakeProfitPrice) {
-      const maxTakeProfitPriceRounded = +maxTakeProfitPrice.toFixed(fractionDigits);
+      const maxTakeProfitPriceRounded = +maxTakeProfitPrice;
       setTakeProfitPrice(maxTakeProfitPriceRounded);
       setTakeProfitInputPrice(maxTakeProfitPriceRounded);
       return;
     }
     if (takeProfitInputPrice < minTakeProfitPrice) {
-      const minTakeProfitPriceRounded = +minTakeProfitPrice.toFixed(fractionDigits);
+      const minTakeProfitPriceRounded = +minTakeProfitPrice;
       setTakeProfitPrice(minTakeProfitPriceRounded);
       setTakeProfitInputPrice(minTakeProfitPriceRounded);
       return;
     }
 
     setTakeProfitPrice(takeProfitInputPrice);
-  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfitPrice, fractionDigits]);
+  }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfitPrice]);
 
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None) {
@@ -100,9 +98,9 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
       } else {
         limitPrice = position.entryPrice * (1 - mapTakeProfitToNumber(takeProfit) / position.leverage);
       }
-      setTakeProfitInputPrice(Math.max(0, +limitPrice.toFixed(fractionDigits)));
+      setTakeProfitInputPrice(Math.max(0, +limitPrice.toFixed(valueToFractionDigits(+limitPrice))));
     }
-  }, [takeProfit, position, fractionDigits]);
+  }, [takeProfit, position]);
 
   useEffect(() => {
     setTakeProfitPrice(takeProfitInputPrice);

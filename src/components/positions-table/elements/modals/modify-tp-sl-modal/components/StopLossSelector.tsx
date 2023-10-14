@@ -18,7 +18,7 @@ import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, StopLossE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
-import { getFractionDigits } from 'utils/formatToCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 
 import styles from './CommonSelector.module.scss';
@@ -69,8 +69,6 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     }
   }, [position]);
 
-  const fractionDigits = useMemo(() => getFractionDigits(parsedSymbol?.quoteCurrency), [parsedSymbol?.quoteCurrency]);
-
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
   const validateStopLossPrice = useCallback(() => {
@@ -80,20 +78,20 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     }
 
     if (maxStopLossPrice && stopLossInputPrice > maxStopLossPrice) {
-      const maxStopLossPriceRounded = +maxStopLossPrice.toFixed(fractionDigits);
+      const maxStopLossPriceRounded = +maxStopLossPrice;
       setStopLossPrice(maxStopLossPriceRounded);
       setStopLossInputPrice(maxStopLossPriceRounded);
       return;
     }
     if (stopLossInputPrice < minStopLossPrice) {
-      const minStopLossPriceRounded = +minStopLossPrice.toFixed(fractionDigits);
+      const minStopLossPriceRounded = +minStopLossPrice;
       setStopLossPrice(minStopLossPriceRounded);
       setStopLossInputPrice(minStopLossPriceRounded);
       return;
     }
 
     setStopLossPrice(stopLossInputPrice);
-  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLossPrice, fractionDigits]);
+  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLossPrice]);
 
   useEffect(() => {
     if (stopLoss && stopLoss !== StopLossE.None) {
@@ -103,9 +101,9 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
       } else {
         stopPrice = position.entryPrice * (1 + Math.abs(mapStopLossToNumber(stopLoss) / position.leverage));
       }
-      setStopLossInputPrice(Math.max(0, +stopPrice.toFixed(fractionDigits)));
+      setStopLossInputPrice(Math.max(0, +stopPrice.toFixed(valueToFractionDigits(+stopPrice))));
     }
-  }, [stopLoss, position, fractionDigits]);
+  }, [stopLoss, position]);
 
   useEffect(() => {
     setStopLossPrice(stopLossInputPrice);
