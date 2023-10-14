@@ -20,8 +20,8 @@
         "index-price": "Precio de Índice",
         "funding-rate": "Tasa de Financiación",
         "open-interest": "Interés Abierto",
-        "view-graph": "View Graph",
-        "hide-graph": "Hide Graph"
+        "view-graph": "Ver grafico",
+        "hide-graph": "Esconder grafico"
       },
       "positions-table": {
         "table-title": "Posiciones",
@@ -41,8 +41,8 @@
           "modify": "Modificar",
           "connect": "Por favor conecte su cartera",
           "no-open": "No hay posiciones abiertas",
-          "multiple": "multiple",
-          "partial": "partial"
+          "multiple": "multiples",
+          "partial": "parcial"
         },
         "position-block-mobile": {
           "symbol": "Símbolo",
@@ -69,7 +69,7 @@
           },
           "cancel": "Cancelar",
           "confirm": "Confirmar",
-          "create": "Create"
+          "create": "Crear"
         },
         "toasts": {
           "submit-close": {
@@ -349,12 +349,12 @@
       "referrer-tab": {
         "disclaimer-text-block1": "Gana rebates invitando a otros usuarios a probar D8X. Los rebates son enviados a tu cartera cada semana via airdrop.",
         "disclaimer-text-block2": "Infórmate sobre los detalles del programa de rebates de D8X.",
-        "total-earned-commission": "Total earned commission",
-        "commission-rate": "Your commission rate",
+        "total-earned-commission": "Total ganado en comisiones",
+        "commission-rate": "Tu tasa de comision",
         "title1": "Tus remisiones",
         "title2": "Refiere & Gana",
         "codes": "Tus Códigos",
-        "add-partner": "Add partner",
+        "add-partner": "Agregar Socio",
         "create-code": "Crear Código",
         "na": "N/A",
         "referrer-rebate-rate": "Tasa de Rebate al Referir",
@@ -368,15 +368,15 @@
       },
       "manage-code": {
         "title-create": "Crear Código de Remisión",
-        "title-add": "Add partner",
-        "commission-rate": "Your commission rate:",
+        "title-add": "Agregar Socio",
+        "commission-rate": "Tu tasa de comision:",
         "you-receive": "Recibes",
         "trader-receives": "Usuarios remitidos reciben",
-        "you": "You",
-        "partner": "Partner",
+        "you": "Tu",
+        "partner": "Socio",
         "trader-kickback": "Incresar la tasa de kickback para usuarios:",
-        "partner-kickback": "Set partner's commission:",
-        "partner-address": "Partner Address:",
+        "partner-kickback": "Ingresar la comision del socio:",
+        "partner-address": "Dirección del socio:",
         "enter-code": "Ingresar un código",
         "code-taken": "Código ya esta en uso",
         "create-code": "Crear Código",
@@ -387,7 +387,7 @@
       },
       "toast": {
         "success-create": "Código Creado",
-        "success-add-partner": "Partner added successfully",
+        "success-add-partner": "Socio anadido exitosamente",
         "success-modify": "Código Modificado",
         "success-apply": "Código Aplicado"
       },
@@ -546,7 +546,7 @@
       "ui-settings": {
         "title": "Configuración de UI",
         "one-click-trading": {
-          "title": "One-click trading"
+          "title": "Comercio a un click"
         },
         "order-block": {
           "title": "Bloque de ordenes",
@@ -555,47 +555,47 @@
         },
         "theme": {
           "title": "Tema",
-          "dark": "Oscura",
-          "light": "Ligera"
+          "dark": "Oscuro",
+          "light": "Claro"
         },
         "default-currency": {
           "title": "Moneda por defecto",
           "base": "Base",
-          "quote": "Quote",
-          "pool": "Pool"
+          "quote": "Denominacion",
+          "pool": "Reserva"
         }
       },
       "one-click-modal": {
-        "title": "One-click trading",
+        "title": "Comercio a un click",
         "modal-button": "Setup",
-        "description": "One-click trading allows you to post and cancel orders by delegating these actions to a secondary account owned by you.",
+        "description": "El comercio a un click te permite crear y cancelar ordenes por medio de un delegado, que consiste en una cartera que solo tu controlas.",
         "create-delegate": {
-          "title": "Create Delegate Account",
-          "description": "As an initial step you need to create a Delegate Account.",
-          "create-success-result": "Delegate account is created and One-click trading is activated.",
-          "create": "Create"
+          "title": "Crear Cuenta Delegada",
+          "description": "Como primer paso debes crear una cuenta delegada.",
+          "create-success-result": "Cuenta delegada creada y comercio a un click activado.",
+          "create": "Crear"
         },
         "manage-delegate": {
-          "title": "Manage Delegate Account",
-          "remove-action-result": "One-click trading is deactivated.",
-          "activate-success-result": "One-click trading activated. If you reload or leave the page you will have to activate one-click trading again.",
-          "activate-error-result": "Invalid wallet. Re-set your delegate and try again.",
-          "activate": "Activate",
-          "deactivate": "Deactivate",
+          "title": "Administrar Cuenta Delegada",
+          "remove-action-result": "Comercio a un click ha sido desactivado.",
+          "activate-success-result": "Comercio a un click activado. Si dejas esta pagina tendras que reactivar el comercio a un click para volver a usarlo.",
+          "activate-error-result": "Cuenta Invalida. Resetea tu delegado y prueba denuevo.",
+          "activate": "Activar",
+          "deactivate": "Desactivar",
           "status": {
-            "title": "One-click trading status",
-            "active": "Active",
-            "inactive": "Inactive"
+            "title": "Estado del comercio a un click",
+            "active": "Activo",
+            "inactive": "Inactivo"
           },
-          "address": "Delegate addr",
-          "amount": "Delegate wallet amount (gas)",
-          "remove": "Remove",
-          "fund": "Fund"
+          "address": "Cuenta delegada",
+          "amount": "Gas en cuenta delegada",
+          "remove": "Descartar",
+          "fund": "Agregar Fondos"
         },
         "funding-modal": {
-          "title": "Fund delegate wallet",
-          "description": "Fund your delegate wallet to pay for gas.",
-          "fund": "Fund"
+          "title": "Agregar fondos a la cuenta delegada",
+          "description": "Agrega fodos a tu cuenta delegada para poder pagar por gas.",
+          "fund": "Agregar Fondos"
         }
       }
     },
