@@ -47,9 +47,9 @@ export const StopLossSelector = memo(() => {
     if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Short) {
       return orderInfo.midPrice;
     } else if (orderInfo?.midPrice && orderInfo?.leverage) {
-      return orderInfo.midPrice - orderInfo.midPrice / orderInfo.leverage;
+      return Math.max(0.000000001, orderInfo.midPrice - orderInfo.midPrice / orderInfo.leverage);
     }
-    return 0;
+    return 0.000000001;
   }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
 
   const maxStopLossPrice = useMemo(() => {

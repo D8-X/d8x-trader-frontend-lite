@@ -56,7 +56,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     if (position.entryPrice && position.side === OrderSideE.Buy) {
       return position.entryPrice;
     }
-    return 0;
+    return 0.000000001;
   }, [position]);
 
   const maxTakeProfitPrice = useMemo(() => {
@@ -98,7 +98,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
       } else {
         limitPrice = position.entryPrice * (1 - mapTakeProfitToNumber(takeProfit) / position.leverage);
       }
-      setTakeProfitInputPrice(Math.max(0, +limitPrice.toFixed(valueToFractionDigits(+limitPrice))));
+      setTakeProfitInputPrice(Math.max(0.000000001, +limitPrice.toFixed(valueToFractionDigits(+limitPrice))));
     }
   }, [takeProfit, position]);
 

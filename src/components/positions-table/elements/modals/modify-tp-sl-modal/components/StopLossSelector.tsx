@@ -56,9 +56,9 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     if (position.entryPrice && position.side === OrderSideE.Sell) {
       return position.entryPrice;
     } else if (position.leverage) {
-      return Math.max(0, position.entryPrice - position.entryPrice / position.leverage);
+      return Math.max(0.000000001, position.entryPrice - position.entryPrice / position.leverage);
     }
-    return 0;
+    return 0.000000001;
   }, [position]);
 
   const maxStopLossPrice = useMemo(() => {
@@ -101,7 +101,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
       } else {
         stopPrice = position.entryPrice * (1 + Math.abs(mapStopLossToNumber(stopLoss) / position.leverage));
       }
-      setStopLossInputPrice(Math.max(0, +stopPrice.toFixed(valueToFractionDigits(+stopPrice))));
+      setStopLossInputPrice(Math.max(0.000000001, +stopPrice.toFixed(valueToFractionDigits(+stopPrice))));
     }
   }, [stopLoss, position]);
 

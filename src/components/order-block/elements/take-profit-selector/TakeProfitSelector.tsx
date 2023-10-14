@@ -47,7 +47,7 @@ export const TakeProfitSelector = memo(() => {
     if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Long) {
       return orderInfo.midPrice;
     }
-    return 0;
+    return 0.000000001;
   }, [orderInfo?.midPrice, orderInfo?.orderBlock]);
 
   const maxTakeProfitPrice = useMemo(() => {
@@ -106,7 +106,7 @@ export const TakeProfitSelector = memo(() => {
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None && orderInfo?.takeProfitPrice) {
       setTakeProfitInputPrice(
-        Math.max(0, +orderInfo.takeProfitPrice.toFixed(valueToFractionDigits(+orderInfo.takeProfitPrice)))
+        Math.max(0.000000001, +orderInfo.takeProfitPrice.toFixed(valueToFractionDigits(+orderInfo.takeProfitPrice)))
       );
     } else if (takeProfit && takeProfit === TakeProfitE.None) {
       setTakeProfitInputPrice(null);
