@@ -86,7 +86,7 @@ declare module '@mui/material/Button' {
 const MuiButtonSharedStyle = {
   minWidth: '140px',
   transition: 'ease-in-out 250ms',
-  borderRadius: '26px',
+  borderRadius: '8px',
   padding: '10px 20px 8px',
   fontSize: '18px',
   fontWeight: 700,
@@ -180,7 +180,7 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '26px',
+          borderRadius: '8px',
           textTransform: 'none',
           color: 'var(--d8x-color-purple)',
           lineHeight: '1.5',
@@ -252,7 +252,7 @@ export const theme = createTheme({
           props: { variant: 'action' },
           style: {
             ...MuiButtonSharedStyle,
-            borderRadius: '16px',
+            borderRadius: '8px',
             backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.1)',
             border: 0,
             color: 'var(--d8x-color-purple)',
