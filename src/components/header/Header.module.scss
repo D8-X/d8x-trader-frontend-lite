@@ -82,9 +82,16 @@
 
 .navMobileItem {
 
+  &.inactive {
+    padding: 12px;
+    margin: -8px;
+  }
+
   &.active {
     text-decoration: underline;
     text-underline-offset: 8px;
+    padding: 12px;
+    margin: -8px;
 
     &::after {
       border-bottom: none;
