@@ -8,7 +8,7 @@
   height: 48px;
   padding-left: 3 * $d8x-spacing;
   padding-right: 3 * $d8x-spacing;
-  border-radius: $d8x-spacing;
+  border-radius: 2 * $d8x-spacing;
 
   &.fullWidth {
     width: 100%;
