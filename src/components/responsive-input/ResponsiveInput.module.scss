@@ -20,7 +20,7 @@
 .decreaseButton,
 .increaseButton {
   display: none;
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
 }
 
 .inputAdornment {
@@ -102,7 +102,7 @@
       }
 
       &:disabled {
-        color: var(--d8x-color-purple);
+        color: var(--d8x-color-action);
         opacity: 0.3;
       }
     }
