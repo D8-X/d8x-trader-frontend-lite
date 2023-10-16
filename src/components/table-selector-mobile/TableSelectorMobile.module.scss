@@ -4,7 +4,7 @@
   border-radius: $d8x-border-radius;
   padding: 6 * $d8x-spacing 4 * $d8x-spacing;
   margin-top: 4 * $d8x-spacing;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
 }
 
 .select {
@@ -29,7 +29,7 @@
 .dropdown {
 
   :global(.MuiPaper-root) {
-    color: var(--d8x-color-black-maintext);
-    background-color: var(--d8x-background);
+    color: var(--d8x-color-text-main);
+    background-color: var(--d8x-color-background);
   }
 }

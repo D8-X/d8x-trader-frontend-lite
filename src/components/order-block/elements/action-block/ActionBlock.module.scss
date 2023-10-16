@@ -19,7 +19,7 @@
 }
 
 .emphasis {
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: $d8x-spacing * 5 $d8x-spacing * 8;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .left {
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
 }
 
 .centered {
@@ -61,7 +61,6 @@
 }
 
 .goMessage {
-  color: var(--d8x-color-black-opac);
   padding: 8px 0 0;
 }
 

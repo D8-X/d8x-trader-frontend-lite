@@ -35,8 +35,10 @@ export const ChartBlock = memo(({ width, candles, seriesRef }: CandlesSeriesProp
       width={width}
       height={chartHeight}
       layout={{
-        background: { color: getComputedStyle(document.documentElement).getPropertyValue('--d8x-background-white') },
-        textColor: getComputedStyle(document.documentElement).getPropertyValue('--d8x-color-black-maintext'),
+        background: {
+          color: getComputedStyle(document.documentElement).getPropertyValue('--d8x-color-background-items'),
+        },
+        textColor: getComputedStyle(document.documentElement).getPropertyValue('--d8x-color-text-main'),
       }}
       crosshair={{ mode: CrosshairMode.Normal }}
       timeScale={{ timeVisible: true, barSpacing: candles.length < 60 ? 22 : 8 }}

@@ -1,7 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: 10 * $d8x-spacing;
   border-radius: $d8x-border-radius 0 0 $d8x-border-radius;
   box-sizing: content-box;
@@ -10,17 +10,17 @@
 
 .title {
   margin-bottom: 10 * $d8x-spacing;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 }
 
 .dataBlock {
   display: flex;
   flex-direction: column;
   gap: 8 * $d8x-spacing;
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
 
   .dataTitle {
-    color: var(--d8x-color-black-maintext);
+    color: var(--d8x-color-text-main);
     margin-bottom: $d8x-spacing;
   }
 

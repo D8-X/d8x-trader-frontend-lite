@@ -3,7 +3,7 @@
 .root {
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
   flex: 1;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
   border-radius: 0 $d8x-border-radius $d8x-border-radius 0;
 }
 
@@ -23,11 +23,11 @@
 
 .dataTitle {
   margin-bottom: $d8x-spacing;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 }
 
 .dataValue {
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
   font-weight: 600;
 }
 

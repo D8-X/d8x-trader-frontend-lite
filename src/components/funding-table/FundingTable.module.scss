@@ -10,21 +10,21 @@
 }
 
 .tableHead {
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
 }
 
 .tableBody {
-  background-color: var(--d8x-color-white-opac);
+  background-color: var(--d8x-color-background-table);
 
   :global(.MuiTypography-root) {
-    color: var(--d8x-color-purple-dark);
+    color: var(--d8x-color-text-highlight);
   }
 
   tr {
-    background-color: var(--d8x-color-black-40);
+    background-color: var(--d8x-color-background-table-row);
 
     &:nth-child(2n) {
-      background-color: var(--d8x-background-white);
+      background-color: var(--d8x-color-background-items);
     }
   }
 }

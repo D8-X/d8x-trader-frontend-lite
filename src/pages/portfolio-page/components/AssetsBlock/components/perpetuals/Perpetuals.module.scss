@@ -9,7 +9,7 @@
 }
 
 .pnlHeader {
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.2;
@@ -21,7 +21,7 @@
   flex-direction: column;
   gap: $d8x-spacing * 4;
   width: 178px;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 
   @include media-tablet {
     width: auto;

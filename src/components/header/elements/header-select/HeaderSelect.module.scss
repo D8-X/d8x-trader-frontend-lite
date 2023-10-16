@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 0.5 * $d8x-spacing;
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
 }
 
 .iconWrapper {
@@ -18,7 +18,7 @@
   height: 45px;
   min-width: 45px;
   border-radius: 50%;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
 
   svg {
     width: 20px;
@@ -33,21 +33,21 @@
   }
 
   :global(.MuiSelect-icon) {
-    color: var(--d8x-color-purple);
+    color: var(--d8x-color-action);
   }
 
   :global(.MuiInputBase-root) {
     min-width: 240px;
-    color: var(--d8x-color-purple);
+    color: var(--d8x-color-action);
     font-weight: 600;
   }
 
   :global(.MuiInputLabel-root):global(.Mui-focused) {
-    color: var(--d8x-color-black);
+    color: var(--d8x-color-text-main);
   }
 
   :global(.MuiInputLabel-root) {
-    color: var(--d8x-color-black-500);
+    color: var(--d8x-color-text-label-one);
   }
 }
 
@@ -61,7 +61,7 @@
   padding: 12px;
   align-items: center;
   gap: $d8x-spacing * 4;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 
   .leftLabel {
     flex: 1;
@@ -74,7 +74,7 @@
   }
 
   .header {
-    color: var(--d8x-color-black-maintext);
+    color: var(--d8x-color-text-main);
     text-align: center;
     font-size: 16px;
     font-style: normal;
@@ -88,7 +88,7 @@
   justify-content: space-between;
   width: 100%;
   gap: $d8x-spacing;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 
   .label {
     font-weight: bold;
@@ -135,7 +135,7 @@
   }
 
   .holderRoot {
-    background-color: var(--d8x-background-white);
+    background-color: var(--d8x-color-background-items);
     border-radius: $d8x-spacing * 2;
     padding: $d8x-spacing * 2;
     max-height: 58px;
@@ -176,7 +176,7 @@
     border-radius: $d8x-spacing * 2;
 
     &:hover {
-      background-color: var(--d8x-color-black-150);
+      background-color: var(--d8x-color-background-items-inactive);
     }
   }
 }

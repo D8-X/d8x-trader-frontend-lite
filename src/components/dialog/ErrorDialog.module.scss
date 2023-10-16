@@ -5,7 +5,7 @@
   @include flex-center;
 
   flex-direction: column;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
   padding: 2 * $d8x-spacing;
   border-radius: $d8x-border-radius;
   border: 1px solid var(--d8x-border);

@@ -18,7 +18,9 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   const perpetual = tradeHistory.perpetual;
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor =
-    tradeHistory.realizedPnl > 0 ? 'rgba(var(--d8x-background-buy-rgb), 1)' : 'rgba(var(--d8x-background-sell-rgb), 1)';
+    tradeHistory.realizedPnl > 0
+      ? 'rgba(var(--d8x-color-background-buy-rgb), 1)'
+      : 'rgba(var(--d8x-color-background-sell-rgb), 1)';
 
   return (
     <TableRow key={tradeHistory.transactionHash}>

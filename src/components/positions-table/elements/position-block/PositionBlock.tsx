@@ -33,7 +33,7 @@ export const PositionBlock = memo(
       <Box className={styles.root}>
         <Box className={styles.headerWrapper}>
           <Box className={styles.leftSection}>
-            <Typography variant="bodySmall" component="p" color={'var(--d8x-color-black-maintext)'}>
+            <Typography variant="bodySmall" component="p" color={'var(--d8x-color-text-main)'}>
               {t('pages.trade.positions-table.position-block-mobile.symbol')}
             </Typography>
             <Typography variant="bodySmall" component="p" className={styles.symbol}>

@@ -8,7 +8,7 @@
 .labelRow {
   display: flex;
   align-items: center;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
   padding: $d8x-spacing * 3;
 }
 
@@ -17,7 +17,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
   padding: $d8x-spacing * 1.5 $d8x-spacing * 2;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .labelIcon {
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
 }
 
 @media screen and ($d8x-breakpoint-max-md) {

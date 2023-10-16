@@ -3,7 +3,7 @@
 .root {
   padding: 8px;
   border-radius: 4px;
-  background-color: var(--d8x-background);
+  background-color: var(--d8x-color-background);
 }
 
 .row {
@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: calc($d8x-spacing / 2);
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 }
 
 .infoText {

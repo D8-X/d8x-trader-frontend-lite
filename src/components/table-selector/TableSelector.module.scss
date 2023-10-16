@@ -1,7 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
 
   &:global(.MuiPaper-root) {
     border-radius: $d8x-border-radius;
@@ -14,8 +14,8 @@
     font-weight: 500;
 
     &.selected {
-      color: var(--d8x-color-purple);
-      background-color: var(--d8x-color-purple-50);
+      color: var(--d8x-color-action);
+      background-color: var(--d8x-color-action-secondary);
     }
   }
 }

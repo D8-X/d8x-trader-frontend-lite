@@ -18,8 +18,8 @@
 .menuHolder {
 
   :global(.MuiPaper-root) {
-    color: var(--d8x-color-black-maintext);
-    background-color: var(--d8x-background);
+    color: var(--d8x-color-text-main);
+    background-color: var(--d8x-color-background);
   }
 }
 
@@ -29,18 +29,18 @@
   gap: 2 * $d8x-spacing;
 
   svg {
-    color: var(--d8x-color-purple);
+    color: var(--d8x-color-action);
     width: 24px;
     height: 24px;
   }
 }
 
 .arrowDropDown {
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
   padding-top: 2 * $d8x-spacing;
 
   &.disabledHandle {
-    color: var(--d8x-color-black-200);
+    color: var(--d8x-color-text-label-two);
   }
 }
 

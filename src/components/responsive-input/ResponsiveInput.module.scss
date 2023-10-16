@@ -12,7 +12,7 @@
 
     &.selected {
       font-weight: bold;
-      background-color: var(--d8x-background-purple);
+      background-color: var(--d8x-color-background-items-selected);
     }
   }
 }
@@ -24,18 +24,18 @@
 }
 
 .inputAdornment {
-  color: var(--d8x-color-black-opac2);
+  color: var(--d8x-color-text-label-one);
 
   :global(.MuiPaper-root) {
-    color: var(--d8x-color-black-maintext);
-    background-color: var(--d8x-background);
+    color: var(--d8x-color-text-main);
+    background-color: var(--d8x-color-background);
   }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .inputAdornment {
-    color: var(--d8x-color-black-maintext);
+    color: var(--d8x-color-text-main);
     min-width: 65px;
   }
 

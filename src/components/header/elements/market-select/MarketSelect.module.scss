@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   gap: 0.5 * $d8x-spacing;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
   border-radius: 8px;
   height: 84px;
 }
@@ -16,8 +16,8 @@
   height: 45px;
   min-width: 45px;
   border-radius: 50%;
-  background-color: var(--d8x-background-white);
-  color: var(--d8x-color-purple);
+  background-color: var(--d8x-color-background-items);
+  color: var(--d8x-color-action);
   margin-left: $d8x-spacing * 3;
 
   svg {
@@ -38,7 +38,7 @@
 }
 
 .arrowDropDown {
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
   padding-top: 2 * $d8x-spacing;
 }
 
@@ -52,16 +52,16 @@
 
   :global(.MuiInputBase-root) {
     min-width: 240px;
-    color: var(--d8x-color-purple);
+    color: var(--d8x-color-action);
     font-weight: 600;
   }
 
   :global(.MuiInputLabel-root):global(.Mui-focused) {
-    color: var(--d8x-color-black);
+    color: var(--d8x-color-text-main);
   }
 
   :global(.MuiInputLabel-root) {
-    color: var(--d8x-color-black-500);
+    color: var(--d8x-color-text-label-one);
   }
 }
 
@@ -70,14 +70,14 @@
 }
 
 .selectedMarketLabel {
-  color: var(--d8x-color-black-500);
+  color: var(--d8x-color-text-label-one);
   line-height: 32px;
 }
 
 .selectedMarketValue {
   display: flex;
   flex-direction: column;
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
 
   .selectedMarketPerpetual {
     font-weight: 600;
@@ -115,7 +115,7 @@
   padding: 12px;
 
   .header {
-    color: var(--d8x-color-black-maintext);
+    color: var(--d8x-color-text-main);
     text-align: center;
     font-size: 16px;
     font-style: normal;

@@ -72,7 +72,7 @@ function HeaderSelectComponent<T>(props: HeaderSelectI<T>) {
             MenuProps: {
               PaperProps: {
                 sx: {
-                  backgroundColor: 'var(--d8x-background)',
+                  backgroundColor: 'var(--d8x-color-background)',
                 },
               },
             },

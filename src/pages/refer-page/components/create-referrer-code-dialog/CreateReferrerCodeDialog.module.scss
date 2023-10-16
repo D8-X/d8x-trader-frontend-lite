@@ -13,7 +13,7 @@
 .baseRebateContainer {
   display: flex;
   justify-content: space-between;
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: 6 * $d8x-spacing 8 * $d8x-spacing;
 }
 
@@ -29,7 +29,7 @@
 }
 
 .divider {
-  border-bottom: 1px solid var(--d8x-color-black-150);
+  border-bottom: 1px solid var(--d8x-color-separator-border);
 }
 
 .kickbackRateInputContainer {
@@ -41,7 +41,7 @@
 
 .kickbackInput {
   max-width: 110px;
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
   font-size: 14px;
 
   input {
@@ -51,7 +51,7 @@
 
 .infoText {
   padding: 0 8 * $d8x-spacing;
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
   margin: 4 * $d8x-spacing 0 8 * $d8x-spacing;
 }
 
@@ -65,17 +65,6 @@
   input {
     width: 100%;
     font-size: 14px;
-  }
-}
-
-@include theme-light {
-
-  .codeInput {
-    background-color: var(--d8x-color-black-100);
-  }
-
-  .kickbackInput {
-    background-color: var(--d8x-color-black-100);
   }
 }
 

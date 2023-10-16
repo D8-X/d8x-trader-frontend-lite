@@ -16,7 +16,7 @@
 .codeContainer {
   display: flex;
   justify-content: space-between;
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: 6 * $d8x-spacing 8 * $d8x-spacing;
 }
 
@@ -29,7 +29,7 @@
 
 .warning {
   text-align: center;
-  color: rgba(var(--d8x-background-sell-rgb), 1);
+  color: rgba(var(--d8x-color-background-sell-rgb), 1);
 }
 
 .dialogAction {

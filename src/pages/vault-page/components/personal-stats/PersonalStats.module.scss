@@ -5,7 +5,7 @@
 }
 
 .heading {
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
   padding-bottom: $d8x-spacing * 2;
 }
 
@@ -16,7 +16,7 @@
 
 .statLabel {
   display: block;
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
   white-space: nowrap;
   margin-bottom: $d8x-spacing * 0.5;
   font-size: 12px;
@@ -24,7 +24,7 @@
 
 .statValue {
   display: block;
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
   font-weight: 600;
   white-space: nowrap;
 }

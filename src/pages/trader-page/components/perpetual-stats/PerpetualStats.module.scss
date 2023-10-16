@@ -4,7 +4,7 @@
   flex: 1;
   padding: $d8x-spacing * 2 $d8x-spacing * 3;
   border-radius: 8px;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
   line-height: 1.2;
   margin-top: $d8x-spacing * 2;
 }
@@ -18,7 +18,7 @@
 .viewChart {
   display: flex;
   align-items: center;
-  color: var(--d8x-color-purple);
+  color: var(--d8x-color-action);
   cursor: pointer;
 
   :global(.MuiFormControlLabel-root) {
@@ -36,7 +36,7 @@
     width: 60px;
     height: 24px;
     margin-bottom: 2px;
-    color: var(--d8x-color-purple);
+    color: var(--d8x-color-action);
 
     &:hover {
       opacity: 0.7;
@@ -47,12 +47,12 @@
 .statMainLabel {
   white-space: nowrap;
   font-size: 0.75rem;
-  color: var(--d8x-color-black-500);
+  color: var(--d8x-color-text-label-one);
 }
 
 .statMainValue {
   font-size: 1rem;
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
   white-space: nowrap;
   font-weight: 600;
 }
@@ -65,20 +65,20 @@
 .statLabel {
   white-space: nowrap;
   margin-top: $d8x-spacing * 2;
-  color: var(--d8x-color-black-500);
+  color: var(--d8x-color-text-label-one);
   font-size: 0.5rem;
   min-width: 50px;
 }
 
 .statValue {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.75rem;
 }
 
 .statCurrency {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.5rem;

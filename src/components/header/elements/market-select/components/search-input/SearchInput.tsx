@@ -25,7 +25,7 @@ export const SearchInput = memo(() => {
         placeholder={t('common.select.search')}
         value={searchFilter}
       />
-      <SearchIcon className={styles.searchIcon} style={{ color: 'var(--d8x-icon-color)' }} />
+      <SearchIcon className={styles.searchIcon} style={{ color: 'var(--d8x-color-icon)' }} />
       {searchFilter && <ClearIcon className={styles.closeIcon} onClick={() => setSearchFilter('')} />}
     </div>
   );

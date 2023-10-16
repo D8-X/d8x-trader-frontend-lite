@@ -1,17 +1,17 @@
 @import '~styles/theme/_theme.scss';
 
 .headerLabel {
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 
   :global(.MuiTypography-root) {
     font-weight: 400;
-    color: var(--d8x-color-black-maintext);
+    color: var(--d8x-color-text-main);
   }
 }
 
 .sortIcon {
 
   svg {
-    fill: var(--d8x-color-purple);
+    fill: var(--d8x-color-action);
   }
 }

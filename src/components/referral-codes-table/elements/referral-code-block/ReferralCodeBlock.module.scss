@@ -1,7 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  border: 1px solid var(--d8x-color-black-opac);
+  border: 1px solid var(--d8x-color-border);
   border-radius: $d8x-border-radius;
   margin-top: 6 * $d8x-spacing;
 }
@@ -16,7 +16,7 @@
   align-items: center;
   justify-content: space-between;
   gap: $d8x-spacing * 4;
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   border-radius: $d8x-border-radius $d8x-border-radius 0 0;
 }
 
@@ -27,7 +27,7 @@
 }
 
 .code {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
   flex-wrap: nowrap;
   overflow: hidden;
   white-space: nowrap;
@@ -39,5 +39,5 @@
 }
 
 .dataValue {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
 }

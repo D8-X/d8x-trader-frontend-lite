@@ -142,7 +142,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   return (
     <div className={styles.root}>
       <Box className={styles.infoBlock}>
-        <Typography variant="h5" color={'var(--d8x-color-black-maintext)'}>
+        <Typography variant="h5" color={'var(--d8x-color-text-main)'}>
           {t('pages.vault.withdraw.title')}
         </Typography>
         <Typography variant="body2" className={styles.text}>

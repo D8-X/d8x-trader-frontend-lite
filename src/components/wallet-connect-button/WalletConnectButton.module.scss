@@ -43,15 +43,15 @@
   width: 24px;
   height: 24px;
   line-height: 1;
-  color: var(--d8x-color-white);
+  color: var(--d8x-color-text-secondary);
 }
 
 .cutAddressName {
-  color: var(--d8x-color-white);
+  color: var(--d8x-color-text-secondary);
 }
 
 .icon {
-  color: var(--d8x-color-white);
+  color: var(--d8x-color-text-secondary);
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {

@@ -116,7 +116,7 @@ export const theme = createTheme({
           border: 'none',
           boxShadow: 'none',
           backgroundColor: 'transparent',
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
         },
       },
     },
@@ -141,7 +141,7 @@ export const theme = createTheme({
     MuiLink: {
       styleOverrides: {
         root: {
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
           marginLeft: '48px',
           ':first-of-type': {
             marginLeft: '0',
@@ -182,14 +182,14 @@ export const theme = createTheme({
         root: {
           borderRadius: '8px',
           textTransform: 'none',
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
           lineHeight: '1.5',
           padding: '9px 8px 7px',
           whiteSpace: 'nowrap',
-          borderColor: 'var(--d8x-color-purple)',
+          borderColor: 'var(--d8x-color-action)',
           '&:hover': {
-            borderColor: 'var(--d8x-color-purple)',
-            backgroundColor: 'var(--d8x-background-purple)',
+            borderColor: 'var(--d8x-color-action)',
+            backgroundColor: 'var(--d8x-color-background-items-selected)',
           },
         },
       },
@@ -198,16 +198,16 @@ export const theme = createTheme({
           props: { variant: 'primary' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'var(--d8x-color-purple)',
-            border: '1px solid var(--d8x-color-purple)',
-            color: 'var(--d8x-color-white)',
+            backgroundColor: 'var(--d8x-color-action)',
+            border: '1px solid var(--d8x-color-action)',
+            color: 'var(--d8x-color-text-secondary)',
             fontSize: '16px',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.6)',
+              backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.6)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-background-buy-inactive-rgb), 0.5)',
-              color: 'var(--d8x-color-white)',
+              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              color: 'var(--d8x-color-text-secondary)',
               border: 0,
             },
           },
@@ -216,11 +216,11 @@ export const theme = createTheme({
           props: { variant: 'secondary' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'var(--d8x-background-white)',
-            border: '1px solid var(--d8x-color-purple)',
-            color: 'var(--d8x-color-purple)',
+            backgroundColor: 'var(--d8x-color-background-items)',
+            border: '1px solid var(--d8x-color-action)',
+            color: 'var(--d8x-color-action)',
             ':hover': {
-              backgroundColor: 'var(--d8x-color-white-opac)',
+              backgroundColor: 'var(--d8x-color-background-table)',
             },
           },
         },
@@ -228,11 +228,11 @@ export const theme = createTheme({
           props: { variant: 'success' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'var(--d8x-color-purple)',
+            backgroundColor: 'var(--d8x-color-action)',
             border: 0,
-            color: 'var(--d8x-color-white)',
+            color: 'var(--d8x-color-text-secondary)',
             ':hover': {
-              backgroundColor: 'var(--d8x-background-purple)',
+              backgroundColor: 'var(--d8x-color-background-items-selected)',
             },
           },
         },
@@ -240,11 +240,11 @@ export const theme = createTheme({
           props: { variant: 'warning' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'var(--d8x-color-yellow)',
-            border: '1px solid var(--d8x-color-rose)',
-            color: 'var(--d8x-color-black-maintext)',
+            backgroundColor: 'var(--d8x-color-warning-main)',
+            border: '1px solid var(--d8x-color-warning-secondary)',
+            color: 'var(--d8x-color-text-main)',
             ':hover': {
-              backgroundColor: 'var(--d8x-color-rose)',
+              backgroundColor: 'var(--d8x-color-warning-secondary)',
             },
           },
         },
@@ -253,11 +253,11 @@ export const theme = createTheme({
           style: {
             ...MuiButtonSharedStyle,
             borderRadius: '8px',
-            backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.1)',
+            backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.1)',
             border: 0,
-            color: 'var(--d8x-color-purple)',
+            color: 'var(--d8x-color-action)',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+              backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.2)',
             },
           },
         },
@@ -265,16 +265,16 @@ export const theme = createTheme({
           props: { variant: 'buy' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'rgba(var(--d8x-background-buy-rgb), 1)',
-            color: 'var(--d8x-color-white)',
+            backgroundColor: 'rgba(var(--d8x-color-background-buy-rgb), 1)',
+            color: 'var(--d8x-color-text-secondary)',
             fontWeight: '600',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-background-buy-rgb), 0.9)',
-              color: 'var(--d8x-color-white)',
+              backgroundColor: 'rgba(var(--d8x-color-background-buy-rgb), 0.9)',
+              color: 'var(--d8x-color-text-secondary)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-background-buy-inactive-rgb), 0.5)',
-              color: 'var(--d8x-color-white)',
+              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              color: 'var(--d8x-color-text-secondary)',
             },
           },
         },
@@ -282,16 +282,16 @@ export const theme = createTheme({
           props: { variant: 'sell' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'rgba(var(--d8x-background-sell-rgb), 1)',
-            color: 'var(--d8x-color-white)',
+            backgroundColor: 'rgba(var(--d8x-color-background-sell-rgb), 1)',
+            color: 'var(--d8x-color-text-secondary)',
             fontWeight: '600',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-background-sell-rgb), 0.9)',
-              color: 'var(--d8x-color-white)',
+              backgroundColor: 'rgba(var(--d8x-color-background-sell-rgb), 0.9)',
+              color: 'var(--d8x-color-text-secondary)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-background-buy-inactive-rgb), 0.5)',
-              color: 'var(--d8x-color-white)',
+              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              color: 'var(--d8x-color-text-secondary)',
             },
           },
         },
@@ -306,9 +306,9 @@ export const theme = createTheme({
             border: 0,
             borderRadius: '8px',
             backgroundColor: 'transparent',
-            color: 'var(--d8x-color-black)',
+            color: 'var(--d8x-color-text-main)',
             ':hover': {
-              backgroundColor: 'var(--d8x-color-purple-50)',
+              backgroundColor: 'var(--d8x-color-action-secondary)',
             },
           },
         },
@@ -318,10 +318,10 @@ export const theme = createTheme({
             borderRadius: '8px',
             borderWidth: '1px',
             padding: '9px 8px 7px',
-            color: 'var(--d8x-color-black-maintext)',
-            borderColor: 'var(--d8x-color-black-opac)',
+            color: 'var(--d8x-color-text-main)',
+            borderColor: 'var(--d8x-color-border)',
             '&:hover': {
-              backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+              backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.2)',
               borderColor: 'transparent',
             },
           },
@@ -353,7 +353,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           padding: '0 8px',
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
 
           '.MuiSvgIcon-root': {
             width: '15px',
@@ -369,20 +369,20 @@ export const theme = createTheme({
           justifyContent: 'space-between',
           width: '180px',
           ':hover': {
-            backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+            backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.2)',
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--d8x-color-black-opac)',
+              borderColor: 'var(--d8x-color-border)',
             },
           },
           ':focus-within': {
-            backgroundColor: 'rgba(var(--d8x-color-purple-rgb), 0.2)',
+            backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.2)',
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--d8x-color-black-opac)',
+              borderColor: 'var(--d8x-color-border)',
               borderWidth: '1px',
             },
           },
           '&.Mui-disabled': {
-            borderColor: 'var(--d8x-color-black-opac)',
+            borderColor: 'var(--d8x-color-border)',
             borderWidth: '1px',
             borderStyle: 'solid',
           },
@@ -395,13 +395,13 @@ export const theme = createTheme({
           border: 'none',
           fontSize: '16px',
           fontWeight: '500',
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
           '::placeholder': {
             paddingTop: '1px',
           },
         },
         notchedOutline: {
-          borderColor: 'var(--d8x-input-border-color)',
+          borderColor: 'var(--d8x-color-input-border)',
         },
       },
     },
@@ -409,7 +409,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           minWidth: '30px',
-          color: 'var(--d8x-color-black-opac2)',
+          color: 'var(--d8x-color-text-label-one)',
         },
       },
     },
@@ -443,7 +443,7 @@ export const theme = createTheme({
         input: {
           fontWeight: '500',
           lineHeight: '1.5',
-          color: 'var(--d8x-color-black)',
+          color: 'var(--d8x-color-text-main)',
           padding: '4px 4px 2px 4px !important',
           width: 'auto',
           border: 'none',
@@ -462,25 +462,25 @@ export const theme = createTheme({
     MuiSlider: {
       styleOverrides: {
         thumb: {
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
         },
         track: {
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
         },
         rail: {
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
         },
         markLabel: {
           fontSize: '12px',
           lineHeight: '16px',
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
           boxShadow: 'none',
         },
       },
@@ -488,14 +488,14 @@ export const theme = createTheme({
     MuiCardContent: {
       styleOverrides: {
         root: {
-          backgroundColor: 'var(--d8x-background-card-details)',
+          backgroundColor: 'var(--d8x-color-background-items)',
         },
       },
     },
     MuiTablePagination: {
       styleOverrides: {
         root: {
-          color: 'var(--d8x-color-black-maintext)',
+          color: 'var(--d8x-color-text-main)',
         },
         selectIcon: {
           top: 0,
@@ -532,7 +532,7 @@ export const theme = createTheme({
     MuiCircularProgress: {
       styleOverrides: {
         colorPrimary: {
-          color: 'var(--d8x-color-purple)',
+          color: 'var(--d8x-color-action)',
         },
       },
     },

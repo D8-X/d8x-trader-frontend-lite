@@ -3,11 +3,11 @@
 .root {
   width: 100%;
   border-radius: $d8x-border-radius;
-  background-color: var(--d8x-background);
+  background-color: var(--d8x-color-background);
 }
 
 .bottomCard {
-  background-color: var(--d8x-background);
+  background-color: var(--d8x-color-background);
 }
 
 .actionIcon {

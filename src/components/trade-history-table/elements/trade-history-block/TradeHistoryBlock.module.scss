@@ -1,7 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  border: 1px solid var(--d8x-color-black-opac);
+  border: 1px solid var(--d8x-color-border);
   border-radius: $d8x-border-radius;
   margin-top: 6 * $d8x-spacing;
 }
@@ -12,7 +12,7 @@
 }
 
 .headerWrapper {
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   border-radius: $d8x-border-radius $d8x-border-radius 0 0;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .symbol {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
 }
 
 .dataLabel {
@@ -31,13 +31,13 @@
 }
 
 .dataValue {
-  color: var(--d8x-color-purple-dark);
+  color: var(--d8x-color-text-highlight);
 }
 
 .green {
-  color: rgba(var(--d8x-background-buy-rgb), 1);
+  color: rgba(var(--d8x-color-background-buy-rgb), 1);
 }
 
 .red {
-  color: rgba(var(--d8x-background-sell-rgb), 1);
+  color: rgba(var(--d8x-color-background-sell-rgb), 1);
 }

@@ -9,14 +9,14 @@
 }
 
 .infoBlock {
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: $d8x-spacing * 10;
   width: 274px;
 }
 
 .actionBlock {
   flex: 1;
-  background-color: var(--d8x-background-white);
+  background-color: var(--d8x-color-background-items);
   padding: $d8x-spacing * 8;
 }
 
@@ -36,7 +36,7 @@
   }
 
   .infoBlock {
-    background-color: var(--d8x-background-white);
+    background-color: var(--d8x-color-background-items);
     border-radius: $d8x-border-radius;
     margin-bottom: $d8x-spacing * 4;
     padding: $d8x-spacing * 6;

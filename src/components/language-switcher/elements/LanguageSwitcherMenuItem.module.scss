@@ -1,11 +1,11 @@
 @import '~styles/theme/_theme.scss';
 
 .selected {
-  background-color: var(--d8x-background-purple);
+  background-color: var(--d8x-color-background-items-selected);
 }
 
 .menuItem {
-  color: var(--d8x-color-black-maintext);
+  color: var(--d8x-color-text-main);
 }
 
 .flagIcon {

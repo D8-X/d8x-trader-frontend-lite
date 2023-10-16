@@ -14,7 +14,7 @@
 .baseRebateContainer {
   display: flex;
   justify-content: space-between;
-  background-color: var(--d8x-color-black-50);
+  background-color: var(--d8x-color-background-items-second);
   padding: 6 * $d8x-spacing 8 * $d8x-spacing;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .divider {
-  border-bottom: 1px solid var(--d8x-color-black-150);
+  border-bottom: 1px solid var(--d8x-color-separator-border);
 }
 
 .referrerKickbackInputContainer,
@@ -47,7 +47,7 @@
 
 .kickbackInput {
   max-width: 120px;
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
 
   input {
     width: 100%;
@@ -81,20 +81,9 @@
   }
 }
 
-@include theme-light {
-
-  .codeInput {
-    background-color: var(--d8x-color-black-100);
-  }
-
-  .kickbackInput {
-    background-color: var(--d8x-color-black-100);
-  }
-}
-
 .infoText {
   padding: 0 8 * $d8x-spacing;
-  color: var(--d8x-color-black-400);
+  color: var(--d8x-color-text-label-two);
   margin: -2 * $d8x-spacing 0 8 * $d8x-spacing;
 }
 

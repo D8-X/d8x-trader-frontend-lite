@@ -47,8 +47,8 @@
 
     &.selected {
       border: 1px solid transparent;
-      background-color: var(--d8x-color-purple);
-      color: var(--d8x-color-white);
+      background-color: var(--d8x-color-action);
+      color: var(--d8x-color-text-secondary);
     }
   }
 }
