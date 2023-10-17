@@ -8,7 +8,7 @@ import { Box, Button, Typography } from '@mui/material';
 
 import { PERIOD_OF_2_DAYS } from 'app-constants';
 import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
@@ -160,7 +160,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
           </>
         )}
         <Box className={styles.withdrawLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={
               <>
                 {!withdrawals.length && '2.'}{' '}
@@ -172,7 +172,6 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
                 {t('pages.vault.withdraw.action.info1', { poolSymbol: selectedPool?.poolSymbol })}
               </Typography>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Box className={styles.summaryBlock}>

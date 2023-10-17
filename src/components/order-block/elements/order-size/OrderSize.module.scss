@@ -5,13 +5,6 @@
   justify-content: space-between;
   align-items: center;
 
-  .label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-  }
-
   .selector {
     color: var(--d8x-color-action);
     padding: $d8x-spacing;
@@ -46,9 +39,10 @@
     align-items: stretch;
   }
 
-  .label {
-    justify-content: flex-start !important;
-    margin-bottom: 3 * $d8x-spacing;
+  .labelHolder {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: $d8x-spacing * 3;
   }
 }
 

@@ -57,19 +57,9 @@
   height: 40px;
 }
 
-.label {
-  display: flex;
-  align-items: center;
-  padding-right: $d8x-spacing;
-  gap: 8px;
-  color: var(--d8x-color-text-main);
-}
-
 .withdrawLabel {
   display: flex;
-  align-items: center;
-  padding-right: $d8x-spacing;
-  gap: 8px;
+  justify-content: flex-start;
   margin-bottom: 3 * $d8x-spacing;
 }
 
@@ -98,10 +88,6 @@
 
 .actionButton {
   margin-top: $d8x-spacing * 6;
-}
-
-.actionIcon {
-  margin-bottom: 4px;
 }
 
 .inputHolder {
@@ -133,7 +119,9 @@
     align-items: stretch;
     height: auto;
 
-    .label {
+    .labelHolder {
+      display: flex;
+      justify-content: flex-start;
       margin-bottom: $d8x-spacing * 2;
     }
 

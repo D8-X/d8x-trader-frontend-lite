@@ -5,14 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, takeProfitAtom, takeProfitPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, TakeProfitE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
-
-import commonStyles from '../../OrderBlock.module.scss';
 
 export const TakeProfitSelector = memo(() => {
   const { t } = useTranslation();
@@ -125,7 +123,7 @@ export const TakeProfitSelector = memo(() => {
     <CustomPriceSelector<TakeProfitE>
       id="custom-take-profit-price"
       label={
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.trade.order-block.take-profit.title')}
           content={
             <>
@@ -134,7 +132,6 @@ export const TakeProfitSelector = memo(() => {
               <Typography>{t('pages.trade.order-block.take-profit.body3')}</Typography>
             </>
           }
-          classname={commonStyles.actionIcon}
         />
       }
       options={Object.values(TakeProfitE)}

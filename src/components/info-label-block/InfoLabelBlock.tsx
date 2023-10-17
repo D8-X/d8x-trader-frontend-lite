@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,23 +6,26 @@ import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material
 
 import { Dialog } from 'components/dialog/Dialog';
 
-import styles from './InfoBlock.module.scss';
+import styles from './InfoLabelBlock.module.scss';
 
 interface InfoBlockPropsI {
   title: string | ReactNode;
   content: string | ReactNode;
-  classname?: string;
 }
 
-export const InfoBlock = ({ title, content, classname }: InfoBlockPropsI) => {
+export const InfoLabelBlock = ({ title, content }: InfoBlockPropsI) => {
   const { t } = useTranslation();
 
   const [isModalOpen, setModalOpen] = useState(false);
 
   return (
     <>
-      <span className={styles.title}>{title}</span>{' '}
-      <InfoOutlined onClick={() => setModalOpen(true)} className={classnames(styles.actionIcon, classname)} />
+      <div className={styles.label}>
+        <span className={styles.title}>{title}</span>{' '}
+        <span className={styles.iconHolder}>
+          <InfoOutlined onClick={() => setModalOpen(true)} className={styles.actionIcon} />
+        </span>
+      </div>
       <Dialog open={isModalOpen} className={styles.dialog} onClose={() => setModalOpen(false)}>
         <DialogTitle>{title}</DialogTitle>
         <DialogContent className={styles.dialogContent}>{content}</DialogContent>

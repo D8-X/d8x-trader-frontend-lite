@@ -27,11 +27,26 @@
   line-height: 32px;
 }
 
+.iconHolder {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 18px;
+  margin-top: -4px;
+}
+
 .actionIcon {
   cursor: pointer;
   position: relative;
   color: var(--d8x-color-action);
   font-size: 1rem;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $d8x-spacing * 2;
 }
 
 .title {

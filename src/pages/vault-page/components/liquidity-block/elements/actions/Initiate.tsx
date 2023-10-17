@@ -2,12 +2,12 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useWaitForTransaction, useWalletClient, type Address } from 'wagmi';
+import { type Address, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
 import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
@@ -136,7 +136,7 @@ export const Initiate = memo(() => {
   return (
     <>
       <Box className={styles.withdrawLabel}>
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.vault.withdraw.initiate.title', { poolSymbol: selectedPool?.poolSymbol })}
           content={
             <>
@@ -148,7 +148,6 @@ export const Initiate = memo(() => {
               </Typography>
             </>
           }
-          classname={styles.actionIcon}
         />
       </Box>
       <ResponsiveInput

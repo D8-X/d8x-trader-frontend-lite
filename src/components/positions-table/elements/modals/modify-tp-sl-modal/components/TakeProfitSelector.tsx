@@ -13,15 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
-
-import styles from './CommonSelector.module.scss';
 
 interface TakeProfitSelectorPropsI {
   setTakeProfitPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -124,7 +122,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
     <CustomPriceSelector<TakeProfitE>
       id="custom-take-profit-price"
       label={
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.trade.order-block.take-profit.title')}
           content={
             <>
@@ -133,7 +131,6 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
               <Typography>{t('pages.trade.order-block.take-profit.body3')}</Typography>
             </>
           }
-          classname={styles.actionIcon}
         />
       }
       options={Object.values(TakeProfitE)}

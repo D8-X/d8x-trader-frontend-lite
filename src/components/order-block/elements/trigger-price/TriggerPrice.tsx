@@ -4,14 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
-import commonStyles from '../../OrderBlock.module.scss';
 import styles from './TriggerPrice.module.scss';
 
 export const TriggerPrice = memo(() => {
@@ -64,7 +63,7 @@ export const TriggerPrice = memo(() => {
   return (
     <Box className={styles.root}>
       <Box className={styles.label}>
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.trade.order-block.trigger-price.title')}
           content={
             <>
@@ -73,7 +72,6 @@ export const TriggerPrice = memo(() => {
               <Typography>{t('pages.trade.order-block.trigger-price.body3')}</Typography>
             </>
           }
-          classname={commonStyles.actionIcon}
         />
       </Box>
       <ResponsiveInput

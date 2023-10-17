@@ -39,7 +39,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
   return (
     <Box className={styles.root}>
       <Box className={styles.labelHolder}>
-        <Box className={styles.label}>{label}</Box>
+        {label}
         <OutlinedInput
           id={id}
           className={styles.customPriceInput}

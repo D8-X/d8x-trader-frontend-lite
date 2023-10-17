@@ -13,15 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, StopLossE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
-
-import styles from './CommonSelector.module.scss';
 
 interface StopLossSelectorPropsI {
   setStopLossPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -127,7 +125,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     <CustomPriceSelector<StopLossE>
       id="custom-stop-loss-price"
       label={
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.trade.order-block.stop-loss.title')}
           content={
             <>
@@ -136,7 +134,6 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
               <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
             </>
           }
-          classname={styles.actionIcon}
         />
       }
       options={Object.values(StopLossE)}

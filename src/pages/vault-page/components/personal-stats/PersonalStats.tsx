@@ -5,7 +5,7 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { getEarnings } from 'network/history';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { sdkConnectedAtom, triggerUserStatsUpdateAtom, userAmountAtom, withdrawalsAtom } from 'store/vault-pools.store';
@@ -69,7 +69,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       </Typography>
       <Box key="amount" className={styles.statContainer}>
         <Box className={styles.statLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={t('pages.vault.personal-stats.amount.title')}
             content={
               <Typography>
@@ -77,7 +77,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 {t('pages.vault.personal-stats.amount.info', { poolSymbol: selectedPool?.poolSymbol })}{' '}
               </Typography>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
@@ -86,7 +85,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       </Box>
       <Box key="estimatedEarnings" className={styles.statContainer}>
         <Box className={styles.statLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={t('pages.vault.personal-stats.earnings.title')}
             content={
               <>
@@ -96,7 +95,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 </Typography>
               </>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
@@ -112,7 +110,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       </Box>
       <Box key="withdrawalInitiated" className={styles.statContainer}>
         <Box className={styles.statLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={t('pages.vault.personal-stats.initiated.title')}
             content={
               <Typography>
@@ -120,7 +118,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 {t('pages.vault.personal-stats.initiated.info1', { poolSymbol: selectedPool?.poolSymbol })}
               </Typography>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
@@ -129,7 +126,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       </Box>
       <Box key="withdrawalAmount" className={styles.statContainer}>
         <Box className={styles.statLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={t('pages.vault.personal-stats.withdrawal-amount.title')}
             content={
               <>
@@ -144,7 +141,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 </Typography>
               </>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
@@ -155,7 +151,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       </Box>
       <Box key="withdrawalDate" className={styles.statContainer}>
         <Box className={styles.statLabel}>
-          <InfoBlock
+          <InfoLabelBlock
             title={t('pages.vault.personal-stats.date.title')}
             content={
               <>
@@ -163,7 +159,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 <Typography>{t('pages.vault.personal-stats.date.info2')}</Typography>
               </>
             }
-            classname={styles.actionIcon}
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>

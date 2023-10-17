@@ -4,13 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Slider, Typography } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { type MarkI } from 'types/types';
 
-import commonStyles from '../../OrderBlock.module.scss';
 import styles from './LeverageSelector.module.scss';
 import { inputValueAtom, leverageAtom, setLeverageAtom } from './store';
 
@@ -60,18 +59,15 @@ export const LeverageSelector = memo(() => {
   return (
     <Box className={styles.root}>
       <Box className={styles.rowOne}>
-        <Box className={styles.label}>
-          <InfoBlock
-            title={t('pages.trade.order-block.leverage.title')}
-            content={
-              <>
-                <Typography>{t('pages.trade.order-block.leverage.body1')}</Typography>
-                <Typography>{t('pages.trade.order-block.leverage.body2')}</Typography>
-              </>
-            }
-            classname={commonStyles.actionIcon}
-          />
-        </Box>
+        <InfoLabelBlock
+          title={t('pages.trade.order-block.leverage.title')}
+          content={
+            <>
+              <Typography>{t('pages.trade.order-block.leverage.body1')}</Typography>
+              <Typography>{t('pages.trade.order-block.leverage.body2')}</Typography>
+            </>
+          }
+        />
         <OrderSettings />
       </Box>
       <Box className={styles.rowTwo}>

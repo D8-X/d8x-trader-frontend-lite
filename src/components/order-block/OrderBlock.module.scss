@@ -10,10 +10,6 @@
   background-color: var(--d8x-color-background);
 }
 
-.actionIcon {
-  margin-bottom: 2.5px;
-}
-
 .selectors {
   display: flex;
   flex-direction: column;
@@ -30,13 +26,6 @@
   .card {
     padding-top: $d8x-spacing * 2;
     padding-bottom: $d8x-spacing * 2;
-  }
-}
-
-@media screen and ($d8x-breakpoint-max-md) {
-
-  .actionIcon {
-    margin-bottom: 0;
   }
 }
 

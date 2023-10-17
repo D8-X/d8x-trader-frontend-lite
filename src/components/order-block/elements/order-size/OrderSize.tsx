@@ -7,7 +7,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Box, ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { getMaxOrderSizeForTrader } from 'network/network';
 import { defaultCurrencyAtom } from 'store/app.store';
@@ -17,7 +17,6 @@ import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
-import commonStyles from '../../OrderBlock.module.scss';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
 import {
@@ -195,8 +194,8 @@ export const OrderSize = memo(() => {
   return (
     <>
       <Box className={styles.root}>
-        <Box className={styles.label}>
-          <InfoBlock
+        <Box className={styles.labelHolder}>
+          <InfoLabelBlock
             title={t('pages.trade.order-block.order-size.title')}
             content={
               <>
@@ -210,7 +209,6 @@ export const OrderSize = memo(() => {
                 </Typography>
               </>
             }
-            classname={commonStyles.actionIcon}
           />
         </Box>
         <ResponsiveInput

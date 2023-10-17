@@ -9,7 +9,7 @@ import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@m
 import { ReactComponent as SwitchIcon } from 'assets/icons/switchSeparator.svg';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { addLiquidity } from 'blockchain-api/contract-interactions/addLiquidity';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import {
@@ -161,11 +161,10 @@ export const Add = memo(() => {
       </Box>
       <Box className={styles.contentBlock}>
         <Box className={styles.inputLine}>
-          <Box className={styles.label}>
-            <InfoBlock
+          <Box className={styles.labelHolder}>
+            <InfoLabelBlock
               title={t('pages.vault.add.amount.title', { poolSymbol: selectedPool?.poolSymbol })}
               content={t('pages.vault.add.amount.info1', { poolSymbol: selectedPool?.poolSymbol })}
-              classname={styles.actionIcon}
             />
           </Box>
           <ResponsiveInput
@@ -197,7 +196,9 @@ export const Add = memo(() => {
           <SwitchIcon />
         </Box>
         <Box className={styles.inputLine}>
-          <Box className={styles.label}>{t('pages.vault.add.receive', { poolSymbol: selectedPool?.poolSymbol })}</Box>
+          <Box className={styles.labelHolder}>
+            {t('pages.vault.add.receive', { poolSymbol: selectedPool?.poolSymbol })}
+          </Box>
           <Box className={styles.inputHolder}>
             <OutlinedInput
               id="expected-amount"

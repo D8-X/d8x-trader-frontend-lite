@@ -5,14 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, StopLossE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
-
-import commonStyles from '../../OrderBlock.module.scss';
 
 export const StopLossSelector = memo(() => {
   const { t } = useTranslation();
@@ -126,7 +124,7 @@ export const StopLossSelector = memo(() => {
     <CustomPriceSelector<StopLossE>
       id="custom-stop-loss-price"
       label={
-        <InfoBlock
+        <InfoLabelBlock
           title={t('pages.trade.order-block.stop-loss.title')}
           content={
             <>
@@ -135,7 +133,6 @@ export const StopLossSelector = memo(() => {
               <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
             </>
           }
-          classname={commonStyles.actionIcon}
         />
       }
       options={Object.values(StopLossE)}

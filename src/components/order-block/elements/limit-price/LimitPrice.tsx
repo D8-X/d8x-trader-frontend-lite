@@ -4,14 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
-import { InfoBlock } from 'components/info-block/InfoBlock';
+import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
-import commonStyles from '../../OrderBlock.module.scss';
 import styles from './LimitPrice.module.scss';
 
 export const LimitPrice = memo(() => {
@@ -68,8 +67,8 @@ export const LimitPrice = memo(() => {
 
   return (
     <Box className={styles.root}>
-      <Box className={styles.label}>
-        <InfoBlock
+      <Box className={styles.labelHolder}>
+        <InfoLabelBlock
           title={t('pages.trade.order-block.limit-price.title')}
           content={
             <>
@@ -77,7 +76,6 @@ export const LimitPrice = memo(() => {
               <Typography>{t('pages.trade.order-block.limit-price.body2')}</Typography>
             </>
           }
-          classname={commonStyles.actionIcon}
         />
       </Box>
       <ResponsiveInput

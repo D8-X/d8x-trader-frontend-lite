@@ -15,7 +15,8 @@
 }
 
 .statLabel {
-  display: block;
+  display: flex;
+  justify-content: flex-start;
   color: var(--d8x-color-text-label-two);
   white-space: nowrap;
   margin-bottom: $d8x-spacing * 0.5;
@@ -27,9 +28,4 @@
   color: var(--d8x-color-text-highlight);
   font-weight: 600;
   white-space: nowrap;
-}
-
-.actionIcon {
-  margin-bottom: -2.5px;
-  height: 13px;
 }

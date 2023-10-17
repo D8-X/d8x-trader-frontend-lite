@@ -3,22 +3,16 @@
 .root {
   flex-direction: column;
   align-items: flex-start;
-  gap: 2 * $d8x-spacing;
-  margin-bottom: 3 * $d8x-spacing;
-  margin-top: 6 * $d8x-spacing;
+  gap: $d8x-spacing * 2;
+  margin-bottom: $d8x-spacing * 3;
+  margin-top: $d8x-spacing * 6;
 }
 
 .labelHolder {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3 * $d8x-spacing;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-bottom: $d8x-spacing * 3;
 }
 
 .customPriceInput {
@@ -73,12 +67,12 @@
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
-    margin-bottom: 2 * $d8x-spacing;
-    margin-top: 2 * $d8x-spacing;
+    margin-bottom: $d8x-spacing * 2;
+    margin-top: $d8x-spacing * 2;
   }
 
   .labelHolder {
-    margin-bottom: 2 * $d8x-spacing;
+    margin-bottom: $d8x-spacing * 2.5;
   }
 
   .priceOptions {
