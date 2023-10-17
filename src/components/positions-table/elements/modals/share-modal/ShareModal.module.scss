@@ -1,0 +1,84 @@
+@import '~styles/theme/_theme.scss';
+
+.dialog {
+
+  :global(.MuiPaper-root) {
+    max-width: initial;
+  }
+}
+
+.contentBlock {
+  display: flex;
+  flex-flow: column wrap;
+  padding: 0;
+}
+
+.backgroundImage {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.statsContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 40px;
+  z-index: 1;
+  color: black;
+}
+
+.sideShort {
+  color: var(--d8x-color-text-sell);
+}
+
+.sideLong {
+  color: var(--d8x-color-text-buy);
+}
+
+.pnlPercent {
+  color: var(--d8x-color-text-sell);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pnlPercentPositive {
+  color: var(--d8x-color-text-buy);
+}
+
+.pricesContainer {
+  width: 183px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.priceLine {
+  display: flex;
+  justify-content: space-between;
+}
+
+.originLink {
+  color: var(--d8x-color-action);
+  margin-top: 60px;
+}
+
+.shareBlock {
+  padding: 24px;
+  text-align: center;
+  font-size: 0.625rem;
+  line-height: 2;
+}
+
+.downloadButton {
+  cursor: pointer;
+}
+
+.modalActions {
+  margin: auto;
+}

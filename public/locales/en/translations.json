@@ -58,6 +58,7 @@
             "remove": "Remove"
           },
           "close": "Close position",
+          "share": "Share position",
           "add": "Add collateral",
           "remove": "Remove collateral",
           "pos-details": {

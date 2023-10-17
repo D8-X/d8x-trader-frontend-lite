@@ -58,6 +58,7 @@
             "remove": "출금"
           },
           "close": "Close position",
+          "share": "위치 공유",
           "add": "Add collateral",
           "remove": "Remove collateral",
           "pos-details": {

@@ -30,6 +30,7 @@ import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { CloseModal } from './elements/modals/close-modal/CloseModal';
 import { ModifyModal } from './elements/modals/modify-modal/ModifyModal';
 import { ModifyTpSlModal } from './elements/modals/modify-tp-sl-modal/ModifyTpSlModal';
+import { ShareModal } from './elements/modals/share-modal/ShareModal';
 import { PositionBlock } from './elements/position-block/PositionBlock';
 import { PositionRow } from './elements/position-row/PositionRow';
 
@@ -58,6 +59,7 @@ export const PositionsTable = () => {
   const [isTpSlChangeModalOpen, setTpSlChangeModalOpen] = useState(false);
   const [isModifyModalOpen, setModifyModalOpen] = useState(false);
   const [isCloseModalOpen, setCloseModalOpen] = useState(false);
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<MarginAccountWithAdditionalDataI | null>();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -76,6 +78,11 @@ export const PositionsTable = () => {
 
   const handlePositionClose = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setCloseModalOpen(true);
+    setSelectedPosition(position);
+  }, []);
+
+  const handlePositionShare = useCallback((position: MarginAccountWithAdditionalDataI) => {
+    setShareModalOpen(true);
     setSelectedPosition(position);
   }, []);
 
@@ -294,6 +301,7 @@ export const PositionsTable = () => {
                     key={position.symbol}
                     position={position}
                     handlePositionClose={handlePositionClose}
+                    handlePositionShare={handlePositionShare}
                     handlePositionModify={handlePositionModify}
                     handleTpSlModify={handleTpSlModify}
                   />
@@ -354,6 +362,14 @@ export const PositionsTable = () => {
       )}
 
       <FilterModal headers={positionsHeaders} filter={filter} setFilter={setFilter} />
+      <ShareModal
+        isOpen={isShareModalOpen}
+        selectedPosition={selectedPosition}
+        closeModal={() => {
+          setShareModalOpen(false);
+          setSelectedPosition(null);
+        }}
+      />
       <ModifyTpSlModal isOpen={isTpSlChangeModalOpen} selectedPosition={selectedPosition} closeModal={closeTpSlModal} />
       <ModifyModal isOpen={isModifyModalOpen} selectedPosition={selectedPosition} closeModal={closeModifyModal} />
       <CloseModal isOpen={isCloseModalOpen} selectedPosition={selectedPosition} closeModal={closeCloseModal} />

@@ -58,6 +58,7 @@
             "remove": "Remover"
           },
           "close": "Cerrar Posición",
+          "share": "Compartir posición",
           "add": "Añadir Margen",
           "remove": "Remover Margen",
           "pos-details": {

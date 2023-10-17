@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DeleteForeverOutlined, ModeEditOutlineOutlined } from '@mui/icons-material';
+import { DeleteForeverOutlined, ModeEditOutlineOutlined, ShareOutlined } from '@mui/icons-material';
 import { TableCell, TableRow, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
@@ -16,12 +16,19 @@ import styles from './PositionRow.module.scss';
 interface PositionRowPropsI {
   position: MarginAccountWithAdditionalDataI;
   handlePositionClose: (position: MarginAccountWithAdditionalDataI) => void;
+  handlePositionShare: (position: MarginAccountWithAdditionalDataI) => void;
   handlePositionModify: (position: MarginAccountWithAdditionalDataI) => void;
   handleTpSlModify: (position: MarginAccountWithAdditionalDataI) => void;
 }
 
 export const PositionRow = memo(
-  ({ position, handlePositionClose, handlePositionModify, handleTpSlModify }: PositionRowPropsI) => {
+  ({
+    position,
+    handlePositionClose,
+    handlePositionShare,
+    handlePositionModify,
+    handleTpSlModify,
+  }: PositionRowPropsI) => {
     const { t } = useTranslation();
 
     const parsedSymbol = parseSymbol(position.symbol);
@@ -88,6 +95,13 @@ export const PositionRow = memo(
             onClick={() => handlePositionClose(position)}
           >
             <DeleteForeverOutlined className={styles.actionIcon} />
+          </IconButton>
+          <IconButton
+            aria-label={t('pages.trade.positions-table.table-content.share')}
+            title={t('pages.trade.positions-table.modify-modal.share')}
+            onClick={() => handlePositionShare(position)}
+          >
+            <ShareOutlined className={styles.actionIcon} />
           </IconButton>
         </TableCell>
       </TableRow>
