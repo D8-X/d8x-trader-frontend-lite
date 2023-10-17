@@ -1,17 +1,19 @@
+import { floatToABK64x64, type TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
+import { RequestMethodE } from 'types/enums';
 import type {
+  CancelOrderResponseI,
+  CollateralChangeResponseI,
   ExchangeInfoI,
   MarginAccountI,
+  MaxOrderSizeResponseI,
   OrderDigestI,
   OrderI,
   PerpetualOpenOrdersI,
   PerpetualStaticInfoI,
   ValidatedResponseI,
 } from 'types/types';
-import { RequestMethodE } from 'types/enums';
-import { type CancelOrderResponseI, type CollateralChangeResponseI, type MaxOrderSizeResponseI } from 'types/types';
-import { type TraderInterface, floatToABK64x64 } from '@d8x/perpetuals-sdk';
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[chainId] || config.apiUrl.default;

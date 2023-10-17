@@ -4,7 +4,6 @@ import { memo } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as MobileBackground } from 'assets/background/mobile-background.svg';
-import { ReactComponent as TabletBackground } from 'assets/background/mobile-background.svg';
 
 import styles from './StaticBackground.module.scss';
 
@@ -15,18 +14,10 @@ export const StaticBackground = memo(() => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
-  if (isMobile) {
+  if (isMobile || isTablet) {
     return (
       <div className={classnames(styles.root, styles.fixed)}>
         <MobileBackground className={styles.mobileBackground} />
-      </div>
-    );
-  }
-
-  if (isTablet) {
-    return (
-      <div className={classnames(styles.root, styles.fixed)}>
-        <TabletBackground className={styles.mobileBackground} />
       </div>
     );
   }
