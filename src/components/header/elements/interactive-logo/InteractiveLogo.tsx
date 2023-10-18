@@ -5,7 +5,7 @@ export const InteractiveLogo = () => {
     <svg
       width="110"
       height="21"
-      viewBox="0 0 221 50"
+      viewBox="0 0 260 50"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={styles.root}
