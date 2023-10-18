@@ -50,7 +50,11 @@ export const fetchPortfolioAtom = atom(
   async (get, set, userAddress: Address, chainId: number, openRewards: OpenTraderRebateI[]) => {
     const pools = get(poolsAtom);
     const traderAPI = get(traderAPIAtom);
-    if (!traderAPI) return;
+    if (!traderAPI) {
+      return;
+    }
+
+    set(isLoadingAtom, false);
 
     let totalReferralRewards = 0;
 
@@ -97,6 +101,5 @@ export const fetchPortfolioAtom = atom(
       totalReferralRewards;
 
     set(accountValueAtom, accountValue);
-    set(isLoadingAtom, false);
   }
 );

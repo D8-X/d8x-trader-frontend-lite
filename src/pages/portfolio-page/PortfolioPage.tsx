@@ -1,7 +1,8 @@
-import { CircularProgress } from '@mui/material';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import { useAccount, useChainId } from 'wagmi';
+
+import { CircularProgress } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
@@ -17,14 +18,16 @@ import styles from './PortfolioPage.module.scss';
 export const PortfolioPage = () => {
   const { address } = useAccount();
   const chainId = useChainId();
+
   const { openRewards } = useFetchOpenRewards();
+
   const [traderAPI] = useAtom(traderAPIAtom);
   const [{ isLoading }, fetchPortfolio] = useAtom(fetchPortfolioAtom);
 
   useEffect(() => {
     if (traderAPI) {
       // eslint-disable-next-line
-      fetchPortfolio(address!, chainId, openRewards);
+      fetchPortfolio(address!, chainId, openRewards).then();
     }
   }, [openRewards, traderAPI, address, chainId, fetchPortfolio]);
 
