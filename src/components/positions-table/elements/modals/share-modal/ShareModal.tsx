@@ -28,6 +28,27 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
     return null;
   }
 
+  const saveImage = async () => {
+    if (!statsRef.current) {
+      return;
+    }
+    const { toPng } = await import('html-to-image');
+    const dataUrl = await toPng(statsRef.current, { pixelRatio: 5 });
+    const img = new Image();
+    img.src = dataUrl;
+    document.body.appendChild(img);
+
+    const link = document.createElement('a');
+
+    link.href = dataUrl;
+    link.download = 'd8x-position.jpg';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    document.body.removeChild(img);
+  };
+
   const parsedSymbol = parseSymbol(selectedPosition.symbol);
 
   const percent =
@@ -79,29 +100,7 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
           <div className={styles.originLink}>{window?.location.origin}</div>
         </div>
         <div className={styles.shareBlock}>
-          <DownloadOutlined
-            onClick={async () => {
-              if (!statsRef.current) {
-                return;
-              }
-              const { toPng } = await import('html-to-image');
-              const dataUrl = await toPng(statsRef.current, { pixelRatio: 5 });
-              const img = new Image();
-              img.src = dataUrl;
-              document.body.appendChild(img);
-
-              const link = document.createElement('a');
-
-              link.href = dataUrl;
-              link.download = 'd8x-position.jpg';
-
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              document.body.removeChild(img);
-            }}
-            className={styles.downloadButton}
-          />
+          <DownloadOutlined onClick={saveImage} className={styles.downloadButton} />
           <div>{t('pages.trade.positions-table.share-modal.share-description')}</div>
         </div>
       </DialogContent>

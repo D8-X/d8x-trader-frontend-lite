@@ -23,8 +23,8 @@ module.exports = {
     sourceType: 'module',
   },
   extends: [
-    "plugin:react/recommended",
-    "plugin:import/recommended",
+    'plugin:react/recommended',
+    'plugin:import/recommended',
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',

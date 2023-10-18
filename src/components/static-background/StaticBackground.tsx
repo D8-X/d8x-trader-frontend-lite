@@ -11,10 +11,9 @@ const FIGURES_ARRAY = ['left-top-1', 'right-top-1', 'center-bottom-1', 'center-b
 
 export const StaticBackground = memo(() => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
-  if (isMobile || isTablet) {
+  if (isTablet) {
     return (
       <div className={classnames(styles.root, styles.fixed)}>
         <MobileBackground className={styles.mobileBackground} />
