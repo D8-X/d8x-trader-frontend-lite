@@ -9,7 +9,7 @@
 
 .contentBlock {
   display: flex;
-  flex-flow: column wrap;
+  flex-flow: column;
   padding: 0;
 }
 
@@ -28,12 +28,14 @@
 }
 
 .statsContainer {
+  min-width: 372px;
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 40px;
   padding: 40px;
   z-index: 1;
+  white-space: nowrap;
 }
 
 .titleBlock {
