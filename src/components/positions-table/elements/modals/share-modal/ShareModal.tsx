@@ -40,7 +40,7 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
         <div ref={statsRef} className={styles.statsContainer}>
           <Background />
           <InteractiveLogo />
-          <div>
+          <div className={styles.titleBlock}>
             <span
               className={classnames({
                 [styles.sideLong]: selectedPosition?.side === 'BUY',
@@ -48,9 +48,12 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
               })}
             >
               {selectedPosition?.side === 'BUY' ? 'Long' : 'Short'}
-            </span>{' '}
-            | {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol} Perpetual |{' '}
-            {Math.round(selectedPosition.leverage * 100) / 100}x
+            </span>
+            |
+            <span>
+              {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol} Perpetual
+            </span>
+            |<span>{Math.round(selectedPosition.leverage * 100) / 100}x</span>
           </div>
           <div
             className={classnames(styles.pnlPercent, {

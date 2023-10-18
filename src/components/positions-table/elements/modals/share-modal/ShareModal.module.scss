@@ -13,13 +13,18 @@
   padding: 0;
 }
 
-.backgroundImage {
+.backgroundContainer {
   height: 100%;
   width: 100%;
   position: absolute;
   inset: 0;
   z-index: -1;
   overflow: hidden;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
 }
 
 .statsContainer {
@@ -29,6 +34,11 @@
   gap: 40px;
   padding: 40px;
   z-index: 1;
+}
+
+.titleBlock {
+  display: flex;
+  gap: 10px;
 }
 
 .sideShort {
