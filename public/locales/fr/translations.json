@@ -233,16 +233,16 @@
             "body2": "Si votre ordre réduit une position existante ('fermeture partielle'), l'effet de levier que vous sélectionnez n'a aucun impact."
           },
           "slippage": {
-            "title": "Paramètres de glissement",
+            "title": "Glissement",
             "body": "Choisissez la tolérance au glissement",
             "max": "Prix d'entrée max:",
             "min": "Prix d'entrée min:",
             "cancel": "Annuler",
             "confirm": "Confirmer"
           },
-          "reduce-only": "Réduction uniquement",
+          "reduce-only": "Réd. uniquement",
           "expiry": {
-            "title": "Paramètres d'expiration",
+            "title": "Expiration",
             "body": "Définissez le nombre de jours après lesquels votre ordre principal expirera (ce paramètre n'affecte pas vos ordres de prise de profit et de stop-loss).",
             "close": "Fermer"
           },
@@ -343,8 +343,8 @@
       },
       "refer": {
         "tab-selector": {
-          "referrer": "En tant que Parrain",
-          "trader": "En tant que Trader"
+          "referrer": "Parrain",
+          "trader": "Trader"
         },
         "referrer-tab": {
           "disclaimer-text-block1": "Gagnez des commissions en invitant des traders à trader sur D8X. Les commissions sont déposées dans votre portefeuille chaque semaine.",
