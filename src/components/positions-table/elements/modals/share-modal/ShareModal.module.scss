@@ -78,6 +78,9 @@
 .originLink {
   color: var(--d8x-color-action);
   margin-top: 60px;
+  max-width: 40ch;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .shareBlock {
