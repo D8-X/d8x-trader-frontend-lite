@@ -72,6 +72,9 @@
           "confirm": "确认",
           "create": "Create"
         },
+        "share-modal": {
+          "share-description": "保存图像并在社交媒体上分享"
+        },
         "toasts": {
           "submit-close": {
             "title": "确认平仓"

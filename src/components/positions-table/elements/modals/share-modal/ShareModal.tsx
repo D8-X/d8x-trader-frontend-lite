@@ -47,11 +47,14 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
                 [styles.sideShort]: selectedPosition?.side !== 'BUY',
               })}
             >
-              {selectedPosition?.side === 'BUY' ? 'Long' : 'Short'}
+              {selectedPosition?.side === 'BUY'
+                ? t('pages.trade.order-block.selector.long')
+                : t('pages.trade.order-block.selector.short')}
             </span>
             |
             <span>
-              {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol} Perpetual
+              {parsedSymbol?.baseCurrency}/{parsedSymbol?.quoteCurrency}/{parsedSymbol?.poolSymbol}{' '}
+              {t('pages.trade.history-table.table-header.perpetual')}
             </span>
             |<span>{Math.round(selectedPosition.leverage * 100) / 100}x</span>
           </div>
@@ -65,11 +68,11 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
           </div>
           <div className={styles.pricesContainer}>
             <div className={styles.priceLine}>
-              <div>Entry Price</div>
+              <div>{t('pages.trade.positions-table.table-header.entry-price')}</div>
               <div>{formatToCurrency(selectedPosition.entryPrice, parsedSymbol?.quoteCurrency, true)}</div>
             </div>
             <div className={styles.priceLine}>
-              <div>Mark Price</div>
+              <div>{t('pages.trade.stats.mark-price')}</div>
               <div>{formatToCurrency(selectedPosition.markPrice, parsedSymbol?.quoteCurrency, true)}</div>
             </div>
           </div>
@@ -99,7 +102,7 @@ export const ShareModal = memo(({ isOpen, selectedPosition, closeModal }: ShareM
             }}
             className={styles.downloadButton}
           />
-          <div>Save the image and share it on social media</div>
+          <div>{t('pages.trade.positions-table.share-modal.share-description')}</div>
         </div>
       </DialogContent>
       <DialogActions className={styles.modalActions}>

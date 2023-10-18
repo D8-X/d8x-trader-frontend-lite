@@ -72,6 +72,9 @@
             "confirm": "Confirmer",
             "create": "Créer"
           },
+          "share-modal": {
+            "share-description": "Enregistrez l'image et partagez-la sur les réseaux sociaux"
+          },
           "toasts": {
             "submit-close": {
               "title": "Soumission de l'ordre de clôture"

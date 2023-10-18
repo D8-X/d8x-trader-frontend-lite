@@ -72,6 +72,9 @@
           "confirm": "Confirmar",
           "create": "Crear"
         },
+        "share-modal": {
+          "share-description": "Guarda la imagen y compártela en las redes sociales"
+        },
         "toasts": {
           "submit-close": {
             "title": "Cerrando Posición"

@@ -72,6 +72,9 @@
           "confirm": "Confirm",
           "create": "Create"
         },
+        "share-modal": {
+          "share-description": "이미지를 저장하고 소셜 미디어에 공유하세요"
+        },
         "toasts": {
           "submit-close": {
             "title": "Submitting Closing Order"

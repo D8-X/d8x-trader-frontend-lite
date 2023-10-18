@@ -72,6 +72,9 @@
           "confirm": "Confirm",
           "create": "Create"
         },
+        "share-modal": {
+          "share-description": "Save the image and share it on social media"
+        },
         "toasts": {
           "submit-close": {
             "title": "Submitting Closing Order"

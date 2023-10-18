@@ -72,6 +72,9 @@
           "confirm": "Bestätigen",
           "create": "Erstellen"
         },
+        "share-modal": {
+          "share-description": "Speichern Sie das Bild und teilen Sie es in den sozialen Medien"
+        },
         "toasts": {
           "submit-close": {
             "title": "Abschicken der Schliess Order"
