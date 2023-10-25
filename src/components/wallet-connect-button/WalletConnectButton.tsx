@@ -59,7 +59,14 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
       console.log(`loading SDK on chainId ${_chainId}`);
       const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
       if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
-        configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoint: config.priceFeedEndpoint[_chainId] }];
+        const pythPriceServiceIdx = configSDK.priceFeedEndpoints?.findIndex(({ type }) => type === 'pyth');
+        if (pythPriceServiceIdx !== undefined && pythPriceServiceIdx >= 0) {
+          if (configSDK.priceFeedEndpoints !== undefined) {
+            configSDK.priceFeedEndpoints[pythPriceServiceIdx].endpoints.push(config.priceFeedEndpoint[_chainId]);
+          }
+        } else {
+          configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoints: [config.priceFeedEndpoint[_chainId]] }];
+        }
       }
       const newTraderAPI = new TraderInterface(configSDK);
       newTraderAPI
