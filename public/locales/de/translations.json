@@ -7,6 +7,7 @@
   },
   "pages": {
     "geolocation": {
+      "setup-required": "Please provide VITE_GEONAMES_USERNAME in the environment variables.",
       "access-denied": "Um fortzufahren, aktivieren Sie bitte die Geolokalisierungsdienste in Ihrem Browser. Anweisungen zum Aktivieren von Geolokalisierungsdiensten finden Sie in der Dokumentation Ihres Browsers.",
       "access-blocked": "DIE D8X-PROTOKOLL-SOFTWARE WURDE NICHT FÜR DEN ZUGRIFF ODER DIE VERWENDUNG DURCH BENUTZER AUS EINEM AUSGESCHLOSSENEN HOHEITSGEBIET BEREITGESTELLT. Zu den ausgeschlossenen Hoheitsgebieten gehören unter anderem die VEREINIGTEN STAATEN VON AMERIKA, WEISSRUSSLAND, BURUNDI, BURMA (Myanmar), die ZENTRALAFRIKANISCHE REPUBLIK, die DEMOKRATISCHE REPUBLIK KONGO, die DEMOKRATISCHE VOLKSREPUBLIK KOREA (DVRK), GUINEA, GUINEA-BISSAU, HAITI, IRAN, IRAK, JEMEN, LIBANON, LIBYEN, MALI, NICARAGUA, SOMALIA, SUDAN, REPUBLIK SÜDSUDAN, SYRIEN, VENEZUELA UND SIMBABWE.",
       "not-supported": "Geolokalisierung wird von Ihrem Browser nicht unterstützt. Um fortzufahren, wechseln Sie bitte zu einem Browser, der Geolokalisierung unterstützt.",

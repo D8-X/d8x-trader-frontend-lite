@@ -8,6 +8,7 @@ const {
   VITE_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
   VITE_PRICE_FEEDS: priceFeedEndpoints = '',
   VITE_HTTP_RPC: httpRPCs = '',
+  MODE: mode = '',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
@@ -26,6 +27,7 @@ function parseUrls(urlData: string): Record<string, string> {
 }
 
 export const config = {
+  mode,
   projectId,
   geonamesUsername,
   apiUrl: parseUrls(apiUrls),

@@ -7,6 +7,7 @@
     },
     "pages": {
       "geolocation": {
+        "setup-required": "Please provide VITE_GEONAMES_USERNAME in the environment variables.",
         "access-denied": "Pour continuer, veuillez activer les services de localisation dans votre navigateur. Veuillez consulter la documentation de votre navigateur pour savoir comment activer les services de localisation.",
         "access-blocked": "LE LOGICIEL DU PROTOCOLE D8X N'A PAS ÉTÉ DÉPLOYÉ POUR ÊTRE ACCÉDÉ OU UTILISÉ PAR UN UTILISATEUR D'UNE JURIDICTION INTERDITE. LES JURIDICTIONS INTERDITES COMPRENNENT, MAIS NE SONT PAS LIMITÉES AUX, ÉTATS-UNIS D'AMÉRIQUE, BÉLARUS, BURUNDI, BIRMANIE (MYANMAR), RÉPUBLIQUE CENTRAFRICAINE, CONGO, RÉP. DÉMOCRATIQUE, RÉPUBLIQUE POPULAIRE DÉMOCRATIQUE DE CORÉE (RPDC), GUINÉE, GUINÉE-BISSAU, HAÏTI, IRAN, IRAK, YÉMEN, LIBAN, LIBYE, MALI, NICARAGUA, SOMALIE, SOUDAN, RÉPUBLIQUE DU SOUDAN DU SUD, SYRIE, VENEZUELA ET ZIMBABWE.",
         "not-supported": "La localisation n'est pas supporté par votre navigateur. Pour continuer, veuillez passer à un navigateur qui supporte la localisation.",

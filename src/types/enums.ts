@@ -1,3 +1,8 @@
+export enum ModeE {
+  Development = 'development',
+  Production = 'production',
+}
+
 export enum LanguageE {
   EN = 'en',
   CN = 'cn',

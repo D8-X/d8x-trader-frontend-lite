@@ -2,13 +2,15 @@ import Geonames from 'geonames.js';
 import { memo, type PropsWithChildren, useEffect, useState } from 'react';
 
 import { config } from 'config';
-import { GeoLocationDataI } from 'types/types';
+import { ModeE } from 'types/enums';
+import type { GeoLocationDataI } from 'types/types';
 
 import { GeoLocationIsNotSupported } from './placeholders/GeoLocationIsNotSupported';
 import { Locating } from './placeholders/Locating';
 import { LocationAccessDenied } from './placeholders/LocationAccessDenied';
 import { GettingLocationInfo } from './placeholders/GettingLocationInfo';
 import { AccessIsBlocked } from './placeholders/AccessIsBlocked';
+import { SetupIsRequired } from './placeholders/SetupIsRequired';
 
 const BLOCKED_COUNTRIES = [
   'BI',
@@ -86,8 +88,12 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     }
   }, []);
 
-  if (hasAccess || config.geonamesUsername === '') {
+  if (hasAccess || (config.mode !== ModeE.Production && config.geonamesUsername === '')) {
     return children;
+  }
+
+  if (config.mode === ModeE.Production && config.geonamesUsername === '') {
+    return <SetupIsRequired />;
   }
 
   if (hasAccess === false) {
