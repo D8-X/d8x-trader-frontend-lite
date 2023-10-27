@@ -36,6 +36,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: frontend
           IMAGE_TAG: d8x-frontend-stage-${{ github.sha }}
+          VITE_ENABLED_CHAINS: 1442
           VITE_HTTP_RPC: 80001::${{ secrets.HTTP_RPC_MUMBAI }}
           VITE_PRICE_FEEDS:
           VITE_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
