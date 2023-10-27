@@ -14,7 +14,6 @@ export const RainbowKitProviderWrapper = ({ children }: { children: ReactNode })
   return (
     <RainbowKitProvider
       chains={chains}
-      initialChain={1442}
       appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
       modalSize="compact"
       theme={enabledDarkMode ? darkTheme() : undefined}

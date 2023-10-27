@@ -8,6 +8,7 @@ const {
   VITE_CANDLES_WEBSOCKET_URL: candlesWsUrls = '',
   VITE_PRICE_FEEDS: priceFeedEndpoints = '',
   VITE_HTTP_RPC: httpRPCs = '',
+  VITE_ENABLED_CHAINS: enabledChains = '',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
@@ -25,6 +26,13 @@ function parseUrls(urlData: string): Record<string, string> {
   return urls;
 }
 
+function splitNumbers(numbers: string): number[] {
+  if (!numbers) {
+    return [];
+  }
+  return numbers.split(URLS_SEPARATOR).map(Number);
+}
+
 export const config = {
   projectId,
   geonamesUsername,
@@ -35,4 +43,5 @@ export const config = {
   candlesWsUrl: parseUrls(candlesWsUrls),
   priceFeedEndpoint: parseUrls(priceFeedEndpoints),
   httpRPC: parseUrls(httpRPCs),
+  enabledChains: splitNumbers(enabledChains),
 };

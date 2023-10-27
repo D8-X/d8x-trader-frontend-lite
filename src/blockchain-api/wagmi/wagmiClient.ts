@@ -9,20 +9,20 @@ import {
   phantomWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { configureChains, createConfig } from 'wagmi';
-import { polygonZkEvmTestnet } from 'wagmi/chains';
+import { polygonZkEvmTestnet, polygonMumbai, polygonZkEvm } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
-// import polygonTestIcon from 'assets/networks/polygonTest.svg';
-// import zkMainIcon from 'assets/networks/zkEvmMain.svg';
+import polygonTestIcon from 'assets/networks/polygonTest.svg';
+import zkMainIcon from 'assets/networks/zkEvmMain.svg';
 import zkTestIcon from 'assets/networks/zkEvmTest.svg';
 import { config } from 'config';
 
 const defaultChains: Chain[] = [
-  // { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
-  // { ...polygonMumbai, iconUrl: polygonTestIcon, iconBackground: 'transparent' },
+  { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
+  { ...polygonMumbai, iconUrl: polygonTestIcon, iconBackground: 'transparent' },
   { ...polygonZkEvmTestnet, iconUrl: zkTestIcon, iconBackground: 'transparent' },
-];
+].filter(({ id }) => config.enabledChains.includes(id));
 
 const providers = [
   jsonRpcProvider({
