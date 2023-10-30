@@ -118,10 +118,15 @@ export function useCandlesWsMessageHandler() {
           }
 
           const candles: TvChartCandleI[] = [];
+          latestCandleRef.current = null;
 
-          for (const candle of newData) {
+          for (const [index, candle] of newData.entries()) {
             const localTime = timeToLocal(candle.time);
             if (latestCandleRef.current != null && latestCandleRef.current.start >= localTime) {
+              console.warn(
+                `Candle (${index}) from the array has wrong time (prev: ${latestCandleRef.current.start} >= next: ${localTime})`,
+                parsedMessage.data
+              );
               continue;
             }
 
@@ -151,6 +156,7 @@ export function useCandlesWsMessageHandler() {
         const localTime = timeToLocal(parsedMessage.data.time);
         if (latestCandleRef.current != null && latestCandleRef.current.start > localTime) {
           setCandlesDataReady(true);
+          console.error('New candle timeToLocal is from the past', parsedMessage.data, localTime);
           return;
         }
 
