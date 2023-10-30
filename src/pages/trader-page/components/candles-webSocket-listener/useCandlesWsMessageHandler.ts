@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { UTCTimestamp } from 'lightweight-charts';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { timeToLocal } from 'helpers/timeToLocal';
 import { selectedPerpetualAtom } from 'store/pools.store';
@@ -13,7 +13,7 @@ import {
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
 import { TvChartPeriodE } from 'types/enums';
-import { PerpetualI } from 'types/types';
+import { PerpetualI, TvChartCandleI } from 'types/types';
 import { debounceLeading } from 'utils/debounceLeading';
 
 import {
@@ -88,6 +88,8 @@ export function useCandlesWsMessageHandler() {
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const setCandlesWsLatestMessageTime = useSetAtom(candlesLatestMessageTimeAtom);
 
+  const latestCandleRef = useRef<TvChartCandleI | null>(null);
+
   return useCallback(
     (message: string) => {
       const parsedMessage = JSON.parse(message);
@@ -115,10 +117,15 @@ export function useCandlesWsMessageHandler() {
             return prevData;
           }
 
-          return newData.map((candle) => {
-            const localTime = timeToLocal(candle.time);
+          const candles: TvChartCandleI[] = [];
 
-            return {
+          for (const candle of newData) {
+            const localTime = timeToLocal(candle.time);
+            if (latestCandleRef.current != null && latestCandleRef.current.start >= localTime) {
+              continue;
+            }
+
+            const newCandle: TvChartCandleI = {
               start: localTime,
               time: (localTime / 1000) as UTCTimestamp,
               open: +candle.open,
@@ -126,7 +133,11 @@ export function useCandlesWsMessageHandler() {
               low: +candle.low,
               close: +candle.close,
             };
-          });
+            candles.push(newCandle);
+            latestCandleRef.current = newCandle;
+          }
+
+          return candles;
         });
         setCandlesDataReady(true);
       } else if (isMarketsSubscribeMessage(parsedMessage)) {
@@ -138,15 +149,22 @@ export function useCandlesWsMessageHandler() {
         }
 
         const localTime = timeToLocal(parsedMessage.data.time);
-        setNewCandle({
+        if (latestCandleRef.current != null && latestCandleRef.current.start > localTime) {
+          setCandlesDataReady(true);
+          return;
+        }
+
+        const newCandle: TvChartCandleI = {
           start: localTime,
           time: (localTime / 1000) as UTCTimestamp,
           open: +parsedMessage.data.open,
           high: +parsedMessage.data.high,
           low: +parsedMessage.data.low,
           close: +parsedMessage.data.close,
-        });
+        };
+        latestCandleRef.current = newCandle;
 
+        setNewCandle(newCandle);
         setCandlesDataReady(true);
       } else if (isMarketsMessage(parsedMessage)) {
         setMarketsData(parsedMessage.data);
