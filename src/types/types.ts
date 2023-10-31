@@ -1,5 +1,4 @@
 import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
-import { type Time } from 'lightweight-charts';
 import type { ReactElement, ReactNode } from 'react';
 
 import type {
@@ -241,7 +240,7 @@ export interface TableHeaderI<T> {
 
 export interface TvChartCandleI {
   start: number;
-  time: Time;
+  time: number;
   open: number;
   high: number;
   low: number;

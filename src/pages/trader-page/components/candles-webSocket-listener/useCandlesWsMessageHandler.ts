@@ -1,8 +1,5 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { UTCTimestamp } from 'lightweight-charts';
 import { useCallback, useRef } from 'react';
-
-import { timeToLocal } from 'helpers/timeToLocal';
 import { selectedPerpetualAtom } from 'store/pools.store';
 import {
   candlesAtom,
@@ -121,7 +118,7 @@ export function useCandlesWsMessageHandler() {
           latestCandleRef.current = null;
 
           for (const [index, candle] of newData.entries()) {
-            const localTime = timeToLocal(candle.time);
+            const localTime = new Date(candle.time).getTime();
             if (latestCandleRef.current != null && latestCandleRef.current.start >= localTime) {
               console.warn(
                 `Candle (${index}) from the array has wrong time (prev: ${latestCandleRef.current.start} >= next: ${localTime})`,
@@ -132,7 +129,7 @@ export function useCandlesWsMessageHandler() {
 
             const newCandle: TvChartCandleI = {
               start: localTime,
-              time: (localTime / 1000) as UTCTimestamp,
+              time: localTime / 1000,
               open: +candle.open,
               high: +candle.high,
               low: +candle.low,
@@ -153,7 +150,7 @@ export function useCandlesWsMessageHandler() {
           return;
         }
 
-        const localTime = timeToLocal(parsedMessage.data.time);
+        const localTime = new Date(parsedMessage.data.time).getTime();
         if (latestCandleRef.current != null && latestCandleRef.current.start > localTime) {
           setCandlesDataReady(true);
           console.error('New candle timeToLocal is from the past', parsedMessage.data, localTime);
@@ -162,7 +159,7 @@ export function useCandlesWsMessageHandler() {
 
         const newCandle: TvChartCandleI = {
           start: localTime,
-          time: (localTime / 1000) as UTCTimestamp,
+          time: localTime / 1000,
           open: +parsedMessage.data.open,
           high: +parsedMessage.data.high,
           low: +parsedMessage.data.low,
