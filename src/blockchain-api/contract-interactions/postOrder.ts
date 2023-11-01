@@ -28,7 +28,7 @@ export function postOrder(
       abi: LOB_ABI,
       functionName: 'postOrders',
       args: [orders, signatures],
-      gas: BigInt(2_000_000),
+      gas: BigInt(600_000 + (orders.length - 1) * 400_000),
       account: walletClient.account,
     })
     .then((tx) => ({ hash: tx }));
