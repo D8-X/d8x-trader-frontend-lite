@@ -19,7 +19,7 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { getDelegateKey } from 'helpers/getDelegateKey';
 import { activatedOneClickTradingAtom, delegateAddressAtom, tradingClientAtom } from 'store/app.store';
 import { storageKeyAtom } from 'store/order-block.store';
-import { proxyAddrAtom } from 'store/pools.store';
+import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 
 import { FundingModal } from './FundingModal';
 import styles from '../OneClickTradingButton.module.scss';
@@ -39,6 +39,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const [delegateAddress, setDelegateAddress] = useAtom(delegateAddressAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [storageKey, setStorageKey] = useAtom(storageKeyAtom);
+  const [traderAPI] = useAtom(traderAPIAtom);
   const setTradingClient = useSetAtom(tradingClientAtom);
 
   const [isLoading, setLoading] = useState(false);
@@ -57,16 +58,16 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   });
 
   useEffect(() => {
-    if (!proxyAddr || !address) {
+    if (!address || !traderAPI || traderAPI?.chainId !== publicClient.chain.id) {
       return;
     }
 
     setLoading(true);
 
-    hasDelegate(publicClient, proxyAddr as Address, address)
+    hasDelegate(publicClient, traderAPI.getProxyAddress() as Address, address)
       .then(setDelegated)
       .finally(() => setLoading(false));
-  }, [publicClient, proxyAddr, address]);
+  }, [publicClient, address, traderAPI]);
 
   useEffect(() => {
     if (!isDelegated || (address && address !== walletClient?.account?.address)) {
