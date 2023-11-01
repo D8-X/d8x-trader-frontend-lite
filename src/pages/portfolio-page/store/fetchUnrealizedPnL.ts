@@ -43,7 +43,7 @@ export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: A
     }
   });
 
-  const leverage = totalPositionNotionalBaseCCY / totalCollateralCC || 0;
+  const leverage = totalPositionNotionalBaseCCY / (totalCollateralCC + totalUnrealizedPnl) || 0;
 
   set(leverageAtom, leverage);
   set(totalUnrealizedPnLAtom, totalUnrealizedPnl);
