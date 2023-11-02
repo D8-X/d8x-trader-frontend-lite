@@ -161,16 +161,10 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   });
 
   useEffect(() => {
-    if (activatedOneClickTrading && delegateAddress !== '' && !!delegateBalance && delegateBalance.value === 0n) {
+    if (activatedOneClickTrading && delegateAddress !== '' && !!delegateBalance && delegateBalance.value < 10n) {
       setFundingModalOpen(true);
     }
   }, [activatedOneClickTrading, delegateBalance, delegateAddress]);
-
-  useEffect(() => {
-    if (delegateAddress !== '' && delegateBalance && delegateBalance.value > 0n) {
-      setFundingModalOpen(false);
-    }
-  }, [delegateBalance, delegateAddress]);
 
   const handleRemove = () => {
     if (!walletClient || !proxyAddr || handleRemoveRef.current) {
