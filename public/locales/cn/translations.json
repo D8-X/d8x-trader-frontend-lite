@@ -1,7 +1,7 @@
 {
   "navigation": {
     "trade": "交易",
-    "refer": "邀请",
+    "refer": "邀请返佣",
     "vault": "金库",
     "portfolio": "投资组合"
   },
@@ -511,7 +511,7 @@
       }
     },
     "portfolio": {
-      "perpetuals": "万年历",
+      "perpetuals": "永续合约",
       "vault": "金库",
       "account-value": {
         "main-title": "你的帐户",
@@ -522,14 +522,14 @@
             "funds": "资金"
           },
           "perps": {
-            "title": "罪犯详情",
-            "leverage": "杠杆作用",
-            "unrealized": "未实现的 PnL",
-            "realized": "实现的 PnL",
+            "title": "永续合约详情",
+            "leverage": "杠杠",
+            "unrealized": "未实现盈亏",
+            "realized": "已实现盈亏",
             "referral": "推荐收入"
           },
           "vault": {
-            "title": "保险库详细信息",
+            "title": "金库详细信息",
             "assets": "资产",
             "assets-pool": "集合资产",
             "earnings-pool": "每池收益",
