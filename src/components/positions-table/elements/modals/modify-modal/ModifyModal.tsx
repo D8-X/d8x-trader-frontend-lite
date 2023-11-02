@@ -339,7 +339,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
           ).then(() => {
             deposit(tradingClient, address, data)
               .then((tx) => {
-                console.log(`deposit tx hash: ${tx.hash}`);
+                // console.log(`deposit tx hash: ${tx.hash}`);
                 setTxHashForAdd(tx.hash);
                 setAmountForAdd(addCollateral);
                 setSymbolForTx(selectedPosition.symbol);
@@ -384,7 +384,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         .then(({ data }) => {
           withdraw(tradingClient, address, data)
             .then((tx) => {
-              console.log(`withdraw tx hash: ${tx.hash}`);
+              // console.log(`withdraw tx hash: ${tx.hash}`);
               setTxHashForRemove(tx.hash);
               setAmountForRemove(removeCollateral);
               setSymbolForTx(selectedPosition.symbol);

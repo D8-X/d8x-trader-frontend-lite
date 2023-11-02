@@ -189,7 +189,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               if (data.data.digest) {
                 cancelOrder(tradingClient, HashZero, data.data, orderToCancel.id)
                   .then((tx) => {
-                    console.log(`cancelOrder tx hash: ${tx.hash}`);
+                    // console.log(`cancelOrder tx hash: ${tx.hash}`);
                     toast.success(
                       <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
                     );
@@ -263,7 +263,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
                 postOrder(tradingClient, signatures, data.data, false)
                   .then((tx) => {
                     // success submitting order to the node
-                    console.log(`postOrder tx hash: ${tx.hash}`);
+                    // console.log(`postOrder tx hash: ${tx.hash}`);
                     // order was sent
                     setTakeProfitPrice(null);
                     setStopLossPrice(null);

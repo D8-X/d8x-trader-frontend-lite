@@ -76,11 +76,11 @@ export async function getPositionRisk(
   }
 
   if (traderAPI && traderAPI.chainId === chainId) {
-    console.log(`positionRisk via SDK`);
+    // console.log(`positionRisk via SDK`);
     const data = await traderAPI.positionRisk(traderAddr);
     return { type: 'position-risk', msg: '', data };
   } else {
-    console.log(`positionRisk via BE`);
+    // console.log(`positionRisk via BE`);
     return fetchUrl(`position-risk?${params}`, chainId);
   }
 }
@@ -99,7 +99,7 @@ export function positionRiskOnTrade(
     maxShortTrade: number;
   }>
 > {
-  console.log('positionRiskOnTrade via SDK');
+  // console.log('positionRiskOnTrade via SDK');
   return traderAPI.positionRiskOnTrade(traderAddr, order, curAccount).then((data) => {
     return { type: 'position-risk-on-trade', msg: '', data: data } as ValidatedResponseI<{
       newPositionRisk: MarginAccountI;
@@ -155,7 +155,7 @@ export async function getOpenOrders(
   timestamp?: number
 ): Promise<ValidatedResponseI<PerpetualOpenOrdersI[]>> {
   if (traderAPI && traderAPI.chainId === chainId) {
-    console.log(`openOrders via SDK`);
+    // console.log(`openOrders via SDK`);
     const data = await traderAPI.openOrders(traderAddr);
     return { type: 'open-orders', msg: '', data };
   } else {

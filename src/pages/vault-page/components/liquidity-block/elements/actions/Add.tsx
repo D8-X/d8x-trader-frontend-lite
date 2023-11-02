@@ -107,7 +107,7 @@ export const Add = memo(() => {
     approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then(() => {
         addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
-          console.log(`addLiquidity tx hash: ${tx.hash}`);
+          // console.log(`addLiquidity tx hash: ${tx.hash}`);
           setTxHash(tx.hash);
           toast.success(<ToastContent title={t('pages.vault.toast.adding')} bodyLines={[]} />);
         });

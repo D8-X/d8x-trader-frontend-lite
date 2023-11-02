@@ -56,7 +56,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
       setTraderAPI(null);
       setSDKConnected(false);
       setAPIBusy(true);
-      console.log(`loading SDK on chainId ${_chainId}`);
+      // console.log(`loading SDK on chainId ${_chainId}`);
       const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
       if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
         const pythPriceServiceIdx = configSDK.priceFeedEndpoints?.findIndex(({ type }) => type === 'pyth');
@@ -75,7 +75,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
           loadingAPIRef.current = false;
           setAPIBusy(false);
           setSDKConnected(true);
-          console.log(`SDK loaded on chain id ${_chainId}`);
+          // console.log(`SDK loaded on chain id ${_chainId}`);
           setTraderAPI(newTraderAPI);
         })
         .catch((err) => {

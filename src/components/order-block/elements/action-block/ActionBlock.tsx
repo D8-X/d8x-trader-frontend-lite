@@ -290,7 +290,7 @@ export const ActionBlock = memo(() => {
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // success submitting order to the node
-                  console.log(`postOrder tx hash: ${tx.hash}`);
+                  // console.log(`postOrder tx hash: ${tx.hash}`);
                   // order was sent
                   clearInputsData();
                   toast.success(

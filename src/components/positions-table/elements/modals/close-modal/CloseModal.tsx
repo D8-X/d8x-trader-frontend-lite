@@ -117,7 +117,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);
-                console.log(`postOrder tx hash: ${tx.hash}`);
+                // console.log(`postOrder tx hash: ${tx.hash}`);
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />
                 );

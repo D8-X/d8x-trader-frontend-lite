@@ -80,7 +80,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
     executeLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol)
       .then((tx) => {
-        console.log(`executeLiquidityWithdrawal tx hash: ${tx.hash}`);
+        // console.log(`executeLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.withdrawing')} bodyLines={[]} />);
       })

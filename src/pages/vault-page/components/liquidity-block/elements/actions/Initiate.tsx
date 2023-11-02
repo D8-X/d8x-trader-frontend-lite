@@ -94,7 +94,7 @@ export const Initiate = memo(() => {
 
     initiateLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
       .then((tx) => {
-        console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
+        // console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.initiating')} bodyLines={[]} />);
       })
