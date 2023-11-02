@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -20,6 +20,7 @@ import {
 } from 'store/vault-pools.store';
 
 import styles from './Action.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 export const Initiate = memo(() => {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ export const Initiate = memo(() => {
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
+  const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
@@ -63,7 +65,26 @@ export const Initiate = memo(() => {
   useWaitForTransaction({
     hash: txHash,
     onSuccess() {
-      toast.success(<ToastContent title={t('pages.vault.toast.initiated')} bodyLines={[]} />);
+      toast.success(
+        <ToastContent
+          title={t('pages.vault.toast.initiated')}
+          bodyLines={[
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
+          ]}
+        />
+      );
     },
     onError(reason) {
       toast.error(
@@ -94,7 +115,6 @@ export const Initiate = memo(() => {
 
     initiateLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
       .then((tx) => {
-        // console.log(`initiateLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.initiating')} bodyLines={[]} />);
       })

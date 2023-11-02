@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -21,6 +21,7 @@ import { OrderSideE, OrderTypeE } from 'types/enums';
 import { type MarginAccountI, type OrderI } from 'types/types';
 
 import styles from '../Modal.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
+  const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
@@ -57,6 +59,19 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
             {
               label: t('pages.trade.positions-table.toasts.submitted.body'),
               value: symbolForTx,
+            },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
             },
           ]}
         />
@@ -117,7 +132,6 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);
-                // console.log(`postOrder tx hash: ${tx.hash}`);
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />
                 );

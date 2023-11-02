@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
 import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
-import { useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
   Box,
@@ -43,6 +43,7 @@ import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
@@ -53,6 +54,7 @@ export const OpenOrdersTable = memo(() => {
 
   const { address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
+  const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
@@ -131,6 +133,19 @@ export const OpenOrdersTable = memo(() => {
                 label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
                 value: traderAPI?.getSymbolFromPerpId((args as { perpetualId: number }).perpetualId),
               },
+              {
+                label: '',
+                value: (
+                  <a
+                    href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.shareLink}
+                  >
+                    {txHash}
+                  </a>
+                ),
+              },
             ]}
           />
         );
@@ -192,7 +207,6 @@ export const OpenOrdersTable = memo(() => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
               setRequestSent(false);
-              console.log(`cancelOrder tx hash: ${tx.hash}`);
               toast.success(
                 <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
               );

@@ -27,6 +27,7 @@ import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
 import styles from '../Modal.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -133,6 +134,19 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               label: t('pages.trade.action-block.toasts.order-submitted.body'),
               value: selectedPosition?.symbol,
             },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
           ]}
         />
       );
@@ -189,9 +203,25 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               if (data.data.digest) {
                 cancelOrder(tradingClient, HashZero, data.data, orderToCancel.id)
                   .then((tx) => {
-                    // console.log(`cancelOrder tx hash: ${tx.hash}`);
                     toast.success(
-                      <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
+                      <ToastContent
+                        title={t('pages.trade.orders-table.toasts.cancel-order.title')}
+                        bodyLines={[
+                          {
+                            label: '',
+                            value: (
+                              <a
+                                href={getTxnLink(chain?.blockExplorers?.default?.url, tx.hash)}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={styles.shareLink}
+                              >
+                                {tx.hash}
+                              </a>
+                            ),
+                          },
+                        ]}
+                      />
                     );
                   })
                   .catch((error) => {
@@ -263,7 +293,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
                 postOrder(tradingClient, signatures, data.data, false)
                   .then((tx) => {
                     // success submitting order to the node
-                    // console.log(`postOrder tx hash: ${tx.hash}`);
                     // order was sent
                     setTakeProfitPrice(null);
                     setStopLossPrice(null);

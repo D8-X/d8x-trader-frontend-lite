@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import {
   Box,
@@ -47,6 +47,7 @@ import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/Modi
 
 import styles from '../Modal.module.scss';
 import { tradingClientAtom } from 'store/app.store';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -65,6 +66,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
+  const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
@@ -97,6 +99,19 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
             {
               label: t('pages.trade.positions-table.toasts.collateral-added.body2'),
               value: formatNumber(amountForAdd),
+            },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHashForAdd)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHashForAdd}
+                </a>
+              ),
             },
           ]}
         />
@@ -132,6 +147,19 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
             {
               label: t('pages.trade.positions-table.toasts.collateral-removed.body2'),
               value: formatNumber(amountForRemove),
+            },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHashForRemove)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHashForRemove}
+                </a>
+              ),
             },
           ]}
         />
@@ -339,7 +367,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
           ).then(() => {
             deposit(tradingClient, address, data)
               .then((tx) => {
-                // console.log(`deposit tx hash: ${tx.hash}`);
                 setTxHashForAdd(tx.hash);
                 setAmountForAdd(addCollateral);
                 setSymbolForTx(selectedPosition.symbol);
@@ -384,7 +411,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         .then(({ data }) => {
           withdraw(tradingClient, address, data)
             .then((tx) => {
-              // console.log(`withdraw tx hash: ${tx.hash}`);
               setTxHashForRemove(tx.hash);
               setAmountForRemove(removeCollateral);
               setSymbolForTx(selectedPosition.symbol);

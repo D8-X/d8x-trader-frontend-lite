@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -35,6 +35,7 @@ import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './ActionBlock.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -95,6 +96,7 @@ export const ActionBlock = memo(() => {
 
   const { address } = useAccount();
   const chainId = useChainId();
+  const { chain } = useNetwork();
 
   const { data: walletClient } = useWalletClient({
     chainId: chainId,
@@ -243,6 +245,19 @@ export const ActionBlock = memo(() => {
               label: t('pages.trade.action-block.toasts.order-submitted.body'),
               value: orderInfo?.symbol,
             },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
           ]}
         />
       );
@@ -290,7 +305,6 @@ export const ActionBlock = memo(() => {
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // success submitting order to the node
-                  // console.log(`postOrder tx hash: ${tx.hash}`);
                   // order was sent
                   clearInputsData();
                   toast.success(

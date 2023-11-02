@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -23,10 +23,12 @@ import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom } from
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 export const Add = memo(() => {
   const { t } = useTranslation();
   const { address } = useAccount();
+  const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient({
     onError(error) {
       console.log(error);
@@ -72,7 +74,26 @@ export const Add = memo(() => {
   useWaitForTransaction({
     hash: txHash,
     onSuccess() {
-      toast.success(<ToastContent title={t('pages.vault.toast.added')} bodyLines={[]} />);
+      toast.success(
+        <ToastContent
+          title={t('pages.vault.toast.added')}
+          bodyLines={[
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
+          ]}
+        />
+      );
     },
     onError(reason) {
       toast.error(
@@ -107,7 +128,6 @@ export const Add = memo(() => {
     approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then(() => {
         addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
-          // console.log(`addLiquidity tx hash: ${tx.hash}`);
           setTxHash(tx.hash);
           toast.success(<ToastContent title={t('pages.vault.toast.adding')} bodyLines={[]} />);
         });

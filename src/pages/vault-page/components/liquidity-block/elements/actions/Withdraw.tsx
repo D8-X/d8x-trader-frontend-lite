@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -24,6 +24,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
+import { getTxnLink } from 'helpers/getTxnLink';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -39,6 +40,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
+  const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
 
   const [requestSent, setRequestSent] = useState(false);
@@ -49,7 +51,26 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   useWaitForTransaction({
     hash: txHash,
     onSuccess() {
-      toast.success(<ToastContent title={t('pages.vault.toast.withdrawn')} bodyLines={[]} />);
+      toast.success(
+        <ToastContent
+          title={t('pages.vault.toast.withdrawn')}
+          bodyLines={[
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
+          ]}
+        />
+      );
     },
     onError(reason) {
       toast.error(
@@ -80,7 +101,6 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
     executeLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol)
       .then((tx) => {
-        // console.log(`executeLiquidityWithdrawal tx hash: ${tx.hash}`);
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.withdrawing')} bodyLines={[]} />);
       })
