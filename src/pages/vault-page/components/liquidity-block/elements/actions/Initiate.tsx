@@ -12,6 +12,7 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
+  dCurrencyPriceAtom,
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
   userAmountAtom,
@@ -26,6 +27,7 @@ export const Initiate = memo(() => {
   const [liqProvTool] = useAtom(traderAPIAtom);
   const [userAmount] = useAtom(userAmountAtom);
   const [withdrawals] = useAtom(withdrawalsAtom);
+  const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
@@ -125,13 +127,27 @@ export const Initiate = memo(() => {
     t,
   ]);
 
+  const minAmount = useMemo(() => {
+    if (selectedPool && dCurrencyPrice) {
+      return (0.5 * selectedPool.brokerCollateralLotSize) / dCurrencyPrice;
+    }
+  }, [selectedPool, dCurrencyPrice]);
+
   const isButtonDisabled = useMemo(() => {
-    if (!withdrawals || withdrawals.length > 0 || !userAmount || !initiateAmount || requestSent) {
+    if (
+      !withdrawals ||
+      withdrawals.length > 0 ||
+      !userAmount ||
+      !initiateAmount ||
+      requestSent ||
+      !minAmount ||
+      initiateAmount < minAmount
+    ) {
       return true;
     } else {
       return userAmount < initiateAmount;
     }
-  }, [withdrawals, userAmount, initiateAmount, requestSent]);
+  }, [withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
 
   return (
     <>
