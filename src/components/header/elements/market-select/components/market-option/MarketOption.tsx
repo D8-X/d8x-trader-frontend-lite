@@ -63,7 +63,7 @@ export const MarketOption = memo(({ option, isSelected, onClick }: MarketOptionP
             </>
           ) : (
             <Typography variant="bodySmall" className={styles.status}>
-              {t('common.select.market.closed')}
+              {option.item.marketData ? t('common.select.market.closed') : ''}
             </Typography>
           )}
         </div>
