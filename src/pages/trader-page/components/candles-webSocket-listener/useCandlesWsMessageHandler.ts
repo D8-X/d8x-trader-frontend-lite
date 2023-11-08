@@ -110,7 +110,7 @@ export function useCandlesWsMessageHandler() {
 
         setCandles((prevData) => {
           // TODO: VOV: Temporary work-around. Should be only 1 message from backend
-          if (prevData.length === newData.length && prevData[0].close === +newData[0].close) {
+          if (prevData.length === newData.length && prevData.length > 0 && prevData[0].close === +newData[0].close) {
             return prevData;
           }
 
