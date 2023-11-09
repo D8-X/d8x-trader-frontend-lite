@@ -5,7 +5,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useConnect, usePublicClient, type PublicClient } from 'wagmi';
+import { type PublicClient, useAccount, useChainId, useConnect, usePublicClient } from 'wagmi';
 
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 
@@ -21,6 +21,7 @@ import { cutAddressName } from 'utils/cutAddressName';
 
 import { OneClickTradingButton } from './OneClickTradingButton';
 import styles from './WalletConnectButton.module.scss';
+import { LiFiWidgetButton } from './LiFiWidgetButton';
 
 const loyaltyMap = ['Diamond', 'Platinum', 'Gold', 'Silver', '-'];
 
@@ -181,6 +182,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
               return (
                 <div className={styles.buttonsHolder}>
                   <OneClickTradingButton />
+                  <LiFiWidgetButton />
                   <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                     <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                   </Button>

@@ -542,6 +542,11 @@
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",
+    "one-click": {
+      "disable": "Disable one-click trading",
+      "enable": "Enable one-click trading"
+    },
+    "li-fi-widget": "LI.FI widget",
     "pagination": {
       "per-page": "每页"
     },

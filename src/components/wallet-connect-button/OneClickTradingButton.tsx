@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mui/material';
 
@@ -10,6 +11,8 @@ import { activatedOneClickTradingAtom } from 'store/app.store';
 import styles from './WalletConnectButton.module.scss';
 
 export const OneClickTradingButton = () => {
+  const { t } = useTranslation();
+
   const [activatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -19,7 +22,7 @@ export const OneClickTradingButton = () => {
         onClick={() => setModalOpen(true)}
         className={styles.chainButton}
         variant="primary"
-        title={activatedOneClickTrading ? 'Disable one-click trading' : 'Enable one-click trading'}
+        title={t(`common.one-click.${activatedOneClickTrading ? 'disable' : 'enable'}`)}
       >
         <FlashIcon isActive={activatedOneClickTrading} />
       </Button>
