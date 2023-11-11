@@ -1,6 +1,8 @@
 {
-  "short_name": "D8x App",
-  "name": "Decentralized Exchange on Polygon",
+  "short_name": "D8X App",
+  "name": "D8X Exchange",
+  "description": "Institutional-grade Perpetual Futures on Polygon zkEVM",
+  "iconPath": "safari-pinned-tab.svg",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
