@@ -12,7 +12,7 @@ export function approveMarginToken(
   minAmount: number,
   decimals: number
 ) {
-  const minAmountBN = parseUnits((4 * minAmount).toFixed(decimals), decimals);
+  const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
   return readContract({
     address: marginTokenAddr as Address,
     abi: erc20ABI,
