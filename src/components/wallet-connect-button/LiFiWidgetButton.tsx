@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
 import { Button } from '@mui/material';
-
-import { ReactComponent as SwitchIcon } from 'assets/icons/switchSeparator.svg';
 import { LiFiWidgetModal } from 'components/li-fi-widget-modal/LiFiWidgetModal';
 
 import styles from './WalletConnectButton.module.scss';
@@ -21,7 +20,7 @@ export const LiFiWidgetButton = () => {
         variant="primary"
         title={t('common.li-fi-widget')}
       >
-        <SwitchIcon width={40} height={40} />
+        <CurrencyExchangeOutlinedIcon />
       </Button>
       <LiFiWidgetModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
     </>

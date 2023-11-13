@@ -1,5 +1,5 @@
 import { useSetAtom } from 'jotai';
-import { Suspense, memo, useEffect } from 'react';
+import { memo, Suspense, useEffect } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 
 import { Box, CircularProgress } from '@mui/material';

@@ -14,10 +14,12 @@ interface LiFiWidgetModalPropsI {
 export const LiFiWidgetModal = ({ isOpen, onClose }: LiFiWidgetModalPropsI) => {
   const { t } = useTranslation();
 
+  console.log('isOpen', isOpen);
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <div className={styles.dialogContent}>
-        <LiFiWidgetHolder />
+        {isOpen && <LiFiWidgetHolder />}
         <Box className={styles.buttonsBlock}>
           <Button variant="secondary" className={styles.closeButton} onClick={onClose}>
             {t('common.info-modal.close')}
