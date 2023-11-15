@@ -59,7 +59,7 @@ export const LiFiWidgetHolder = () => {
           maxPriceImpact: 0.4, // increases threshold to 40%
         },
       },
-      chains: {
+      toChains: {
         allow: [...appConfig.enabledChains],
       },
       bridges: {

@@ -1,0 +1,85 @@
+diff --git a/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js b/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
+index f1ff504..bc7fd75 100644
+--- a/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
++++ b/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
+@@ -22,6 +22,7 @@ export const ChainSelect = ({ formType }) => {
+         navigate(navigationRoutes[`${formType}Chain`]);
+     };
+     const chainsToHide = (chains?.length ?? 0) - maxChainToOrder;
++    console.log("formType", formType, "chainsToHide", chainsToHide, "out of", chains?.length);
+     return (_jsxs(ChainContainer, { children: [isLoading
+                 ? Array.from({ length: maxChainToOrder + 1 }).map((_, index) => (_jsx(Skeleton, { variant: "rectangular", width: 56, height: 56, sx: { borderRadius: 1 } }, index)))
+                 : getChains().map((chain) => (_jsx(Tooltip, { title: chain.name, placement: "top", enterDelay: 400, arrow: true, children: _jsx(ChainCard, { onClick: () => setCurrentChain(chain.id), variant: chainId === chain.id ? 'selected' : 'default', children: _jsx(Avatar, { src: chain.logoURI, alt: chain.key, sx: { width: 40, height: 40 }, children: chain.name[0] }) }) }, chain.id))), chainsToHide > 0 ? (_jsx(ChainCard, { onClick: showAllChains, children: _jsx(Box, { sx: {
+diff --git a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js b/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
+index d1edcbb..20e3475 100644
+--- a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
++++ b/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
+@@ -1,12 +1,22 @@
+ import { useController, useFormContext } from 'react-hook-form';
+ import { useChains, useSwapOnly } from '../../hooks';
+-import { FormKey, FormKeyHelper } from '../../providers';
++import { FormKey, FormKeyHelper, useWidgetConfig, isItemAllowed } from '../../providers';
+ import { useChainOrder } from '../../stores';
+ export const useChainSelect = (formType) => {
+     const chainKey = FormKeyHelper.getChainKey(formType);
+     const { field: { onChange, onBlur }, } = useController({ name: chainKey });
+     const { setValue } = useFormContext();
+-    const { chains, isLoading } = useChains();
++    const { chains: availableChains, isLoading } = useChains();
++    const { fromChains, toChains, keyPrefix } = useWidgetConfig();
++    let chains = availableChains;
++    if (availableChains) {
++        if (fromChains && FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('from')) {
++            chains = availableChains.filter((chain) => isItemAllowed(chain.id, fromChains));
++        }
++        if (toChains && FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('to')) {
++            chains = availableChains.filter((chain) => isItemAllowed(chain.id, toChains));
++        }
++    }
+     const [chainOrder, setChainOrder] = useChainOrder();
+     const swapOnly = useSwapOnly();
+     const getChains = () => {
+diff --git a/node_modules/@lifi/widget/hooks/useChains.js b/node_modules/@lifi/widget/hooks/useChains.js
+index 422026f..e70f2d9 100644
+--- a/node_modules/@lifi/widget/hooks/useChains.js
++++ b/node_modules/@lifi/widget/hooks/useChains.js
+@@ -4,7 +4,8 @@ import { useFormContext } from 'react-hook-form';
+ import { FormKey, isItemAllowed, useLiFi, useWidgetConfig } from '../providers';
+ import { useChainOrderStore } from '../stores';
+ export const useChains = () => {
+-    const { chains, keyPrefix } = useWidgetConfig();
++    const { fromChains, toChains, keyPrefix } = useWidgetConfig();
++    const chains = fromChains;
+     const lifi = useLiFi();
+     const { getValues, setValue } = useFormContext();
+     const initializeChains = useChainOrderStore((state) => state.initializeChains);
+diff --git a/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js b/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
+index c97f223..b5f4883 100644
+--- a/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
++++ b/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
+@@ -9,7 +9,7 @@ import { useChains, useNavigateBack } from '../../hooks';
+ export const SelectNativeTokenPage = ({ formType, }) => {
+     const { t } = useTranslation();
+     const { navigateBack } = useNavigateBack();
+-    const { chains } = useChains();
++    const { chains } = useChains(formType);
+     const selectToken = useTokenSelect(formType, navigateBack);
+     return (_jsx(Container, { disableGutters: true, children: _jsx(List, { sx: {
+                 paddingLeft: 1.5,
+diff --git a/node_modules/@lifi/widget/types/widget.d.ts b/node_modules/@lifi/widget/types/widget.d.ts
+index afa3514..0e42f0e 100644
+--- a/node_modules/@lifi/widget/types/widget.d.ts
++++ b/node_modules/@lifi/widget/types/widget.d.ts
+@@ -101,7 +101,11 @@ export interface WidgetConfig {
+         allow?: string[];
+         deny?: string[];
+     };
+-    chains?: {
++    fromChains?: {
++        allow?: number[];
++        deny?: number[];
++    };
++    toChains?: {
+         allow?: number[];
+         deny?: number[];
+     };
