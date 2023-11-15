@@ -53,7 +53,7 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@ethersproject/providers": "5.7.2",
-    "@lifi/widget": "2.9.0",
+    "@lifi/widget": "2.9.2",
     "@mui/icons-material": "5.14.3",
     "@mui/material": "5.14.4",
     "@mui/utils": "5.14.8",

@@ -54,6 +54,11 @@ export const LiFiWidgetHolder = () => {
         default: (modifyLanguage(i18n.resolvedLanguage) as LanguageKey) || LanguageE.EN,
         allow: [LanguageE.EN, LanguageE.DE, LanguageE.ES, LanguageE.FR, WIDGET_CN_KEY],
       },
+      sdkConfig: {
+        defaultRouteOptions: {
+          maxPriceImpact: 0.4, // increases threshold to 40%
+        },
+      },
       chains: {
         allow: [...appConfig.enabledChains],
       },
