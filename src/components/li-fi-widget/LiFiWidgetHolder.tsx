@@ -3,13 +3,14 @@ import { LanguageKey } from '@lifi/widget/providers';
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useConnect, useDisconnect } from 'wagmi';
+import { useChainId, useConnect, useDisconnect } from 'wagmi';
 
-import { config as appConfig } from 'config';
+// import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
 import { LanguageE } from 'types/enums';
 import { switchChain } from 'utils/switchChain';
+import { selectedPoolAtom } from '../../store/pools.store';
 
 const WIDGET_CN_KEY = 'zh';
 
@@ -23,17 +24,19 @@ function modifyLanguage(languageKey?: string) {
 export const LiFiWidgetHolder = () => {
   const { i18n } = useTranslation();
 
+  const chainId = useChainId();
   const { connectAsync, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const signer = useEthersSigner();
 
   const [enabledDarkMode] = useAtom(enabledDarkModeAtom);
+  const [selectedPool] = useAtom(selectedPoolAtom);
 
   const widgetConfig: WidgetConfig = useMemo(() => {
     const config: WidgetConfig = {
       integrator: 'li-fi-widget',
       walletManagement: {
-        signer: signer,
+        signer,
         connect: async () => {
           const result = await connectAsync({ connector: connectors[0] });
           const walletClient = await result.connector?.getWalletClient();
@@ -48,6 +51,8 @@ export const LiFiWidgetHolder = () => {
         },
         switchChain,
       },
+      fromChain: chainId,
+      fromToken: selectedPool?.marginTokenAddr,
       hiddenUI: ['language', 'appearance'],
       appearance: enabledDarkMode ? 'dark' : 'light',
       languages: {
@@ -72,7 +77,9 @@ export const LiFiWidgetHolder = () => {
       },
     };
     return config;
-  }, [signer, connectAsync, connectors, disconnect, i18n, enabledDarkMode]);
+  }, [chainId, selectedPool, signer, connectAsync, connectors, disconnect, i18n, enabledDarkMode]);
+
+  console.log({ chainId });
 
   return <LiFiWidget integrator="li-fi-widget" config={widgetConfig} />;
 };
