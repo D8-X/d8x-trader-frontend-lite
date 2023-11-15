@@ -1,15 +1,3 @@
-diff --git a/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js b/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
-index f1ff504..bc7fd75 100644
---- a/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
-+++ b/node_modules/@lifi/widget/components/ChainSelect/ChainSelect.js
-@@ -22,6 +22,7 @@ export const ChainSelect = ({ formType }) => {
-         navigate(navigationRoutes[`${formType}Chain`]);
-     };
-     const chainsToHide = (chains?.length ?? 0) - maxChainToOrder;
-+    console.log("formType", formType, "chainsToHide", chainsToHide, "out of", chains?.length);
-     return (_jsxs(ChainContainer, { children: [isLoading
-                 ? Array.from({ length: maxChainToOrder + 1 }).map((_, index) => (_jsx(Skeleton, { variant: "rectangular", width: 56, height: 56, sx: { borderRadius: 1 } }, index)))
-                 : getChains().map((chain) => (_jsx(Tooltip, { title: chain.name, placement: "top", enterDelay: 400, arrow: true, children: _jsx(ChainCard, { onClick: () => setCurrentChain(chain.id), variant: chainId === chain.id ? 'selected' : 'default', children: _jsx(Avatar, { src: chain.logoURI, alt: chain.key, sx: { width: 40, height: 40 }, children: chain.name[0] }) }) }, chain.id))), chainsToHide > 0 ? (_jsx(ChainCard, { onClick: showAllChains, children: _jsx(Box, { sx: {
 diff --git a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js b/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
 index d1edcbb..20e3475 100644
 --- a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
@@ -53,21 +41,8 @@ index 422026f..e70f2d9 100644
      const lifi = useLiFi();
      const { getValues, setValue } = useFormContext();
      const initializeChains = useChainOrderStore((state) => state.initializeChains);
-diff --git a/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js b/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
-index c97f223..b5f4883 100644
---- a/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
-+++ b/node_modules/@lifi/widget/pages/SelectNativeTokenPage/SelectNativeTokenPage.js
-@@ -9,7 +9,7 @@ import { useChains, useNavigateBack } from '../../hooks';
- export const SelectNativeTokenPage = ({ formType, }) => {
-     const { t } = useTranslation();
-     const { navigateBack } = useNavigateBack();
--    const { chains } = useChains();
-+    const { chains } = useChains(formType);
-     const selectToken = useTokenSelect(formType, navigateBack);
-     return (_jsx(Container, { disableGutters: true, children: _jsx(List, { sx: {
-                 paddingLeft: 1.5,
 diff --git a/node_modules/@lifi/widget/types/widget.d.ts b/node_modules/@lifi/widget/types/widget.d.ts
-index afa3514..0e42f0e 100644
+index afa3514..5b64a15 100644
 --- a/node_modules/@lifi/widget/types/widget.d.ts
 +++ b/node_modules/@lifi/widget/types/widget.d.ts
 @@ -101,7 +101,11 @@ export interface WidgetConfig {

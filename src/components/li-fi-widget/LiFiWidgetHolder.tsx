@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
 
-// import { config as appConfig } from 'config';
+import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
 import { LanguageE } from 'types/enums';
