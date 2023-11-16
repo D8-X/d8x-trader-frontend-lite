@@ -543,13 +543,13 @@
     "change-language": "切换语言",
     "wallet-connect": "连接",
     "one-click": {
-      "disable": "Disable one-click trading",
-      "enable": "Enable one-click trading"
+      "disable": "禁用一键交易",
+      "enable": "启用一键交易"
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
+      "header-to": "跨链转入",
+      "header-from": "跨链转出"
     },
     "pagination": {
       "per-page": "每页"

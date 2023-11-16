@@ -544,8 +544,8 @@
       "change-language": "Changer de langue",
       "wallet-connect": "Connecter",
       "one-click": {
-        "disable": "Disable one-click trading",
-        "enable": "Enable one-click trading"
+        "disable": "Activer le trading en un clic",
+        "enable": "Désactiver le trading en un clic"
       },
       "li-fi-widget": {
         "button-title": "LI.FI widget",
