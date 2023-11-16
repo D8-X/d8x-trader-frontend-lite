@@ -27,6 +27,30 @@ index d1edcbb..b4e2880 100644
      const [chainOrder, setChainOrder] = useChainOrder();
      const swapOnly = useSwapOnly();
      const getChains = () => {
+diff --git a/node_modules/@lifi/widget/components/ReverseTokensButton/ReverseTokensButton.js b/node_modules/@lifi/widget/components/ReverseTokensButton/ReverseTokensButton.js
+index 65ed3dd..a126767 100644
+--- a/node_modules/@lifi/widget/components/ReverseTokensButton/ReverseTokensButton.js
++++ b/node_modules/@lifi/widget/components/ReverseTokensButton/ReverseTokensButton.js
+@@ -4,8 +4,11 @@ import SwapVertIcon from '@mui/icons-material/SwapVert';
+ import { useFormContext } from 'react-hook-form';
+ import { FormKey } from '../../providers';
+ import { IconButton } from './ReverseTokensButton.style';
++import { WidgetEvent, useWidgetEvents } from '@lifi/widget';
++ 
+ export const ReverseTokensButton = ({ vertical, }) => {
+     const { setValue, getValues } = useFormContext();
++    const emitter = useWidgetEvents();
+     const handleClick = () => {
+         const [fromChain, fromToken, toChain, toToken] = getValues([
+             FormKey.FromChain,
+@@ -18,6 +21,7 @@ export const ReverseTokensButton = ({ vertical, }) => {
+         setValue(FormKey.FromToken, toToken, { shouldTouch: true });
+         setValue(FormKey.ToChain, fromChain, { shouldTouch: true });
+         setValue(FormKey.ToToken, fromToken, { shouldTouch: true });
++        emitter.emit(WidgetEvent.ExchangeReversed, {fromChain: fromChain, toChain: toChain, fromToken: fromToken, toToken: toToken});
+     };
+     return (_jsx(IconButton, { onClick: handleClick, size: "small", children: vertical ? _jsx(SwapVertIcon, {}) : _jsx(SwapHorizIcon, {}) }));
+ };
 diff --git a/node_modules/@lifi/widget/components/TokenList/TokenList.js b/node_modules/@lifi/widget/components/TokenList/TokenList.js
 index b9e344b..a03928d 100644
 --- a/node_modules/@lifi/widget/components/TokenList/TokenList.js
@@ -57,6 +81,28 @@ index b9e344b..a03928d 100644
      const searchFilter = tokenSearchFilter?.toUpperCase() ?? '';
      filteredTokens = tokenSearchFilter
          ? filteredTokens.filter((token) => token.name.toUpperCase().includes(searchFilter) ||
+diff --git a/node_modules/@lifi/widget/types/events.d.ts b/node_modules/@lifi/widget/types/events.d.ts
+index 3544a53..c3ed7f0 100644
+--- a/node_modules/@lifi/widget/types/events.d.ts
++++ b/node_modules/@lifi/widget/types/events.d.ts
+@@ -10,7 +10,8 @@ export declare enum WidgetEvent {
+     DestinationChainTokenSelected = "destinationChainTokenSelected",
+     SendToWalletToggled = "sendToWalletToggled",
+     ReviewTransactionPageEntered = "reviewTransactionPageEntered",
+-    WalletConnected = "walletConnected"
++    WalletConnected = "walletConnected",
++    ExchangeReversed = "exchangeReversed"
+ }
+ export type WidgetEvents = {
+     routeExecutionStarted: Route;
+@@ -24,6 +25,7 @@ export type WidgetEvents = {
+     sendToWalletToggled: boolean;
+     reviewTransactionPageEntered?: Route;
+     walletConnected: WalletConnected;
++    exchangeReversed: ExchangeReversed;
+ };
+ export interface RouteContactSupport {
+     supportId?: string;
 diff --git a/node_modules/@lifi/widget/types/widget.d.ts b/node_modules/@lifi/widget/types/widget.d.ts
 index afa3514..1ee2d97 100644
 --- a/node_modules/@lifi/widget/types/widget.d.ts
