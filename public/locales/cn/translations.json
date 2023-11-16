@@ -548,8 +548,8 @@
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
-      "header-to": "Bridge to",
-      "header-from": "Bridge from"
+      "header-to": "Bridge in",
+      "header-from": "Bridge out"
     },
     "pagination": {
       "per-page": "每页"
