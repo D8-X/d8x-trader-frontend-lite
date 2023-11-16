@@ -20,7 +20,8 @@
     "lint:ts:fix": "npm run lint:ts -- --fix",
     "lint:css": "npm run stylelint",
     "lint": "tsc && npm run lint:ts && npm run lint:css",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postinstall": "patch-package"
   },
   "husky": {
     "hooks": {
@@ -104,6 +105,8 @@
     "eslint-plugin-react": "7.33.1",
     "husky": "8.0.3",
     "lint-staged": "13.2.3",
+    "patch-package": "8.0.0",
+    "postinstall-postinstall": "2.1.0",
     "prettier": "3.0.1",
     "sass": "1.65.1",
     "stylelint": "14.16.1",

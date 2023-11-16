@@ -1,0 +1,79 @@
+diff --git a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js b/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
+index d1edcbb..b4e2880 100644
+--- a/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
++++ b/node_modules/@lifi/widget/components/ChainSelect/useChainSelect.js
+@@ -1,12 +1,22 @@
+ import { useController, useFormContext } from 'react-hook-form';
+ import { useChains, useSwapOnly } from '../../hooks';
+-import { FormKey, FormKeyHelper } from '../../providers';
++import { FormKey, FormKeyHelper, useWidgetConfig, isItemAllowed } from '../../providers';
+ import { useChainOrder } from '../../stores';
+ export const useChainSelect = (formType) => {
+     const chainKey = FormKeyHelper.getChainKey(formType);
+     const { field: { onChange, onBlur }, } = useController({ name: chainKey });
+     const { setValue } = useFormContext();
+-    const { chains, isLoading } = useChains();
++    const { chains: availableChains, isLoading } = useChains();
++    const { chains: configChains, keyPrefix } = useWidgetConfig();
++    let chains = availableChains;
++    if (availableChains) {
++        if (configChains && configChains.allowFrom && configChains.allowFrom.length && FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('from')) {
++            chains = availableChains.filter((chain) => configChains.allowFrom.includes(chain.id));
++        }
++        if (configChains && configChains.allowTo && configChains.allowTo.length && FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('to')) {
++            chains = availableChains.filter((chain) => configChains.allowTo.includes(chain.id));
++        }
++    }
+     const [chainOrder, setChainOrder] = useChainOrder();
+     const swapOnly = useSwapOnly();
+     const getChains = () => {
+diff --git a/node_modules/@lifi/widget/components/TokenList/TokenList.js b/node_modules/@lifi/widget/components/TokenList/TokenList.js
+index b9e344b..a03928d 100644
+--- a/node_modules/@lifi/widget/components/TokenList/TokenList.js
++++ b/node_modules/@lifi/widget/components/TokenList/TokenList.js
+@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
+ import { useRef } from 'react';
+ import { useWatch } from 'react-hook-form';
+ import { useChain, useDebouncedWatch, useTokenBalances, useTokenSearch, } from '../../hooks';
+-import { FormKey, FormKeyHelper, useWallet } from '../../providers';
++import { FormKey, FormKeyHelper, useWallet, useWidgetConfig } from '../../providers';
+ import { TokenNotFound } from './TokenNotFound';
+ import { VirtualizedTokenList } from './VirtualizedTokenList';
+ import { useTokenSelect } from './useTokenSelect';
+@@ -16,9 +16,16 @@ export const TokenList = ({ formType, height, onClick, }) => {
+     const [tokenSearchFilter] = useDebouncedWatch([FormKey.TokenSearchFilter], 320);
+     const { chain, isLoading: isChainLoading } = useChain(selectedChainId);
+     const { tokens: chainTokens, tokensWithBalance, isLoading: isTokensLoading, isBalanceLoading, featuredTokens, } = useTokenBalances(selectedChainId);
++    const { tokens: configTokens } = useWidgetConfig();
+     let filteredTokens = (tokensWithBalance ??
+         chainTokens ??
+         []);
++    if (FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('to') && configTokens && configTokens.allowTo && configTokens.allowTo.length) {
++        filteredTokens = filteredTokens.filter(({chainId, address}) => ((configTokens.allowTo.some(({chainId: id, address: addr}) => (id == chainId && addr.toLowerCase() == address.toLowerCase())))));
++    }
++    if (FormKeyHelper.getChainKey(formType) == FormKeyHelper.getChainKey('from') && configTokens && configTokens.allowFrom && configTokens.allowFrom.length) {
++        filteredTokens = filteredTokens.filter(({chainId, address}) => ((configTokens.allowFrom.some(({chainId: id, address: addr}) => (id == chainId && addr.toLowerCase() == address.toLowerCase())))));
++    }
+     const searchFilter = tokenSearchFilter?.toUpperCase() ?? '';
+     filteredTokens = tokenSearchFilter
+         ? filteredTokens.filter((token) => token.name.toUpperCase().includes(searchFilter) ||
+diff --git a/node_modules/@lifi/widget/types/widget.d.ts b/node_modules/@lifi/widget/types/widget.d.ts
+index afa3514..fe5fc51 100644
+--- a/node_modules/@lifi/widget/types/widget.d.ts
++++ b/node_modules/@lifi/widget/types/widget.d.ts
+@@ -104,12 +104,15 @@ export interface WidgetConfig {
+     chains?: {
+         allow?: number[];
+         deny?: number[];
++        allowTo?: number[];
++        allowFrom?: number[];
+     };
+     tokens?: {
+         featured?: StaticToken[];
+         include?: Token[];
+         allow?: BaseToken[];
+         deny?: BaseToken[];
++        allowTo?: BaseToken[];
+     };
+     languages?: {
+         default?: LanguageKey;

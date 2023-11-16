@@ -5,12 +5,12 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
 
-// import { config as appConfig } from 'config';
+import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
 import { LanguageE } from 'types/enums';
 import { switchChain } from 'utils/switchChain';
-import { selectedPoolAtom } from '../../store/pools.store';
+import { selectedPoolAtom, poolsAtom } from '../../store/pools.store';
 
 const WIDGET_CN_KEY = 'zh';
 
@@ -31,6 +31,14 @@ export const LiFiWidgetHolder = () => {
 
   const [enabledDarkMode] = useAtom(enabledDarkModeAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
+  const [pools] = useAtom(poolsAtom);
+
+  const admissibleTokens = useMemo(() => {
+    return pools.map(({ marginTokenAddr }) => ({
+      chainId: chainId,
+      address: marginTokenAddr,
+    }));
+  }, [pools, chainId]);
 
   const widgetConfig: WidgetConfig = useMemo(() => {
     const config: WidgetConfig = {
@@ -64,9 +72,14 @@ export const LiFiWidgetHolder = () => {
           maxPriceImpact: 0.4, // increases threshold to 40%
         },
       },
-      // chains: {
-      //   allow: [...appConfig.enabledChains],
-      // },
+      chains: {
+        // allowFrom?: ...
+        allowTo: [...appConfig.enabledChains],
+      },
+      tokens: {
+        // allowFrom?: ...
+        allowTo: admissibleTokens,
+      },
       bridges: {
         // TODO: Might be change later in this way
         // deny: ['stargate'],
@@ -77,7 +90,7 @@ export const LiFiWidgetHolder = () => {
       },
     };
     return config;
-  }, [chainId, selectedPool, signer, connectAsync, connectors, disconnect, i18n, enabledDarkMode]);
+  }, [chainId, selectedPool, signer, connectAsync, connectors, disconnect, i18n, enabledDarkMode, admissibleTokens]);
 
   console.log({ chainId });
 
