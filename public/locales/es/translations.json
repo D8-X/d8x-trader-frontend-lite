@@ -546,7 +546,11 @@
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
     },
-    "li-fi-widget": "LI.FI widget",
+    "li-fi-widget": {
+      "button-title": "LI.FI widget",
+      "header-to": "Bridge to",
+      "header-from": "Bridge from"
+    },
     "pagination": {
       "per-page": "Por página"
     },

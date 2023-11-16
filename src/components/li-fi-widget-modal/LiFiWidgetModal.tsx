@@ -15,7 +15,7 @@ export const LiFiWidgetModal = ({ isOpen, onClose }: LiFiWidgetModalPropsI) => {
   const { t } = useTranslation();
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
+    <Dialog open={isOpen} onCloseClick={onClose}>
       <div className={styles.dialogContent}>
         {isOpen && <LiFiWidgetHolder />}
         <Box className={styles.buttonsBlock}>
