@@ -58,10 +58,10 @@ index b9e344b..a03928d 100644
      filteredTokens = tokenSearchFilter
          ? filteredTokens.filter((token) => token.name.toUpperCase().includes(searchFilter) ||
 diff --git a/node_modules/@lifi/widget/types/widget.d.ts b/node_modules/@lifi/widget/types/widget.d.ts
-index afa3514..fe5fc51 100644
+index afa3514..1ee2d97 100644
 --- a/node_modules/@lifi/widget/types/widget.d.ts
 +++ b/node_modules/@lifi/widget/types/widget.d.ts
-@@ -104,12 +104,15 @@ export interface WidgetConfig {
+@@ -104,12 +104,16 @@ export interface WidgetConfig {
      chains?: {
          allow?: number[];
          deny?: number[];
@@ -74,6 +74,7 @@ index afa3514..fe5fc51 100644
          allow?: BaseToken[];
          deny?: BaseToken[];
 +        allowTo?: BaseToken[];
++        allowFrom?: BaseToken[];
      };
      languages?: {
          default?: LanguageKey;
