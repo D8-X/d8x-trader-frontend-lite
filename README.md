@@ -14,6 +14,12 @@ This package is configured entirely via environment variables. You must specify:
   - This entry should then take the form:
     `VITE_ENABLED_CHAINS=1101;1442`
 
+- **VITE_ACTIVATE_LIFI**: This is an optional variable that allow to disable LIFI widget. It could be required when app is tested with testnet. The LIFI widget doesn't work with testnet.
+
+  - By default, this variable is set to `true`.
+  - If it is required to be disabled then it should take the form:
+    `VITE_ACTIVATE_LIFI=false`
+
 - **VITE_API_URL**: A semicolon separated list of endpoints served by your main REST API service.
 
   - For example, you could be hosting two main API services for two different chains, one at `https://api.mybackend.com` for Polygon zkEVM (chain ID 1101) and one at `https://api.test.mybackend.com` for Polygon zkEVM Testnet (chain ID 1442).

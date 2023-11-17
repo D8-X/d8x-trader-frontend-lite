@@ -182,7 +182,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
               return (
                 <div className={styles.buttonsHolder}>
                   <OneClickTradingButton />
-                  <LiFiWidgetButton />
+                  {config.activateLiFi && <LiFiWidgetButton />}
                   <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                     <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                   </Button>
