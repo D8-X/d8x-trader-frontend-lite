@@ -90,7 +90,8 @@ export function positionRiskOnTrade(
   traderAPI: TraderInterface,
   order: OrderI,
   traderAddr: string,
-  curAccount?: MarginAccountI
+  curAccount: MarginAccountI | undefined,
+  tradingFeeTbps: number | undefined
 ): Promise<
   ValidatedResponseI<{
     newPositionRisk: MarginAccountI;
@@ -99,15 +100,16 @@ export function positionRiskOnTrade(
     maxShortTrade: number;
   }>
 > {
-  // console.log('positionRiskOnTrade via SDK');
-  return traderAPI.positionRiskOnTrade(traderAddr, order, curAccount).then((data) => {
-    return { type: 'position-risk-on-trade', msg: '', data: data } as ValidatedResponseI<{
-      newPositionRisk: MarginAccountI;
-      orderCost: number;
-      maxLongTrade: number;
-      maxShortTrade: number;
-    }>;
-  });
+  return traderAPI
+    .positionRiskOnTrade(traderAddr, order, curAccount, undefined, { tradingFeeTbps: tradingFeeTbps })
+    .then((data) => {
+      return { type: 'position-risk-on-trade', msg: '', data: data } as ValidatedResponseI<{
+        newPositionRisk: MarginAccountI;
+        orderCost: number;
+        maxLongTrade: number;
+        maxShortTrade: number;
+      }>;
+    });
 }
 
 export function positionRiskOnCollateralAction(

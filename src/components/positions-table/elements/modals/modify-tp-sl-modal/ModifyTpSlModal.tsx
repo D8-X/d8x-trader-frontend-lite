@@ -18,7 +18,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { getCancelOrder, orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { poolFeeAtom, poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -71,6 +71,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
+  const [poolFee] = useAtom(poolFeeAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
@@ -88,14 +89,14 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       return;
     }
 
-    if (!selectedPosition || !address || !traderAPI) {
+    if (!selectedPosition || !address || !traderAPI || !poolFee) {
       return;
     }
 
     validityCheckRef.current = true;
 
     const mainOrder = createMainOrder(selectedPosition);
-    positionRiskOnTrade(chainId, traderAPI, mainOrder, address, selectedPosition)
+    positionRiskOnTrade(chainId, traderAPI, mainOrder, address, selectedPosition, poolFee)
       .then((data) => {
         setCollateralDeposit(data.data.orderCost);
       })
@@ -103,7 +104,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       .finally(() => {
         validityCheckRef.current = false;
       });
-  }, [selectedPosition, address, traderAPI, chainId]);
+  }, [selectedPosition, address, traderAPI, chainId, poolFee]);
 
   useEffect(() => {
     if (selectedPosition && pools.length > 0) {

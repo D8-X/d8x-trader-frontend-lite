@@ -21,6 +21,7 @@ import {
   collateralDepositAtom,
   newPositionRiskAtom,
   perpetualStaticInfoAtom,
+  poolFeeAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
   positionsAtom,
@@ -117,6 +118,7 @@ export const ActionBlock = memo(() => {
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
+  const [poolFee] = useAtom(poolFeeAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 
@@ -130,7 +132,7 @@ export const ActionBlock = memo(() => {
   const validityCheckRef = useRef(false);
 
   const openReviewOrderModal = async () => {
-    if (!orderInfo || !address || !traderAPI) {
+    if (!orderInfo || !address || !traderAPI || !poolFee) {
       return;
     }
     validityCheckRef.current = true;
@@ -143,7 +145,8 @@ export const ActionBlock = memo(() => {
       traderAPI,
       mainOrder,
       address,
-      positions?.find((pos) => pos.symbol === orderInfo.symbol)
+      positions?.find((pos) => pos.symbol === orderInfo.symbol),
+      poolFee
     )
       .then((data) => {
         setNewPositionRisk(data.data.newPositionRisk);
