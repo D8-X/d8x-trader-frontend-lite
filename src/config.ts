@@ -47,5 +47,5 @@ export const config = {
   httpRPC: parseUrls(httpRPCs),
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
-  showChallengeModal: showChallengeModal,
+  showChallengeModal: showChallengeModal === 'true',
 };
