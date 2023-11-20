@@ -10,6 +10,7 @@ const {
   VITE_HTTP_RPC: httpRPCs = '',
   VITE_ENABLED_CHAINS: enabledChains = '',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
+  VITE_WELCOME_MODAL: showChallengeModal = 'false',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
@@ -46,4 +47,5 @@ export const config = {
   httpRPC: parseUrls(httpRPCs),
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
+  showChallengeModal: showChallengeModal,
 };

@@ -7,6 +7,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { showWelcomeModalAtom } from 'store/app.store';
 
 import styles from './WelcomeModal.module.scss';
+import { config } from 'config';
 
 export const WelcomeModal = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useAtom(showWelcomeModalAtom);
@@ -19,7 +20,7 @@ export const WelcomeModal = () => {
   };
 
   return (
-    <Dialog open={showModal} className={styles.dialog}>
+    <Dialog open={config.showChallengeModal && showModal} className={styles.dialog}>
       <DialogTitle>Join the D8X UX Challenge!</DialogTitle>
       <DialogContent className={styles.dialogContent}>
         <p>
