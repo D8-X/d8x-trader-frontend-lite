@@ -2,13 +2,13 @@ import Geonames from 'geonames.js';
 import { memo, type PropsWithChildren, useEffect, useState } from 'react';
 
 import { config } from 'config';
-import { GeoLocationDataI } from 'types/types';
+import { type GeoLocationDataI } from 'types/types';
 
-import { GeoLocationIsNotSupported } from './placeholders/GeoLocationIsNotSupported';
-import { Locating } from './placeholders/Locating';
-import { LocationAccessDenied } from './placeholders/LocationAccessDenied';
-import { GettingLocationInfo } from './placeholders/GettingLocationInfo';
 import { AccessIsBlocked } from './placeholders/AccessIsBlocked';
+import { GeoLocationIsNotSupported } from './placeholders/GeoLocationIsNotSupported';
+import { GettingLocationInfo } from './placeholders/GettingLocationInfo';
+import { LocationAccessDenied } from './placeholders/LocationAccessDenied';
+import { Locating } from './placeholders/Locating';
 
 const BLOCKED_COUNTRIES = [
   'BI',
@@ -35,6 +35,8 @@ const BLOCKED_COUNTRIES = [
   'YE',
   'ZW',
 ];
+
+const SIMPLE_CHECK = true;
 
 export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
   const [hasNavigator, setHasNavigator] = useState<boolean | null>(null);
@@ -92,6 +94,10 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
 
   if (hasAccess === false) {
     return <AccessIsBlocked />;
+  }
+
+  if (SIMPLE_CHECK) {
+    return children;
   }
 
   if (currentPosition) {
