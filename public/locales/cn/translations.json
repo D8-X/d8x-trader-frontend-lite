@@ -539,6 +539,9 @@
       }
     }
   },
+  "footer": {
+    "external-service-status": "外部服务状态"
+  },
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",

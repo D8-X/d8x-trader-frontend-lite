@@ -539,6 +539,9 @@
       }
     }
   },
+  "footer": {
+    "external-service-status": "Status externer Services"
+  },
   "common": {
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",

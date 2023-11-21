@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { Box, Link, Typography } from '@mui/material';
+import { Link, Typography } from '@mui/material';
 
 import { ReactComponent as Logo } from 'assets/logo.svg';
 import { ReactComponent as GithubLogo } from 'assets/social/github.svg';
@@ -12,18 +12,26 @@ import { ReactComponent as GitbookLogo } from 'assets/social/gitbook.svg';
 import { Container } from '../container/Container';
 
 import styles from './Footer.module.scss';
+import { useTranslation } from 'react-i18next';
 
 export const Footer = memo(() => {
+  const { t } = useTranslation();
+
   return (
     <footer>
       <Container>
-        <Box className={styles.rootBox}>
-          <Box component="nav">
-            <Typography color={'var(--d8x-color-text-main)'} variant="caption" gutterBottom={false}>
-              © Copyright 2023 D8X
-            </Typography>
-          </Box>
-          <Box className={styles.iconsHolder}>
+        <div className={styles.rootBox}>
+          <Link
+            href="https://app.pulsetic.com/status/xVSntXa0"
+            target="_blank"
+            rel="noopener noreferrer"
+            color="inherit"
+            underline="none"
+            className={styles.footerLink}
+          >
+            {t('footer.external-service-status')}
+          </Link>
+          <div className={styles.iconsHolder}>
             <Link
               href="https://github.com/D8-X"
               target="_blank"
@@ -64,7 +72,7 @@ export const Footer = memo(() => {
             >
               <GitbookLogo />
             </Link>
-          </Box>
+          </div>
           <Link
             href="https://d8x.exchange"
             target="_blank"
@@ -75,7 +83,12 @@ export const Footer = memo(() => {
           >
             <Logo className={styles.footerLogo} />
           </Link>
-        </Box>
+        </div>
+        <div className={styles.copyrightHolder}>
+          <Typography color={'var(--d8x-color-text-main)'} variant="caption" gutterBottom={false}>
+            © Copyright 2023 D8X
+          </Typography>
+        </div>
       </Container>
     </footer>
   );

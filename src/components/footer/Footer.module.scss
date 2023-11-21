@@ -21,11 +21,23 @@
   gap: 48px;
 }
 
+.footerLink {
+  color: var(--d8x-color-action);
+  cursor: pointer;
+  margin: 1rem 0;
+
+  &:hover {
+    color: var(--d8x-color-action);
+    text-decoration: none;
+  }
+}
+
 .footerSocialLogo {
   color: var(--d8x-color-action);
   transition: color 300ms linear;
   text-decoration: none;
   margin: 1rem 0;
+  cursor: pointer;
 
   &:hover {
     color: var(--d8x-color-text-main);
@@ -41,6 +53,12 @@
 .footerLogo {
   width: 40px;
   height: 24px;
+}
+
+.copyrightHolder {
+  text-align: center;
+  padding-bottom: $d8x-spacing * 4;
+  margin: 1rem 0;
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
