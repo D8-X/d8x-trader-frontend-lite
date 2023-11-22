@@ -73,6 +73,13 @@ This package is configured entirely via environment variables. You must specify:
   - Example:
     `VITE_PROJECT_ID=yourprojectid`
 
+- **VITE_WELCOME_MODAL**: This is an optional variable that allows to enable a Welcome modal. You can use it to add a Disclaimer. 
+Change its content in src/components/welcome-modal.
+
+  - By default, this variable is set to `false`.
+  - Enable it as follows:
+    `VITE_WELCOME_MODAL=true` 
+
 ---
 
 # Branding the Frontend Kit

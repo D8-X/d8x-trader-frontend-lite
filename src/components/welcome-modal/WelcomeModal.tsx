@@ -110,7 +110,7 @@ export const WelcomeModal = () => {
       </DialogContent>
       <DialogActions className={styles.dialogAction}>
         <Button onClick={handleModalClose} variant="secondary" size="small">
-          Close
+          Agree
         </Button>
       </DialogActions>
     </Dialog>
