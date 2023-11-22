@@ -96,11 +96,7 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     return <AccessIsBlocked />;
   }
 
-  if (SIMPLE_CHECK) {
-    return children;
-  }
-
-  if (currentPosition) {
+  if (!SIMPLE_CHECK && currentPosition) {
     return <GettingLocationInfo />;
   }
 
@@ -109,7 +105,7 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
   }
 
   if (hasNavigator) {
-    return <Locating />;
+    return SIMPLE_CHECK ? children : <Locating />;
   }
 
   return <GeoLocationIsNotSupported />;
