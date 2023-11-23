@@ -155,7 +155,7 @@ Local styles are defined in corresponing components
 
 ## Manifest
 
-All the fields populated in the manifest, found in `public/manifest.json`, are required in for the DApp to be properly integrated within third party applications.
+All the fields populated in the manifest, found in `public/manifest.json`, are required for the DApp to be properly integrated within third party applications.
 In particular, values in this file may be modified to reflect the branding, but no entries should be removed.
 
 ---
