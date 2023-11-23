@@ -69,16 +69,17 @@ This package is configured entirely via environment variables. You must specify:
     `VITE_GEONAMES_USERNAME=myusername`
 
 - **VITE_PROJECT_ID**: A string with your WalletConnect project ID.
+
   - Head over to [WalletConnect Cloud](https://cloud.walletconnect.com/) to sign up and create a project ID.
   - Example:
     `VITE_PROJECT_ID=yourprojectid`
 
-- **VITE_WELCOME_MODAL**: This is an optional variable that allows to enable a Welcome modal. You can use it to add a Disclaimer. 
-Change its content in src/components/welcome-modal.
+- **VITE_WELCOME_MODAL**: This is an optional variable that allows to enable a Welcome modal. You can use it to add a Disclaimer.
+  Change its content in src/components/welcome-modal.
 
   - By default, this variable is set to `false`.
   - Enable it as follows:
-    `VITE_WELCOME_MODAL=true` 
+    `VITE_WELCOME_MODAL=true`
 
 ---
 
@@ -154,7 +155,8 @@ Local styles are defined in corresponing components
 
 ## Manifest
 
-All the fields populated in the manifest, found in `public/manifest.json`, are mandatory for proper integration with party applications. In particular, values may be modified but no entries should be removed.
+All the fields populated in the manifest, found in `public/manifest.json`, are required in for the DApp to be properly integrated within third party applications.
+In particular, values in this file may be modified to reflect the branding, but no entries should be removed.
 
 ---
 
