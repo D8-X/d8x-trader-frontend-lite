@@ -152,6 +152,10 @@ Global styles are defined in `src/styles/theme/theme.ts` and in `index.scss`
 
 Local styles are defined in corresponing components
 
+## Manifest
+
+All the fields populated in the manifest, found in `public/manifest.json`, are mandatory for proper integration with party applications. In particular, values may be modified but no entries should be removed.
+
 ---
 
 # Development Guidelines
