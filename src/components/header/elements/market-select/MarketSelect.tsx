@@ -120,24 +120,26 @@ export const MarketSelect = memo(() => {
       .filter((pool) => pool.isRunning)
       .forEach((pool) =>
         marketsList.push(
-          ...pool.perpetuals.map((perpetual) => {
-            const pairId = `${perpetual.baseCurrency}-${perpetual.quoteCurrency}`.toLowerCase();
-            const marketData = marketsData.find((market) => market.symbol === pairId);
+          ...pool.perpetuals
+            .filter((perpetual) => perpetual.state === 'NORMAL')
+            .map((perpetual) => {
+              const pairId = `${perpetual.baseCurrency}-${perpetual.quoteCurrency}`.toLowerCase();
+              const marketData = marketsData.find((market) => market.symbol === pairId);
 
-            return {
-              value: perpetual.id.toString(),
-              item: {
-                ...perpetual,
-                poolSymbol: pool.poolSymbol,
-                symbol: createSymbol({
+              return {
+                value: perpetual.id.toString(),
+                item: {
+                  ...perpetual,
                   poolSymbol: pool.poolSymbol,
-                  baseCurrency: perpetual.baseCurrency,
-                  quoteCurrency: perpetual.quoteCurrency,
-                }),
-                marketData: marketData ?? null,
-              },
-            };
-          })
+                  symbol: createSymbol({
+                    poolSymbol: pool.poolSymbol,
+                    baseCurrency: perpetual.baseCurrency,
+                    quoteCurrency: perpetual.quoteCurrency,
+                  }),
+                  marketData: marketData ?? null,
+                },
+              };
+            })
         )
       );
     return marketsList;
