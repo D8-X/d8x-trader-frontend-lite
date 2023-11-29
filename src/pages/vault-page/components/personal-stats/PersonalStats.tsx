@@ -103,7 +103,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
                 estimatedEarnings < -0.0000000001 ? estimatedEarnings : Math.max(estimatedEarnings, 0),
                 selectedPool?.poolSymbol,
                 false,
-                Math.max(2, Math.ceil(4 - Math.log10(Math.max(estimatedEarnings, 0.0000000001))))
+                Math.max(2, Math.ceil(4 - Math.log10(Math.max(Math.abs(estimatedEarnings), 0.0000000001))))
               )
             : '--'}
         </Typography>
