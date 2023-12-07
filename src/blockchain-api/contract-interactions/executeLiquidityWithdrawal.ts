@@ -20,7 +20,7 @@ export async function executeLiquidityWithdrawal(
       abi: PROXY_ABI,
       functionName: 'executeLiquidityWithdrawal',
       args: [poolId, walletClient.account?.address],
-      gas: BigInt(2_000_000),
+      gas: BigInt(500_000),
       account: account,
     })
     .then((tx) => ({ hash: tx }));

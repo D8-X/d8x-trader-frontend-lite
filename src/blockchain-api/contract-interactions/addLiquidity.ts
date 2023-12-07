@@ -22,7 +22,7 @@ export async function addLiquidity(
       functionName: 'addLiquidity',
       args: [poolId, amountParsed],
       account: account,
-      gas: BigInt(2_000_000),
+      gas: BigInt(500_000),
     })
     .then((tx) => ({ hash: tx }));
 }
