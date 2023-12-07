@@ -525,6 +525,7 @@
           "perps": {
             "title": "Perps details",
             "leverage": "Leverage",
+            "margin-total": "Margin (tot)",
             "unrealized": "Unrealized PnL",
             "realized": "Realized PnL",
             "referral": "Referral earnings"

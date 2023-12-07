@@ -12,6 +12,7 @@ export interface UnrealizedPnLListAtomI {
 }
 
 export const leverageAtom = atom(0);
+export const totalMarginAtom = atom(0);
 export const totalUnrealizedPnLAtom = atom(0);
 export const unrealizedPnLListAtom = atom<UnrealizedPnLListAtomI[]>([]);
 
@@ -46,6 +47,7 @@ export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: A
   const leverage = totalPositionNotionalBaseCCY / (totalCollateralCC + totalUnrealizedPnl) || 0;
 
   set(leverageAtom, leverage);
+  set(totalMarginAtom, totalCollateralCC);
   set(totalUnrealizedPnLAtom, totalUnrealizedPnl);
   set(
     unrealizedPnLListAtom,

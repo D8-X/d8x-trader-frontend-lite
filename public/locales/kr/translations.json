@@ -524,6 +524,7 @@
           "perps": {
             "title": "범인 세부 정보",
             "leverage": "레버리지",
+            "margin-total": "Margin (tot)",
             "unrealized": "미실현 손익",
             "realized": "실현된 손익",
             "referral": "추천인 수익"

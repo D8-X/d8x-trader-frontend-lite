@@ -6,7 +6,7 @@ import { totalEstimatedEarningsAtom } from 'pages/portfolio-page/store/fetchEarn
 import { accountValueAtom, totalOpenRewardsAtom } from 'pages/portfolio-page/store/fetchPortfolio';
 import { poolShareTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolShare';
 import { poolTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolTokensUSDBalance';
-import { leverageAtom, totalUnrealizedPnLAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
+import { leverageAtom, totalMarginAtom, totalUnrealizedPnLAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
 
 import styles from './AccountValue.module.scss';
 
@@ -18,6 +18,7 @@ export const AccountValue = () => {
   const [poolTokensUSDBalance] = useAtom(poolTokensUSDBalanceAtom);
   const [poolShareTokensUSDBalance] = useAtom(poolShareTokensUSDBalanceAtom);
   const [leverage] = useAtom(leverageAtom);
+  const [totalMargin] = useAtom(totalMarginAtom);
   const [totalUnrealizedPnL] = useAtom(totalUnrealizedPnLAtom);
   const [totalEstimatedEarnings] = useAtom(totalEstimatedEarningsAtom);
   const [totalReferralRewards] = useAtom(totalOpenRewardsAtom);
@@ -47,6 +48,10 @@ export const AccountValue = () => {
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.perps.leverage')}</div>
           <div className={styles.detailsValue}>{formatCurrency(leverage)}x</div>
+        </div>
+        <div className={styles.detailsLine}>
+          <div>{t('pages.portfolio.account-value.details.perps.margin-total')}</div>
+          <div className={styles.detailsValue}>${formatCurrency(totalMargin)}</div>
         </div>
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.perps.unrealized')}</div>

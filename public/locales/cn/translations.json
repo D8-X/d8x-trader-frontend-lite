@@ -524,6 +524,7 @@
           "perps": {
             "title": "永续合约详情",
             "leverage": "杠杠",
+            "margin-total": "Margin (tot)",
             "unrealized": "未实现盈亏",
             "realized": "已实现盈亏",
             "referral": "推荐收入"

@@ -524,6 +524,7 @@
           "perps": {
             "title": "Details zu den Tätern",
             "leverage": "Hebelwirkung",
+            "margin-total": "Margin (tot)",
             "unrealized": "Nicht realisierter PnL",
             "realized": "Realisierte PnL",
             "referral": "Verdienst durch Empfehlungen"

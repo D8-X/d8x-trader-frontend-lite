@@ -524,6 +524,7 @@
           "perps": {
             "title": "Detalles de los perpetradores",
             "leverage": "Aproveche",
+            "margin-total": "Margin (tot)",
             "unrealized": "PnL no realizado",
             "realized": "PnL realizado",
             "referral": "Ingresos por remisión"
