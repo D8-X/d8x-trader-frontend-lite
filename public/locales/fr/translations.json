@@ -523,9 +523,9 @@
               "funds": "Fonds"
             },
             "perps": {
-              "title": "Détails des Perpétuels",
+              "title": "Détails des perpétuels",
               "leverage": "Effet de levier",
-              "margin-total": "Margin (tot)",
+              "margin-total": "Marge",
               "unrealized": "PnL non réalisé",
               "realized": "PnL réalisé",
               "referral": "Gains de parrainage"
@@ -535,7 +535,7 @@
               "assets": "Actifs",
               "assets-pool": "Actifs dans les pools",
               "earnings-pool": "Gains par pool",
-              "total": "Gains estimés totaux"
+              "total": ".. dont gains estimés"
             }
           }
         }

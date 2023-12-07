@@ -524,7 +524,7 @@
           "perps": {
             "title": "Detalles de los perpetradores",
             "leverage": "Aproveche",
-            "margin-total": "Margin (tot)",
+            "margin-total": "Margen",
             "unrealized": "PnL no realizado",
             "realized": "PnL realizado",
             "referral": "Ingresos por remisión"
@@ -534,7 +534,7 @@
             "assets": "Activos",
             "assets-pool": "Activos en pools",
             "earnings-pool": "Beneficios por pool",
-            "total": "Total estim. Ingresos"
+            "total": "..de los estim. ingresos"
           }
         }
       }

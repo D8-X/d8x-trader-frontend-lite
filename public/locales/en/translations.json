@@ -525,7 +525,7 @@
           "perps": {
             "title": "Perps details",
             "leverage": "Leverage",
-            "margin-total": "Margin (tot)",
+            "margin-total": "Margin",
             "unrealized": "Unrealized PnL",
             "realized": "Realized PnL",
             "referral": "Referral earnings"
@@ -535,7 +535,7 @@
             "assets": "Assets",
             "assets-pool": "Assets in pools",
             "earnings-pool": "Earnings per pool",
-            "total": "Total estim. Earnings"
+            "total": "..of which estim. earnings"
           }
         }
       }

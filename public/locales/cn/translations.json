@@ -524,7 +524,7 @@
           "perps": {
             "title": "永续合约详情",
             "leverage": "杠杠",
-            "margin-total": "Margin (tot)",
+            "margin-total": "本金",
             "unrealized": "未实现盈亏",
             "realized": "已实现盈亏",
             "referral": "推荐收入"
@@ -534,7 +534,7 @@
             "assets": "资产",
             "assets-pool": "集合资产",
             "earnings-pool": "每池收益",
-            "total": "估算总额 收益"
+            "total": "预估收益"
           }
         }
       }

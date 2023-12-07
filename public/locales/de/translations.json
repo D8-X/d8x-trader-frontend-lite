@@ -512,29 +512,29 @@
     },
     "portfolio": {
       "perpetuals": "Perpetuals",
-      "vault": "Tresor",
+      "vault": "Liquiditätspools",
       "account-value": {
         "main-title": "Ihr Konto",
         "title": "Konto Wert",
         "details": {
           "wallet": {
-            "title": "Details zur Brieftasche",
+            "title": "Brieftasche",
             "funds": "Mittel"
           },
           "perps": {
-            "title": "Details zu den Tätern",
+            "title": "Perpetuals",
             "leverage": "Hebelwirkung",
-            "margin-total": "Margin (tot)",
+            "margin-total": "Marge",
             "unrealized": "Nicht realisierter PnL",
-            "realized": "Realisierte PnL",
+            "realized": "Realisierter PnL",
             "referral": "Verdienst durch Empfehlungen"
           },
           "vault": {
-            "title": "Details zum Tresor",
+            "title": "Liquiditätspools",
             "assets": "Vermögenswerte",
             "assets-pool": "Vermögenswerte in Pools",
-            "earnings-pool": "Ergebnis pro Pool",
-            "total": "Gesamtschätzung. Ergebnis"
+            "earnings-pool": "Einnahmen pro Pool",
+            "total": ".. davon Einnahmen"
           }
         }
       }
