@@ -444,10 +444,7 @@ export const ActionBlock = memo(() => {
     return t(`pages.trade.action-block.validity.${validityCheckType}`);
   }, [t, validityCheckType, poolTokenBalance]);
 
-  const isOrderValid =
-    validityCheckType === ValidityCheckE.GoodToGo ||
-    validityCheckType === ValidityCheckE.Closed ||
-    validityCheckType === ValidityCheckE.BelowMinPosition;
+  const isOrderValid = validityCheckType === ValidityCheckE.GoodToGo || validityCheckType === ValidityCheckE.Closed;
 
   const isConfirmButtonDisabled = useMemo(() => {
     return !isOrderValid || requestSentRef.current || requestSent;
