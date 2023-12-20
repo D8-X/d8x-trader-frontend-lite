@@ -38,9 +38,7 @@ export const LimitPrice = memo(() => {
         setInputValue(targetValue);
       } else {
         if (orderType === OrderTypeE.Limit) {
-          const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
-          const initialLimit =
-            perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice * (1 + 0.01 * direction);
+          const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
           setLimitPrice(`${initialLimit}`);
           setInputValue('');
         } else if (orderType === OrderTypeE.Stop) {
@@ -50,7 +48,7 @@ export const LimitPrice = memo(() => {
       }
       inputValueChangedRef.current = true;
     },
-    [setLimitPrice, perpetualStatistics, orderType, orderBlock]
+    [setLimitPrice, perpetualStatistics, orderType]
   );
 
   useEffect(() => {

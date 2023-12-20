@@ -36,10 +36,12 @@ export const orderTypeAtom = atom(
   (get, set, newType: OrderTypeE) => {
     if (newType === OrderTypeE.Limit) {
       const perpetualStatistics = get(perpetualStatisticsAtom);
+      const orderBlock = get(orderBlockAtom);
       let initialLimit: number;
       if (perpetualStatistics?.midPrice) {
+        const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
-        initialLimit = Math.round(perpetualStatistics.midPrice * step) / step;
+        initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
       } else {
         initialLimit = -1;
       }
