@@ -26,7 +26,7 @@ export const maxOrderSizeAtom = atom((get) => {
   const maxTraderOrderSize = get(maxTraderOrderSizeAtom);
   const orderType = get(orderTypeAtom);
   const orderInfo = get(orderInfoAtom);
-  const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0;
+  const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0.01;
 
   if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !maxTraderOrderSize) {
     return;
@@ -34,9 +34,7 @@ export const maxOrderSizeAtom = atom((get) => {
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
-  const orderFee = orderInfo?.tradingFee || 0;
-
-  const buffer = (1.001 + leverage * (0.009 + orderFee / 10000 + slippage)) * 1.01;
+  const orderFeeBps = orderInfo?.tradingFee || 0;
 
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
   let collateralCC = 0;
@@ -47,10 +45,15 @@ export const maxOrderSizeAtom = atom((get) => {
   const orderBlockSide = orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell;
 
   if (openPosition && openPosition.side !== orderBlockSide) {
-    collateralCC = openPosition.collateralCC;
+    collateralCC = openPosition.collateralCC + openPosition.unrealizedPnlQuoteCCY;
   }
-
-  const personalMax = ((poolTokenBalance + collateralCC) * leverage * collToQuoteIndexPrice) / (indexPrice * buffer);
+  const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
+  const limitPrice = indexPrice * (1 + direction * slippage);
+  const buffer =
+    indexPrice * (orderFeeBps / 10_000) +
+    selectedPerpetual.markPrice / leverage +
+    direction * (limitPrice - selectedPerpetual.markPrice);
+  const personalMax = (((poolTokenBalance + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
 });
 
