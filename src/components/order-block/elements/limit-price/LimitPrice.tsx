@@ -7,9 +7,9 @@ import { Box, Typography } from '@mui/material';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
+import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
-import { OrderTypeE } from 'types/enums';
+import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
 
@@ -17,6 +17,7 @@ export const LimitPrice = memo(() => {
   const { t } = useTranslation();
 
   const [orderType] = useAtom(orderTypeAtom);
+  const [orderBlock] = useAtom(orderBlockAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
@@ -37,7 +38,9 @@ export const LimitPrice = memo(() => {
         setInputValue(targetValue);
       } else {
         if (orderType === OrderTypeE.Limit) {
-          const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics?.midPrice;
+          const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
+          const initialLimit =
+            perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice * (1 + 0.01 * direction);
           setLimitPrice(`${initialLimit}`);
           setInputValue('');
         } else if (orderType === OrderTypeE.Stop) {
@@ -47,7 +50,7 @@ export const LimitPrice = memo(() => {
       }
       inputValueChangedRef.current = true;
     },
-    [setLimitPrice, perpetualStatistics, orderType]
+    [setLimitPrice, perpetualStatistics, orderType, orderBlock]
   );
 
   useEffect(() => {
