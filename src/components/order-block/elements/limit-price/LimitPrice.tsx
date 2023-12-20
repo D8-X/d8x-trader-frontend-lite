@@ -7,17 +7,16 @@ import { Box, Typography } from '@mui/material';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
+import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
-import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
+import { OrderTypeE } from 'types/enums';
 
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
 
   const [orderType] = useAtom(orderTypeAtom);
-  const [orderBlock] = useAtom(orderBlockAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
