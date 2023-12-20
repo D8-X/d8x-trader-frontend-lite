@@ -350,13 +350,13 @@ export const OpenOrdersTable = memo(() => {
           )}
         </Box>
       )}
-      {address && openOrders.length > 5 && (
+      {address && filteredRows.length > 5 && (
         <Box className={styles.paginationHolder}>
           <TablePagination
             align="center"
             rowsPerPageOptions={[5, 10, 20]}
             component="div"
-            count={openOrders.length}
+            count={filteredRows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={(_event, newPage) => setPage(newPage)}
