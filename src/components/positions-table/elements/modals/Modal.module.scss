@@ -48,6 +48,16 @@
   margin-bottom: $d8x-spacing * 3;
 }
 
+.actionBlock {
+  padding-top: $d8x-spacing * 3;
+  padding-bottom: $d8x-spacing * 3;
+  cursor: pointer;
+}
+
+.checkbox {
+  padding-right: 0;
+}
+
 .helperText {
   cursor: pointer;
   text-align: right;

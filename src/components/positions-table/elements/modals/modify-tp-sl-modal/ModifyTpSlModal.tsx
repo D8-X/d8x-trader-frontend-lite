@@ -9,13 +9,13 @@ import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material
 
 import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
-import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { getCancelOrder, orderDigest, positionRiskOnTrade } from 'network/network';
+import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { poolFeeAtom, poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
@@ -23,11 +23,11 @@ import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
+import { cancelOrders } from '../../../helpers/cancelOrders';
 import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
 import styles from '../Modal.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -195,49 +195,17 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       ordersToCancel.push(...selectedPosition.stopLoss.orders);
     }
 
-    if (ordersToCancel.length) {
-      const cancelOrdersPromises: Promise<void>[] = [];
-      for (const orderToCancel of ordersToCancel) {
-        cancelOrdersPromises.push(
-          getCancelOrder(chainId, traderAPI, orderToCancel.symbol, orderToCancel.id)
-            .then((data) => {
-              if (data.data.digest) {
-                cancelOrder(tradingClient, HashZero, data.data, orderToCancel.id)
-                  .then((tx) => {
-                    toast.success(
-                      <ToastContent
-                        title={t('pages.trade.orders-table.toasts.cancel-order.title')}
-                        bodyLines={[
-                          {
-                            label: '',
-                            value: (
-                              <a
-                                href={getTxnLink(chain?.blockExplorers?.default?.url, tx.hash)}
-                                target="_blank"
-                                rel="noreferrer"
-                                className={styles.shareLink}
-                              >
-                                {tx.hash}
-                              </a>
-                            ),
-                          },
-                        ]}
-                      />
-                    );
-                  })
-                  .catch((error) => {
-                    console.error(error);
-                  });
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-            })
-        );
-      }
-      await Promise.all(cancelOrdersPromises);
-      setLatestOrderSentTimestamp(Date.now());
-    }
+    await cancelOrders({
+      ordersToCancel,
+      chainId,
+      chain,
+      traderAPI,
+      tradingClient,
+      toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
+      callback: () => {
+        setLatestOrderSentTimestamp(Date.now());
+      },
+    });
 
     const parsedOrders: OrderI[] = [];
     if (takeProfitPrice != null && takeProfitPrice !== selectedPosition.takeProfit.fullValue) {

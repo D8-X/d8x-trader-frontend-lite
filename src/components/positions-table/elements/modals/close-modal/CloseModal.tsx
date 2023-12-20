@@ -1,10 +1,10 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
 
-import { Box, Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
 import { HashZero } from 'app-constants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
@@ -13,19 +13,22 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { orderDigest } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom } from 'store/pools.store';
+import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
-import { type MarginAccountI, type OrderI } from 'types/types';
+import type { MarginAccountWithAdditionalDataI, OrderI } from 'types/types';
+import { OrderWithIdI } from 'types/types';
+
+import { cancelOrders } from '../../../helpers/cancelOrders';
 
 import styles from '../Modal.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
 
 interface CloseModalPropsI {
   isOpen: boolean;
-  selectedPosition?: MarginAccountI | null;
+  selectedPosition?: MarginAccountWithAdditionalDataI | null;
   closeModal: () => void;
 }
 
@@ -37,6 +40,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
+  const [traderAPI] = useAtom(traderAPIAtom);
 
   const chainId = useChainId();
   const { chain } = useNetwork();
@@ -46,6 +50,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [symbolForTx, setSymbolForTx] = useState('');
+  const [closeOpenOrders, setCloseOpenOrders] = useState(true);
 
   const requestSentRef = useRef(false);
 
@@ -93,7 +98,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     enabled: !!address && !!txHash,
   });
 
-  const handleClosePositionConfirm = () => {
+  const handleClosePositionConfirm = async () => {
     if (requestSentRef.current) {
       return;
     }
@@ -160,7 +165,36 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         setRequestSent(false);
         requestSentRef.current = false;
       });
+
+    if (closeOpenOrders) {
+      const ordersToCancel: OrderWithIdI[] = [];
+      if (selectedPosition.takeProfit.orders.length > 0) {
+        ordersToCancel.push(...selectedPosition.takeProfit.orders);
+      }
+      if (selectedPosition.stopLoss.orders.length > 0) {
+        ordersToCancel.push(...selectedPosition.stopLoss.orders);
+      }
+
+      await cancelOrders({
+        ordersToCancel,
+        chainId,
+        chain,
+        traderAPI,
+        tradingClient,
+        toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
+        callback: () => {
+          setLatestOrderSentTimestamp(Date.now());
+        },
+      });
+    }
   };
+
+  useEffect(() => {
+    setCloseOpenOrders(true);
+  }, [selectedPosition]);
+
+  const hasTpSl =
+    selectedPosition && (selectedPosition.stopLoss.orders.length > 0 || selectedPosition.takeProfit.orders.length > 0);
 
   return (
     <Dialog open={isOpen} className={styles.root}>
@@ -179,6 +213,19 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
           <SidesRow leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')} rightSide="-" />
         </Box>
       </DialogContent>
+      {hasTpSl && (
+        <>
+          <Separator />
+          <DialogContent>
+            <Box className={styles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
+              <SidesRow
+                leftSide={t('pages.trade.positions-table.modify-modal.pos-details.close-tp-sl')}
+                rightSide={<Checkbox checked={closeOpenOrders} className={styles.checkbox} />}
+              />
+            </Box>
+          </DialogContent>
+        </>
+      )}
       <Separator />
       <DialogActions>
         <Button onClick={closeModal} variant="secondary" size="small">
