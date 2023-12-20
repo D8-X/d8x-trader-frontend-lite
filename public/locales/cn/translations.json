@@ -67,7 +67,7 @@
             "margin": "本金",
             "leverage": "杠杆",
             "liq-price": "强平价",
-            "close-tp-sl": "Close related TP/SL orders?"
+            "close-tp-sl": "关闭相关止盈/止损订单吗？"
           },
           "cancel": "取消",
           "confirm": "确认",

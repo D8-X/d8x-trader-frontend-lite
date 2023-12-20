@@ -67,7 +67,7 @@
               "margin": "Marge:",
               "leverage": "Effet de levier:",
               "liq-price": "Prix de liquidation:",
-              "close-tp-sl": "Close related TP/SL orders?"
+              "close-tp-sl": "Fermer les TP/SL associés?"
             },
             "cancel": "Annuler",
             "confirm": "Confirmer",

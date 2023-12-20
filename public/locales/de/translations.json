@@ -67,7 +67,7 @@
             "margin": "Margin:",
             "leverage": "Hebel:",
             "liq-price": "Liq. Preis:",
-            "close-tp-sl": "Close related TP/SL orders?"
+            "close-tp-sl": "Verbundene TP/SL Orders schliessen?"
           },
           "cancel": "Abbrechen",
           "confirm": "Bestätigen",
