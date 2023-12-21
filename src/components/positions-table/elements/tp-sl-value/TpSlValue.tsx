@@ -39,7 +39,7 @@ const defaultOpenOrdersData: OpenOrdersDataI = {
   },
 };
 
-const TEXTUAL_VALUE_TYPES = [OrderValueTypeE.Multiple, OrderValueTypeE.Partial];
+const TEXTUAL_VALUE_TYPES = [OrderValueTypeE.Multiple, OrderValueTypeE.Partial, OrderValueTypeE.Exceeded];
 
 export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) => {
   const { t } = useTranslation();
@@ -72,7 +72,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
     if (position.stopLoss.valueType !== OrderValueTypeE.None) {
       ordersData.stopLoss.className = styles.slValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.stopLoss.valueType)) {
-        ordersData.stopLoss.value = t('pages.trade.positions-table.table-content.multiple');
+        ordersData.stopLoss.value = t(`pages.trade.positions-table.table-content.${position.stopLoss.valueType}`);
       } else {
         ordersData.stopLoss.value = formatToCurrency(position.stopLoss.fullValue, parsedSymbol?.quoteCurrency, true);
       }

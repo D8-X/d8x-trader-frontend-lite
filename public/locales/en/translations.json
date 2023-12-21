@@ -42,7 +42,8 @@
           "connect": "Please connect your wallet",
           "no-open": "No open positions",
           "multiple": "multiple",
-          "partial": "partial"
+          "partial": "partial",
+          "exceeded": "exceeded"
         },
         "position-block-mobile": {
           "symbol": "Symbol",

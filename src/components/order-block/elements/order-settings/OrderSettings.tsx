@@ -60,7 +60,7 @@ export const OrderSettings = memo(() => {
   // const [keepPositionLeverage, setKeepPositionLeverage] = useAtom(keepPositionLeverageAtom);
   const [reduceOnly, setReduceOnly] = useAtom(reduceOnlyAtom);
 
-  const [updatedSlippage, setUpdatedSlippage] = useState(3);
+  const [updatedSlippage, setUpdatedSlippage] = useState(2);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showExpiryModal, setShowExpiryModal] = useState(false);
   const [inputValue, setInputValue] = useState(`${updatedSlippage}`);
