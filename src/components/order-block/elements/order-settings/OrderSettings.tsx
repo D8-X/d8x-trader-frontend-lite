@@ -80,7 +80,6 @@ export const OrderSettings = memo(() => {
     setSlippage(updatedSlippage);
   };
 
-  console.log(slippage);
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const targetValue = event.target.value;
     if (targetValue) {

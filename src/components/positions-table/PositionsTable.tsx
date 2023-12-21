@@ -237,15 +237,26 @@ export const PositionsTable = () => {
         let stopLossFullValue;
         if (stopLossOrders.length > 0) {
           if (stopLossOrders.length > 1) {
-            // if >1 SL orders exist for the same position, display the string "multiple" for the SL price
-            stopLossValueType = OrderValueTypeE.Multiple;
+            const totalQuantity = stopLossOrders.reduce((sum, slOrder) => sum + slOrder.quantity, 0);
+            if (totalQuantity < position.positionNotionalBaseCCY) {
+              // if the sum of all SL order sizes is less than position.positionNotionalBaseCCY -> partial
+              stopLossValueType = OrderValueTypeE.Partial;
+            } else if (totalQuantity === position.positionNotionalBaseCCY) {
+              // if the sum of all SL order sizes is equal to position.positionNotionalBaseCCY -> multiple
+            } else {
+              // if the sum of all SL order sizes is greater than position.positionNotionalBaseCCY -> exceeded
+              stopLossValueType = OrderValueTypeE.Exceeded;
+            }
           } else if (stopLossOrders[0].quantity < position.positionNotionalBaseCCY) {
             // if 1 SL order exists for an order size that is < position.size, the TP/SL column displays "partial" for the SL price
             stopLossValueType = OrderValueTypeE.Partial;
-          } else {
-            // if 1 TP order exists for an order size that is >= position.size, show stopPrice of that order for SL
+          } else if (stopLossOrders[0].quantity === position.positionNotionalBaseCCY) {
+            // if 1 SL order exists for an order size that is = position.size, show stopPrice of that order for SL
             stopLossValueType = OrderValueTypeE.Full;
             stopLossFullValue = stopLossOrders[0].stopPrice;
+          } else {
+            // if 1 TP order exists for an order size that is >= position.size, show stopPrice of that order for SL
+            stopLossValueType = OrderValueTypeE.Exceeded;
           }
         }
 

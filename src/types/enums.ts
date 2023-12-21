@@ -16,6 +16,7 @@ export enum OrderValueTypeE {
   Multiple = 'multiple',
   Partial = 'partial',
   Full = 'full',
+  Exceeded = 'exceeded',
   None = 'none',
 }
 
