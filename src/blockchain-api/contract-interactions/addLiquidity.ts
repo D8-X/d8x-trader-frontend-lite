@@ -22,7 +22,7 @@ export async function addLiquidity(
       functionName: 'addLiquidity',
       args: [poolId, amountParsed],
       account: account,
-      gas: BigInt(500_000),
+      gas: 400_000n + 120_000n * BigInt(traderAPI.getPerpetualSymbolsInPool(symbol).length),
     })
     .then((tx) => ({ hash: tx }));
 }
