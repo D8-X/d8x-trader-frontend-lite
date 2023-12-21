@@ -42,7 +42,8 @@
           "connect": "请连接钱包",
           "no-open": "无持仓",
           "multiple": "多个",
-          "partial": "部分"
+          "partial": "部分",
+          "exceeded": "超过"
         },
         "position-block-mobile": {
           "symbol": "币对",

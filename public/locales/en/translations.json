@@ -43,7 +43,7 @@
           "no-open": "No open positions",
           "multiple": "multiple",
           "partial": "partial",
-          "exceeded": "exceeded"
+          "exceeded": "exceeding"
         },
         "position-block-mobile": {
           "symbol": "Symbol",

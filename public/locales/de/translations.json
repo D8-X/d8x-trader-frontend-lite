@@ -42,7 +42,8 @@
           "connect": "Verbinden Sie Ihre Wallet",
           "no-open": "Keine offenen Positionen",
           "multiple": "mehrere",
-          "partial": "partiel"
+          "partial": "partiel",
+          "exceeded": "überschreitend"
         },
         "position-block-mobile": {
           "symbol": "Symbol",

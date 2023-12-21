@@ -42,7 +42,8 @@
           "connect": "Por favor conecte su cartera",
           "no-open": "No hay posiciones abiertas",
           "multiple": "multiples",
-          "partial": "parcial"
+          "partial": "parcial",
+          "exceeded": "excedida"
         },
         "position-block-mobile": {
           "symbol": "Símbolo",

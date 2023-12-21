@@ -42,7 +42,8 @@
             "connect": "Veuillez connecter votre portefeuille",
             "no-open": "Aucune position ouverte",
             "multiple": "multiple",
-            "partial": "partiel"
+            "partial": "partiel",
+            "exceeded": "surpassant"
           },
           "position-block-mobile": {
             "symbol": "Symbole",
