@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -18,9 +18,20 @@ import {
   userAmountAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
+
+enum ValidityCheckInitiateE {
+  Empty = '-',
+  NoAmount = 'no-amount',
+  NoAddress = 'not-connected',
+  AmountTooBig = 'amount-too-big',
+  AmountBelowMinimum = 'amount-below-min',
+  GoodToGo = 'good-to-go',
+  NoFunds = 'no-funds',
+}
 
 export const Initiate = memo(() => {
   const { t } = useTranslation();
@@ -31,6 +42,7 @@ export const Initiate = memo(() => {
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const { address } = useAccount();
 
   const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
@@ -169,6 +181,50 @@ export const Initiate = memo(() => {
     }
   }, [withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
 
+  const validityCheckInitiateType = useMemo(() => {
+    if (!address) {
+      return ValidityCheckInitiateE.NoAddress;
+    }
+    if (requestSent || !minAmount || !withdrawals || withdrawals.length > 0) {
+      return ValidityCheckInitiateE.Empty;
+    }
+    if (!userAmount || userAmount === 0) {
+      return ValidityCheckInitiateE.NoFunds;
+    }
+    if (!initiateAmount) {
+      return ValidityCheckInitiateE.NoAmount;
+    }
+    const isAmountTooBig = userAmount < initiateAmount;
+    if (isAmountTooBig) {
+      return ValidityCheckInitiateE.AmountTooBig;
+    }
+    const isAmountBelowMinimum = initiateAmount < minAmount;
+    if (isAmountBelowMinimum) {
+      return ValidityCheckInitiateE.AmountBelowMinimum;
+    }
+    return ValidityCheckInitiateE.GoodToGo;
+  }, [address, withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
+
+  const validityCheckInitiateText = useMemo(() => {
+    if (validityCheckInitiateType === ValidityCheckInitiateE.Empty) {
+      return `${t('pages.vault.withdraw.initiate.validity-empty')}`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.NoAddress) {
+      return `${t('pages.vault.withdraw.initiate.validity-no-address')}`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.NoFunds) {
+      return `${t('pages.vault.withdraw.initiate.validity-no-funds')}`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.AmountBelowMinimum) {
+      const numberDigits = valueToFractionDigits(minAmount);
+      return `${t('pages.vault.withdraw.initiate.validity-amount-below-min')} (${minAmount?.toFixed(
+        numberDigits
+      )} ${selectedPool?.poolSymbol})`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.NoAmount) {
+      return `${t('pages.vault.withdraw.initiate.validity-no-amount')}`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.AmountTooBig) {
+      return `${t('pages.vault.withdraw.initiate.validity-amount-too-big')}`;
+    }
+    return t('pages.vault.withdraw.initiate.button');
+  }, [t, validityCheckInitiateType, minAmount, selectedPool?.poolSymbol]);
+
   return (
     <>
       <Box className={styles.withdrawLabel}>
@@ -202,7 +258,7 @@ export const Initiate = memo(() => {
           onClick={handleInitiateLiquidity}
           className={styles.actionButton}
         >
-          {t('pages.vault.withdraw.initiate.button')}
+          {validityCheckInitiateText}
         </Button>
       </Box>
     </>

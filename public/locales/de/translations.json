@@ -483,7 +483,13 @@
           "title": "1. Auszahlung von {{poolSymbol}} einleiten",
           "info1": "Geben Sie die Menge an d{{poolSymbol}} an, die Sie gegen {{poolSymbol}} eintauschen möchten.",
           "info2": "Nach 48 Stunden kann dieser Betrag in {{poolSymbol}} umgewandelt und aus dem Pool abgehoben werden.",
-          "button": "Auszahlung initialisieren"
+          "button": "Auszahlung initialisieren",
+          "validity-no-address": "Brieftasche verbinden",
+          "validity-empty": "-",
+          "validity-no-funds": "Keine auszahlbaren Mittel",
+          "validity-amount-too-big": "Betrag zu gross" ,
+          "validity-amount-below-min": "Betrag unter Minimum",
+          "validity-no-amount": "Betrag eingeben"
         },
         "action": {
           "title": "{{poolSymbol}} abheben",

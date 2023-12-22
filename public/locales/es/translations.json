@@ -483,7 +483,13 @@
           "title": "1. Iniciar retiro de {{poolSymbol}}",
           "info1": "Ingresa el monto de d{{poolSymbol}} que quieres intercambiar por {{poolSymbol}}.",
           "info2": "Despues de 48 horas, este monto puede ser convertido a {{poolSymbol}} y removido de las reservas.",
-          "button": "Iniciar Retiro"
+          "button": "Iniciar Retiro",
+          "validity-no-address": "Conectar cartera",
+          "validity-empty": "-",
+          "validity-no-funds": "No hay fondos para retirar",
+          "validity-amount-too-big": "Cantidad demasiado grande" ,
+          "validity-amount-below-min": "Cantidad por debajo del mínimo",
+          "validity-no-amount": "Ingresar cantidad"
         },
         "action": {
           "title": "Retirar {{poolSymbol}}",

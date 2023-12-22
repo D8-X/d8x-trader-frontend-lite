@@ -483,7 +483,13 @@
           "title": "1. 发起{{poolSymbol}}的提现",
           "info1": "设置您想要兑换{{poolSymbol}}的d{{poolSymbol}}数量。",
           "info2": "48小时后，该金额可以转换为MATIC并从流动性池中提取。 ",
-          "button": "发起提现"
+          "button": "发起提现",
+          "validity-no-address": "Connect wallet",
+          "validity-empty": "-",
+          "validity-no-funds": "No funds to withdraw",
+          "validity-amount-too-big": "Amount too large" ,
+          "validity-amount-below-min": "Amount below min",
+          "validity-no-amount": "Enter amount"
         },
         "action": {
           "title": "提现{{poolSymbol}}",
