@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork, useBalance } from 'wagmi';
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -12,13 +12,7 @@ import { addLiquidity } from 'blockchain-api/contract-interactions/addLiquidity'
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import {
-  poolTokenBalanceAtom,
-  poolTokenDecimalsAtom,
-  proxyAddrAtom,
-  selectedPoolAtom,
-  traderAPIAtom,
-} from 'store/pools.store';
+import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -42,7 +36,16 @@ export const Add = memo(() => {
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
+
+  const { data: poolTokenBalanceResult } = useBalance({
+    address,
+    token: selectedPool?.marginTokenAddr as Address,
+    enabled: !!selectedPool?.marginTokenAddr,
+  });
+
+  const poolTokenBalance = useMemo(() => {
+    return poolTokenBalanceResult ? Number(poolTokenBalanceResult.formatted) : undefined;
+  }, [poolTokenBalanceResult]);
 
   const [addAmount, setAddAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
