@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -30,6 +30,12 @@ interface WithdrawPropsI {
   withdrawOn: string;
 }
 
+enum ValidityCheckWithdrawE {
+  NoAddress = 'no-address',
+  NoInitiation = 'no-initiation',
+  NoFunds = 'no-funds',
+}
+
 export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const { t } = useTranslation();
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -42,6 +48,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
   const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
@@ -159,6 +166,29 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
   const isButtonDisabled = !userAmount || !shareAmount || requestSent;
 
+  const validityCheckWithdrawType = useMemo(() => {
+    if (!address) {
+      return ValidityCheckWithdrawE.NoAddress;
+    }
+    if (!userAmount || userAmount === 0) {
+      return ValidityCheckWithdrawE.NoFunds;
+    }
+    if (!shareAmount || shareAmount === 0) {
+      return ValidityCheckWithdrawE.NoInitiation;
+    }
+  }, [address, userAmount, shareAmount]);
+
+  const validityCheckWithdrawText = useMemo(() => {
+    if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoAddress) {
+      return `${t('pages.vault.withdraw.action.validity-no-address')}`;
+    } else if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoFunds) {
+      return `${t('pages.vault.withdraw.action.validity-no-funds')}`;
+    } else if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoInitiation) {
+      return `${t('pages.vault.withdraw.action.validity-no-initiation')}`;
+    }
+    return t('pages.vault.withdraw.action.button');
+  }, [t, validityCheckWithdrawType]);
+
   return (
     <div className={styles.root}>
       <Box className={styles.infoBlock}>
@@ -215,7 +245,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
             className={styles.actionButton}
             disabled={isButtonDisabled}
           >
-            {t('pages.vault.withdraw.action.button')}
+            {validityCheckWithdrawText}
           </Button>
         </Box>
       </Box>

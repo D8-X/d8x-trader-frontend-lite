@@ -496,7 +496,10 @@
           "info1": "Este monto puede convertirse a {{poolSymbol}} y removido de las reservas.",
           "date": "Puede retirarse en:",
           "receive": "Recibes:",
-          "button": "Retirar"
+          "button": "Retirar",
+          "validity-no-address": "Conectar cartera",
+          "validity-no-funds": "No hay fondos para retirar",
+          "validity-no-initiation": "Iniciar retiro y esperar 48h"
         }
       },
       "na": "N/A",

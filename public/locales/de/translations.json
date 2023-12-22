@@ -496,7 +496,10 @@
           "info1": "Dieser Betrag kann in {{poolSymbol}} umgewandelt werden, das aus dem Pool abgehoben werden kann.",
           "date": "Auszahlungdatum:",
           "receive": "Sie erhalten:",
-          "button": "Auszahlen"
+          "button": "Auszahlen",
+          "validity-no-address": "Brieftasche verbinden",
+          "validity-no-funds": "Keine auszahlbaren Mittel",
+          "validity-no-initiation": "Auszahlung einleiten und 48 Stunden warten"
         }
       },
       "na": "N/A",

@@ -496,7 +496,10 @@
           "info1": "该金额可转换为{{poolSymbol}}，可以从流动性池中提取。",
           "date": "可以提现：",
           "receive": "您将收到：",
-          "button": "提现"
+          "button": "提现",
+          "validity-no-address": "Connect wallet",
+          "validity-no-funds": "No funds to withdraw",
+          "validity-no-initiation": "Initiate withdrawal and wait 48h"
         }
       },
       "na": "无",

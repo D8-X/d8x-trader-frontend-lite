@@ -496,7 +496,10 @@
           "info1": "This amount can be converted to {{poolSymbol}}, which can be withdrawn from the pool.",
           "date": "Can be withdrawn on:",
           "receive": "You receive:",
-          "button": "Withdraw"
+          "button": "Withdraw",
+          "validity-no-address": "Connect wallet",
+          "validity-no-funds": "No funds to withdraw",
+          "validity-no-initiation": "Initiate withdrawal and wait 48h"
         }
       },
       "na": "N/A",
