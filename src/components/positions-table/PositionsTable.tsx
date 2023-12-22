@@ -17,6 +17,7 @@ import {
   openOrdersAtom,
   positionsAtom,
   removePositionAtom,
+  selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
   traderAPIBusyAtom,
@@ -27,6 +28,7 @@ import { AlignE, FieldTypeE, OpenOrderTypeE, OrderSideE, OrderValueTypeE, SortOr
 import type { TableHeaderI } from 'types/types';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 
+import { hasTpSlOrdersAtom } from '../order-block/elements/action-block/store';
 import { CloseModal } from './elements/modals/close-modal/CloseModal';
 import { ModifyModal } from './elements/modals/modify-modal/ModifyModal';
 import { ModifyTpSlModal } from './elements/modals/modify-tp-sl-modal/ModifyTpSlModal';
@@ -42,6 +44,7 @@ export const PositionsTable = () => {
   const { t } = useTranslation();
 
   const [selectedPool] = useAtom(selectedPoolAtom);
+  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [openOrders] = useAtom(openOrdersAtom);
   const [positions, setPositions] = useAtom(positionsAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
@@ -49,6 +52,7 @@ export const PositionsTable = () => {
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
 
   const isAPIBusyRef = useRef(isAPIBusy);
 
@@ -294,6 +298,23 @@ export const PositionsTable = () => {
       }),
     [positions, openOrders]
   );
+
+  useEffect(() => {
+    let hasTpSlOrders = false;
+    if (selectedPool && selectedPerpetual && positionsWithLiqPrice.length > 0) {
+      const symbol = createSymbol({
+        baseCurrency: selectedPerpetual.baseCurrency,
+        quoteCurrency: selectedPerpetual.quoteCurrency,
+        poolSymbol: selectedPool.poolSymbol,
+      });
+
+      const foundPosition = positionsWithLiqPrice.find((position) => position.symbol === symbol);
+      if (foundPosition) {
+        hasTpSlOrders = foundPosition.takeProfit.orders.length > 0 || foundPosition.stopLoss.orders.length > 0;
+      }
+    }
+    setHasTpSlOrders(hasTpSlOrders);
+  }, [selectedPool, selectedPerpetual, positionsWithLiqPrice, setHasTpSlOrders]);
 
   const { filter, setFilter, filteredRows } = useFilter(positionsWithLiqPrice, positionsHeaders);
 

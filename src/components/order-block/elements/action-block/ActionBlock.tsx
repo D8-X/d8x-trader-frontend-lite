@@ -38,6 +38,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/store';
+import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
 
@@ -134,6 +135,7 @@ export const ActionBlock = memo(() => {
   const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
+  const [hasTpSlOrders] = useAtom(hasTpSlOrdersAtom);
   const [poolFee] = useAtom(poolFeeAtom);
   const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
@@ -777,6 +779,17 @@ export const ActionBlock = memo(() => {
               ''
             )}
           </DialogContent>
+          {hasTpSlOrders && (
+            <DialogContent>
+              <Typography
+                variant="bodySmallPopup"
+                className={styles.centered}
+                style={{ color: 'var(--d8x-color-warning-secondary)' }}
+              >
+                {t('pages.trade.action-block.validity.verify-tp-sl-orders')}
+              </Typography>
+            </DialogContent>
+          )}
           <DialogActions className={styles.dialogActions}>
             <Button onClick={closeReviewOrderModal} variant="secondary" size="small">
               {t('pages.trade.action-block.review.cancel')}

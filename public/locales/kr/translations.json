@@ -304,9 +304,15 @@
           "below-min-position": "Warning: order size below minimal position size",
           "insufficient-balance": "Order will fail: insufficient wallet balance",
           "undefined": "Order undefined: take profit is incompatible with leverage",
+          "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying an existing position that has TP/SL orders",
           "good-to-go": "Good to go",
           "pass": "Passed",
-          "fail": "Failed"
+          "fail": "Failed",
+          "button-no-address": "Connect wallet",
+          "button-no-funds": "No collateral in wallet",
+          "button-no-amount": "Order size too small",
+          "button-no-limit": "Set limit price",
+          "button-no-trigger": "Set trigger price"
         },
         "order-types": {
           "market": "시장",

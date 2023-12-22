@@ -305,6 +305,7 @@
           "below-min-position": "警告：订单小于仓位",
           "insufficient-balance": "钱包余额不足，导致订单失败",
           "undefined": "止盈与杠杆不兼容，订单未执行",
+          "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying an existing position that has TP/SL orders",
           "good-to-go": "准备就绪",
           "pass": "通过",
           "fail": "失败",
