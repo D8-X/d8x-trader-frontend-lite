@@ -386,6 +386,7 @@
         "enter-code": "Ingresar un código",
         "code-taken": "Código ya esta en uso",
         "create-code": "Crear Código",
+        "add-partner": "Agregar",
         "instructions": "Sólo letras MAYUSCULAS, números, guiones bajos (_) y guiones (-) están permitidos.",
         "cancel": "Cancelar",
         "enter-addr": "Ingresa tu dirección",
@@ -468,7 +469,11 @@
         },
         "receive": "d{{poolSymbol}} que recibes",
         "max": "Max:",
-        "button": "Anadir"
+        "button": "Anadir",
+        "validity-empty": "Conectar cartera",
+        "validity-amount-too-big": "Fondos insuficientes" ,
+        "validity-amount-below-min": "Cantidad por debajo del mínimo",
+        "validity-no-amount": "Ingresar cantidad"
       },
       "withdraw": {
         "title": "Remover Liquidez",

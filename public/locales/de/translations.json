@@ -386,6 +386,7 @@
         "enter-code": "Code eingeben",
         "code-taken": "Code bereits vergeben",
         "create-code": "Code generieren",
+        "add-partner": "Hinzufügen",
         "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
         "cancel": "Abbrechen",
         "enter-addr": "Adresse eingeben",
@@ -468,7 +469,11 @@
         },
         "receive": "Sie erhalten d{{poolSymbol}}",
         "max": "Max:",
-        "button": "Hinzufügen"
+        "button": "Hinzufügen",
+        "validity-empty": "Brieftasche verbinden",
+        "validity-amount-too-big": "Zu wenig Mittel" ,
+        "validity-amount-below-min": "Betrag unter Minimum",
+        "validity-no-amount": "Betrag eingeben"
       },
       "withdraw": {
         "title": "Liquidität abheben",

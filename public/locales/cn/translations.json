@@ -386,6 +386,7 @@
         "enter-code": "输入专属码",
         "code-taken": "专属码已被使用",
         "create-code": "创建专属码",
+        "add-partner": "增加",
         "instructions": "仅允许使用大写字符、数字、下划线(_) 和连字符 (-) 。",
         "cancel": "取消",
         "enter-addr": "输入地址",
@@ -468,7 +469,11 @@
         },
         "receive": "您会收到d{{poolSymbol}}",
         "max": "最大：",
-        "button": "添加"
+        "button": "添加",
+        "validity-empty": "Connect wallet",
+        "validity-amount-too-big": "Insufficient funds" ,
+        "validity-amount-below-min": "Amount below min",
+        "validity-no-amount": "Enter amount"
       },
       "withdraw": {
         "title": "提取流动性",

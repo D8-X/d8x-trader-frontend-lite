@@ -469,7 +469,11 @@
         },
         "receive": "You receive d{{poolSymbol}}",
         "max": "Max:",
-        "button": "Add"
+        "button": "Add",
+        "validity-empty": "Connect wallet",
+        "validity-amount-too-big": "Insufficient funds" ,
+        "validity-amount-below-min": "Amount below min",
+        "validity-no-amount": "Enter amount"
       },
       "withdraw": {
         "title": "Withdraw Liquidity",

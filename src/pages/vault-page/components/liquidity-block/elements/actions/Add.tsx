@@ -25,6 +25,15 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
 
+enum ValidityCheckAddE {
+  Empty = '-',
+  NoAmount = 'no-amount',
+  NoAddress = 'not-connected',
+  AmountTooBig = 'amount-too-big',
+  AmountBelowMinimum = 'amount-below-min',
+  GoodToGo = 'good-to-go',
+}
+
 export const Add = memo(() => {
   const { t } = useTranslation();
   const { address } = useAccount();
@@ -166,6 +175,39 @@ export const Add = memo(() => {
     return addAmount > poolTokenBalance || addAmount < selectedPool.brokerCollateralLotSize;
   }, [addAmount, requestSent, isSDKConnected, selectedPool, poolTokenBalance]);
 
+  const validityCheckAddType = useMemo(() => {
+    if (requestSent || !isSDKConnected || !selectedPool?.brokerCollateralLotSize || !poolTokenBalance) {
+      return ValidityCheckAddE.Empty;
+    }
+    if (!addAmount) {
+      return ValidityCheckAddE.NoAmount;
+    }
+    const isAmountTooBig = addAmount > poolTokenBalance;
+    if (isAmountTooBig) {
+      return ValidityCheckAddE.AmountTooBig;
+    }
+    const isAmountBelowMinimum = addAmount < selectedPool.brokerCollateralLotSize;
+    if (isAmountBelowMinimum) {
+      return ValidityCheckAddE.AmountBelowMinimum;
+    }
+    return ValidityCheckAddE.GoodToGo;
+  }, [addAmount, requestSent, isSDKConnected, selectedPool?.brokerCollateralLotSize, poolTokenBalance]);
+
+  const validityCheckAddText = useMemo(() => {
+    if (validityCheckAddType === ValidityCheckAddE.Empty) {
+      return `${t('pages.vault.add.validity-empty')}`;
+    } else if (validityCheckAddType === ValidityCheckAddE.AmountTooBig) {
+      return `${t('pages.vault.add.validity-amount-too-big')}`;
+    } else if (validityCheckAddType === ValidityCheckAddE.AmountBelowMinimum) {
+      return `${t(
+        'pages.vault.add.validity-amount-below-min'
+      )} (${selectedPool?.brokerCollateralLotSize} ${selectedPool?.poolSymbol})`;
+    } else if (validityCheckAddType === ValidityCheckAddE.NoAmount) {
+      return `${t('pages.vault.add.validity-no-amount')}`;
+    }
+    return t('pages.vault.add.button');
+  }, [t, validityCheckAddType, selectedPool?.brokerCollateralLotSize, selectedPool?.poolSymbol]);
+
   return (
     <div className={styles.root}>
       <Box className={styles.infoBlock}>
@@ -242,7 +284,7 @@ export const Add = memo(() => {
             onClick={handleAddLiquidity}
             className={styles.actionButton}
           >
-            {t('pages.vault.add.button')}
+            {validityCheckAddText}
           </Button>
         </Box>
       </Box>

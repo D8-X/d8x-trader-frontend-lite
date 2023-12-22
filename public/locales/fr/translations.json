@@ -469,7 +469,11 @@
           },
           "receive": "Vous recevez d{{poolSymbol}}",
           "max": "Max:",
-          "button": "Ajouter"
+          "button": "Ajouter",
+          "validity-empty": "Connectez le portefeuille",
+          "validity-amount-too-big": "Fonds insuffisants" ,
+          "validity-amount-below-min": "Montant inférieur au minimum",
+          "validity-no-amount": "Entrer le montant"
         },
         "withdraw": {
           "title": "Retirer la Liquidité",
