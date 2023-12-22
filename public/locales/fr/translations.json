@@ -301,7 +301,7 @@
             "closed": "Les ordres ne seront pas exécutés avant l'ouverture du marché",
             "order-too-large": "L'ordre échouera: la taille de l'ordre est trop grande",
             "order-too-small": "L'ordre échouera: la taille de l'ordre est trop petite",
-            "position-too-small": "L'ordre échouera: la position résultante est trop petite",
+            "position-too-small": "L'ordre échouera: la position résultante est trop petite (min.: {{minAmount}})",
             "below-min-position": "Attention: taille de l'ordre en dessous de la taille de position minimale",
             "insufficient-balance": "L'ordre échouera: solde de portefeuille insuffisant",
             "undefined": "Ordre indéfini: la prise de profit est incompatible avec l'effet de levier",

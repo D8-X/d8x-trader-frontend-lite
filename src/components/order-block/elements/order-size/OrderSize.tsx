@@ -17,6 +17,7 @@ import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
+import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
 import styles from './OrderSize.module.scss';
 import {
@@ -60,6 +61,8 @@ export const OrderSize = memo(() => {
 
   const fetchedMaxSizes = useRef(false);
   const anchorRef = useRef<HTMLDivElement>(null);
+
+  const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
   const onInputChange = useCallback(
     (value: string) => {
@@ -113,19 +116,6 @@ export const OrderSize = memo(() => {
         const numberDigits = valueToFractionDigits(roundedValueBase);
         return roundedValueBase.toFixed(numberDigits);
       }
-    }
-    return '0.1';
-  }, [perpetualStaticInfo, currencyMultiplier]);
-
-  const minPositionString = useMemo(() => {
-    if (perpetualStaticInfo) {
-      return formatToCurrency(
-        +roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC) * currencyMultiplier,
-        '',
-        false,
-        undefined,
-        true
-      );
     }
     return '0.1';
   }, [perpetualStaticInfo, currencyMultiplier]);

@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -13,6 +13,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
 import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
@@ -35,8 +36,10 @@ import type { OrderI, OrderInfoI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
+import { useMinPositionString } from '../../hooks/useMinPositionString';
+import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/store';
+
 import styles from './ActionBlock.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -119,8 +122,10 @@ export const ActionBlock = memo(() => {
 
   const [orderInfo] = useAtom(orderInfoAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
+  const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
+  const [selectedCurrency] = useAtom(selectedCurrencyAtom);
   const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
   const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
   const [positions] = useAtom(positionsAtom);
@@ -130,6 +135,7 @@ export const ActionBlock = memo(() => {
   const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
   const [tradingClient] = useAtom(tradingClientAtom);
   const [poolFee] = useAtom(poolFeeAtom);
+  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 
@@ -141,6 +147,8 @@ export const ActionBlock = memo(() => {
 
   const requestSentRef = useRef(false);
   const validityCheckRef = useRef(false);
+
+  const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI || !poolFee) {
@@ -197,7 +205,6 @@ export const ActionBlock = memo(() => {
       return ValidityCheckButtonE.NoAddress;
     }
     if (poolTokenBalance === 0) {
-      console.log(poolTokenBalance);
       return ValidityCheckButtonE.NoFunds;
     }
     if (orderInfo.size === 0) {
@@ -459,7 +466,6 @@ export const ActionBlock = memo(() => {
     }
     if (poolTokenBalance === undefined || poolTokenBalance < collateralDeposit) {
       return ValidityCheckE.InsufficientBalance;
-      // return `${t('pages.trade.action-block.validity.insufficient-balance')} {' '} ${poolTokenBalance}`;
     }
     if (orderInfo.takeProfitPrice !== null && orderInfo.takeProfitPrice <= 0) {
       return ValidityCheckE.Undefined;
@@ -487,9 +493,13 @@ export const ActionBlock = memo(() => {
       return '-';
     } else if (validityCheckType === ValidityCheckE.InsufficientBalance) {
       return `${t('pages.trade.action-block.validity.insufficient-balance')} ${poolTokenBalance}`;
+    } else if (validityCheckType === ValidityCheckE.PositionTooSmall) {
+      return `${t('pages.trade.action-block.validity.position-too-small', {
+        minAmount: `${minPositionString} ${selectedCurrency}`,
+      })}`;
     }
     return t(`pages.trade.action-block.validity.${validityCheckType}`);
-  }, [t, validityCheckType, poolTokenBalance]);
+  }, [t, validityCheckType, poolTokenBalance, minPositionString, selectedCurrency]);
 
   const isOrderValid = validityCheckType === ValidityCheckE.GoodToGo || validityCheckType === ValidityCheckE.Closed;
 
