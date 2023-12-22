@@ -386,6 +386,7 @@
         "enter-code": "Code eingeben",
         "code-taken": "Code bereits vergeben",
         "create-code": "Code generieren",
+        "add-partner": "Hinzufügen",
         "instructions": "Es sind nur GROSSBUCHSTABEN, Zahlen, Unterstriche (_) und Bindestriche (-) zulässig.",
         "cancel": "Abbrechen",
         "enter-addr": "Adresse eingeben",
@@ -468,7 +469,11 @@
         },
         "receive": "Sie erhalten d{{poolSymbol}}",
         "max": "Max:",
-        "button": "Hinzufügen"
+        "button": "Hinzufügen",
+        "validity-empty": "Brieftasche verbinden",
+        "validity-amount-too-big": "Zu wenig Mittel" ,
+        "validity-amount-below-min": "Betrag unter Minimum",
+        "validity-no-amount": "Betrag eingeben"
       },
       "withdraw": {
         "title": "Liquidität abheben",
@@ -478,14 +483,23 @@
           "title": "1. Auszahlung von {{poolSymbol}} einleiten",
           "info1": "Geben Sie die Menge an d{{poolSymbol}} an, die Sie gegen {{poolSymbol}} eintauschen möchten.",
           "info2": "Nach 48 Stunden kann dieser Betrag in {{poolSymbol}} umgewandelt und aus dem Pool abgehoben werden.",
-          "button": "Auszahlung initialisieren"
+          "button": "Auszahlung initialisieren",
+          "validity-no-address": "Brieftasche verbinden",
+          "validity-empty": "-",
+          "validity-no-funds": "Keine auszahlbaren Mittel",
+          "validity-amount-too-big": "Betrag zu gross" ,
+          "validity-amount-below-min": "Betrag unter Minimum",
+          "validity-no-amount": "Betrag eingeben"
         },
         "action": {
           "title": "{{poolSymbol}} abheben",
           "info1": "Dieser Betrag kann in {{poolSymbol}} umgewandelt werden, das aus dem Pool abgehoben werden kann.",
           "date": "Auszahlungdatum:",
           "receive": "Sie erhalten:",
-          "button": "Auszahlen"
+          "button": "Auszahlen",
+          "validity-no-address": "Brieftasche verbinden",
+          "validity-no-funds": "Keine auszahlbaren Mittel",
+          "validity-no-initiation": "Auszahlung einleiten und 48 Stunden warten"
         }
       },
       "na": "N/A",

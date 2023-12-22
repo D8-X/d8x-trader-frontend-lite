@@ -386,6 +386,7 @@
         "enter-code": "输入专属码",
         "code-taken": "专属码已被使用",
         "create-code": "创建专属码",
+        "add-partner": "增加",
         "instructions": "仅允许使用大写字符、数字、下划线(_) 和连字符 (-) 。",
         "cancel": "取消",
         "enter-addr": "输入地址",
@@ -468,7 +469,11 @@
         },
         "receive": "您会收到d{{poolSymbol}}",
         "max": "最大：",
-        "button": "添加"
+        "button": "添加",
+        "validity-empty": "Connect wallet",
+        "validity-amount-too-big": "Insufficient funds" ,
+        "validity-amount-below-min": "Amount below min",
+        "validity-no-amount": "Enter amount"
       },
       "withdraw": {
         "title": "提取流动性",
@@ -478,14 +483,23 @@
           "title": "1. 发起{{poolSymbol}}的提现",
           "info1": "设置您想要兑换{{poolSymbol}}的d{{poolSymbol}}数量。",
           "info2": "48小时后，该金额可以转换为MATIC并从流动性池中提取。 ",
-          "button": "发起提现"
+          "button": "发起提现",
+          "validity-no-address": "Connect wallet",
+          "validity-empty": "-",
+          "validity-no-funds": "No funds to withdraw",
+          "validity-amount-too-big": "Amount too large" ,
+          "validity-amount-below-min": "Amount below min",
+          "validity-no-amount": "Enter amount"
         },
         "action": {
           "title": "提现{{poolSymbol}}",
           "info1": "该金额可转换为{{poolSymbol}}，可以从流动性池中提取。",
           "date": "可以提现：",
           "receive": "您将收到：",
-          "button": "提现"
+          "button": "提现",
+          "validity-no-address": "Connect wallet",
+          "validity-no-funds": "No funds to withdraw",
+          "validity-no-initiation": "Initiate withdrawal and wait 48h"
         }
       },
       "na": "无",
