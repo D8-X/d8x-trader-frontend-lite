@@ -40,7 +40,7 @@ export const Add = memo(() => {
   const { data: poolTokenBalanceResult } = useBalance({
     address,
     token: selectedPool?.marginTokenAddr as Address,
-    enabled: !!selectedPool?.marginTokenAddr,
+    enabled: !!selectedPool?.marginTokenAddr && !!address,
   });
 
   const poolTokenBalance = useMemo(() => {

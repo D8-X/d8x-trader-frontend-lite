@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
@@ -8,7 +8,13 @@ import { Box, Typography } from '@mui/material';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { getEarnings } from 'network/history';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
-import { sdkConnectedAtom, triggerUserStatsUpdateAtom, userAmountAtom, withdrawalsAtom } from 'store/vault-pools.store';
+import {
+  sdkConnectedAtom,
+  triggerUserStatsUpdateAtom,
+  userAmountAtom,
+  withdrawalOnChainAtom,
+  withdrawalsAtom,
+} from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './PersonalStats.module.scss';
@@ -28,6 +34,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const [triggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
+  const hasOpenRequestOnChain = useAtomValue(withdrawalOnChainAtom);
 
   const [estimatedEarnings, setEstimatedEarnings] = useState<number>();
 
@@ -121,7 +128,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
-          {withdrawals && withdrawals.length > 0 ? 'Yes' : 'No'}
+          {(withdrawals && withdrawals.length > 0) || hasOpenRequestOnChain ? 'Yes' : 'No'}
         </Typography>
       </Box>
       <Box key="withdrawalAmount" className={styles.statContainer}>

@@ -1,8 +1,8 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { type Address, useWaitForTransaction, useWalletClient, useNetwork, useContractRead } from 'wagmi';
 
 import { Box, Button, Typography } from '@mui/material';
 
@@ -17,6 +17,7 @@ import {
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
   userAmountAtom,
+  withdrawalOnChainAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -25,6 +26,7 @@ import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
+import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -39,6 +41,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [withdrawals] = useAtom(withdrawalsAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const [hasOpenRequestOnChain, setWithrawalOnChain] = useAtom(withdrawalOnChainAtom);
 
   const { chain } = useNetwork();
   const { data: walletClient } = useWalletClient();
@@ -47,6 +50,24 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
 
   const requestSentRef = useRef(false);
+
+  const { data: openRequests, refetch: refetchOnChainStatus } = useContractRead({
+    address: liqProvTool?.getProxyAddress() as Address,
+    abi: PROXY_ABI,
+    enabled: !!liqProvTool && !!selectedPool,
+    functionName: 'getWithdrawRequests',
+    args: [selectedPool?.poolId, 0, 256],
+  });
+
+  useEffect(() => {
+    if (!openRequests || !walletClient) {
+      return undefined;
+    }
+    const res = (openRequests as unknown[]).some(
+      (req) => (req as { lp: string }).lp.toLowerCase() === walletClient.account.address.toLowerCase()
+    );
+    setWithrawalOnChain(res);
+  }, [openRequests, walletClient, setWithrawalOnChain]);
 
   useWaitForTransaction({
     hash: txHash,
@@ -83,6 +104,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     onSettled() {
       setTxHash(undefined);
       setTriggerUserStatsUpdate((prevValue) => !prevValue);
+      refetchOnChainStatus();
     },
     enabled: !!txHash,
   });
@@ -173,7 +195,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
         </Typography>
       </Box>
       <Box className={styles.contentBlock}>
-        {!withdrawals.length && (
+        {!withdrawals.length && !hasOpenRequestOnChain && (
           <>
             <Initiate />
             <Separator className={styles.separator} />
