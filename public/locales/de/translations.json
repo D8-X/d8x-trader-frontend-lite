@@ -142,7 +142,9 @@
           "cancel": "Schliessen",
           "limit": "Limit",
           "market": "Market",
-          "stop": "Stop"
+          "stop": "Stop",
+          "yes": "Ja",
+          "no": "Nein"
         },
         "cancel-modal": {
           "title": "Offene Order Stornieren",

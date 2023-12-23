@@ -142,7 +142,9 @@
           "cancel": "Cancelar",
           "limit": "Límite",
           "market": "Mercado",
-          "stop": "Parada"
+          "stop": "Parada",
+          "yes": "Sí",
+          "no": "No"
         },
         "cancel-modal": {
           "title": "Cancelar Orden",

@@ -142,7 +142,9 @@
           "cancel": "取消",
           "limit": "限价",
           "market": "市价",
-          "stop": "止盈止损"
+          "stop": "止盈止损",
+          "yes": "是的",
+          "no": "不"
         },
         "cancel-modal": {
           "title": "取消订单",

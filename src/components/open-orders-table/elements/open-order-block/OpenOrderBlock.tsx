@@ -90,7 +90,11 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[6].label}
-          rightSide={order.reduceOnly ? 'True' : 'False'}
+          rightSide={
+            order.reduceOnly
+              ? t('pages.trade.orders-table.table-content.yes')
+              : t('pages.trade.orders-table.table-content.no')
+          }
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />

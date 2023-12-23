@@ -142,7 +142,9 @@
           "cancel": "Cancel",
           "limit": "Limit",
           "market": "Market",
-          "stop": "Stop"
+          "stop": "Stop",
+          "yes": "Yes",
+          "no": "No"
         },
         "cancel-modal": {
           "title": "Cancel Open Order",
