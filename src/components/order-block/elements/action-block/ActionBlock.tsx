@@ -266,7 +266,7 @@ export const ActionBlock = memo(() => {
         symbol: orderInfo.symbol,
         quantity: orderInfo.size,
         leverage: orderInfo.leverage,
-        reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
+        reduceOnly: true,
         keepPositionLvg: orderInfo.keepPositionLeverage,
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });
@@ -284,7 +284,7 @@ export const ActionBlock = memo(() => {
         symbol: orderInfo.symbol,
         quantity: orderInfo.size,
         leverage: orderInfo.leverage,
-        reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
+        reduceOnly: true,
         keepPositionLvg: orderInfo.keepPositionLeverage,
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });

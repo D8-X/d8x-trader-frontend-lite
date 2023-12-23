@@ -46,7 +46,7 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
     // stopPrice: undefined,
     quantity: position.positionNotionalBaseCCY,
     leverage: position.leverage,
-    // reduceOnly: undefined,
+    reduceOnly: true,
     // keepPositionLvg: undefined,
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
     deadline: Math.floor(Date.now() / 1000 + 60 * 60 * deadlineMultiplier),
@@ -220,7 +220,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         symbol: selectedPosition.symbol,
         quantity: selectedPosition.positionNotionalBaseCCY,
         leverage: selectedPosition.leverage,
-        // reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
+        reduceOnly: true,
         // keepPositionLvg: orderInfo.keepPositionLeverage,
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });
@@ -238,7 +238,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         symbol: selectedPosition.symbol,
         quantity: selectedPosition.positionNotionalBaseCCY,
         leverage: selectedPosition.leverage,
-        // reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
+        reduceOnly: true,
         // keepPositionLvg: orderInfo.keepPositionLeverage,
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });
