@@ -305,7 +305,7 @@
           "below-min-position": "Warnung: Ordergrösse ist kleiner als die minimale Positionsgrösse",
           "insufficient-balance": "Order wird scheitern: Das Walletguthaben ist zu klein",
           "undefined": "Order nicht definiert: Take Profit Einstellungen sind inkompatibel mit der Hebeleinstellung",
-          "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying an existing position that has TP/SL orders",
+          "verify-tp-sl-orders": "Überprüfen Sie Ihre TP/SL - Sie verändern eine Position mit existierenden TP/SL",
           "good-to-go": "Alles bereit",
           "pass": "Bestanden",
           "fail": "Nicht bestanden",

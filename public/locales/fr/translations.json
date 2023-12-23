@@ -305,7 +305,7 @@
             "below-min-position": "Attention: taille de l'ordre en dessous de la taille de position minimale",
             "insufficient-balance": "L'ordre échouera: solde de portefeuille insuffisant",
             "undefined": "Ordre indéfini: la prise de profit est incompatible avec l'effet de levier",
-            "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying an existing position that has TP/SL orders",
+            "verify-tp-sl-orders": "Vérifiez vos TP/SL existantes - vous modifiez une position qui contient déjà des TP/SL",
             "good-to-go": "Prêt à l'emploi",
             "pass": "Passé",
             "fail": "Échoué",
