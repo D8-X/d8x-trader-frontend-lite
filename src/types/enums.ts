@@ -133,4 +133,5 @@ export enum FieldTypeE {
   String,
   Number,
   Date,
+  Boolean,
 }

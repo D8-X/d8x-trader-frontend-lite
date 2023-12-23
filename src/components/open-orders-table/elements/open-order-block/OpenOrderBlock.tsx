@@ -90,12 +90,18 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[6].label}
-          rightSide={`${leverage}x`}
+          rightSide={order.reduceOnly ? 'True' : 'False'}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[7].label}
+          rightSide={`${leverage}x`}
+          leftSideStyles={styles.dataLabel}
+          rightSideStyles={styles.dataValue}
+        />
+        <SidesRow
+          leftSide={headers[8].label}
           rightSide={deadlineDate}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}

@@ -61,6 +61,9 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
             : t('pages.trade.orders-table.table-content.na')}
         </Typography>
       </TableCell>
+      <TableCell align="left">
+        <Typography variant="cellSmall">{order.reduceOnly ? 'True' : 'False'}</Typography>
+      </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">{leverage}x</Typography>
       </TableCell>

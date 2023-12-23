@@ -129,6 +129,7 @@
           "order-size": "Order Size",
           "limit-price": "Limit Price",
           "stop-price": "Stop Price",
+          "reduce-only": "Reduce Only",
           "leverage": "Leverage",
           "good-until": "Good Until"
         },

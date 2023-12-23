@@ -129,6 +129,7 @@
           "order-size": "仓位大小",
           "limit-price": "限价",
           "stop-price": "止盈止损价",
+          "reduce-only": "仅减少",
           "leverage": "杠杆",
           "good-until": "截至"
         },

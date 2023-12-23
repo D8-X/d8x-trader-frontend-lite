@@ -129,6 +129,7 @@
           "order-size": "Tamaño",
           "limit-price": "Precio Límite",
           "stop-price": "Precio de Parada",
+          "reduce-only": "Sólo Reducir",
           "leverage": "Apalancamiento",
           "good-until": "Vencimiento"
         },

@@ -129,6 +129,7 @@
               "order-size": "Taille de l'Ordre",
               "limit-price": "Prix Limite",
               "stop-price": "Prix Stop",
+              "reduce-only": "Réd. Uniquement",
               "leverage": "Effet de Levier",
               "good-until": "Valable jusqu'à"
             },

@@ -267,6 +267,12 @@ export const OpenOrdersTable = memo(() => {
         fieldType: FieldTypeE.Number,
       },
       {
+        field: 'reduceOnly',
+        label: t('pages.trade.orders-table.table-header.reduce-only'),
+        align: AlignE.Left,
+        fieldType: FieldTypeE.Boolean,
+      },
+      {
         field: 'leverage',
         label: t('pages.trade.orders-table.table-header.leverage'),
         align: AlignE.Right,

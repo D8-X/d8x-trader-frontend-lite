@@ -411,7 +411,10 @@ export const theme = createTheme({
           },
           '&.Mui-disabled': {
             color: 'var(--d8x-color-text-main)',
-            '-webkit-text-fill-color': 'var(--d8x-color-text-main)',
+            WebkitTextFillColor: 'var(--d8x-color-text-main)',
+            '::placeholder': {
+              color: 'var(--d8x-color-text-main)',
+            },
           },
         },
         notchedOutline: {
