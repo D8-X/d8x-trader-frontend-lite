@@ -216,25 +216,38 @@ export const PositionsTable = () => {
         if (takeProfitOrders.length > 0) {
           if (takeProfitOrders.length > 1) {
             const totalQuantity = takeProfitOrders.reduce((sum, tpOrder) => sum + tpOrder.quantity, 0);
+            const totalQuantityReduceOnly = takeProfitOrders.reduce((sum, tpOrder) => {
+              return tpOrder.reduceOnly === true ? sum + tpOrder.quantity : sum;
+            }, 0);
             if (areFloatsEqual(totalQuantity, position.positionNotionalBaseCCY)) {
-              // if the sum of all SL order sizes is equal to position.positionNotionalBaseCCY -> multiple
+              // if the sum of all TP order sizes is equal to position.positionNotionalBaseCCY -> multiple
               takeProfitValueType = OrderValueTypeE.Multiple;
             } else if (totalQuantity < position.positionNotionalBaseCCY) {
-              // if the sum of all SL order sizes is less than position.positionNotionalBaseCCY -> partial
+              // if the sum of all TP order sizes is less than position.positionNotionalBaseCCY -> partial
               takeProfitValueType = OrderValueTypeE.Partial;
+            } else if (totalQuantityReduceOnly === totalQuantity) {
+              // if the sum of all TP order sizes is greater than position.positionNotionalBaseCCY
+              // but they are all reduceOnly -> multiple
+              takeProfitValueType = OrderValueTypeE.Multiple;
             } else {
-              // if the sum of all SL order sizes is greater than position.positionNotionalBaseCCY -> exceeded
+              // if the sum of all TP order sizes is greater than position.positionNotionalBaseCCY
+              // and at least one order is not reduce only -> exceeded
               takeProfitValueType = OrderValueTypeE.Exceeded;
             }
           } else if (areFloatsEqual(takeProfitOrders[0].quantity, position.positionNotionalBaseCCY)) {
-            // if 1 SL order exists for an order size that is = position.size, show stopPrice of that order for SL
+            // if 1 TP order exists for an order size that is = position.size, show limitPrice
             takeProfitValueType = OrderValueTypeE.Full;
             takeProfitFullValue = takeProfitOrders[0].limitPrice;
           } else if (takeProfitOrders[0].quantity < position.positionNotionalBaseCCY) {
-            // if 1 SL order exists for an order size that is < position.size, the TP/SL column displays "partial" for the SL price
+            // if 1 TP order exists for an order size that is < position.size, the TP/SL column displays "partial"
             takeProfitValueType = OrderValueTypeE.Partial;
+          } else if (takeProfitOrders[0].reduceOnly === true) {
+            // if 1 TP order exists for an order size that is > position.size, but the order is reduceOnly, show limitPrice
+            takeProfitValueType = OrderValueTypeE.Full;
+            takeProfitFullValue = takeProfitOrders[0].limitPrice;
           } else {
-            // if 1 TP order exists for an order size that is > position.size, show stopPrice of that order for SL
+            // if 1 TP order exists for an order size that is > position.size and the order is not reduceOnly,
+            // show stopPrice of that order for SL
             takeProfitValueType = OrderValueTypeE.Exceeded;
           }
         }
@@ -258,14 +271,22 @@ export const PositionsTable = () => {
         if (stopLossOrders.length > 0) {
           if (stopLossOrders.length > 1) {
             const totalQuantity = stopLossOrders.reduce((sum, slOrder) => sum + slOrder.quantity, 0);
+            const totalQuantityReduceOnly = stopLossOrders.reduce((sum, slOrder) => {
+              return slOrder.reduceOnly === true ? sum + slOrder.quantity : sum;
+            }, 0);
             if (areFloatsEqual(totalQuantity, position.positionNotionalBaseCCY)) {
               // if the sum of all SL order sizes is equal to position.positionNotionalBaseCCY -> multiple
               stopLossValueType = OrderValueTypeE.Multiple;
             } else if (totalQuantity < position.positionNotionalBaseCCY) {
               // if the sum of all SL order sizes is less than position.positionNotionalBaseCCY -> partial
               stopLossValueType = OrderValueTypeE.Partial;
+            } else if (totalQuantityReduceOnly === totalQuantity) {
+              // if the sum of all SL order sizes is greater than position.positionNotionalBaseCCY
+              // but they are all reduceOnly -> multiple
+              stopLossValueType = OrderValueTypeE.Multiple;
             } else {
-              // if the sum of all SL order sizes is greater than position.positionNotionalBaseCCY -> exceeded
+              // if the sum of all SL order sizes is greater than position.positionNotionalBaseCCY
+              // and at least one order is not reduce only -> exceeded
               stopLossValueType = OrderValueTypeE.Exceeded;
             }
           } else if (areFloatsEqual(stopLossOrders[0].quantity, position.positionNotionalBaseCCY)) {
@@ -275,6 +296,10 @@ export const PositionsTable = () => {
           } else if (stopLossOrders[0].quantity < position.positionNotionalBaseCCY) {
             // if 1 SL order exists for an order size that is < position.size, the TP/SL column displays "partial" for the SL price
             stopLossValueType = OrderValueTypeE.Partial;
+          } else if (stopLossOrders[0].reduceOnly === true) {
+            // if 1 SL order exists for an order size that is > position.size, but the order is reduceOnly, show stopPrice
+            stopLossValueType = OrderValueTypeE.Full;
+            stopLossFullValue = takeProfitOrders[0].stopPrice;
           } else {
             // if 1 TP order exists for an order size that is > position.size, show stopPrice of that order for SL
             stopLossValueType = OrderValueTypeE.Exceeded;
