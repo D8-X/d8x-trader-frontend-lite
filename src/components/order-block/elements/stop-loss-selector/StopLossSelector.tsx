@@ -9,7 +9,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
-import { OrderBlockE, StopLossE } from 'types/enums';
+import { OrderBlockE, OrderTypeE, StopLossE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const StopLossSelector = memo(() => {
@@ -21,6 +21,7 @@ export const StopLossSelector = memo(() => {
   const setStopLossPrice = useSetAtom(stopLossPriceAtom);
 
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null>(null);
+  const [isDisabled, setDisabled] = useState(false);
 
   const currentOrderBlockRef = useRef(orderInfo?.orderBlock);
   const currentLeverageRef = useRef(orderInfo?.leverage);
@@ -112,6 +113,17 @@ export const StopLossSelector = memo(() => {
     }
   }, [stopLoss, orderInfo?.stopLossPrice]);
 
+  useEffect(() => {
+    if (orderInfo && orderInfo.reduceOnly && orderInfo.orderType !== OrderTypeE.Market) {
+      setStopLossInputPrice(null);
+      setStopLossPrice(null);
+      setStopLoss(StopLossE.None);
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [setStopLossInputPrice, setStopLossPrice, setStopLoss, orderInfo]);
+
   const translationMap: Record<StopLossE, string> = {
     [StopLossE.None]: t('pages.trade.order-block.stop-loss.none'),
     [StopLossE['10%']]: '10%',
@@ -144,6 +156,7 @@ export const StopLossSelector = memo(() => {
       selectedPrice={stopLoss}
       currency={selectedPerpetual?.quoteCurrency}
       stepSize={stepSize}
+      disabled={isDisabled}
     />
   );
 });

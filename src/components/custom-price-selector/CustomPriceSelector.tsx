@@ -19,6 +19,7 @@ interface CustomPriceSelectorPropsI<T extends string> {
   selectedPrice: T | null;
   currency?: string;
   stepSize: string;
+  disabled?: boolean;
 }
 
 function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelectorPropsI<T>) {
@@ -34,6 +35,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
     selectedPrice,
     currency,
     stepSize,
+    disabled = false,
   } = props;
 
   return (
@@ -54,6 +56,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
           onChange={handleInputPriceChange}
           onBlur={validateInputPrice}
           inputProps={{ step: stepSize, min: 0 }}
+          disabled={disabled}
         />
       </Box>
       <Box className={styles.priceOptions}>
@@ -63,6 +66,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
             variant="outlined"
             className={classnames({ [styles.selected]: key === selectedPrice })}
             onClick={() => handlePriceChange(key)}
+            disabled={disabled}
           >
             {translationMap[key]}
           </Button>

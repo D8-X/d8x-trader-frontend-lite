@@ -9,7 +9,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, takeProfitAtom, takeProfitPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom } from 'store/pools.store';
-import { OrderBlockE, TakeProfitE } from 'types/enums';
+import { OrderBlockE, OrderTypeE, TakeProfitE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const TakeProfitSelector = memo(() => {
@@ -21,6 +21,7 @@ export const TakeProfitSelector = memo(() => {
   const setTakeProfitPrice = useSetAtom(takeProfitPriceAtom);
 
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null>(null);
+  const [isDisabled, setDisabled] = useState(false);
 
   const currentOrderBlockRef = useRef(orderInfo?.orderBlock);
   const currentLeverageRef = useRef(orderInfo?.leverage);
@@ -111,6 +112,17 @@ export const TakeProfitSelector = memo(() => {
     }
   }, [takeProfit, orderInfo?.takeProfitPrice]);
 
+  useEffect(() => {
+    if (orderInfo && orderInfo.reduceOnly && orderInfo.orderType !== OrderTypeE.Market) {
+      setTakeProfitInputPrice(null);
+      setTakeProfitPrice(null);
+      setTakeProfit(TakeProfitE.None);
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  }, [setTakeProfitInputPrice, setTakeProfitPrice, setTakeProfit, orderInfo]);
+
   const translationMap: Record<TakeProfitE, string> = {
     [TakeProfitE.None]: t('pages.trade.order-block.take-profit.none'),
     [TakeProfitE['25%']]: '35%',
@@ -143,6 +155,7 @@ export const TakeProfitSelector = memo(() => {
       selectedPrice={takeProfit}
       currency={selectedPerpetual?.quoteCurrency}
       stepSize={stepSize}
+      disabled={isDisabled}
     />
   );
 });

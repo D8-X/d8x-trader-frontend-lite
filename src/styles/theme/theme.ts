@@ -324,6 +324,11 @@ export const theme = createTheme({
               backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.2)',
               borderColor: 'transparent',
             },
+            ':disabled': {
+              borderColor: 'var(--d8x-color-border)',
+              color: 'var(--d8x-color-text-secondary)',
+              opacity: '0.3',
+            },
           },
         },
         {
@@ -383,8 +388,13 @@ export const theme = createTheme({
           },
           '&.Mui-disabled': {
             borderColor: 'var(--d8x-color-border)',
-            borderWidth: '1px',
+            borderWidth: '0',
             borderStyle: 'solid',
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'var(--d8x-color-border)',
+              borderWidth: '1px',
+              opacity: '0.3',
+            },
           },
         },
         input: {
@@ -398,6 +408,10 @@ export const theme = createTheme({
           color: 'var(--d8x-color-text-main)',
           '::placeholder': {
             paddingTop: '1px',
+          },
+          '&.Mui-disabled': {
+            color: 'var(--d8x-color-text-main)',
+            '-webkit-text-fill-color': 'var(--d8x-color-text-main)',
           },
         },
         notchedOutline: {
