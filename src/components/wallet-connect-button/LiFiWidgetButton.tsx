@@ -18,7 +18,7 @@ export const LiFiWidgetButton = () => {
         onClick={() => setModalOpen(true)}
         className={styles.chainButton}
         variant="primary"
-        title={t('common.li-fi-widget')}
+        title={t('common.li-fi-widget.button-title')}
       >
         <CurrencyExchangeOutlinedIcon />
       </Button>
