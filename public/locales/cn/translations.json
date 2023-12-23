@@ -305,15 +305,15 @@
           "below-min-position": "警告：订单小于仓位",
           "insufficient-balance": "钱包余额不足，导致订单失败",
           "undefined": "止盈与杠杆不兼容，订单未执行",
-          "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying a position that already has TP/SL orders",
+          "verify-tp-sl-orders": "验证您现有的止盈/止损订单 - 您正在修改已有止盈/止损订单的仓位",
           "good-to-go": "准备就绪",
           "pass": "通过",
           "fail": "失败",
-          "button-no-address": "Connect wallet",
-          "button-no-funds": "No collateral in wallet",
-          "button-no-amount": "Order size too small",
-          "button-no-limit": "Set limit price",
-          "button-no-trigger": "Set trigger price"
+          "button-no-address": "连接钱包",
+          "button-no-funds": "钱包内无抵押品",
+          "button-no-amount": "订单规模太小",
+          "button-no-limit": "设置限价",
+          "button-no-trigger": "设置触发价格"
         },
         "order-types": {
           "market": "市价单",
@@ -476,10 +476,10 @@
         "receive": "您会收到d{{poolSymbol}}",
         "max": "最大：",
         "button": "添加",
-        "validity-empty": "Connect wallet",
-        "validity-amount-too-big": "Insufficient funds" ,
-        "validity-amount-below-min": "Amount below min",
-        "validity-no-amount": "Enter amount"
+        "validity-empty": "连接钱包",
+        "validity-amount-too-big": "资金不足" ,
+        "validity-amount-below-min": "金额低于最小值",
+        "validity-no-amount": "输入金额"
       },
       "withdraw": {
         "title": "提取流动性",
@@ -490,12 +490,12 @@
           "info1": "设置您想要兑换{{poolSymbol}}的d{{poolSymbol}}数量。",
           "info2": "48小时后，该金额可以转换为MATIC并从流动性池中提取。 ",
           "button": "发起提现",
-          "validity-no-address": "Connect wallet",
+          "validity-no-address": "连接钱包",
           "validity-empty": "-",
-          "validity-no-funds": "No funds to withdraw",
-          "validity-amount-too-big": "Amount too large" ,
-          "validity-amount-below-min": "Amount below min",
-          "validity-no-amount": "Enter amount"
+          "validity-no-funds": "无资金可提取",
+          "validity-amount-too-big": "金额太大" ,
+          "validity-amount-below-min": "金额低于最小",
+          "validity-no-amount": "输入金额"
         },
         "action": {
           "title": "提现{{poolSymbol}}",
@@ -503,9 +503,9 @@
           "date": "可以提现：",
           "receive": "您将收到：",
           "button": "提现",
-          "validity-no-address": "Connect wallet",
-          "validity-no-funds": "No funds to withdraw",
-          "validity-no-initiation": "Initiate withdrawal and wait 48h"
+          "validity-no-address": "连接钱包",
+          "validity-no-funds": "没有资金可提取",
+          "validity-no-initiation": "启动提款并等待48小时"
         }
       },
       "na": "无",
