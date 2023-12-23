@@ -305,7 +305,7 @@
           "below-min-position": "Cuidado: El tamaño de la orden esta debajo del tamaño minimo para una posición",
           "insufficient-balance": "Insuficiente saldo en tu cartera",
           "undefined": "El valor de tomar ganancias es incompatible con el apalancamiento",
-          "verify-tp-sl-orders": "Verify your existing TP/SL orders - you are modifying an existing position that has TP/SL orders",
+          "verify-tp-sl-orders": "Verifique sus TP/SL existentes: está modificando una posición que tiene TP/SL",
           "good-to-go": "Todo Listo",
           "pass": "Pasó",
           "fail": "No Pasó",
