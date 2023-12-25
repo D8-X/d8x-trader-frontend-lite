@@ -14,11 +14,24 @@
   flex: 1;
 }
 
+.pythLogo {
+  width: 56px;
+  color: var(--d8x-color-action);
+  margin: 1rem 0;
+}
+
 .iconsHolder {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 48px;
+}
+
+.iconsLeft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
 }
 
 .footerLink {
