@@ -2,6 +2,7 @@ import Geonames from 'geonames.js';
 import { memo, type PropsWithChildren, useEffect, useState } from 'react';
 
 import { config } from 'config';
+import { getIpGeolocationData } from 'network/public';
 import { type GeoLocationDataI } from 'types/types';
 
 import { AccessIsBlocked } from './placeholders/AccessIsBlocked';
@@ -37,15 +38,24 @@ const BLOCKED_COUNTRIES = [
 ];
 
 const SIMPLE_CHECK = true;
+const GEO_LATEST_CHECK_LS_KEY = 'd8x_geoLatestCheck';
+const ONE_DAY_AGO_MS = 24 * 60 * 60 * 1000;
 
 export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
+  const [isIpGeolocationSuccess, setIpGeolocationSuccess] = useState<boolean | null>(null);
   const [hasNavigator, setHasNavigator] = useState<boolean | null>(null);
   const [isNavigatorBlocked, setNavigatorBlocked] = useState<boolean>(false);
   const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
   const [hasAccess, setAccess] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const geoLatestCheck = localStorage.getItem(GEO_LATEST_CHECK_LS_KEY);
+  const isGeoCheckExpired = geoLatestCheck === null || +geoLatestCheck <= Date.now() - ONE_DAY_AGO_MS;
+
   useEffect(() => {
+    if (config.ipGeolocationApiKey !== '' && isIpGeolocationSuccess) {
+      return;
+    }
     if (currentPosition && config.geonamesUsername !== '') {
       const geonames = Geonames({
         username: config.geonamesUsername,
@@ -64,13 +74,36 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
               BLOCKED_COUNTRIES.includes(countryCode)
             );
             setAccess(!foundBlocked);
+            if (!foundBlocked) {
+              localStorage.setItem(GEO_LATEST_CHECK_LS_KEY, `${Date.now()}`);
+            }
           }
         });
     }
-  }, [currentPosition]);
+  }, [currentPosition, isIpGeolocationSuccess]);
 
   useEffect(() => {
-    if ('geolocation' in navigator && config.geonamesUsername !== '') {
+    if (isGeoCheckExpired && config.ipGeolocationApiKey) {
+      getIpGeolocationData()
+        .then((data) => {
+          if (data.country_code2) {
+            const isBlocked = BLOCKED_COUNTRIES.includes(data.country_code2);
+            setAccess(!isBlocked);
+            setIpGeolocationSuccess(true);
+            localStorage.setItem(GEO_LATEST_CHECK_LS_KEY, `${Date.now()}`);
+          } else {
+            setIpGeolocationSuccess(false);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          setIpGeolocationSuccess(false);
+        });
+    }
+  }, [isGeoCheckExpired]);
+
+  useEffect(() => {
+    if (isGeoCheckExpired && 'geolocation' in navigator && config.geonamesUsername !== '') {
       setHasNavigator(true);
 
       navigator.geolocation.getCurrentPosition(
@@ -86,9 +119,13 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     } else {
       setHasNavigator(false);
     }
-  }, []);
+  }, [isGeoCheckExpired]);
 
-  if (hasAccess || config.geonamesUsername === '') {
+  if (!isGeoCheckExpired) {
+    return children;
+  }
+
+  if (hasAccess || (config.geonamesUsername === '' && config.ipGeolocationApiKey === '')) {
     return children;
   }
 
@@ -100,7 +137,7 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     return <GettingLocationInfo />;
   }
 
-  if (isNavigatorBlocked) {
+  if (isIpGeolocationSuccess === false && isNavigatorBlocked) {
     return <LocationAccessDenied errorMessage={errorMessage} />;
   }
 
@@ -108,5 +145,5 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     return SIMPLE_CHECK ? children : <Locating />;
   }
 
-  return <GeoLocationIsNotSupported />;
+  return SIMPLE_CHECK ? children : <GeoLocationIsNotSupported />;
 });

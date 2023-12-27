@@ -1,6 +1,7 @@
 const {
   VITE_PROJECT_ID: projectId = '',
   VITE_GEONAMES_USERNAME: geonamesUsername = '',
+  VITE_IP_GEOLOCATION_API_KEY: ipGeolocationApiKey = '',
   VITE_API_URL: apiUrls = '',
   VITE_HISTORY_URL: historyUrls = '',
   VITE_REFERRAL_URL: referralUrls = '',
@@ -38,6 +39,7 @@ function splitNumbers(numbers: string): number[] {
 export const config = {
   projectId,
   geonamesUsername,
+  ipGeolocationApiKey,
   apiUrl: parseUrls(apiUrls),
   historyUrl: parseUrls(historyUrls),
   referralUrl: parseUrls(referralUrls),

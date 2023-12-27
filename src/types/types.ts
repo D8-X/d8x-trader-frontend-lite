@@ -374,3 +374,25 @@ export interface OverviewItemI {
   title: string;
   poolsItems: OverviewPoolItemI[];
 }
+
+export interface IpGeolocationDataI {
+  ip: string;
+  country_code2: string;
+  country_code3: string;
+  country_name: string;
+  state_prov: string;
+  district: string;
+  city: string;
+  zipcode: string;
+  latitude: string;
+  longitude: string;
+  security?: {
+    threat_score: number;
+    is_tor: boolean;
+    is_proxy: boolean;
+    proxy_type: string;
+    is_anonymous: boolean;
+    is_known_attacker: boolean;
+    is_cloud_provider: boolean;
+  };
+}
