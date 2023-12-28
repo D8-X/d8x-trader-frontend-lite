@@ -103,7 +103,12 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
   }, [isGeoCheckExpired]);
 
   useEffect(() => {
-    if (isGeoCheckExpired && 'geolocation' in navigator && config.geonamesUsername !== '') {
+    if (
+      (isIpGeolocationSuccess === false || config.ipGeolocationApiKey === '') &&
+      isGeoCheckExpired &&
+      'geolocation' in navigator &&
+      config.geonamesUsername !== ''
+    ) {
       setHasNavigator(true);
 
       navigator.geolocation.getCurrentPosition(
@@ -119,7 +124,7 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
     } else {
       setHasNavigator(false);
     }
-  }, [isGeoCheckExpired]);
+  }, [isIpGeolocationSuccess, isGeoCheckExpired]);
 
   if (!isGeoCheckExpired) {
     return children;

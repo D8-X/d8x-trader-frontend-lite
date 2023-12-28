@@ -67,17 +67,24 @@ This package is configured entirely via environment variables. You must specify:
   - Then you would define
     `VITE_HTTP_RPC=1101::https://zkevm-rpc.com;1442::https://rpc.public.zkevm-test.net;default::https://pyth.testnet.yourdomain.com/api`
 
-- **VITE_GEONAMES_USERNAME**: A string with your geonames username. You need to set this parameter to prohibit impermissible access to citizens and residents of, or participants physically located in, any Prohibited Jurisdiction as defined in the D8X Terms of Service:
+- **VITE_IP_GEOLOCATION_API_KEY**: A string with your ipgeolocation.io API key. You need to set this parameter to prohibit impermissible access to citizens and residents of, or participants physically located in, any Prohibited Jurisdiction as defined in the D8X Terms of Service. This activates the primary geoblocking system. If you run out of requests, the system switches to the secondary geoblocking system.
+
+  - Go to [Login page](https://app.ipgeolocation.io/login) and follow the guidance to create a new user account, free of charge or select any paid plan
+  - After registration, you will see your API Key on the [Dashboard page](https://app.ipgeolocation.io/dashboard) which should be added to .env file:
+    `VITE_IP_GEOLOCATION_API_KEY=ipGeolocationApiKey`
+
+- **VITE_GEONAMES_USERNAME**: A string with your geonames username. You need to set this parameter to prohibit impermissible access to citizens and residents of, or participants physically located in, any Prohibited Jurisdiction as defined in the D8X Terms of Service. This activates the secondary geoblocking system.
 
   - Go to https://www.geonames.org/export/web-services.html and follow the guidance to create a new user account, free of charge
-  - Let’s assume you chose the username `myusername` , then you would define
-    `VITE_GEONAMES_USERNAME=myusername`
+  - After registering, click on your username on the top right, and enable "Free Web Services" in your account settings
+  - Let’s assume you chose the username `myUsername`, then you would define:
+    `VITE_GEONAMES_USERNAME=myUsername`
 
 - **VITE_PROJECT_ID**: A string with your WalletConnect project ID.
 
   - Head over to [WalletConnect Cloud](https://cloud.walletconnect.com/) to sign up and create a project ID.
   - Example:
-    `VITE_PROJECT_ID=yourprojectid`
+    `VITE_PROJECT_ID=yourProjectId`
 
 - **VITE_WELCOME_MODAL**: This is an optional variable that allows to enable a Welcome modal. You can use it to add a Disclaimer.
   Change its content in src/components/welcome-modal.
