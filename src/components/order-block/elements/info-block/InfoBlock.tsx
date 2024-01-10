@@ -11,6 +11,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { orderSizeAtom } from '../order-size/store';
 import { leverageAtom } from '../leverage-selector/store';
 import styles from './InfoBlock.module.scss';
+import { useFeeData } from 'wagmi';
 
 export const InfoBlock = memo(() => {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ export const InfoBlock = memo(() => {
   const [leverage] = useAtom(leverageAtom);
   const [slippage] = useAtom(slippageSliderAtom);
   const [orderType] = useAtom(orderTypeAtom);
+  const { data: gasInfo } = useFeeData({ formatUnits: 'ether' });
 
   const feeInCC = useMemo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
@@ -39,6 +41,22 @@ export const InfoBlock = memo(() => {
       );
     }
   }, [orderInfo]);
+
+  const gasPrice = useMemo(() => {
+    if (orderInfo && gasInfo?.formatted?.gasPrice) {
+      return (
+        +gasInfo.formatted.gasPrice *
+        500_000 *
+        (1 + (orderInfo.stopLossPrice ? 1 : 0) + (orderInfo.takeProfitPrice ? 1 : 0))
+      );
+    }
+  }, [gasInfo, orderInfo]);
+
+  const gasRebate = useMemo(() => {
+    if (gasPrice) {
+      return gasPrice * 0.77734375;
+    }
+  }, [gasPrice]);
 
   const approxDepositFromWallet = useMemo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
@@ -82,6 +100,16 @@ export const InfoBlock = memo(() => {
         <Typography variant="bodySmallSB" className={styles.infoText}>
           {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
           {formatToCurrency(feePct, '%', false, 3)}
+          {')'}
+        </Typography>
+      </Box>
+      <Box className={styles.row}>
+        <Typography variant="bodySmallPopup" className={styles.infoText}>
+          Gas Fees
+        </Typography>
+        <Typography variant="bodySmallSB" className={styles.infoText}>
+          {formatToCurrency(gasPrice, 'ETH')} {'(Rebate '}
+          {formatToCurrency(gasRebate, 'ETH')}
           {')'}
         </Typography>
       </Box>
