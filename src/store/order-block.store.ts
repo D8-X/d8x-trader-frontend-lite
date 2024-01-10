@@ -152,7 +152,8 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   let maxMinEntryPrice = null;
   if (orderType === OrderTypeE.Market) {
     maxMinEntryPrice =
-      perpetualStatistics.midPrice * (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
+      perpetualStatistics.indexPrice *
+      (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
   }
 
   let stopLossPrice = null;

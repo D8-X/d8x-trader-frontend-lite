@@ -102,7 +102,7 @@ export const OrderSettings = memo(() => {
   const entryPrice = useMemo(() => {
     if (perpetualStatistics) {
       return (
-        perpetualStatistics.midPrice *
+        perpetualStatistics.indexPrice *
         (1 + mapSlippageToNumber(updatedSlippage) * (orderBlock === OrderBlockE.Long ? 1 : -1))
       );
     }
