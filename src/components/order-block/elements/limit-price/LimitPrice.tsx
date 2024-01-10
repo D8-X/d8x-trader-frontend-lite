@@ -7,16 +7,17 @@ import { Box, Typography } from '@mui/material';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { limitPriceAtom, orderTypeAtom } from 'store/order-block.store';
+import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 
 import styles from './LimitPrice.module.scss';
-import { OrderTypeE } from 'types/enums';
+import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
 
   const [orderType] = useAtom(orderTypeAtom);
+  const [orderBlock] = useAtom(orderBlockAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
@@ -24,6 +25,7 @@ export const LimitPrice = memo(() => {
   const [inputValue, setInputValue] = useState(limitPrice != null ? `${limitPrice}` : '');
 
   const inputValueChangedRef = useRef(false);
+  const orderBlockChangedRef = useRef(true);
 
   const stepSize = useMemo(
     () => `${Math.min(1, +calculateStepSize(selectedPerpetual?.midPrice))}`,
@@ -56,6 +58,21 @@ export const LimitPrice = memo(() => {
     }
     inputValueChangedRef.current = false;
   }, [limitPrice]);
+
+  useEffect(() => {
+    orderBlockChangedRef.current = true;
+  }, [orderBlock]);
+
+  useEffect(() => {
+    if (orderBlockChangedRef.current && orderType === OrderTypeE.Limit && !!perpetualStatistics?.midPrice) {
+      const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
+      const step = +stepSize;
+      const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
+      setLimitPrice(`${initialLimit}`);
+      setInputValue('');
+    }
+    orderBlockChangedRef.current = false;
+  }, [setLimitPrice, perpetualStatistics?.midPrice, orderType, stepSize, orderBlock]);
 
   const handleInputBlur = useCallback(() => {
     setInputValue(limitPrice != null ? `${limitPrice}` : '');
