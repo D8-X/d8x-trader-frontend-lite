@@ -49,7 +49,9 @@ export const InfoBlock = memo(() => {
 
   const gasFee = useMemo(() => {
     if (orderInfo && gasPriceUSD) {
-      return gasPriceUSD * 500_000 * (1 + (orderInfo.stopLossPrice ? 1 : 0) + (orderInfo.takeProfitPrice ? 1 : 0));
+      return (
+        gasPriceUSD * (600_000 + (orderInfo.stopLossPrice ? 400_000 : 0) + (orderInfo.takeProfitPrice ? 400_000 : 0))
+      );
     }
   }, [gasPriceUSD, orderInfo]);
 
