@@ -273,6 +273,8 @@
           "balance": "Balance de tu Cartera",
           "order-size": "Tamaño de tu orden",
           "fees": "Comisiones",
+          "gas": "Tarifa de Gas",
+          "rebate": "Reembolso",
           "approx-deposit": "Aprox. depósito desde tu cartera"
         },
         "review": {
@@ -667,6 +669,16 @@
           "status": "Estado"
         }
       }
+    },
+    "usdc-swap-widget": {
+      "title": "Prepárate para comerciar!",
+      "message": "Convierte tu viejo USDC en el nuevo USDC con CERO comisiones!",
+      "item1": "Convierte tu legacy bridged",
+      "item2": "a el nuevo",
+      "item3": "Este widget utiliza el",
+      "item4": "NativeConverter de Polygon",
+      "item5": "Puedes leer mas en",
+      "item6": "el anuncio oficial de Polygon"
     },
     "info-modal": {
       "close": "Cerrar"

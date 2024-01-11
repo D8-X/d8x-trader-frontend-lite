@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { parseUnits } from 'viem/utils';
@@ -23,6 +25,8 @@ import { OLD_USDC_ADDRESS, USDC_DECIMALS, ZK_NATIVE_CONVERTER_ABI, ZK_NATIVE_CON
 import styles from './UsdcSwapWidget.module.scss';
 
 export function UsdcSwapWidget() {
+  const { t } = useTranslation();
+
   const { address, isConnected } = useAccount();
   const { data: wallet } = useWalletClient({ chainId: 1101 });
 
@@ -221,7 +225,7 @@ export function UsdcSwapWidget() {
       </div>
       <div className={styles.row}>
         <div className={styles.text}>
-          Swap your legacy bridged{' '}
+          {t('common.usdc-swap-widget.item1')}{' '}
           <a
             href="https://zkevm.polygonscan.com/token/0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035"
             target="_blank"
@@ -229,7 +233,7 @@ export function UsdcSwapWidget() {
           >
             USDC
           </a>{' '}
-          to the new bridged{' '}
+          {t('common.usdc-swap-widget.item2')}{' '}
           <a
             href="https://zkevm.polygonscan.com/token/0x37eAA0eF3549a5Bb7D431be78a3D99BD360d19e5"
             target="_blank"
@@ -237,21 +241,21 @@ export function UsdcSwapWidget() {
           >
             USDC
           </a>
-          . This widget relies on{' '}
+          . {t('common.usdc-swap-widget.item3')}{' '}
           <a
             href="https://zkevm.polygonscan.com/address/0xd4F3531Fc95572D9e7b9e9328D9FEaa8e8496054#code"
             target="_blank"
             rel="noreferrer"
           >
-            Polygon's NativeConverter
+            {t('common.usdc-swap-widget.item4')}
           </a>
-          . You can read more in{' '}
+          . {t('common.usdc-swap-widget.item5')}{' '}
           <a
             href="https://polygon.technology/blog/bridged-usdc-standard-contracts-are-live-on-polygon-zkevm"
             target="_blank"
             rel="noreferrer"
           >
-            Polygon's announcement
+            {t('common.usdc-swap-widget.item6')}
           </a>
           .
         </div>

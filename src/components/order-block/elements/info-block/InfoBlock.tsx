@@ -119,10 +119,10 @@ export const InfoBlock = memo(() => {
       {chainId !== undefined && chainId === 1101 && (
         <Box className={styles.row}>
           <Typography variant="bodySmallPopup" className={styles.infoText}>
-            Gas Fees
+            {t('pages.trade.order-block.info.gas')}
           </Typography>
           <Typography variant="bodySmallSB" className={styles.infoText}>
-            {formatToCurrency(gasFee, '$', undefined, 2)} {'(Rebate: '}
+            {formatToCurrency(gasFee, '$', undefined, 2)} {'('} {t('pages.trade.order-block.info.rebate')} {': '}
             {formatToCurrency(gasRebate, '$', undefined, 2)}
             {')'}
           </Typography>

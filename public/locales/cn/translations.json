@@ -273,6 +273,8 @@
           "balance": "钱包余额",
           "order-size": "仓位大小",
           "fees": "手续费",
+          "gas": "燃料费",
+          "rebate": "返还",
           "approx-deposit": "从钱包充值约为"
         },
         "review": {
@@ -668,6 +670,16 @@
         }
       }
     },
+    "usdc-swap-widget": {
+      "title": "准备交易吧！",
+      "message": "零滑点将您的旧版USDC兑换为新版USDC",
+      "item1": "将您的桥接旧版",
+      "item2": "兑换为新版",
+      "item3": "这个小工具依赖于",
+      "item4": "Polygon的NativeConverter",
+      "item5": "您可以在",
+      "item6": "Polygon的公告中了解更多"
+    },    
     "info-modal": {
       "close": "关闭"
     },

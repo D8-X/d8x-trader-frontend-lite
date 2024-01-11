@@ -273,6 +273,8 @@
           "balance": "Wallet Guthaben",
           "order-size": "Ordergrösse",
           "fees": "Gebühren",
+          "gas": "Gasgebühr",
+          "rebate": "Rabatt",
           "approx-deposit": "Einzahlung aus der Wallet (circa)"
         },
         "review": {
@@ -667,6 +669,16 @@
           "status": "Status"
         }
       }
+    },
+    "usdc-swap-widget": {
+      "title": "Mach dich bereit zum Handeln!",
+      "message": "Tausche deine alten USDC gegen neue USDC mit NULL Slippage!",
+      "item1": "Tausche deine alten",
+      "item2": "gegen neue",
+      "item3": "Dieses Widget baut auf",
+      "item4": "Polygon's NativeConverter auf",
+      "item5": "Du kannst in",
+      "item6": "Polygon's Ankündigung mehr erfahren"
     },
     "info-modal": {
       "close": "Schliessen"

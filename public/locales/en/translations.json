@@ -273,6 +273,8 @@
           "balance": "Wallet balance",
           "order-size": "Order size",
           "fees": "Fees",
+          "gas": "Gas fees",
+          "rebate": "Rebate",
           "approx-deposit": "Approx. deposit from wallet"
         },
         "review": {
@@ -669,8 +671,14 @@
       }
     },
     "usdc-swap-widget": {
-      "title": "Swap old to new USDC",
-      "message": "You don't have new USDC. Swap your legacy USDC now to trade."
+      "title": "Get ready to trade!",
+      "message": "Swap your legacy USDC to new USDC with ZERO slippage!",
+      "item1": "Swap your legacy bridged",
+      "item2": "to the new bridged",
+      "item3": "This widget relies on",
+      "item4": "Polygon's NativeConverter",
+      "item5": "You can read more in",
+      "item6": "Polygon's announcement"
     },
     "info-modal": {
       "close": "Close"

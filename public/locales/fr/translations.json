@@ -273,6 +273,8 @@
             "balance": "Solde du portefeuille",
             "order-size": "Taille de l'ordre",
             "fees": "Frais",
+            "gas": "Frais de gaz",
+            "rebate": "Rabais",
             "approx-deposit": "Dépôt approximatif depuis le portefeuille"
           },
           "review": {
@@ -667,6 +669,16 @@
             "status": "Statut"
           }
         }
+      },
+      "usdc-swap-widget": {
+        "title": "Préparez-vous à échanger!",
+        "message": "Échangez votre ancien USDC contre un nouvel USDC avec ZÉRO glissement!",
+        "item1": "Échangez votre ancien",
+        "item2": "contre un nouvel",
+        "item3": "Ce widget s'appuie sur",
+        "item4": "Polygon's NativeConverter",
+        "item5": "Vous pouvez en savoir plus dans",
+        "item6": "l'annonce de Polygon"
       },
       "info-modal": {
         "close": "Fermer"
