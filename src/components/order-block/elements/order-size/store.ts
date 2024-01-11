@@ -52,7 +52,7 @@ export const maxOrderSizeAtom = atom((get) => {
   const buffer =
     indexPrice * (orderFeeBps / 10_000) +
     selectedPerpetual.markPrice / leverage +
-    direction * (limitPrice - selectedPerpetual.markPrice);
+    Math.max(direction * (limitPrice - selectedPerpetual.markPrice), 0);
   const personalMax = (((poolTokenBalance + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
 });
