@@ -679,7 +679,8 @@
       "item3": "Este widget utiliza el",
       "item4": "NativeConverter de Polygon",
       "item5": "Puedes leer mas en",
-      "item6": "el anuncio oficial de Polygon"
+      "item6": "el anuncio oficial de Polygon",
+      "swap": "Convierte"
     },
     "info-modal": {
       "close": "Cerrar"

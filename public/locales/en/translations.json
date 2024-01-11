@@ -679,7 +679,8 @@
       "item3": "This widget relies on",
       "item4": "Polygon's NativeConverter",
       "item5": "You can read more in",
-      "item6": "Polygon's announcement"
+      "item6": "Polygon's announcement",
+      "swap": "Swap"
     },
     "info-modal": {
       "close": "Close"

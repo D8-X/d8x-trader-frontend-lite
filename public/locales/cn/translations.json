@@ -679,7 +679,8 @@
       "item3": "这个小工具依赖于",
       "item4": "Polygon的NativeConverter",
       "item5": "您可以在",
-      "item6": "Polygon的公告中了解更多"
+      "item6": "Polygon的公告中了解更多",
+      "swap": "兑换"
     },    
     "info-modal": {
       "close": "关闭"

@@ -276,7 +276,7 @@ export function UsdcSwapWidget() {
             inAction
           }
         >
-          Swap
+          {t('common.usdc-swap-widget.swap')}
         </Button>
       </div>
     </div>

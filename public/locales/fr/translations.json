@@ -679,7 +679,8 @@
         "item3": "Ce widget s'appuie sur",
         "item4": "Polygon's NativeConverter",
         "item5": "Vous pouvez en savoir plus dans",
-        "item6": "l'annonce de Polygon"
+        "item6": "l'annonce de Polygon",
+        "swap": "Échangez"
       },
       "info-modal": {
         "close": "Fermer"
