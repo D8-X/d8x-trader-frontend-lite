@@ -33,6 +33,7 @@ export const mainWsLatestMessageTimeAtom = atom(Date.now());
 export const loyaltyScoreAtom = atom(0);
 export const proxyABIAtom = atom<string[] | undefined>(undefined);
 export const poolTokenBalanceAtom = atom<number | undefined>(undefined);
+export const gasTokenSymbolAtom = atom<string | undefined>(undefined);
 export const poolTokenDecimalsAtom = atom<number | undefined>(undefined);
 export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);

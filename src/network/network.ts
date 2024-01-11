@@ -12,6 +12,7 @@ import type {
   OrderI,
   PerpetualOpenOrdersI,
   PerpetualStaticInfoI,
+  PriceFeedResponseI,
   ValidatedResponseI,
 } from 'types/types';
 
@@ -384,4 +385,31 @@ export function getRemoveCollateral(
       return data.json();
     });
   }
+}
+
+export function getPythID(symbol: string): Promise<{ id: string }[]> {
+  return fetch(
+    `https://benchmarks.pyth.network/v1/price_feeds/?query=crypto.${symbol}/usd&asset_type=crypto`,
+    getRequestOptions()
+  ).then((data) => {
+    if (!data.ok) {
+      console.error({ data });
+      throw new Error(data.statusText);
+    }
+    return data.json();
+  });
+}
+
+export function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI[]> {
+  return getPythID(symbol).then((res) => {
+    return fetch(`https://hermes.pyth.network/api/latest_price_feeds?ids[]=${res[0].id}`, getRequestOptions()).then(
+      (data) => {
+        if (!data.ok) {
+          console.error({ data });
+          throw new Error(data.statusText);
+        }
+        return data.json();
+      }
+    );
+  });
 }

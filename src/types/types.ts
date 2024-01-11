@@ -231,6 +231,22 @@ export interface MaxOrderSizeResponseI {
   sell: number;
 }
 
+export interface PriceFeedResponseI {
+  id: string;
+  price: {
+    price: string;
+    conf: string;
+    expo: number;
+    publish_time: number;
+  };
+  ema_price: {
+    price: string;
+    conf: string;
+    expo: number;
+    publish_time: number;
+  };
+}
+
 export interface TableHeaderI<T> {
   label: ReactElement | string;
   align: AlignE;
