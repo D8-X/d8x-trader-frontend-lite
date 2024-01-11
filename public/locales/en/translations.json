@@ -308,6 +308,7 @@
           "order-too-small": "Order will fail: order size is too small",
           "position-too-small": "Order will fail: resulting position too small (min.: {{minAmount}})",
           "below-min-position": "Warning: order size below minimal position size",
+          "slippage-too-large": "Warning: slippage is larger than what your slippage settings allow. Order will likely fail.",
           "insufficient-balance": "Order will fail: insufficient wallet balance",
           "undefined": "Order undefined: take profit is incompatible with leverage",
           "verify-tp-sl-orders": "Verify your existing TP/SL orders - you modify a position that has TP/SL orders",

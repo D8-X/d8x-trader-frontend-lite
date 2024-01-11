@@ -94,6 +94,7 @@ enum ValidityCheckE {
   InsufficientBalance = 'insufficient-balance',
   Undefined = 'undefined',
   GoodToGo = 'good-to-go',
+  SlippageTooLarge = 'slippage-too-large',
 }
 
 enum ValidityCheckButtonE {
@@ -475,6 +476,21 @@ export const ActionBlock = memo(() => {
     if (isMarketClosed) {
       return ValidityCheckE.Closed;
     }
+    if (
+      orderInfo.orderType === OrderTypeE.Market &&
+      orderInfo.maxMinEntryPrice !== null &&
+      selectedPerpetual?.midPrice !== undefined
+    ) {
+      let isSlippageTooLarge;
+      if (orderInfo.orderBlock === OrderBlockE.Long) {
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice < selectedPerpetual?.midPrice;
+      } else {
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice > selectedPerpetual?.midPrice;
+      }
+      if (isSlippageTooLarge) {
+        return ValidityCheckE.SlippageTooLarge;
+      }
+    }
     return ValidityCheckE.GoodToGo;
   }, [
     maxOrderSize,
@@ -482,6 +498,8 @@ export const ActionBlock = memo(() => {
     orderInfo?.orderBlock,
     orderInfo?.orderType,
     orderInfo?.takeProfitPrice,
+    orderInfo?.maxMinEntryPrice,
+    selectedPerpetual,
     selectedPerpetualStaticInfo?.lotSizeBC,
     poolTokenBalance,
     isMarketClosed,
@@ -503,7 +521,10 @@ export const ActionBlock = memo(() => {
     return t(`pages.trade.action-block.validity.${validityCheckType}`);
   }, [t, validityCheckType, poolTokenBalance, minPositionString, selectedCurrency]);
 
-  const isOrderValid = validityCheckType === ValidityCheckE.GoodToGo || validityCheckType === ValidityCheckE.Closed;
+  const isOrderValid =
+    validityCheckType === ValidityCheckE.GoodToGo ||
+    validityCheckType === ValidityCheckE.Closed ||
+    validityCheckType === ValidityCheckE.SlippageTooLarge;
 
   const isConfirmButtonDisabled = useMemo(() => {
     return !isOrderValid || requestSentRef.current || requestSent;

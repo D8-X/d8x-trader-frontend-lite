@@ -308,6 +308,7 @@
           "order-too-small": "El tamaño de la orden es muy pequeno",
           "position-too-small": "El tamaño de la posicion es muy pequeno (min.: {{minAmount}})",
           "below-min-position": "Cuidado: El tamaño de la orden esta debajo del tamaño minimo para una posición",
+          "slippage-too-large": "Cuidado: el deslizamiento es mayor de lo que permite su configuración de deslizamiento. Es probable que la orden falle",
           "insufficient-balance": "Insuficiente saldo en tu cartera",
           "undefined": "El valor de tomar ganancias es incompatible con el apalancamiento",
           "verify-tp-sl-orders": "Verifique sus TP/SL existentes: está modificando una posición que tiene TP/SL",

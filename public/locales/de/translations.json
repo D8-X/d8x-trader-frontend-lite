@@ -308,6 +308,7 @@
           "order-too-small": "Order wird scheitern: Ordergrösse ist zu klein",
           "position-too-small": "Order wird scheitern: Die resultierende Position ist zu klein (min.: {{minAmount}})",
           "below-min-position": "Warnung: Ordergrösse ist kleiner als die minimale Positionsgrösse",
+          "slippage-too-large": "Warnung: Slippage ist größer als in Ihren Slippage-Einstellungen zulässig. Die Order wird wahrscheinlich fehlschlagen.",
           "insufficient-balance": "Order wird scheitern: Das Walletguthaben ist zu klein",
           "undefined": "Order nicht definiert: Take Profit Einstellungen sind inkompatibel mit der Hebeleinstellung",
           "verify-tp-sl-orders": "Überprüfen Sie Ihre TP/SL - Sie verändern eine Position mit existierenden TP/SL",

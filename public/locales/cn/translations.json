@@ -308,6 +308,7 @@
           "order-too-small": "订单过小，导致订单失败",
           "position-too-small": "仓位过小，导致订单失败 (min.: {{minAmount}})",
           "below-min-position": "警告：订单小于仓位",
+          "slippage-too-large": "警告：滑点大于您的滑点设置允许的范围。订单可能会失败。",
           "insufficient-balance": "钱包余额不足，导致订单失败",
           "undefined": "止盈与杠杆不兼容，订单未执行",
           "verify-tp-sl-orders": "验证您现有的止盈/止损订单 - 您正在修改已有止盈/止损订单的仓位",
