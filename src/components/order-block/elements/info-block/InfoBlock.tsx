@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFeeData } from 'wagmi';
+import { useChainId, useFeeData } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
@@ -30,6 +30,7 @@ export const InfoBlock = memo(() => {
   const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
 
   const [gasPriceUSD, setGasPriceUSD] = useState(0);
+  const chainId = useChainId();
 
   const feeInCC = useMemo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
@@ -115,16 +116,18 @@ export const InfoBlock = memo(() => {
           {')'}
         </Typography>
       </Box>
-      <Box className={styles.row}>
-        <Typography variant="bodySmallPopup" className={styles.infoText}>
-          Gas Fees
-        </Typography>
-        <Typography variant="bodySmallSB" className={styles.infoText}>
-          {formatToCurrency(gasFee, 'USD')} {'(Rebate '}
-          {formatToCurrency(gasRebate, 'USD')}
-          {')'}
-        </Typography>
-      </Box>
+      {chainId !== undefined && chainId === 1101 && (
+        <Box className={styles.row}>
+          <Typography variant="bodySmallPopup" className={styles.infoText}>
+            Gas Fees
+          </Typography>
+          <Typography variant="bodySmallSB" className={styles.infoText}>
+            {formatToCurrency(gasFee, '$', undefined, 2)} {'(Rebate: '}
+            {formatToCurrency(gasRebate, '$', undefined, 2)}
+            {')'}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 });
