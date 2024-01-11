@@ -17,7 +17,7 @@ export const UsdcSwapModal = ({ isOpen, onClose }: UsdcSwapModalPropsI) => {
   const { t } = useTranslation();
 
   return (
-    <Dialog open={isOpen} className={styles.root}>
+    <Dialog open={isOpen} onClose={onClose} className={styles.root}>
       <DialogTitle>{t('common.usdc-swap-widget.title')}</DialogTitle>
       <Separator />
       <DialogContent className={styles.dialogContent}>{t('common.usdc-swap-widget.message')}</DialogContent>
