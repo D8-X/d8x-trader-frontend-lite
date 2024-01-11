@@ -1,18 +1,19 @@
 import { useAtom } from 'jotai';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFeeData } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
+import { getSymbolPrice } from 'network/network';
 import { orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import { gasTokenSymbolAtom, poolTokenBalanceAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { orderSizeAtom } from '../order-size/store';
 import { leverageAtom } from '../leverage-selector/store';
+
 import styles from './InfoBlock.module.scss';
-import { getSymbolPrice } from 'network/network';
-import { useFeeData } from 'wagmi';
 
 export const InfoBlock = memo(() => {
   const { t } = useTranslation();

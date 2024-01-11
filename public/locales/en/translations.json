@@ -668,6 +668,10 @@
         }
       }
     },
+    "usdc-swap-widget": {
+      "title": "Swap old to new USDC",
+      "message": "You don't have new USDC. Swap your legacy USDC now to trade."
+    },
     "info-modal": {
       "close": "Close"
     },

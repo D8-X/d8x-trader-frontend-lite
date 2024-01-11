@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { type Address, useAccount, useChainId } from 'wagmi';
+import { type Address, useAccount, useBalance, useChainId } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -17,6 +17,9 @@ import { PositionsTable } from 'components/positions-table/PositionsTable';
 import { TableSelectorMobile } from 'components/table-selector-mobile/TableSelectorMobile';
 import { type SelectorItemI, TableSelector } from 'components/table-selector/TableSelector';
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
+import { UsdcSwapModal } from 'components/usdc-swap-modal/UsdcSwapModal';
+import { NEW_USDC_ADDRESS, OLD_USDC_ADDRESS } from 'components/usdc-swap-widget/constants';
+import { useDialog } from 'hooks/useDialog';
 import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
@@ -33,11 +36,14 @@ import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import styles from './TraderPage.module.scss';
 import { PerpetualInfoFetcher } from './components/PerpetualInfoFetcher';
 import { PoolSubscription } from './components/PoolSubscription';
 import { CandlesWebSocketListener } from './components/candles-webSocket-listener/CandlesWebSocketListener';
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
+
+import styles from './TraderPage.module.scss';
+
+const MIN_REQUIRED_USDC = 20;
 
 export const TraderPage = () => {
   const { t } = useTranslation();
@@ -54,6 +60,8 @@ export const TraderPage = () => {
   const fetchFeeRef = useRef(false);
   const isPageUrlAppliedRef = useRef(false);
 
+  const { dialogOpen, openDialog, closeDialog } = useDialog();
+
   const [orderBlockPosition] = useAtom(orderBlockPositionAtom);
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -67,6 +75,34 @@ export const TraderPage = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { data: legacyTokenData } = useBalance({
+    address,
+    token: OLD_USDC_ADDRESS,
+    chainId: 1101,
+    enabled: !!address && chainId === 1101,
+  });
+
+  const { data: newTokenData } = useBalance({
+    address,
+    token: NEW_USDC_ADDRESS,
+    chainId: 1101,
+    enabled: !!address && chainId === 1101,
+  });
+
+  useEffect(() => {
+    if (!address || chainId !== 1101 || !legacyTokenData || !newTokenData) {
+      return;
+    }
+
+    if (+newTokenData.formatted >= MIN_REQUIRED_USDC) {
+      return;
+    }
+
+    if (+legacyTokenData.formatted >= MIN_REQUIRED_USDC) {
+      openDialog();
+    }
+  }, [legacyTokenData, newTokenData, chainId, address, openDialog]);
 
   const fetchPositions = useCallback(
     async (_chainId: number, _address: Address) => {
@@ -275,6 +311,7 @@ export const TraderPage = () => {
         )}
       </Box>
 
+      <UsdcSwapModal isOpen={dialogOpen} onClose={closeDialog} />
       <TableDataFetcher />
       <PerpetualInfoFetcher />
       <PoolSubscription />

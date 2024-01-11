@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { memo, type ChangeEvent, type ReactNode } from 'react';
+import { type ChangeEvent, memo, type ReactNode } from 'react';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
@@ -11,6 +11,7 @@ import styles from './ResponsiveInput.module.scss';
 interface ResponsiveInputPropsI {
   id: string;
   className?: string;
+  inputClassName?: string;
   inputValue: string | number | null;
   setInputValue: (newValue: string) => void;
   handleInputBlur?: () => void;
@@ -20,12 +21,14 @@ interface ResponsiveInputPropsI {
   min?: number;
   max?: number;
   adornmentAction?: ReactNode;
+  disabled?: boolean;
 }
 
 export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
   const {
     id,
     className,
+    inputClassName,
     inputValue,
     setInputValue,
     handleInputBlur,
@@ -35,6 +38,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     min = -1,
     max,
     adornmentAction,
+    disabled,
   } = props;
 
   const handleValueChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -95,7 +99,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         size="small"
         className={styles.decreaseButton}
         onClick={handleValueDecrease}
-        disabled={inputNumeric === null || inputNumeric <= min}
+        disabled={disabled || inputNumeric === null || inputNumeric <= min}
       >
         <DecreaseIcon />
       </Button>
@@ -107,12 +111,14 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
             {adornmentAction}
           </InputAdornment>
         }
+        className={inputClassName}
         inputProps={{ step, min, max }}
         type="number"
         placeholder={placeholder}
         onChange={handleValueChange}
         onBlur={handleInputBlur}
         value={inputNumeric === null ? '' : inputValue}
+        disabled={disabled}
       />
       <Button
         key="increase-input-value"
@@ -120,7 +126,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         size="small"
         className={styles.increaseButton}
         onClick={handleValueIncrease}
-        disabled={!!(max && inputNumeric !== null && inputNumeric >= max)}
+        disabled={disabled || !!(max && inputNumeric !== null && inputNumeric >= max)}
       >
         <IncreaseIcon />
       </Button>

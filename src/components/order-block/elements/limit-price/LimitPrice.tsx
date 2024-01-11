@@ -9,9 +9,9 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
-import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
