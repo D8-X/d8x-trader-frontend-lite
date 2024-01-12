@@ -122,7 +122,9 @@ export const InfoBlock = memo(() => {
             {t('pages.trade.order-block.info.gas')}
           </Typography>
           <Typography variant="bodySmallSB" className={styles.infoText}>
-            {formatToCurrency(gasFee, '$', undefined, 2)} {'('} {t('pages.trade.order-block.info.rebate')} {': '}
+            {formatToCurrency(gasFee, '$', undefined, 2)} {'('}
+            {t('pages.trade.order-block.info.rebate')}
+            {': '}
             {formatToCurrency(gasRebate, '$', undefined, 2)}
             {')'}
           </Typography>
