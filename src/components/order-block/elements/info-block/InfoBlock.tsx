@@ -74,9 +74,11 @@ export const InfoBlock = memo(() => {
 
   useEffect(() => {
     if (gasTokenSymbol && gasPriceETH?.formatted?.gasPrice) {
-      getSymbolPrice(gasTokenSymbol).then((res) => {
-        setGasPriceUSD(+res[0].price.price * 10 ** res[0].price.expo * +(gasPriceETH.formatted.gasPrice || 0));
-      });
+      getSymbolPrice(gasTokenSymbol)
+        .then((res) => {
+          setGasPriceUSD(+res[0].price.price * 10 ** res[0].price.expo * +(gasPriceETH.formatted.gasPrice || 0));
+        })
+        .catch(() => {});
     }
   }, [gasPriceETH, gasTokenSymbol]);
 
