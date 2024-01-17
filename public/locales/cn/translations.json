@@ -64,10 +64,13 @@
           "remove": "减少抵押品",
           "pos-details": {
             "title": "新仓位详情",
+            "title-existing": "Existing position details",
             "size": "仓位大小",
             "margin": "本金",
             "leverage": "杠杆",
             "liq-price": "强平价",
+            "side": "涨跌",
+            "unrealized": "未实现盈亏",
             "close-tp-sl": "关闭相关止盈/止损订单吗？"
           },
           "cancel": "取消",

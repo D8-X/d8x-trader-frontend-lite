@@ -63,10 +63,13 @@
           "remove": "Remove collateral",
           "pos-details": {
             "title": "New position details",
+            "title-existing": "Existing position details",
             "size": "포지션 크기:",
             "margin": "마진:",
             "leverage": "레버리지:",
             "liq-price": "청산 가격:",
+            "side": "측면:",
+            "unrealized": "미실현 손익:",
             "close-tp-sl": "Close related TP/SL orders?"
           },
           "cancel": "Cancel",

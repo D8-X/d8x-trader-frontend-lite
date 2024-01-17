@@ -55,6 +55,7 @@ export const PositionsTable = () => {
   const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
 
   const isAPIBusyRef = useRef(isAPIBusy);
+  const isSelectedPositionSetRef = useRef(false);
 
   const chainId = useChainId();
   const { address, isConnected, isDisconnected } = useAccount();
@@ -73,36 +74,43 @@ export const PositionsTable = () => {
   const handleTpSlModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setTpSlChangeModalOpen(true);
     setSelectedPosition(position);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const handlePositionModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setModifyModalOpen(true);
     setSelectedPosition(position);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const handlePositionClose = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setCloseModalOpen(true);
     setSelectedPosition(position);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const handlePositionShare = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setShareModalOpen(true);
     setSelectedPosition(position);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const closeTpSlModal = useCallback(() => {
     setTpSlChangeModalOpen(false);
     setSelectedPosition(null);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const closeModifyModal = useCallback(() => {
     setModifyModalOpen(false);
     setSelectedPosition(null);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const closeCloseModal = useCallback(() => {
     setCloseModalOpen(false);
     setSelectedPosition(null);
+    isSelectedPositionSetRef.current = true;
   }, []);
 
   const clearPositions = useCallback(() => {
@@ -352,6 +360,16 @@ export const PositionsTable = () => {
     [filteredRows, page, rowsPerPage, order, orderBy]
   );
 
+  useEffect(() => {
+    if (!isSelectedPositionSetRef.current && selectedPosition != null) {
+      const foundRow = filteredRows.find((row) => row.symbol === selectedPosition.symbol);
+      setSelectedPosition(foundRow);
+      isSelectedPositionSetRef.current = true;
+    } else {
+      isSelectedPositionSetRef.current = false;
+    }
+  }, [filteredRows, selectedPosition]);
+
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
@@ -443,6 +461,7 @@ export const PositionsTable = () => {
         closeModal={() => {
           setShareModalOpen(false);
           setSelectedPosition(null);
+          isSelectedPositionSetRef.current = true;
         }}
       />
       <ModifyTpSlModal isOpen={isTpSlChangeModalOpen} selectedPosition={selectedPosition} closeModal={closeTpSlModal} />

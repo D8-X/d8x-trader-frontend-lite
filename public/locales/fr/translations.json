@@ -64,10 +64,13 @@
             "remove": "Retirer du collatéral",
             "pos-details": {
               "title": "Détails de la nouvelle position",
+              "title-existing": "Existing position details",
               "size": "Taille de la position:",
               "margin": "Marge:",
               "leverage": "Effet de levier:",
               "liq-price": "Prix de liquidation:",
+              "side": "Direction:",
+              "unrealized": "PnL non réalisé:",
               "close-tp-sl": "Fermer les TP/SL associés?"
             },
             "cancel": "Annuler",

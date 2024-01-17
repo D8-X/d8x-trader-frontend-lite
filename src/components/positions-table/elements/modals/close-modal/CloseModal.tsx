@@ -15,16 +15,19 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { orderDigest } from 'network/network';
+import { parseSymbol } from 'helpers/parseSymbol';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI } from 'types/types';
 import { OrderWithIdI } from 'types/types';
+import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
 
-import styles from '../Modal.module.scss';
+import modalStyles from '../Modal.module.scss';
+import styles from './CloseModal.module.scss';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -72,7 +75,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
                   href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
                   target="_blank"
                   rel="noreferrer"
-                  className={styles.shareLink}
+                  className={modalStyles.shareLink}
                 >
                   {txHash}
                 </a>
@@ -196,31 +199,62 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const hasTpSl =
     selectedPosition && (selectedPosition.stopLoss.orders.length > 0 || selectedPosition.takeProfit.orders.length > 0);
 
+  const parsedSymbol = parseSymbol(selectedPosition?.symbol);
+
   return (
-    <Dialog open={isOpen} className={styles.root}>
+    <Dialog open={isOpen} className={modalStyles.root}>
       <DialogTitle>{t('pages.trade.positions-table.modify-modal.close')}</DialogTitle>
       <Separator />
       <DialogContent>
-        <Box className={styles.newPositionHeader}>
-          <Typography variant="bodyMedium" className={styles.centered}>
-            {t('pages.trade.positions-table.modify-modal.pos-details.title')}
+        <Box className={modalStyles.newPositionHeader}>
+          <Typography variant="bodyMedium" className={modalStyles.centered}>
+            {t('pages.trade.positions-table.modify-modal.pos-details.title-existing')}
           </Typography>
         </Box>
-        <Box className={styles.newPositionDetails}>
-          <SidesRow leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')} rightSide={0} />
-          <SidesRow leftSide={t('pages.trade.positions-table.modify-modal.pos-details.margin')} rightSide={0} />
-          <SidesRow leftSide={t('pages.trade.positions-table.modify-modal.pos-details.leverage')} rightSide="-" />
-          <SidesRow leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')} rightSide="-" />
+        <Box className={modalStyles.newPositionDetails}>
+          <SidesRow
+            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')}
+            rightSide={formatToCurrency(selectedPosition?.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
+          />
+          <SidesRow
+            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.side')}
+            rightSide={
+              selectedPosition?.side === 'BUY'
+                ? t('pages.trade.positions-table.table-content.buy')
+                : t('pages.trade.positions-table.table-content.sell')
+            }
+          />
+          <SidesRow
+            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')}
+            rightSide={
+              !selectedPosition || selectedPosition.liqPrice < 0
+                ? `- ${parsedSymbol?.quoteCurrency}`
+                : formatToCurrency(selectedPosition.liqPrice, parsedSymbol?.quoteCurrency, true)
+            }
+          />
+          <SidesRow
+            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.margin')}
+            rightSide={`${formatToCurrency(selectedPosition?.collateralCC, parsedSymbol?.poolSymbol, true)}${
+              selectedPosition && ` (${Math.round(selectedPosition?.leverage * 100) / 100}x)`
+            }`}
+          />
+          <SidesRow
+            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.unrealized')}
+            rightSide={formatToCurrency(selectedPosition?.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
+            rightSideStyles={
+              selectedPosition && selectedPosition.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative
+            }
+          />
         </Box>
       </DialogContent>
       {hasTpSl && (
         <>
           <Separator />
           <DialogContent>
-            <Box className={styles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
+            <Box className={modalStyles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
               <SidesRow
                 leftSide={t('pages.trade.positions-table.modify-modal.pos-details.close-tp-sl')}
-                rightSide={<Checkbox checked={closeOpenOrders} className={styles.checkbox} />}
+                rightSide={<Checkbox checked={closeOpenOrders} className={modalStyles.checkbox} />}
               />
             </Box>
           </DialogContent>

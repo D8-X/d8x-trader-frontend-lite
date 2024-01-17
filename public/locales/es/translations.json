@@ -64,10 +64,13 @@
           "remove": "Remover Margen",
           "pos-details": {
             "title": "Detalles de su nueva posición",
+            "title-existing": "Existing position details",
             "size": "Tamaño",
             "margin": "Margen:",
             "leverage": "Apalancamiento:",
             "liq-price": "Precio de Liquidación",
+            "side": "Dirección:",
+            "unrealized": "PnL no realizado:",
             "close-tp-sl": "¿Cerrar órdenes TP/SL asociadas?"
           },
           "cancel": "Cancelar",
