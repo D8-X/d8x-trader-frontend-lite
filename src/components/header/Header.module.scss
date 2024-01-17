@@ -14,6 +14,53 @@
   }
 }
 
+.headerHolder {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainLogoHolder,
+.drawerLogoHolder {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 3 * $d8x-spacing;
+}
+
+.betaTag {
+  margin-top: 3 * $d8x-spacing;
+  color: var(--d8x-color-text-main);
+  font-size: 14px;
+}
+
+.betaInfoLine {
+  display: flex;
+  align-items: center;
+  padding: 8px 32px;
+  background-color: var(--d8x-color-background-items-second);
+
+  &.hideBetaText {
+    display: none;
+  }
+
+  .textBlock {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .closeButton {
+    cursor: pointer;
+
+    .closeIcon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
 .toolbar {
   align-items: center;
   padding: 8px 32px 0;

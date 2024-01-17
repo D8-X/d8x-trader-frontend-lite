@@ -34,6 +34,7 @@ export const appDimensionsAtom = atom<AppDimensionsI>({});
 export const delegateAddressAtom = atom('');
 
 export const activatedOneClickTradingAtom = atom(false);
+export const hideBetaTextAtom = atom(false);
 
 export const showWelcomeModalAtom = atom(
   () => {
