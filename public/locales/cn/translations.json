@@ -688,6 +688,10 @@
     "info-modal": {
       "close": "关闭"
     },
+    "public-beta": {
+      "info-text": "This is public beta.",
+      "beta-tag": "[beta]"
+    },
     "refresh": "刷新",
     "filter": "筛选"
   },

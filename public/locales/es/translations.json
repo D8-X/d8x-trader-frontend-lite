@@ -688,6 +688,10 @@
     "info-modal": {
       "close": "Cerrar"
     },
+    "public-beta": {
+      "info-text": "This is public beta.",
+      "beta-tag": "[beta]"
+    },
     "refresh": "Actualizar",
     "filter": "Filtrar"
   },
