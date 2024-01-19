@@ -402,6 +402,9 @@ export function getPythID(symbol: string): Promise<{ id: string }[]> {
 
 export function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI[]> {
   return getPythID(symbol).then((res) => {
+    if (res.length < 1) {
+      throw new Error(`Pyth Id not found for symbol ${symbol}`);
+    }
     return fetch(`https://hermes.pyth.network/api/latest_price_feeds?ids[]=${res[0].id}`, getRequestOptions()).then(
       (data) => {
         if (!data.ok) {
