@@ -9,9 +9,13 @@ import { Close, Menu } from '@mui/icons-material';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as LogoWithText } from 'assets/logoWithText.svg';
+import { Container } from 'components/container/Container';
+import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
+import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo } from 'network/network';
 import { authPages, pages } from 'routes/pages';
+import { hideBetaTextAtom } from 'store/app.store';
 import {
   gasTokenSymbolAtom,
   oracleFactoryAddrAtom,
@@ -26,16 +30,13 @@ import {
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 
-import { Container } from '../container/Container';
-import { LanguageSwitcher } from '../language-switcher/LanguageSwitcher';
-import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
 import { collateralsAtom } from './elements/market-select/collaterals.store';
 import { SettingsBlock } from './elements/settings-block/SettingsBlock';
 import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { hideBetaTextAtom } from '../../store/app.store';
+import { Separator } from '../separator/Separator';
 
 interface HeaderPropsI {
   /**
@@ -57,7 +58,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const chainId = useChainId();
   const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
@@ -257,9 +258,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               {!isSmallScreen && (
                 <Typography id="header-side" variant="h6" component="div" className={styles.selectBoxes} />
               )}
-              <Typography variant="h6" component="div" className={styles.walletConnect}>
-                <WalletConnectButton />
-              </Typography>
+              {(!isMobileScreen || !isConnected) && (
+                <Typography variant="h6" component="div" className={styles.walletConnect}>
+                  <WalletConnectButton />
+                </Typography>
+              )}
               {!isTabletScreen && <SettingsButton />}
               {isTabletScreen && (
                 <Button onClick={handleDrawerToggle} variant="primary" className={styles.menuButton}>
@@ -267,6 +270,14 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 </Button>
               )}
             </Toolbar>
+            {isMobileScreen && isConnected && (
+              <div className={styles.mobileButtonsBlock}>
+                <Separator />
+                <div className={styles.mobileWalletButtons}>
+                  <WalletConnectButton />
+                </div>
+              </div>
+            )}
           </PageAppBar>
           <Box component="nav">
             <Drawer

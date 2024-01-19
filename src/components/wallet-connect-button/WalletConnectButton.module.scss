@@ -67,6 +67,17 @@
   }
 }
 
+@media screen and ($d8x-breakpoint-max-sm) {
+
+  .buttonsHolder {
+    justify-content: space-between;
+
+    button {
+      width: 20%;
+    }
+  }
+}
+
 @media screen and ($d8x-breakpoint-max-xs) {
 
   .addressButton {

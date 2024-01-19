@@ -187,10 +187,20 @@
   gap: 15px;
 }
 
+.buttonsHolder {
+  display: flex;
+  gap: $d8x-spacing * 4;
+  height: 48px;
+}
+
 @media screen and ($d8x-breakpoint-max-lg) {
 
   .betaInfoLine {
     padding: 8px 16px;
+  }
+
+  .buttonsHolder {
+    gap: $d8x-spacing * 2;
   }
 
   .toolbar {
@@ -239,6 +249,16 @@
     padding: 0 24px;
     margin: -16px -24px 0;
   }
+
+  .mobileButtonsBlock {
+    background-color: var(--d8x-color-background-items);
+    padding: 0 4 * $d8x-spacing;
+    margin: 0 -4 * $d8x-spacing;
+  }
+
+  .mobileWalletButtons {
+    padding: 4 * $d8x-spacing 0;
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
@@ -257,11 +277,7 @@
 
   .mainLogoHolder,
   .drawerLogoHolder {
-    gap: 1 * $d8x-spacing;
-  }
-
-  .betaTag {
-    font-size: 10px;
+    gap: 2 * $d8x-spacing;
   }
 
   .toolbar {

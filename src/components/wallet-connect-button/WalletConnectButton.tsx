@@ -19,9 +19,10 @@ import { loyaltyScoreAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { cutAddressName } from 'utils/cutAddressName';
 
-import { OneClickTradingButton } from './OneClickTradingButton';
-import styles from './WalletConnectButton.module.scss';
 import { LiFiWidgetButton } from './LiFiWidgetButton';
+import { OneClickTradingButton } from './OneClickTradingButton';
+
+import styles from './WalletConnectButton.module.scss';
 
 const loyaltyMap = ['Diamond', 'Platinum', 'Gold', 'Silver', '-'];
 
