@@ -689,8 +689,8 @@
       "close": "关闭"
     },
     "public-beta": {
-      "info-text": "This is public beta.",
-      "beta-tag": "[beta]"
+      "info-text": "D8X 正在公开测试中 - 请自行进行研究",
+      "beta-tag": "[测试版]"
     },
     "refresh": "刷新",
     "filter": "筛选"

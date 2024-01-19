@@ -255,6 +255,15 @@
     padding: 4px 12px;
   }
 
+  .mainLogoHolder,
+  .drawerLogoHolder {
+    gap: 1 * $d8x-spacing;
+  }
+
+  .betaTag {
+    font-size: 10px;
+  }
+
   .toolbar {
     padding: 0 12px;
     margin: -16px -12px 0;

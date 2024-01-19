@@ -689,8 +689,8 @@
         "close": "Fermer"
       },
       "public-beta": {
-        "info-text": "This is public beta.",
-        "beta-tag": "[beta]"
+        "info-text": "D8X est en version bêta publique - faites vos propres recherches",
+        "beta-tag": "[bêta]"
       },
       "refresh": "Actualiser",
       "filter": "Filtrer"
