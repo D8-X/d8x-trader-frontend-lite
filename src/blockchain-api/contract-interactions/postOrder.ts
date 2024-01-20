@@ -1,8 +1,9 @@
 import { LOB_ABI, TraderInterface, TypeSafeOrder } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 import { type OrderDigestI } from 'types/types';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 
-export function postOrder(
+export async function postOrder(
   walletClient: WalletClient,
   signatures: string[],
   data: OrderDigestI,
@@ -21,6 +22,7 @@ export function postOrder(
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   return walletClient
     .writeContract({
       chain: walletClient.chain,
@@ -30,6 +32,7 @@ export function postOrder(
       args: [orders, signatures],
       gas: BigInt(600_000 + (orders.length - 1) * 400_000),
       account: walletClient.account,
+      gasPrice: gasPrice,
     })
     .then((tx) => ({ hash: tx }));
 }

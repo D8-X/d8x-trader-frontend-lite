@@ -2,8 +2,9 @@ import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 
 import type { CollateralChangeResponseI } from 'types/types';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 
-export function deposit(
+export async function deposit(
   walletClient: WalletClient,
   traderAddr: Address,
   data: CollateralChangeResponseI
@@ -11,6 +12,7 @@ export function deposit(
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   return walletClient
     .writeContract({
       chain: walletClient.chain,
@@ -19,6 +21,7 @@ export function deposit(
       functionName: 'deposit',
       args: [data.perpId, traderAddr, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
+      gasPrice: gasPrice,
       value: BigInt(data.priceUpdate.updateFee),
       account: walletClient.account,
     })

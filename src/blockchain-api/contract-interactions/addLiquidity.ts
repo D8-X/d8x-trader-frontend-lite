@@ -1,4 +1,5 @@
 import { PROXY_ABI, type TraderInterface, floatToDecN } from '@d8x/perpetuals-sdk';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { type Address, type WalletClient } from 'viem';
 
 export async function addLiquidity(
@@ -14,6 +15,7 @@ export async function addLiquidity(
     throw new Error('undefined call parameters');
   }
   const amountParsed = BigInt(floatToDecN(amount, decimals).toString());
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   return walletClient
     .writeContract({
       chain: walletClient.chain,
@@ -23,6 +25,7 @@ export async function addLiquidity(
       args: [poolId, amountParsed],
       account: account,
       gas: 400_000n + 200_000n * BigInt(traderAPI.getPerpetualSymbolsInPool(symbol).length),
+      gasPrice: gasPrice,
     })
     .then((tx) => ({ hash: tx }));
 }

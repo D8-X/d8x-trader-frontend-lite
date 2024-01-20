@@ -1,8 +1,9 @@
 import { LOB_ABI } from '@d8x/perpetuals-sdk';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { type CancelOrderResponseI } from 'types/types';
 import { type Address, type WalletClient } from 'viem';
 
-export function cancelOrder(
+export async function cancelOrder(
   walletClient: WalletClient,
   signature: string,
   data: CancelOrderResponseI,
@@ -11,6 +12,7 @@ export function cancelOrder(
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   return walletClient
     .writeContract({
       chain: walletClient.chain,
@@ -19,6 +21,7 @@ export function cancelOrder(
       functionName: 'cancelOrder',
       args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
       gas: BigInt(1_000_000),
+      gasPrice: gasPrice,
       value: BigInt(data.priceUpdate.updateFee),
       account: walletClient.account,
     })

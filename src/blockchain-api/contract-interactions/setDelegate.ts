@@ -1,7 +1,8 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import type { Address, WalletClient } from 'viem';
 
-export function setDelegate(
+export async function setDelegate(
   walletClient: WalletClient,
   proxyAddr: Address,
   delegateAddr: Address
@@ -10,6 +11,7 @@ export function setDelegate(
   if (!account) {
     throw new Error('account not connected');
   }
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   return walletClient
     .writeContract({
       chain: walletClient.chain,
@@ -18,6 +20,7 @@ export function setDelegate(
       functionName: 'setDelegate',
       args: [delegateAddr],
       gas: BigInt(1_000_000),
+      gasPrice: gasPrice,
       account: account,
     })
     .then((tx) => ({ hash: tx }));

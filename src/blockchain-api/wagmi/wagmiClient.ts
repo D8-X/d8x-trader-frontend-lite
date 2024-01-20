@@ -82,4 +82,4 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
-export { chains, wagmiConfig };
+export { chains, wagmiConfig, publicClient };
