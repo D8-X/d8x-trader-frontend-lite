@@ -166,7 +166,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     if (isOpen) {
       interval = window.setInterval(() => {
         refetch();
-      }, 1000); // 5000 milliseconds = 5 seconds
+      }, 2000); // 2000 milliseconds = 5 seconds
     }
 
     return () => {
