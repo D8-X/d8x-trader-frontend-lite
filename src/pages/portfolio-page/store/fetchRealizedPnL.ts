@@ -14,9 +14,9 @@ export const fetchRealizedPnLAtom = atom(null, async (get, set, userAddress: Add
   const tradeHistory = await getTradesHistory(chainId, userAddress);
   const realizedPnLReduced = tradeHistory.reduce<Record<string, number>>((acc, current) => {
     const poolName = perpetuals.find(({ id }) => id === current.perpetualId)?.poolName || '';
-    if (acc[poolName]) {
+    if (acc[poolName] && poolName !== '') {
       acc[poolName] += current.realizedPnl;
-    } else {
+    } else if (poolName !== '') {
       acc[poolName] = current.realizedPnl;
     }
     return acc;
