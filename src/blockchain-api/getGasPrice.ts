@@ -5,5 +5,5 @@ export async function getGasPrice(chainId?: number) {
     return undefined;
   }
   const gasPrice = await publicClient({ chainId }).getGasPrice();
-  return (gasPrice * 110n) / 100n;
+  return (gasPrice * 150n) / 100n;
 }
