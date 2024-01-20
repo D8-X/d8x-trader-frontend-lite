@@ -158,6 +158,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const { data: delegateBalance } = useBalance({
     address: delegateAddress as Address,
     enabled: delegateAddress !== '',
+    watch: isOpen,
   });
 
   useEffect(() => {
@@ -256,7 +257,9 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
                       <div className={styles.infoTitle}>
                         {t('common.settings.one-click-modal.manage-delegate.amount')}
                       </div>
-                      <div>{delegateBalance.formatted} ETH</div>
+                      <div>
+                        {delegateBalance.formatted} {delegateBalance?.symbol}
+                      </div>
                     </div>
                   )}
                 </div>
