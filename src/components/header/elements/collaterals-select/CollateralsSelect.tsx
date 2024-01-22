@@ -115,7 +115,9 @@ export const CollateralsSelect = memo(() => {
             <MenuItem key={option.value} value={option.value} selected={option.value === selectedPool?.poolSymbol}>
               <Box className={styles.optionHolder}>
                 <Box className={styles.label}>{option.item.poolSymbol}</Box>
-                <Box className={styles.value}>{option.item.perpetuals.length}</Box>
+                <Box className={styles.value}>
+                  {option.item.perpetuals.filter(({ state }) => state === 'NORMAL').length}
+                </Box>
               </Box>
             </MenuItem>
           )
