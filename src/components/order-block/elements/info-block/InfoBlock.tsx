@@ -97,7 +97,7 @@ export const InfoBlock = memo(() => {
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.balance')}
         </Typography>
-        <Tooltip title={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : 'Loading...'}>
+        <Tooltip title={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : '...'}>
           <Typography variant="bodySmallSB" className={styles.infoTextTooltip}>
             {formatToCurrency(poolTokenBalance, orderInfo?.poolName)}
           </Typography>
