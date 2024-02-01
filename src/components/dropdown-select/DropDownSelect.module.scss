@@ -29,14 +29,14 @@
   gap: 2 * $d8x-spacing;
 
   svg {
-    color: var(--d8x-color-action);
+    color: var(--d8x-color-action-icon);
     width: 24px;
     height: 24px;
   }
 }
 
 .arrowDropDown {
-  color: var(--d8x-color-action);
+  color: var(--d8x-color-action-icon);
   padding-top: 2 * $d8x-spacing;
 
   &.disabledHandle {

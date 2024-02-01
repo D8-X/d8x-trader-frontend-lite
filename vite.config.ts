@@ -7,7 +7,9 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import svgr from 'vite-plugin-svgr';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import checker from 'vite-plugin-checker';
+import { checker } from 'vite-plugin-checker';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import stylelintPlugin from 'vite-plugin-stylelint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -37,6 +39,7 @@ export default defineConfig({
         lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
       },
     }),
+    stylelintPlugin(),
   ],
   server: {
     open: true,

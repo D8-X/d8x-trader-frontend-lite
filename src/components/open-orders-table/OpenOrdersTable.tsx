@@ -1,4 +1,5 @@
 import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
+import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
 import { useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
 
 import {
-  Box,
   Button,
   DialogActions,
   DialogContent,
@@ -29,6 +29,7 @@ import { FilterModal } from 'components/table/filter-modal/FilterModal';
 import { useFilter } from 'components/table/filter-modal/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
@@ -43,7 +44,6 @@ import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
 import styles from './OpenOrdersTable.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 const TOPIC_CANCEL_SUCCESS = encodeEventTopics({ abi: PROXY_ABI, eventName: 'PerpetualLimitOrderCancelled' })[0];
@@ -304,7 +304,7 @@ export const OpenOrdersTable = memo(() => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer className={styles.tableHolder}>
+        <TableContainer className={classnames(styles.tableHolder, styles.withBackground)}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
               <TableRow>
@@ -337,7 +337,7 @@ export const OpenOrdersTable = memo(() => {
         </TableContainer>
       )}
       {(!width || width < MIN_WIDTH_FOR_TABLE) && (
-        <Box>
+        <div className={styles.blocksHolder}>
           {address &&
             visibleRows.map((openOrder) => (
               <OpenOrderBlock
@@ -348,16 +348,20 @@ export const OpenOrdersTable = memo(() => {
               />
             ))}
           {(!address || openOrders.length === 0) && (
-            <Box className={styles.noData}>
+            <div className={styles.noData}>
               {!address
                 ? t('pages.trade.orders-table.table-content.connect')
                 : t('pages.trade.orders-table.table-content.no-open')}
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
       )}
       {address && filteredRows.length > 5 && (
-        <Box className={styles.paginationHolder}>
+        <div
+          className={classnames(styles.paginationHolder, {
+            [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE,
+          })}
+        >
           <TablePagination
             align="center"
             rowsPerPageOptions={[5, 10, 20]}
@@ -372,8 +376,11 @@ export const OpenOrdersTable = memo(() => {
             }}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
-        </Box>
+        </div>
       )}
+      <div
+        className={classnames(styles.footer, { [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE })}
+      ></div>
 
       <FilterModal headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
       <Dialog open={isCancelModalOpen} className={styles.dialog}>

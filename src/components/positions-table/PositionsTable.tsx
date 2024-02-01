@@ -1,10 +1,11 @@
+import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount, useChainId } from 'wagmi';
 
-import { Box, Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
 import { FilterModal } from 'components/table/filter-modal/FilterModal';
@@ -203,6 +204,10 @@ export const PositionsTable = () => {
         label: t('pages.trade.positions-table.table-header.tp-sl'),
         align: AlignE.Right,
       },
+      {
+        label: '',
+        align: AlignE.Right,
+      },
     ],
     [t]
   );
@@ -373,7 +378,7 @@ export const PositionsTable = () => {
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
-        <TableContainer className={styles.tableHolder}>
+        <TableContainer className={classnames(styles.tableHolder, styles.withBackground)}>
           <MuiTable>
             <TableHead className={styles.tableHead}>
               <TableRow>
@@ -413,7 +418,7 @@ export const PositionsTable = () => {
         </TableContainer>
       )}
       {(!width || width < MIN_WIDTH_FOR_TABLE) && (
-        <Box>
+        <div className={styles.blocksHolder}>
           {address &&
             visibleRows.map((position) => (
               <PositionBlock
@@ -427,16 +432,20 @@ export const PositionsTable = () => {
               />
             ))}
           {(!address || positions.length === 0) && (
-            <Box className={styles.noData}>
+            <div className={styles.noData}>
               {!address
                 ? t('pages.trade.positions-table.table-content.connect')
                 : t('pages.trade.positions-table.table-content.no-open')}
-            </Box>
+            </div>
           )}
-        </Box>
+        </div>
       )}
       {address && positions.length > 5 && (
-        <Box className={styles.paginationHolder}>
+        <div
+          className={classnames(styles.paginationHolder, {
+            [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE,
+          })}
+        >
           <TablePagination
             align="center"
             rowsPerPageOptions={[5, 10, 20]}
@@ -451,8 +460,11 @@ export const PositionsTable = () => {
             }}
             labelRowsPerPage={t('common.pagination.per-page')}
           />
-        </Box>
+        </div>
       )}
+      <div
+        className={classnames(styles.footer, { [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE })}
+      ></div>
 
       <FilterModal headers={positionsHeaders} filter={filter} setFilter={setFilter} />
       <ShareModal

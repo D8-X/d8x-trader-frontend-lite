@@ -198,17 +198,17 @@ export const theme = createTheme({
           props: { variant: 'primary' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'var(--d8x-color-action)',
+            backgroundColor: 'var(--d8x-color-background-primary)',
             border: '1px solid var(--d8x-color-action)',
             color: 'var(--d8x-color-text-secondary)',
             fontSize: '16px',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-color-action-rgb), 0.6)',
+              backgroundColor: 'var(--d8x-color-background-primary-hover)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              backgroundColor: 'var(--d8x-color-background-primary-disabled)',
               color: 'var(--d8x-color-text-secondary)',
-              border: 0,
+              borderColor: 'transparent',
             },
           },
         },
@@ -265,15 +265,15 @@ export const theme = createTheme({
           props: { variant: 'buy' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'rgba(var(--d8x-color-background-buy-rgb), 1)',
+            backgroundColor: 'var(--d8x-color-background-buy)',
             color: 'var(--d8x-color-text-secondary)',
             fontWeight: '600',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-color-background-buy-rgb), 0.9)',
+              backgroundColor: 'var(--d8x-color-background-buy-hover)',
               color: 'var(--d8x-color-text-secondary)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              backgroundColor: 'var(--d8x-color-background-buy-disabled)',
               color: 'var(--d8x-color-text-secondary)',
             },
           },
@@ -282,15 +282,15 @@ export const theme = createTheme({
           props: { variant: 'sell' },
           style: {
             ...MuiButtonSharedStyle,
-            backgroundColor: 'rgba(var(--d8x-color-background-sell-rgb), 1)',
+            backgroundColor: 'var(--d8x-color-background-sell)',
             color: 'var(--d8x-color-text-secondary)',
             fontWeight: '600',
             ':hover': {
-              backgroundColor: 'rgba(var(--d8x-color-background-sell-rgb), 0.9)',
+              backgroundColor: 'var(--d8x-color-background-sell-hover)',
               color: 'var(--d8x-color-text-secondary)',
             },
             ':disabled': {
-              backgroundColor: 'rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5)',
+              backgroundColor: 'var(--d8x-color-background-sell-disabled)',
               color: 'var(--d8x-color-text-secondary)',
             },
           },
@@ -358,7 +358,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           padding: '0 8px',
-          color: 'var(--d8x-color-action)',
+          color: 'var(--d8x-color-action-icon)',
 
           '.MuiSvgIcon-root': {
             width: '15px',
@@ -479,13 +479,13 @@ export const theme = createTheme({
     MuiSlider: {
       styleOverrides: {
         thumb: {
-          color: 'var(--d8x-color-action)',
+          color: 'var(--d8x-color-action-icon)',
         },
         track: {
-          color: 'var(--d8x-color-action)',
+          color: 'var(--d8x-color-action-icon)',
         },
         rail: {
-          color: 'var(--d8x-color-action)',
+          color: 'var(--d8x-color-action-icon)',
         },
         markLabel: {
           fontSize: '12px',
@@ -505,7 +505,7 @@ export const theme = createTheme({
     MuiCardContent: {
       styleOverrides: {
         root: {
-          backgroundColor: 'var(--d8x-color-background-items)',
+          backgroundColor: 'var(--d8x-color-background-card-content)',
         },
       },
     },
@@ -515,6 +515,7 @@ export const theme = createTheme({
           color: 'var(--d8x-color-text-main)',
         },
         selectIcon: {
+          color: 'var(--d8x-color-text-main)',
           top: 0,
         },
       },

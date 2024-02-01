@@ -16,10 +16,10 @@
     line-height: 24px;
     font-weight: 600;
     max-height: 40px;
-    background-color: var(--d8x-color-background-items-inactive);
     border-width: 1px 1px 0 0;
     margin-bottom: -1px;
-    color: var(--d8x-color-text-primarytab-inactive);
+    background-color: var(--d8x-color-background-order-option);
+    color: var(--d8x-color-text-order-option);
 
     &:first-of-type {
       border-left-width: 1px;
@@ -32,12 +32,13 @@
 
     &:hover,
     &.selected {
-      color: var(--d8x-color-action);
+      background-color: var(--d8x-color-background-order-option-hover);
+      color: var(--d8x-color-text-order-option-hover);
     }
 
     &.selected {
-      background-color: var(--d8x-color-action);
-      color: var(--d8x-color-text-secondary);
+      background-color: var(--d8x-color-background-order-option-selected);
+      color: var(--d8x-color-text-order-option-selected);
     }
   }
 }

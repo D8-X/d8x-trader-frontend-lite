@@ -66,13 +66,14 @@
   padding: 8px 32px 0;
   margin: -16px -32px 0;
   min-height: 80px;
-  background-color: var(--d8x-color-background-items);
+  background-color: var(--d8x-color-background-header);
 }
 
 .leftSide {
   display: flex;
   flex: 1;
   gap: 8 * $d8x-spacing;
+  align-items: center;
 
   .navWrapper {
     display: flex;
@@ -115,15 +116,8 @@
   &.active {
     color: var(--d8x-color-action);
     position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -$d8x-spacing;
-      width: 100%;
-      border-bottom: 1px solid var(--d8x-color-action);
-    }
+    text-decoration: underline;
+    text-underline-offset: $d8x-spacing * 2.5;
   }
 }
 
@@ -136,7 +130,7 @@
 
   &.active {
     text-decoration: underline;
-    text-underline-offset: 8px;
+    text-underline-offset: $d8x-spacing * 2;
     padding: 12px;
     margin: -8px;
 

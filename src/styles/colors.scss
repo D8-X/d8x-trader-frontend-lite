@@ -31,6 +31,37 @@
   --d8x-color-warning-main: #FFDA9F;
   --d8x-color-warning-secondary: #FFBDBD;
 
+  // Additional colors
+  --d8x-color-background-header: var(--d8x-color-background-items);
+  --d8x-color-background-icon: var(--d8x-color-background-items);
+  --d8x-color-background-order-block: var(--d8x-color-background);
+  --d8x-color-background-card-content: var(--d8x-color-background-items);
+  --d8x-color-background-order-block-bottom: var(--d8x-color-background);
+  --d8x-color-background-table-holder: var(--d8x-color-background-items);
+  --d8x-color-background-table-header: var(--d8x-color-background-items);
+  --d8x-color-background-table-row-default: var(--d8x-color-background-table-row);
+  --d8x-color-background-table-even-row: var(--d8x-color-background-items);
+  --d8x-color-text-table-header: var(--d8x-color-text-main);
+  --d8x-color-text-table-cell: var(--d8x-color-text-highlight);
+  --d8x-color-action-icon: var(--d8x-color-action);
+  --d8x-color-background-primary: var(--d8x-color-action);
+  --d8x-color-background-primary-hover: rgba(var(--d8x-color-action-rgb), 0.6);
+  --d8x-color-background-primary-disabled: rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5);
+  --d8x-color-buy-rgba: rgba(var(--d8x-color-background-buy-rgb), 1);
+  --d8x-color-background-buy: rgba(var(--d8x-color-background-buy-rgb), 1);
+  --d8x-color-background-buy-hover: rgba(var(--d8x-color-background-buy-rgb), 0.9);
+  --d8x-color-background-buy-disabled: rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5);
+  --d8x-color-sell-rgba: rgba(var(--d8x-color-background-sell-rgb), 1);
+  --d8x-color-background-sell: rgba(var(--d8x-color-background-sell-rgb), 1);
+  --d8x-color-background-sell-hover: rgba(var(--d8x-color-background-sell-rgb), 0.9);
+  --d8x-color-background-sell-disabled: rgba(var(--d8x-color-background-buy-inactive-rgb), 0.5);
+  --d8x-color-background-order-option: var(--d8x-color-background-items-inactive);
+  --d8x-color-background-order-option-hover: var(--d8x-color-background-items-inactive);
+  --d8x-color-background-order-option-selected: var(--d8x-color-action);
+  --d8x-color-text-order-option: var(--d8x-color-text-primarytab-inactive);
+  --d8x-color-text-order-option-hover: var(--d8x-color-action);
+  --d8x-color-text-order-option-selected: var(--d8x-color-text-secondary);
+
   // Override colors for toastify
   --toastify-color-progress-success: #664ADF;
   --toastify-color-progress-error: #FFBDBD;

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -224,7 +224,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   return (
     <>
-      <div className={classNames(styles.betaInfoLine, { [styles.hideBetaText]: hideBetaText })}>
+      <div className={classnames(styles.betaInfoLine, { [styles.hideBetaText]: hideBetaText })}>
         <div className={styles.textBlock}>{t('common.public-beta.info-text')}</div>
         <div title={t('common.info-modal.close')} className={styles.closeButton} onClick={() => setHideBetaText(true)}>
           <Close className={styles.closeIcon} />

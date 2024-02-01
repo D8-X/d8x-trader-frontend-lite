@@ -12,7 +12,7 @@
 }
 
 .actionIcon {
-  color: var(--d8x-color-action);
+  color: var(--d8x-color-action-icon);
 }
 
 .headerWrapper {
@@ -46,9 +46,9 @@
 }
 
 .green {
-  color: rgba(var(--d8x-color-background-buy-rgb), 1);
+  color: var(--d8x-color-buy-rgba);
 }
 
 .red {
-  color: rgba(var(--d8x-color-background-sell-rgb), 1);
+  color: var(--d8x-color-sell-rgba);
 }

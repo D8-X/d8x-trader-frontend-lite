@@ -4,22 +4,26 @@
   overflow-x: auto;
 }
 
+.tableHolder {
+  padding: 0 6 * $d8x-spacing;
+}
+
 .tableHead {
-  background-color: var(--d8x-color-background-items);
+  background-color: var(--d8x-color-background-table-header);
 }
 
 .tableBody {
   background-color: var(--d8x-color-background-table);
 
   :global(.MuiTypography-root) {
-    color: var(--d8x-color-text-highlight);
+    color: var(--d8x-color-text-table-cell);
   }
 
   tr {
-    background-color: var(--d8x-color-background-table-row);
+    background-color: var(--d8x-color-background-table-row-default);
 
     &:nth-child(2n) {
-      background-color: var(--d8x-color-background-items);
+      background-color: var(--d8x-color-background-table-even-row);
     }
   }
 }
@@ -40,6 +44,22 @@
   :global(.MuiFormControlLabel-label) {
     font-size: 14px;
   }
+}
+
+.blocksHolder {
+  padding: 0 6 * $d8x-spacing;
+
+  @include media-phone {
+    padding: 0 4 * $d8x-spacing;
+  }
+}
+
+.withBackground {
+  background-color: var(--d8x-color-background-table-holder);
+}
+
+.footer {
+  padding-bottom: 6 * $d8x-spacing;
 }
 
 @media screen and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {

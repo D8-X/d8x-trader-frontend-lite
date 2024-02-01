@@ -1,13 +1,13 @@
 .pnlPositive {
-  color: rgba(var(--d8x-color-background-buy-rgb), 1) !important;
+  color: var(--d8x-color-buy-rgba) !important;
 }
 
 .pnlNegative {
-  color: rgba(var(--d8x-color-background-sell-rgb), 1) !important;
+  color: var(--d8x-color-sell-rgba) !important;
 }
 
 .actionIcon {
-  color: var(--d8x-color-action);
+  color: var(--d8x-color-action-icon);
 }
 
 .tpSlCell {

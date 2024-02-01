@@ -1,14 +1,15 @@
 import classnames from 'classnames';
 import { type ReactNode } from 'react';
 
-import { Box, Button, Card, CardContent, CardHeader } from '@mui/material';
+import { Button, Card, CardContent, CardHeader } from '@mui/material';
 
 import { FilterModalProvider } from 'components/table/filter-modal/FilterModalContext';
 import { type TableTypeE } from 'types/enums';
 
-import styles from './TableSelector.module.scss';
 import { Filter } from './elements/filter/Filter';
 import { Refresher } from './elements/refresher/Refresher';
+
+import styles from './TableSelector.module.scss';
 
 export interface SelectorItemI {
   label: string;
@@ -29,8 +30,8 @@ export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: Ta
         <CardHeader
           className={styles.headerRoot}
           title={
-            <Box className={styles.headerWrapper}>
-              <Box className={styles.tableSelectorsWrapper}>
+            <div className={styles.headerWrapper}>
+              <div className={styles.tableSelectorsWrapper}>
                 {selectorItems.map(({ label }, index) => (
                   <Button
                     key={label}
@@ -41,10 +42,10 @@ export const TableSelector = ({ selectorItems, activeIndex, setActiveIndex }: Ta
                     {label}
                   </Button>
                 ))}
-              </Box>
+              </div>
               <Filter activeTableType={selectorItems[activeIndex].tableType} />
               <Refresher activeTableType={selectorItems[activeIndex].tableType} />
-            </Box>
+            </div>
           }
         />
         <CardContent className={styles.content}>{selectorItems[activeIndex].item}</CardContent>

@@ -26,7 +26,9 @@ const defaultChains: Chain[] = [
   { ...polygonZkEvmTestnet, iconUrl: zkTestIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: zkTestIcon, iconBackground: 'transparent' },
-].filter(({ id }) => config.enabledChains.includes(id));
+]
+  .filter(({ id }) => config.enabledChains.includes(id))
+  .sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2));
 
 const providers = [
   jsonRpcProvider({

@@ -50,10 +50,10 @@
   font-size: 0.625rem;
 
   &.buyPrice {
-    color: rgba(var(--d8x-color-background-buy-rgb), 1);
+    color: var(--d8x-color-buy-rgba);
   }
 
   &.sellPrice {
-    color: rgba(var(--d8x-color-background-sell-rgb), 1);
+    color: var(--d8x-color-sell-rgba);
   }
 }

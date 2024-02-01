@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Box, MenuItem } from '@mui/material';
+import { MenuItem } from '@mui/material';
 
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { type SelectorItemI } from 'components/table-selector/TableSelector';
@@ -21,36 +21,36 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
 
   return (
     <FilterModalProvider>
-      <Box className={styles.root}>
-        <DropDownSelect
-          id="table-selector-dropdown"
-          selectedValue={selectorItems[selectedIndex]?.label}
-          anchorEl={anchorEl}
-          setAnchorEl={setAnchorEl}
-          className={styles.dropdownSelect}
-          fullWidth
-        >
-          {selectorItems.map(({ label }, index) => (
-            <MenuItem
-              key={label}
-              value={index}
-              className={styles.dropdown}
-              onClick={() => {
-                setSelectedIndex(index);
-                setAnchorEl(null);
-              }}
-            >
-              {label}
-            </MenuItem>
-          ))}
-        </DropDownSelect>
-
+      <div className={styles.root}>
+        <div className={styles.dropdownHolder}>
+          <DropDownSelect
+            id="table-selector-dropdown"
+            selectedValue={selectorItems[selectedIndex]?.label}
+            anchorEl={anchorEl}
+            setAnchorEl={setAnchorEl}
+            fullWidth
+          >
+            {selectorItems.map(({ label }, index) => (
+              <MenuItem
+                key={label}
+                value={index}
+                className={styles.dropdown}
+                onClick={() => {
+                  setSelectedIndex(index);
+                  setAnchorEl(null);
+                }}
+              >
+                {label}
+              </MenuItem>
+            ))}
+          </DropDownSelect>
+        </div>
         <div className={styles.buttonsBlock}>
           <Filter activeTableType={selectorItems[selectedIndex].tableType} />
           <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
         </div>
-        <Box>{selectorItems[selectedIndex].item}</Box>
-      </Box>
+        <div>{selectorItems[selectedIndex].item}</div>
+      </div>
     </FilterModalProvider>
   );
 };

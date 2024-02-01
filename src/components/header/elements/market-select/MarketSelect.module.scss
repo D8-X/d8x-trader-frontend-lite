@@ -16,8 +16,8 @@
   height: 45px;
   min-width: 45px;
   border-radius: 50%;
-  background-color: var(--d8x-color-background-items);
-  color: var(--d8x-color-action);
+  background-color: var(--d8x-color-background-icon);
+  color: var(--d8x-color-action-icon);
   margin-left: $d8x-spacing * 3;
 
   svg {
@@ -38,7 +38,7 @@
 }
 
 .arrowDropDown {
-  color: var(--d8x-color-action);
+  color: var(--d8x-color-action-icon);
   padding-top: 2 * $d8x-spacing;
 }
 

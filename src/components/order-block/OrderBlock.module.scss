@@ -3,11 +3,11 @@
 .root {
   width: 100%;
   border-radius: $d8x-border-radius;
-  background-color: var(--d8x-color-background);
+  background-color: var(--d8x-color-background-order-block);
 }
 
 .bottomCard {
-  background-color: var(--d8x-color-background);
+  background-color: var(--d8x-color-background-order-block-bottom);
 }
 
 .selectors {
