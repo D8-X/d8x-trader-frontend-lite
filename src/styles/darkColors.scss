@@ -34,7 +34,7 @@
   // Additional colors
   --d8x-color-background-header: var(--d8x-color-background-items);
   --d8x-color-background-icon: var(--d8x-color-background-items);
-  --d8x-color-background-order-block: var(--d8x-color-background);
+  --d8x-color-background-order-block: var(--d8x-color-background-items);
   --d8x-color-background-card-content: var(--d8x-color-background-items);
   --d8x-color-background-order-block-bottom: var(--d8x-color-background);
   --d8x-color-background-table-holder: var(--d8x-color-background-items);
@@ -61,6 +61,10 @@
   --d8x-color-text-order-option: var(--d8x-color-text-primarytab-inactive);
   --d8x-color-text-order-option-hover: var(--d8x-color-action);
   --d8x-color-text-order-option-selected: var(--d8x-color-text-secondary);
+  --d8x-color-background-modal: var(--d8x-color-background);
+  --d8x-color-background-order-block-info: var(--d8x-color-background);
+  --d8x-color-text-order-block-info: var(--d8x-color-text-main);
+  --d8x-color-text-market-icon: var(--d8x-color-action);
 
   // Override colors for toastify
   --toastify-color-progress-success: #664ADF;
