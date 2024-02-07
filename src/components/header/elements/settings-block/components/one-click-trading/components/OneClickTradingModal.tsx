@@ -188,7 +188,14 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     }
     handleRemoveRef.current = true;
     setActionLoading(true);
-    await removeDelegate(walletClient, tradingClient, proxyAddr as Address)
+    let strgKey = storageKey;
+    if (!strgKey) {
+      strgKey = await getStorageKey(walletClient);
+      setStorageKey(strgKey);
+    }
+    const delegateAccount = privateKeyToAccount(getDelegateKey(walletClient, strgKey) as Address);
+
+    await removeDelegate(walletClient, delegateAccount, proxyAddr as Address)
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
         setActivatedOneClickTrading(false);
