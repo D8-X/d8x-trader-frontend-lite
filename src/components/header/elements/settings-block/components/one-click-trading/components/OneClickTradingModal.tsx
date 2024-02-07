@@ -86,7 +86,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
 
     const strgKey = await getStorageKey(walletClient);
     setStorageKey(strgKey);
-    const delegateAddr = await generateDelegate(walletClient, strgKey);
+    const delegateAddr = (await generateDelegate(walletClient, strgKey)).address;
     await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
     setDelegated(true);
     setActivatedOneClickTrading(true);
@@ -123,7 +123,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
       const delegateKey = getDelegateKey(walletClient, strgKey);
       let generatedAddress;
       if (!delegateKey) {
-        generatedAddress = await generateDelegate(walletClient, strgKey);
+        generatedAddress = (await generateDelegate(walletClient, strgKey)).address;
       } else {
         generatedAddress = privateKeyToAccount(delegateKey as Address).address;
       }
@@ -190,13 +190,8 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     setActionLoading(true);
 
     getStorageKey(walletClient)
-      .then((strgKey) =>
-        removeDelegate(
-          walletClient,
-          privateKeyToAccount(getDelegateKey(walletClient, strgKey) as Address),
-          proxyAddr as Address
-        )
-      )
+      .then((strgKey) => generateDelegate(walletClient, strgKey))
+      .then((delegateAccount) => removeDelegate(walletClient, delegateAccount, proxyAddr as Address))
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
         setActivatedOneClickTrading(false);
