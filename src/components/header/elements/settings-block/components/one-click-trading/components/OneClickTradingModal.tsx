@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -40,7 +40,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [storageKey, setStorageKey] = useAtom(storageKeyAtom);
   const [traderAPI] = useAtom(traderAPIAtom);
-  const setTradingClient = useSetAtom(tradingClientAtom);
+  const [tradingClient, setTradingClient] = useAtom(tradingClientAtom);
 
   const [isLoading, setLoading] = useState(false);
   const [isActionLoading, setActionLoading] = useState(false);
@@ -182,15 +182,13 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     }
   }, [activatedOneClickTrading, delegateBalance, delegateAddress]);
 
-  const handleRemove = () => {
-    if (!walletClient || !proxyAddr || handleRemoveRef.current) {
+  const handleRemove = async () => {
+    if (!walletClient || !tradingClient || !proxyAddr || handleRemoveRef.current) {
       return;
     }
-
     handleRemoveRef.current = true;
     setActionLoading(true);
-
-    removeDelegate(walletClient, proxyAddr as Address)
+    await removeDelegate(walletClient, tradingClient, proxyAddr as Address)
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
         setActivatedOneClickTrading(false);
