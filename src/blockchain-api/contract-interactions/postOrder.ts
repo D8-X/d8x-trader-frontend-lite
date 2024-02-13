@@ -30,7 +30,6 @@ export async function postOrder(
       abi: LOB_ABI,
       functionName: 'postOrders',
       args: [orders, signatures],
-      gas: BigInt(600_000 + (orders.length - 1) * 400_000),
       account: walletClient.account,
       gasPrice: gasPrice,
     })

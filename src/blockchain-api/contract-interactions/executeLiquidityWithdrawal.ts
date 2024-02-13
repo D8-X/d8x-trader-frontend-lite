@@ -22,7 +22,6 @@ export async function executeLiquidityWithdrawal(
       abi: PROXY_ABI,
       functionName: 'executeLiquidityWithdrawal',
       args: [poolId, walletClient.account?.address],
-      gas: 400_000n + 200_000n * BigInt(traderAPI.getPerpetualSymbolsInPool(symbol).length),
       gasPrice: gasPrice,
       account: account,
     })

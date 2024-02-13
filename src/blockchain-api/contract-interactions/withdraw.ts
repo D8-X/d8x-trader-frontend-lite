@@ -20,7 +20,7 @@ export async function withdraw(
       abi: PROXY_ABI,
       functionName: 'withdraw',
       args: [data.perpId, traderAddr, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
-      gas: BigInt(1_000_000),
+      // gas: BigInt(1_000_000),
       gasPrice: gasPrice,
       value: BigInt(data.priceUpdate.updateFee),
       account: walletClient.account,

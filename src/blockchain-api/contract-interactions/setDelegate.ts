@@ -19,7 +19,6 @@ export async function setDelegate(
       abi: PROXY_ABI,
       functionName: 'setDelegate',
       args: [delegateAddr],
-      gas: BigInt(1_000_000),
       gasPrice: gasPrice,
       account: account,
     })

@@ -5,6 +5,7 @@ import { erc20ABI, type Chain } from 'wagmi';
 
 import { MaxUint256 } from 'app-constants';
 import { getGasPrice } from './getGasPrice';
+import { getGasLimit } from './getGasLimit';
 
 export async function approveMarginToken(
   walletClient: WalletClient<Transport, Chain, Account>,
@@ -29,6 +30,7 @@ export async function approveMarginToken(
       throw new Error('account not connected');
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
+    const gasLimit = getGasLimit({ chainId: walletClient.chain?.id, method: 'approve' });
     return walletClient
       .writeContract({
         chain: walletClient.chain,
@@ -36,7 +38,7 @@ export async function approveMarginToken(
         abi: erc20ABI,
         functionName: 'approve',
         args: [proxyAddr as Address, BigInt(MaxUint256)],
-        gas: BigInt(100_000),
+        gas: gasLimit,
         gasPrice: gasPrice,
         account: account,
       })
