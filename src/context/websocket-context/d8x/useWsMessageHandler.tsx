@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -9,6 +9,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { getOpenOrders } from 'network/network';
 import {
   allPerpetualStatisticsAtom,
+  executeOrderAtom,
   failOrderAtom,
   mainWsLatestMessageTimeAtom,
   openOrdersAtom,
@@ -94,7 +95,8 @@ export function useWsMessageHandler() {
   const removeOpenOrder = useSetAtom(removeOpenOrderAtom);
   const failOpenOrder = useSetAtom(failOrderAtom);
   const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
 
   const updatePerpetualStats = useCallback(
     (stats: PerpetualStatisticsI) => {
@@ -206,18 +208,23 @@ export function useWsMessageHandler() {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
         }
-        removeOpenOrder(parsedMessage.data.obj.orderId);
-        toast.success(
-          <ToastContent
-            title={t('pages.trade.positions-table.toasts.trade-executed.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.positions-table.toasts.trade-executed.body'),
-                value: parsedMessage.data.obj.symbol,
-              },
-            ]}
-          />
-        );
+        const orderId = parsedMessage.data.obj.orderId;
+        removeOpenOrder(orderId);
+        if (!executedOrders.has(orderId)) {
+          setOrderExecuted(orderId);
+          console.log('from event');
+          toast.success(
+            <ToastContent
+              title={t('pages.trade.positions-table.toasts.trade-executed.title')}
+              bodyLines={[
+                {
+                  label: t('pages.trade.positions-table.toasts.trade-executed.body'),
+                  value: parsedMessage.data.obj.symbol,
+                },
+              ]}
+            />
+          );
+        }
       } else if (isExecutionFailedMessage(parsedMessage)) {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
@@ -249,6 +256,8 @@ export function useWsMessageHandler() {
       failOpenOrder,
       setAllPerpetualStatistics,
       setMainWsLatestMessageTime,
+      setOrderExecuted,
+      executedOrders,
       chainId,
       address,
       t,
