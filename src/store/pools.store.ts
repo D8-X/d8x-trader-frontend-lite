@@ -223,3 +223,17 @@ export const executeOrderAtom = atom(
     });
   }
 );
+
+const failedOrderIdsAtom = atom<Set<string>>(new Set<string>());
+
+export const failOrderIdAtom = atom(
+  (get) => {
+    return get(failedOrderIdsAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(failedOrderIdsAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);

@@ -11,6 +11,7 @@ import {
   allPerpetualStatisticsAtom,
   executeOrderAtom,
   failOrderAtom,
+  failOrderIdAtom,
   mainWsLatestMessageTimeAtom,
   openOrdersAtom,
   perpetualStatisticsAtom,
@@ -97,6 +98,7 @@ export function useWsMessageHandler() {
   const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
+  const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
 
   const updatePerpetualStats = useCallback(
     (stats: PerpetualStatisticsI) => {
@@ -228,22 +230,26 @@ export function useWsMessageHandler() {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
         }
-        failOpenOrder(parsedMessage.data.obj.orderId);
-        toast.error(
-          <ToastContent
-            title={t('pages.trade.positions-table.toasts.order-failed.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.positions-table.toasts.order-failed.body1'),
-                value: parsedMessage.data.obj.symbol,
-              },
-              {
-                label: t('pages.trade.positions-table.toasts.order-failed.body2'),
-                value: parsedMessage.data.obj.reason,
-              },
-            ]}
-          />
-        );
+        const orderId = parsedMessage.data.obj.orderId;
+        failOpenOrder(orderId);
+        if (!failedOrderIds.has(orderId)) {
+          setOrderIdFailed(orderId);
+          toast.error(
+            <ToastContent
+              title={t('pages.trade.positions-table.toasts.order-failed.title')}
+              bodyLines={[
+                {
+                  label: t('pages.trade.positions-table.toasts.order-failed.body1'),
+                  value: parsedMessage.data.obj.symbol,
+                },
+                {
+                  label: t('pages.trade.positions-table.toasts.order-failed.body2'),
+                  value: parsedMessage.data.obj.reason,
+                },
+              ]}
+            />
+          );
+        }
       }
     },
     [
@@ -256,7 +262,9 @@ export function useWsMessageHandler() {
       setAllPerpetualStatistics,
       setMainWsLatestMessageTime,
       setOrderExecuted,
+      setOrderIdFailed,
       executedOrders,
+      failedOrderIds,
       chainId,
       address,
       t,

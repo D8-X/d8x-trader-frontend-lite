@@ -4,7 +4,14 @@ import { type Address, useAccount, useChainId } from 'wagmi';
 
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { clearOpenOrdersAtom, executeOrderAtom, openOrdersAtom, positionsAtom, traderAPIAtom } from 'store/pools.store';
+import {
+  clearOpenOrdersAtom,
+  executeOrderAtom,
+  failOrderIdAtom,
+  openOrdersAtom,
+  positionsAtom,
+  traderAPIAtom,
+} from 'store/pools.store';
 import { PerpetualOpenOrdersI } from 'types/types';
 import { OrderStatus } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
@@ -25,6 +32,7 @@ export const TableDataFetcher = memo(() => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
+  const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
 
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const setPositions = useSetAtom(positionsAtom);
@@ -83,7 +91,8 @@ export const TableDataFetcher = memo(() => {
               />
             );
           }
-          if (orderStatus === OrderStatus.CANCELED) {
+          if (orderStatus === OrderStatus.CANCELED && !failedOrderIds.has(order.id)) {
+            setOrderIdFailed(order.id);
             toast.error(
               <ToastContent
                 title={t('pages.trade.positions-table.toasts.order-failed.title')}
@@ -99,7 +108,7 @@ export const TableDataFetcher = memo(() => {
         }
       }
     },
-    [executedOrders, t, openOrders, traderAPI, setOrderExecuted]
+    [executedOrders, failedOrderIds, t, openOrders, traderAPI, setOrderExecuted, setOrderIdFailed]
   );
 
   useEffect(() => {
