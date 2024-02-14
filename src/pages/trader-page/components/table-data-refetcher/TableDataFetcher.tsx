@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 const MAX_FETCH_COUNT = 20;
 const MAX_FETCH_TIME = 40 * 1000;
 const INTERVAL_FOR_TICKER_FAST = 2000;
-const INTERVAL_FOR_TICKER_SLOW = 60000;
+const INTERVAL_FOR_TICKER_SLOW = 120000;
 
 export const TableDataFetcher = memo(() => {
   const { t } = useTranslation();
@@ -63,7 +63,6 @@ export const TableDataFetcher = memo(() => {
 
   const handleRemovedOrders = useCallback(
     async (newOrderInfo: PerpetualOpenOrdersI[]) => {
-      console.log(openOrders, executedOrders, traderAPI);
       if (newOrderInfo.length < 1 || !traderAPI) {
         return;
       }
@@ -71,7 +70,6 @@ export const TableDataFetcher = memo(() => {
         if (!newOrderInfo.some(({ orderIds }) => orderIds.some((orderId) => order.id === orderId))) {
           const orderStatus = await traderAPI.getOrderStatus(order.symbol, order.id);
           if (orderStatus === OrderStatus.EXECUTED && !executedOrders.has(order.id)) {
-            console.log('from callback');
             setOrderExecuted(order.id);
             toast.success(
               <ToastContent
@@ -135,7 +133,6 @@ export const TableDataFetcher = memo(() => {
     address,
     lastFetch,
     handleRemovedOrders,
-    // setLastFetch,
     setPositions,
     setOpenOrders,
     clearOpenOrders,

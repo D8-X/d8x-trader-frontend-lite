@@ -212,7 +212,6 @@ export function useWsMessageHandler() {
         removeOpenOrder(orderId);
         if (!executedOrders.has(orderId)) {
           setOrderExecuted(orderId);
-          console.log('from event');
           toast.success(
             <ToastContent
               title={t('pages.trade.positions-table.toasts.trade-executed.title')}
