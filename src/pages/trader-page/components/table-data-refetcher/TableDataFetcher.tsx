@@ -32,6 +32,8 @@ export const TableDataFetcher = memo(() => {
   const [fastTicker, setFastTicker] = useState(0);
   const [slowTicker, setSlowTicker] = useState(0);
 
+  const [lastFetch, setLastFetch] = useState(0);
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     if (Date.now() - latestOrderSentTimestamp <= MAX_FETCH_TIME) {
@@ -61,9 +63,13 @@ export const TableDataFetcher = memo(() => {
 
   const handleRemovedOrders = useCallback(
     async (newOrderInfo: PerpetualOpenOrdersI[]) => {
+      console.log(openOrders, executedOrders, traderAPI);
+      if (newOrderInfo.length < 1 || !traderAPI) {
+        return;
+      }
       for (const order of openOrders) {
         if (!newOrderInfo.some(({ orderIds }) => orderIds.some((orderId) => order.id === orderId))) {
-          const orderStatus = await traderAPI?.getOrderStatus(order.symbol, order.id);
+          const orderStatus = await traderAPI.getOrderStatus(order.symbol, order.id);
           if (orderStatus === OrderStatus.EXECUTED && !executedOrders.has(order.id)) {
             console.log('from callback');
             setOrderExecuted(order.id);
@@ -95,11 +101,15 @@ export const TableDataFetcher = memo(() => {
         }
       }
     },
-    [openOrders, executedOrders, traderAPI, t, setOrderExecuted]
+    [executedOrders, t, openOrders, traderAPI, setOrderExecuted]
   );
 
   useEffect(() => {
+    if (Date.now() - lastFetch < INTERVAL_FOR_TICKER_FAST) {
+      return;
+    }
     if ((fastTicker > 0 || slowTicker > 0) && chainId && address) {
+      setLastFetch(Date.now());
       getOpenOrders(chainId, traderAPI, address as Address)
         .then(({ data: d }) => {
           handleRemovedOrders(d).then();
@@ -123,7 +133,9 @@ export const TableDataFetcher = memo(() => {
     chainId,
     traderAPI,
     address,
+    lastFetch,
     handleRemovedOrders,
+    // setLastFetch,
     setPositions,
     setOpenOrders,
     clearOpenOrders,
