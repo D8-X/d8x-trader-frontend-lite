@@ -5,9 +5,25 @@ import { OpenloginAdapter, OPENLOGIN_NETWORK } from '@web3auth/openlogin-adapter
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from '@web3auth/base';
 import { config } from 'config';
 
-const name = 'Login with X';
+const name = 'Login with Web3Auth';
 const iconUrl = 'https://avatars.githubusercontent.com/u/2824157?s=280&v=4';
 const clientId = config.web3AuthClientId;
+const disabledMethods = [
+  'google',
+  'facebook',
+  'reddit',
+  'discord',
+  'twitch',
+  'apple',
+  'line',
+  'github',
+  'kakao',
+  'linkedin',
+  'weibo',
+  'wechat',
+  'email_passwordless',
+  'sms_passwordless',
+];
 
 //@ts-expect-error chains has the corrrect type
 export const rainbowWeb3AuthConnector = ({ chains }) => {
@@ -69,6 +85,9 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
                   name: 'twitter',
                   showOnModal: true,
                 },
+                ...disabledMethods
+                  .map((n) => ({ name: n, showOnModal: false }))
+                  .reduce((obj, item) => Object.assign(obj, { [item.name]: item }), {}),
               },
             },
           },
