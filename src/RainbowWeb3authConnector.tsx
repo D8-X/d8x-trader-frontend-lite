@@ -30,7 +30,7 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: '0x' + chains[0].id.toString(16),
-    rpcTarget: chains[0].rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
+    rpcTarget: chains[0].rpcUrls.default.http[0],
     displayName: chains[0].name,
     tickerName: chains[0].nativeCurrency?.name,
     ticker: chains[0].nativeCurrency?.symbol,
@@ -47,7 +47,6 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
     },
   });
 
-  // Add openlogin adapter for customisations
   const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
   const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider,
@@ -58,9 +57,9 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
       },
       loginConfig: {
         jwt: {
-          verifier: 'd8x-test', // Pass the Verifier name here
-          typeOfLogin: 'jwt', // Pass on the login provider of the verifier you've created
-          clientId: 'YwsAsnbGPju3zXfqayLgBbla85fSp56X', // Pass on the Auth0 `Client ID` here
+          verifier: 'd8x-test', // Verifier name
+          typeOfLogin: 'jwt',
+          clientId: 'YwsAsnbGPju3zXfqayLgBbla85fSp56X', // Auth0 `Client ID`
         },
       },
     },
