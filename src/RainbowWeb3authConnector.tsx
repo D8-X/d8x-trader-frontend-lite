@@ -41,10 +41,10 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
         appName: 'D8X',
       },
       loginConfig: {
-        twitter: {
-          verifier: 'd8x-test',
-          typeOfLogin: 'twitter',
-          clientId: clientId,
+        jwt: {
+          verifier: 'd8x-test', // Pass the Verifier name here
+          typeOfLogin: 'jwt', // Pass on the login provider of the verifier you've created
+          clientId: 'YwsAsnbGPju3zXfqayLgBbla85fSp56X', // Pass on the Auth0 `Client ID` here
         },
       },
     },
