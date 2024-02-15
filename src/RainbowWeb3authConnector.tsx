@@ -1,0 +1,82 @@
+import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
+import { Web3Auth } from '@web3auth/modal';
+import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { OpenloginAdapter, OPENLOGIN_NETWORK } from '@web3auth/openlogin-adapter';
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from '@web3auth/base';
+import { config } from 'config';
+
+const name = 'Login with X';
+const iconUrl = 'https://avatars.githubusercontent.com/u/2824157?s=280&v=4';
+const clientId = config.web3AuthClientId;
+
+//@ts-expect-error chains has the corrrect type
+export const rainbowWeb3AuthConnector = ({ chains }) => {
+  const chainConfig = {
+    chainNamespace: CHAIN_NAMESPACES.EIP155,
+    chainId: '0x' + chains[0].id.toString(16),
+    rpcTarget: chains[0].rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
+    displayName: chains[0].name,
+    tickerName: chains[0].nativeCurrency?.name,
+    ticker: chains[0].nativeCurrency?.symbol,
+    blockExplorer: chains[0].blockExplorers?.default.url[0],
+  };
+
+  // Create Web3Auth Instance
+  const web3AuthInstance = new Web3Auth({
+    clientId: clientId,
+    chainConfig,
+    web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
+    uiConfig: {
+      loginMethodsOrder: ['twitter'],
+    },
+  });
+
+  // Add openlogin adapter for customisations
+  const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
+  const openloginAdapter = new OpenloginAdapter({
+    privateKeyProvider,
+    adapterSettings: {
+      uxMode: 'popup',
+      whiteLabel: {
+        appName: 'D8X',
+      },
+      loginConfig: {
+        twitter: {
+          verifier: 'd8x-test',
+          typeOfLogin: 'twitter',
+          clientId: clientId,
+        },
+      },
+    },
+  });
+  web3AuthInstance.configureAdapter(openloginAdapter);
+
+  return {
+    id: 'web3auth',
+    name,
+    iconUrl,
+    iconBackground: '#fff',
+    createConnector: () => {
+      const connector = new Web3AuthConnector({
+        chains: chains,
+        options: {
+          web3AuthInstance,
+          modalConfig: {
+            [WALLET_ADAPTERS.OPENLOGIN]: {
+              label: 'Social Login',
+              loginMethods: {
+                twitter: {
+                  name: 'twitter',
+                  showOnModal: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return {
+        connector,
+      };
+    },
+  };
+};
