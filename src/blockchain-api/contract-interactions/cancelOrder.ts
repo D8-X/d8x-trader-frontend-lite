@@ -20,7 +20,6 @@ export async function cancelOrder(
       abi: LOB_ABI,
       functionName: 'cancelOrder',
       args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
-      gas: BigInt(1_000_000),
       gasPrice: gasPrice,
       value: BigInt(data.priceUpdate.updateFee),
       account: walletClient.account,

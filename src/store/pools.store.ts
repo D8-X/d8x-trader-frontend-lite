@@ -209,3 +209,31 @@ export const failOrderAtom = atom(null, (_get, set, orderIdToUpdate: string) => 
 export const clearOpenOrdersAtom = atom(null, (_get, set) => {
   set(ordersAtom, {});
 });
+
+const executedOrdersAtom = atom<Set<string>>(new Set<string>());
+
+export const executeOrderAtom = atom(
+  (get) => {
+    return get(executedOrdersAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(executedOrdersAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);
+
+const failedOrderIdsAtom = atom<Set<string>>(new Set<string>());
+
+export const failOrderIdAtom = atom(
+  (get) => {
+    return get(failedOrderIdsAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(failedOrderIdsAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);

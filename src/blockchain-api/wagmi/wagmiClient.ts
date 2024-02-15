@@ -9,13 +9,14 @@ import {
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { configureChains, createConfig } from 'wagmi';
-import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet } from 'wagmi/chains';
+import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 import polygonTestIcon from 'assets/networks/polygonTest.svg';
 import zkMainIcon from 'assets/networks/zkEvmMain.svg';
 import zkTestIcon from 'assets/networks/zkEvmTest.svg';
+import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.svg';
 import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
 import { x1, cardona } from 'utils/chains';
@@ -26,6 +27,17 @@ const defaultChains: Chain[] = [
   { ...polygonZkEvmTestnet, iconUrl: zkTestIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: zkTestIcon, iconBackground: 'transparent' },
+  {
+    ...arbitrumSepolia,
+    iconUrl: arbitrumSepoliaIcon,
+    iconBackground: 'transparent',
+    blockExplorers: {
+      default: {
+        name: 'Arbiscan',
+        url: 'https://sepolia.arbiscan.io/',
+      },
+    },
+  },
 ]
   .filter(({ id }) => config.enabledChains.includes(id))
   .sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2));

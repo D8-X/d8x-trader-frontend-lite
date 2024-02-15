@@ -180,7 +180,12 @@ export const OrderSize = memo(() => {
     setOpenCurrencySelector(false);
   };
 
-  const maxOrderSizeCurrent = maxOrderSize && maxOrderSize * currencyMultiplier;
+  const maxOrderSizeCurrent = useMemo(() => {
+    if (maxOrderSize !== undefined) {
+      return maxOrderSize && maxOrderSize * currencyMultiplier;
+    }
+  }, [maxOrderSize, currencyMultiplier]);
+
   return (
     <>
       <Box className={styles.root}>
