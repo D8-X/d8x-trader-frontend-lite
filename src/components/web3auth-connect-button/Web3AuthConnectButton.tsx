@@ -6,12 +6,18 @@ import { Button } from '@mui/material';
 
 import { config } from 'config';
 
-// import styles from './WalletConnectButton.module.scss';
-import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK } from '@web3auth/base';
-import { Web3Auth } from '@web3auth/modal';
+import styles from './Web3AuthConnectButton.module.scss';
+import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS, IProvider } from '@web3auth/base';
+// import { Web3Auth } from '@web3auth/modal';
+import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import * as allChains from 'viem/chains';
+import { walletClientAtom } from 'store/app.store';
+import { useSetAtom } from 'jotai';
+import { Address, createWalletClient, http } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
+import { publicClient } from 'blockchain-api/wagmi/wagmiClient';
 
 // const name = 'Web3Auth';
 // const iconUrl = 'https://avatars.githubusercontent.com/u/2824157?s=280&v=4';
@@ -50,8 +56,10 @@ function getChain(chainId: number) {
 
 export const Web3AuthConnectButton = memo(() => {
   const chainId = 1;
+  const setWalletClient = useSetAtom(walletClientAtom);
   const chain = getChain(chainId);
-  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
+  const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
+  const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -64,11 +72,25 @@ export const Web3AuthConnectButton = memo(() => {
       ticker: chain.nativeCurrency?.symbol,
       blockExplorer: '',
     };
+    // const chainConfig = {
+    //   chainNamespace: CHAIN_NAMESPACES.EIP155,
+    //   chainId: '0xaa36a7',
+    //   rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
+    //   displayName: 'Ethereum Sepolia',
+    //   blockExplorer: 'https://sepolia.etherscan.io',
+    //   ticker: 'ETH',
+    //   tickerName: 'Ethereum',
+    // };
     const init = async () => {
       try {
         // Create Web3Auth Instance
-        const web3AuthInstance = new Web3Auth({
-          clientId: clientId,
+        // const web3AuthInstance = new Web3Auth({
+        //   clientId: clientId,
+        //   chainConfig,
+        //   web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
+        // });
+        const web3AuthInstance = new Web3AuthNoModal({
+          clientId,
           chainConfig,
           web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
         });
@@ -92,7 +114,8 @@ export const Web3AuthConnectButton = memo(() => {
         });
         web3AuthInstance.configureAdapter(openloginAdapter);
         setWeb3auth(web3AuthInstance);
-        await web3AuthInstance.initModal();
+        await web3AuthInstance.init();
+        setProvider(web3AuthInstance.provider);
         if (web3AuthInstance.connected) {
           setLoggedIn(true);
         }
@@ -109,23 +132,64 @@ export const Web3AuthConnectButton = memo(() => {
       console.log('web3auth not initialized yet');
       return;
     }
-    await web3auth.connect();
+    // await web3auth.connect();
+    const web3authProvider = await web3auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+      loginProvider: 'twitter',
+    });
+    setProvider(web3authProvider);
     setLoggedIn(true);
+    console.log('logged in');
+  };
+
+  const logout = async () => {
+    if (!web3auth) {
+      console.log('web3auth not initialized yet');
+      return;
+    }
+    await web3auth.logout();
+
+    setLoggedIn(false);
+
+    console.log('logged out');
   };
 
   useEffect(() => {
     if (loggedIn) {
       const getUserInfo = async () => {
-        if (!web3auth) {
+        if (!web3auth || !provider) {
           console.log('web3auth not initialized yet');
           return;
         }
         const user = await web3auth.getUserInfo();
+        const privateKey = await provider.request({
+          method: 'eth_private_key',
+        });
+        setWalletClient(
+          createWalletClient({
+            account: privateKeyToAccount(('0x' + privateKey) as Address),
+            chain: publicClient({ chainId }).chain,
+            transport: http(),
+          })
+        );
         console.log(user);
       };
       getUserInfo();
+    } else {
+      setProvider(null);
+      setWalletClient(null);
     }
-  }, [loggedIn, web3auth]);
+  }, [loggedIn, web3auth, provider, setWalletClient]);
 
-  return <Button onClick={login} />;
+  return (
+    <Button
+      onClick={() => {
+        loggedIn ? logout() : login();
+      }}
+      className={styles.chainButton}
+      variant="primary"
+      title={loggedIn ? 'Disconnect' : 'Connect'}
+    >
+      {loggedIn ? 'Disconnect Twitter' : 'Connect Twitter'}
+    </Button>
+  );
 });

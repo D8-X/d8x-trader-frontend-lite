@@ -37,7 +37,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
 import { Separator } from '../separator/Separator';
-import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
+import { ConnectDialog } from './elements/connect-dialog/ConnectDialog';
 
 interface HeaderPropsI {
   /**
@@ -76,6 +76,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const requestRef = useRef(false);
+  const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
   const setExchangeInfo = useCallback(
     (data: ExchangeInfoI | null) => {
@@ -261,8 +262,12 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               )}
               {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  <Web3AuthConnectButton />
-                  {/* <WalletConnectButton /> */}
+                  <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="outlined">
+                    <Typography variant="bodyMedium" className={styles.modalButtonText}>
+                      {'Connect'}
+                    </Typography>
+                  </Button>
+                  <ConnectDialog isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}

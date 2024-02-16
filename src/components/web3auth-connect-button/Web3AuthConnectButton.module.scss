@@ -1,32 +1,92 @@
 @import '~styles/theme/_theme.scss';
 
-.dialog {
+.root {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
 
-  :global(.MuiPaper-root) {
-    width: 100%;
-    max-width: 650px;
+.buttonsHolder {
+  display: flex;
+  gap: $d8x-spacing * 4;
+  height: 48px;
+}
+
+.connectWalletButton {
+  min-width: 195px;
+  height: 48px;
+}
+
+.chainButton {
+  display: flex;
+  align-items: center;
+  border-color: transparent;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
+
+  img {
+    width: 32px;
+    height: 32px;
   }
 }
 
-.dialogContent {
-  font-size: 16px;
-  line-height: 24px;
+.addressButton {
+  display: flex;
+  align-items: center;
+  gap: 2 * $d8x-spacing;
+}
 
-  p {
-    margin-top: $d8x-spacing * 6;
+.starsHolder {
+  white-space: normal;
+  margin-top: -10px;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+  color: var(--d8x-color-text-secondary);
+}
+
+.cutAddressName {
+  color: var(--d8x-color-text-secondary);
+}
+
+.icon {
+  color: var(--d8x-color-text-secondary);
+}
+
+@media screen and ($d8x-breakpoint-max-lg) {
+
+  .buttonsHolder {
+    gap: $d8x-spacing * 2;
   }
 
-  a {
-    color: var(--d8x-color-text-highlight);
+  .connectWalletButton {
+    padding-left: 20px;
+    padding-right: 20px;
+    min-width: 48px;
   }
 }
 
-.dialogAction {
-  justify-content: center;
+@media screen and ($d8x-breakpoint-max-sm) {
+
+  .buttonsHolder {
+    justify-content: space-between;
+
+    button {
+      width: 20%;
+    }
+  }
 }
 
-.dialogTitle {
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 32px;
+@media screen and ($d8x-breakpoint-max-xs) {
+
+  .addressButton {
+    padding: 0;
+    min-width: 48px;
+
+    svg {
+      height: 26px;
+      width: 26px;
+    }
+  }
 }
