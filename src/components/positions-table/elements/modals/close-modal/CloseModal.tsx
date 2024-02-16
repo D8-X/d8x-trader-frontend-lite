@@ -14,7 +14,7 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { orderDigest } from 'network/network';
+import { orderDigest, orderSubmitted } from 'network/network';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
@@ -140,6 +140,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);
+                orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                  .then()
+                  .catch((error) => console.log(error));
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />
                 );

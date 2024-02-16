@@ -239,6 +239,23 @@ export function orderDigest(
   });
 }
 
+export function orderSubmitted(chainId: number, orderId: string[]): Promise<void> {
+  const requestOptions = {
+    ...getRequestOptions(RequestMethodE.Post),
+    body: JSON.stringify({
+      orderId: orderId,
+    }),
+  };
+  return fetch(`${getApiUrlByChainId(chainId)}/order-submitted`, requestOptions).then((data) => {
+    if (!data.ok) {
+      console.error({ data });
+      throw new Error(data.statusText);
+    }
+    console.log('POST order-submitted');
+    // return data.json();
+  });
+}
+
 export function getCancelOrder(
   chainId: number,
   traderAPI: TraderInterface | null,

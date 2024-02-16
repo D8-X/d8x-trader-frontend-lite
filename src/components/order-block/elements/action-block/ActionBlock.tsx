@@ -15,7 +15,7 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
-import { orderDigest, positionRiskOnTrade } from 'network/network';
+import { orderDigest, orderSubmitted, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { clearInputsDataAtom, latestOrderSentTimestampAtom, orderInfoAtom } from 'store/order-block.store';
 import {
@@ -364,7 +364,10 @@ export const ActionBlock = memo(() => {
               postOrder(tradingClient, signatures, data.data)
                 .then((tx) => {
                   setShowReviewOrderModal(false);
-                  // success submitting order to the node
+                  // success submitting order to the node - inform backend
+                  orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                    .then()
+                    .catch((error) => console.log(error));
                   // order was sent
                   clearInputsData();
                   toast.success(
