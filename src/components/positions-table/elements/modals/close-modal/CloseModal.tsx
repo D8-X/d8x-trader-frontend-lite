@@ -14,7 +14,7 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { orderDigest, orderSubmitted } from 'network/network';
+import { orderDigest } from 'network/network';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
@@ -28,6 +28,7 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
+import { orderSubmitted } from 'network/broker';
 
 interface CloseModalPropsI {
   isOpen: boolean;
