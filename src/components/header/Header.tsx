@@ -37,6 +37,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
 import { Separator } from '../separator/Separator';
+import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
 
 interface HeaderPropsI {
   /**
@@ -260,7 +261,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               )}
               {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  <WalletConnectButton />
+                  <Web3AuthConnectButton />
+                  {/* <WalletConnectButton /> */}
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}

@@ -5,7 +5,7 @@ import { OpenloginAdapter, OPENLOGIN_NETWORK } from '@web3auth/openlogin-adapter
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS } from '@web3auth/base';
 import { config } from 'config';
 
-const name = 'Login with Web3Auth';
+const name = 'Web3Auth';
 const iconUrl = 'https://avatars.githubusercontent.com/u/2824157?s=280&v=4';
 const clientId = config.web3AuthClientId;
 const disabledMethods = [
@@ -25,7 +25,7 @@ const disabledMethods = [
   'sms_passwordless',
 ];
 
-//@ts-expect-error chains has the corrrect type
+//@ts-expect-error chains has the correct type
 export const rainbowWeb3AuthConnector = ({ chains }) => {
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -35,16 +35,13 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
     tickerName: chains[0].nativeCurrency?.name,
     ticker: chains[0].nativeCurrency?.symbol,
     blockExplorer: chains[0].blockExplorers?.default.url[0],
-  };
+  } as const;
 
   // Create Web3Auth Instance
   const web3AuthInstance = new Web3Auth({
     clientId: clientId,
     chainConfig,
     web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
-    uiConfig: {
-      loginMethodsOrder: ['twitter'],
-    },
   });
 
   const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
@@ -95,6 +92,10 @@ export const rainbowWeb3AuthConnector = ({ chains }) => {
       return {
         connector,
       };
+    },
+    onConnect: () => {
+      //
+      console.log('connected');
     },
   };
 };

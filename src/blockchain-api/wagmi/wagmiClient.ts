@@ -20,7 +20,7 @@ import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.svg';
 import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
 import { x1, cardona } from 'utils/chains';
-import { rainbowWeb3AuthConnector } from 'RainbowWeb3authConnector';
+// import { rainbowWeb3AuthConnector } from 'RainbowWeb3authConnector';
 
 const defaultChains: Chain[] = [
   { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
@@ -78,7 +78,6 @@ const connectors = connectorsForWallets([
       metaMaskWallet({ projectId, chains }),
       rabbyWallet({ chains }),
       walletConnectWallet({ projectId, chains }),
-      rainbowWeb3AuthConnector({ chains }),
     ],
   },
   {
