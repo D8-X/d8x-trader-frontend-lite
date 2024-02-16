@@ -46,4 +46,5 @@ export const showWelcomeModalAtom = atom(
   }
 );
 
+export const walletClientAtom = atom<WalletClient | null>(null);
 export const tradingClientAtom = atom<WalletClient | null>(null);

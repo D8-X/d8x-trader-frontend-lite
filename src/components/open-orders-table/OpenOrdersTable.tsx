@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
 import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
-import { useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useNetwork, useWaitForTransaction } from 'wagmi';
 
 import {
   Button,
@@ -55,7 +55,6 @@ export const OpenOrdersTable = memo(() => {
   const { address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
   const { chain } = useNetwork();
-  const { data: walletClient } = useWalletClient({ chainId: chainId });
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
@@ -194,7 +193,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !walletClient || !tradingClient) {
+    if (isDisconnected || !tradingClient) {
       return;
     }
 
