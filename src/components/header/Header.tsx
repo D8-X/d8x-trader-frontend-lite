@@ -37,7 +37,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
 import { Separator } from '../separator/Separator';
-import { ConnectDialog } from './elements/connect-dialog/ConnectDialog';
+import { ConnectModal } from './elements/connect-modal/ConnectModal';
 
 interface HeaderPropsI {
   /**
@@ -267,7 +267,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                       {'Connect'}
                     </Typography>
                   </Button>
-                  <ConnectDialog isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
+                  <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}

@@ -1,9 +1,13 @@
-import { parseEther, type Account, type Address, type Transport } from 'viem';
-import type { Chain, WalletClient } from 'wagmi';
+import { parseEther, type Address, WalletClient } from 'viem';
 
-export function transferFunds(walletClient: WalletClient<Transport, Chain, Account>, to: Address, amount: number) {
+export function transferFunds(walletClient: WalletClient, to: Address, amount: number) {
+  if (!walletClient.account) {
+    throw new Error('account not connected');
+  }
   return walletClient
     .sendTransaction({
+      account: walletClient.account,
+      chain: walletClient.chain,
       to: to,
       value: parseEther(`${amount}`),
     })
