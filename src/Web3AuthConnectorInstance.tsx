@@ -4,8 +4,7 @@ import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 import { config } from 'config';
-import { useSetAtom } from 'jotai';
-import { web3AuthAtom } from 'store/app.store';
+import { numberToHex } from 'viem';
 import { Chain } from 'wagmi';
 
 export default function Web3AuthConnectorInstance(chains: Chain[]) {
@@ -32,16 +31,16 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
   //   blockExplorer: chain?.blockExplorers?.default.url ?? '',
   // };
 
-  const setWeb3Auth = useSetAtom(web3AuthAtom);
-
+  // const setWeb3Auth = useSetAtom(web3AuthAtom);
+  const chain = chains[0];
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: '0x' + chains[0].id.toString(16),
-    rpcTarget: chains[0].rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
-    displayName: chains[0].name,
-    tickerName: chains[0].nativeCurrency?.name,
-    ticker: chains[0].nativeCurrency?.symbol,
-    blockExplorer: chains[0].blockExplorers?.default.url[0] as string,
+    chainId: numberToHex(chain.id),
+    rpcTarget: chain.rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
+    displayName: chain.name,
+    tickerName: chain.nativeCurrency?.name,
+    ticker: chain.nativeCurrency?.symbol,
+    blockExplorer: chain.blockExplorers?.default.url[0] as string,
   };
 
   const web3AuthInstance = new Web3AuthNoModal({
@@ -71,19 +70,17 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
   });
   web3AuthInstance.configureAdapter(openloginAdapter);
 
-  chains.slice(1).map((chain) =>
+  chains.slice(1).map((c) =>
     web3AuthInstance.addChain({
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: '0x' + chain.id.toString(16),
-      rpcTarget: chain.rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
-      displayName: chain.name,
-      tickerName: chain.nativeCurrency?.name,
-      ticker: chain.nativeCurrency?.symbol,
-      blockExplorer: chain.blockExplorers?.default.url[0] as string,
+      chainId: numberToHex(c.id),
+      rpcTarget: c.rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
+      displayName: c.name,
+      tickerName: c.nativeCurrency?.name,
+      ticker: c.nativeCurrency?.symbol,
+      blockExplorer: c.blockExplorers?.default.url[0] as string,
     })
   );
-
-  setWeb3Auth(web3AuthInstance);
 
   return new Web3AuthConnector({
     chains: chains,

@@ -95,7 +95,7 @@ console.log(connectors());
 
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [Web3AuthConnectorInstance(chains)],
+  connectors: [Web3AuthConnectorInstance(chains)], //chains.map((chain) => Web3AuthConnectorInstance(chain)),
   publicClient,
   webSocketPublicClient,
 });
