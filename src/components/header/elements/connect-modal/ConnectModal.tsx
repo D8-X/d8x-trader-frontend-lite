@@ -13,10 +13,9 @@ import { WalletConnectButton } from 'components/wallet-connect-button/WalletConn
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { useCallback, useEffect, useRef } from 'react';
-import { PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
+import { PublicClient, useAccount, useChainId, useNetwork, usePublicClient, useSwitchNetwork } from 'wagmi';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
-import { useChainModal } from '@rainbow-me/rainbowkit';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
@@ -27,6 +26,8 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const { t } = useTranslation();
 
   const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
 
   const userInfo = useAtomValue(socialUserInfoAtom);
 
@@ -34,11 +35,10 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
 
-  const { openChainModal } = useChainModal();
-
   const loadingAPIRef = useRef(false);
 
   const chainId = useChainId();
+
   const publicClient = usePublicClient();
 
   const loadSDK = useCallback(
@@ -138,11 +138,18 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
                     ))}
                 </div>
               }
-              <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
-                Select Chain
-              </Button>
             </>
           }
+        </Box>
+        <Box className={styles.dialogContent}>
+          {chain && <div>Connected to {chain.name}</div>}
+          {chains.map((x) => (
+            <Button disabled={!switchNetwork || x.id === chain?.id} key={x.id} onClick={() => switchNetwork?.(x.id)}>
+              {x.name}
+              {isLoading && pendingChainId === x.id && ' (switching)'}
+            </Button>
+          ))}
+          <div>{error && error.message}</div>
         </Box>
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
