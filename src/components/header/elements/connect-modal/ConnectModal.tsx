@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
-import { NetworkSwitcher } from 'components/web3auth-connect-button/NetworkSwitcher';
+import { useChainModal } from '@rainbow-me/rainbowkit';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
@@ -33,6 +33,8 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
+
+  const { openChainModal } = useChainModal();
 
   const loadingAPIRef = useRef(false);
 
@@ -136,6 +138,9 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
                     ))}
                 </div>
               }
+              <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
+                Select Chain
+              </Button>
             </>
           }
         </Box>
@@ -145,9 +150,6 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
               <Web3AuthConnectButton />
               <WalletConnectButton />
             </>
-          </Box>
-          <Box className={styles.actionButtonsContainer}>
-            <NetworkSwitcher />
           </Box>
         </Box>
         <Separator />

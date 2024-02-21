@@ -8,29 +8,6 @@ import { numberToHex } from 'viem';
 import { Chain } from 'wagmi';
 
 export default function Web3AuthConnectorInstance(chains: Chain[]) {
-  // const chainConfig = {
-  //   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  //   chainId: '0xaa36a7',
-  //   rpcTarget: 'https://rpc.ankr.com/eth_sepolia',
-  //   displayName: 'Ethereum Sepolia',
-  //   blockExplorer: 'https://sepolia.etherscan.io',
-  //   ticker: 'ETH',
-  //   tickerName: 'Ethereum',
-  // };
-  // const { chain } = useNetwork();
-
-  // console.log(chain);
-
-  // const chainConfig = {
-  //   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  //   chainId: toHex(chain?.id ?? 0),
-  //   rpcTarget: chain?.rpcUrls.default.http[0] ?? '',
-  //   displayName: chain?.name ?? '',
-  //   tickerName: chain?.nativeCurrency?.name ?? '',
-  //   ticker: chain?.nativeCurrency?.symbol ?? '',
-  //   blockExplorer: chain?.blockExplorers?.default.url ?? '',
-  // };
-
   // const setWeb3Auth = useSetAtom(web3AuthAtom);
   const chain = chains[0];
   const chainConfig = {

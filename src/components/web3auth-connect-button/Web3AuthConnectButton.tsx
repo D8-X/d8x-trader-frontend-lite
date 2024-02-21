@@ -17,33 +17,6 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
   const { connect, connectors, error } = useConnect();
   const { disconnect } = useDisconnect();
 
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     const getUserInfo = async () => {
-  //       if (!web3auth || !provider) {
-  //         console.log('web3auth not initialized yet');
-  //         return;
-  //       }
-  //       const user = await web3auth.getUserInfo();
-  //       const privateKey = await provider.request({
-  //         method: 'eth_private_key',
-  //       });
-  //       setWalletClient(
-  //         createWalletClient({
-  //           account: privateKeyToAccount(('0x' + privateKey) as Address),
-  //           chain: publicClient({ chainId }).chain,
-  //           transport: http(),
-  //         })
-  //       );
-  //       console.log(user);
-  //     };
-  //     getUserInfo();
-  //   } else {
-  //     setProvider(null);
-  //     setWalletClient(null);
-  //   }
-  // }, [isConnected]);
-
   if (isConnected) {
     return (
       <div className="main">
@@ -58,17 +31,20 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
   } else {
     return (
       <div className="main">
-        {connectors.map((c) => {
-          return (
-            <Button
-              className={classnames(styles.connectWalletButton, buttonClassName)}
-              key={c.id}
-              onClick={() => connect({ connector: c })}
-            >
-              {c.name}
-            </Button>
-          );
-        })}
+        {connectors
+          .filter((c) => c.name === 'Web3Auth')
+          .map((c) => {
+            return (
+              <Button
+                className={classnames(styles.connectWalletButton, buttonClassName)}
+                key={c.id}
+                onClick={() => connect({ connector: c })}
+                variant="primary"
+              >
+                {c.name}
+              </Button>
+            );
+          })}
         {error && <div>{error.message}</div>}
       </div>
     );

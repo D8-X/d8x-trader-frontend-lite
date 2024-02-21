@@ -260,14 +260,19 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               {!isSmallScreen && (
                 <Typography id="header-side" variant="h6" component="div" className={styles.selectBoxes} />
               )}
-              {(!isMobileScreen || !isConnected) && (
+              {!isMobileScreen && !isConnected && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="outlined">
+                  <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
                     <Typography variant="bodyMedium" className={styles.modalButtonText}>
                       {'Connect'}
                     </Typography>
                   </Button>
                   <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
+                </Typography>
+              )}
+              {!isMobileScreen && isConnected && (
+                <Typography variant="h6" component="div" className={styles.walletConnect}>
+                  <WalletConnectButton />
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}
