@@ -8,7 +8,6 @@ import { numberToHex } from 'viem';
 import { Chain } from 'wagmi';
 
 export default function Web3AuthConnectorInstance(chains: Chain[]) {
-  // const setWeb3Auth = useSetAtom(web3AuthAtom);
   const chain = chains[0];
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -38,9 +37,9 @@ export default function Web3AuthConnectorInstance(chains: Chain[]) {
       },
       loginConfig: {
         jwt: {
-          verifier: 'd8x-test', // Verifier name
+          verifier: config.web3AuthVerifier,
           typeOfLogin: 'jwt',
-          clientId: 'YwsAsnbGPju3zXfqayLgBbla85fSp56X', // Auth0 `Client ID`
+          clientId: config.auth0ClientId,
         },
       },
     },

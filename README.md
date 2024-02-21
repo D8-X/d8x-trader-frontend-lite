@@ -3,6 +3,7 @@
 Usage of this repository is subject to the Terms of Service and the D8X Protocol Software Disclaimer as specified on [D8X Exchange](https://d8x.exchange/)
 
 ---
+
 # Pre-flight checklist
 
 - Go to [WalletConnect Cloud](https://cloud.walletconnect.com/), sign up and create a project ID
@@ -92,6 +93,9 @@ This package is configured entirely via environment variables. You must specify:
   - By default, this variable is set to `false`.
   - Enable it as follows:
     `VITE_WELCOME_MODAL=true`
+
+- **VITE_WEB3AUTH_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/dashboard-setup/projects-and-analytics).
+- **VITE_WEB3AUTH_VERIFIER** and **VITE_AUTH0_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter).
 
 ---
 
