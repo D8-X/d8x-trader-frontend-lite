@@ -272,6 +272,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               )}
               {!isMobileScreen && isConnected && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
+                  <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
                   <WalletConnectButton />
                 </Typography>
               )}

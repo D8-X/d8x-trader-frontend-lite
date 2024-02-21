@@ -6,27 +6,34 @@ import styles from './Web3AuthConnectButton.module.scss';
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import classnames from 'classnames';
-import { NetworkSwitcher } from './NetworkSwitcher';
-
+import { useSetAtom } from 'jotai';
+import { socialUserInfoAtom } from 'store/app.store';
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
 }
 
 export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
-  const { address, connector, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const { connect, connectors, error } = useConnect();
   const { disconnect } = useDisconnect();
+  const setUserInfo = useSetAtom(socialUserInfoAtom);
+
+  const handleDisconnect = () => {
+    setUserInfo(null);
+    disconnect();
+  };
 
   if (isConnected) {
     return (
-      <div className="main">
-        <div className="title">Connected to {connector?.name}</div>
-        <div>{address}</div>
-        <NetworkSwitcher />
-        <Button className="card" onClick={() => disconnect()}>
+      isConnected && (
+        <Button
+          className={classnames(styles.connectWalletButton, buttonClassName)}
+          onClick={handleDisconnect}
+          variant="primary"
+        >
           Disconnect
         </Button>
-      </div>
+      )
     );
   } else {
     return (

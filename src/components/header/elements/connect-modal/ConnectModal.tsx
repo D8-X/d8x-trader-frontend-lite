@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { Box, Button, Typography } from '@mui/material';
@@ -16,6 +16,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { PublicClient, useAccount, useChainId, useNetwork, usePublicClient, useSwitchNetwork } from 'wagmi';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
+import { web3AuthInstance } from 'blockchain-api/wagmi/wagmiClient';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const { chain } = useNetwork();
   const { chains, error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
 
-  const userInfo = useAtomValue(socialUserInfoAtom);
+  const [userInfo, setUserInfo] = useAtom(socialUserInfoAtom);
 
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
@@ -40,6 +41,15 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const chainId = useChainId();
 
   const publicClient = usePublicClient();
+
+  useEffect(() => {
+    console.log(web3AuthInstance.connected, isConnected);
+    if (web3AuthInstance.connected && isConnected) {
+      web3AuthInstance.getUserInfo().then((info) => {
+        setUserInfo({ ...info, pubKey: '' });
+      });
+    }
+  }, [isConnected, setUserInfo]);
 
   const loadSDK = useCallback(
     async (_publicClient: PublicClient, _chainId: number) => {
@@ -154,7 +164,7 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
           <Box className={styles.actionButtonsContainer}>
             <>
               <Web3AuthConnectButton />
-              <WalletConnectButton />
+              {!isConnected && <WalletConnectButton />}
             </>
           </Box>
         </Box>
