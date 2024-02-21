@@ -1,22 +1,18 @@
-import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { useAtom } from 'jotai';
+import { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { type PublicClient, useAccount, useChainId, useConnect, usePublicClient } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 
 import { ReactComponent as WalletIcon } from 'assets/icons/walletIcon.svg';
 import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
 import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
-import { ToastContent } from 'components/toast-content/ToastContent';
 import { config } from 'config';
 import { getTraderLoyalty } from 'network/network';
-import { loyaltyScoreAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
-import { sdkConnectedAtom } from 'store/vault-pools.store';
+import { loyaltyScoreAtom } from 'store/pools.store';
 import { cutAddressName } from 'utils/cutAddressName';
 
 import { LiFiWidgetButton } from './LiFiWidgetButton';
@@ -36,68 +32,12 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const setTraderAPI = useSetAtom(traderAPIAtom);
   const [loyaltyScore, setLoyaltyScore] = useAtom(loyaltyScoreAtom);
-  const setSDKConnected = useSetAtom(sdkConnectedAtom);
-  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
 
-  const loadingAPIRef = useRef(false);
   const loadingTraderLoyaltyRef = useRef(false);
 
   const chainId = useChainId();
-  const publicClient = usePublicClient();
-  const { address, isConnected, isReconnecting, isDisconnected } = useAccount();
-  const { error: errorMessage } = useConnect();
-
-  const loadSDK = useCallback(
-    async (_publicClient: PublicClient, _chainId: number) => {
-      if (loadingAPIRef.current) {
-        return;
-      }
-      loadingAPIRef.current = true;
-      setTraderAPI(null);
-      setSDKConnected(false);
-      setAPIBusy(true);
-      // console.log(`loading SDK on chainId ${_chainId}`);
-      const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
-      if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
-        const pythPriceServiceIdx = configSDK.priceFeedEndpoints?.findIndex(({ type }) => type === 'pyth');
-        if (pythPriceServiceIdx !== undefined && pythPriceServiceIdx >= 0) {
-          if (configSDK.priceFeedEndpoints !== undefined) {
-            configSDK.priceFeedEndpoints[pythPriceServiceIdx].endpoints.push(config.priceFeedEndpoint[_chainId]);
-          }
-        } else {
-          configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoints: [config.priceFeedEndpoint[_chainId]] }];
-        }
-      }
-      const newTraderAPI = new TraderInterface(configSDK);
-      newTraderAPI
-        .createProxyInstance()
-        .then(() => {
-          loadingAPIRef.current = false;
-          setAPIBusy(false);
-          setSDKConnected(true);
-          // console.log(`SDK loaded on chain id ${_chainId}`);
-          setTraderAPI(newTraderAPI);
-        })
-        .catch((err) => {
-          console.log('error loading SDK');
-          loadingAPIRef.current = false;
-          setAPIBusy(false);
-          console.error(err);
-          if (err?.code) {
-            console.log('error code', err.code);
-          }
-        });
-    },
-    [setTraderAPI, setSDKConnected, setAPIBusy]
-  );
-
-  const unloadSDK = useCallback(() => {
-    setSDKConnected(false);
-    setAPIBusy(false);
-    setTraderAPI(null);
-  }, [setTraderAPI, setSDKConnected, setAPIBusy]);
+  const { address } = useAccount();
 
   useEffect(() => {
     if (loadingTraderLoyaltyRef.current) {
@@ -118,34 +58,6 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
       setLoyaltyScore(5);
     }
   }, [chainId, address, setLoyaltyScore]);
-
-  // disconnect SDK on error
-  useEffect(() => {
-    if (errorMessage) {
-      toast.error(
-        <ToastContent title="Connection error" bodyLines={[{ label: 'Reason', value: errorMessage.message }]} />
-      );
-      unloadSDK();
-    }
-  }, [errorMessage, unloadSDK]);
-
-  // disconnect SDK on wallet disconnected
-  useEffect(() => {
-    if (isDisconnected || isReconnecting) {
-      unloadSDK();
-    }
-  }, [isDisconnected, isReconnecting, unloadSDK]);
-
-  // connect SDK on change of provider/chain/wallet
-  useEffect(() => {
-    if (loadingAPIRef.current || !isConnected || !publicClient || !chainId) {
-      return;
-    }
-    unloadSDK();
-    loadSDK(publicClient, chainId)
-      .then()
-      .catch((err) => console.log(err));
-  }, [isConnected, publicClient, chainId, loadSDK, unloadSDK]);
 
   return (
     <ConnectButton.Custom>

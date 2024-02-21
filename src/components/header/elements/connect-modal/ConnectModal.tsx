@@ -50,7 +50,6 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
       setTraderAPI(null);
       setSDKConnected(false);
       setAPIBusy(true);
-      // console.log(`loading SDK on chainId ${_chainId}`);
       const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
       if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
         const pythPriceServiceIdx = configSDK.priceFeedEndpoints?.findIndex(({ type }) => type === 'pyth');
