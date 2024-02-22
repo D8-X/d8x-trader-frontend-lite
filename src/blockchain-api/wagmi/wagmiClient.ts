@@ -20,11 +20,6 @@ import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.svg';
 import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
 import { x1, cardona } from 'utils/chains';
-import Web3AuthConnectorInstance from 'Web3AuthConnectorInstance';
-import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK } from '@web3auth/base';
-import { numberToHex } from 'viem';
-import { Web3AuthNoModal } from '@web3auth/no-modal';
-import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 
 const defaultChains: Chain[] = [
   { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
@@ -95,29 +90,11 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-const chain = chains[0];
-const chainConfig = {
-  chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: numberToHex(chain.id),
-  rpcTarget: chain.rpcUrls.default.http[0], // This is the public RPC we have added, please pass on your own endpoint while creating an app
-  displayName: chain.name,
-  tickerName: chain.nativeCurrency?.name,
-  ticker: chain.nativeCurrency?.symbol,
-  blockExplorer: chain.blockExplorers?.default.url[0] as string,
-};
-
-const web3AuthInstance = new Web3AuthNoModal({
-  clientId: config.web3AuthClientId,
-  web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
-  chainConfig,
-});
-const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
-
 const wagmiConfig = createConfig({
   autoConnect: true,
-  connectors: [...connectors(), Web3AuthConnectorInstance(chains, web3AuthInstance, privateKeyProvider)], //chains.map((chain) => Web3AuthConnectorInstance(chain)),
+  connectors: connectors,
   publicClient,
   webSocketPublicClient,
 });
 
-export { chains, wagmiConfig, publicClient, web3AuthInstance };
+export { chains, wagmiConfig, publicClient };

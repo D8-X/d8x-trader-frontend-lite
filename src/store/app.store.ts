@@ -48,12 +48,8 @@ export const showWelcomeModalAtom = atom(
   }
 );
 
-interface TempUserInfoI extends Partial<OpenloginUserInfo> {
-  pubKey: string;
-}
-
 export const walletClientAtom = atom<WalletClient | null>(null);
 export const tradingClientAtom = atom<WalletClient | null>(null);
-export const socialUserInfoAtom = atom<TempUserInfoI | null>(null);
+export const socialUserInfoAtom = atom<Partial<OpenloginUserInfo> | null>(null);
 
 export const web3AuthAtom = atom<Web3AuthNoModal | null>(null);

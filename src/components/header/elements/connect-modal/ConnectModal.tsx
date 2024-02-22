@@ -16,7 +16,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { PublicClient, useAccount, useChainId, useNetwork, usePublicClient, useSwitchNetwork } from 'wagmi';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
-import { web3AuthInstance } from 'blockchain-api/wagmi/wagmiClient';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
@@ -28,9 +27,8 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
 
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
-  const { chains, error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
-
-  const [userInfo, setUserInfo] = useAtom(socialUserInfoAtom);
+  const { error } = useSwitchNetwork();
+  const [userInfo] = useAtom(socialUserInfoAtom);
 
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
@@ -41,15 +39,6 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const chainId = useChainId();
 
   const publicClient = usePublicClient();
-
-  useEffect(() => {
-    console.log(web3AuthInstance.connected, isConnected);
-    if (web3AuthInstance.connected && isConnected) {
-      web3AuthInstance.getUserInfo().then((info) => {
-        setUserInfo({ ...info, pubKey: '' });
-      });
-    }
-  }, [isConnected, setUserInfo]);
 
   const loadSDK = useCallback(
     async (_publicClient: PublicClient, _chainId: number) => {
@@ -152,12 +141,12 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
         </Box>
         <Box className={styles.dialogContent}>
           {chain && <div>Connected to {chain.name}</div>}
-          {chains.map((x) => (
-            <Button disabled={!switchNetwork || x.id === chain?.id} key={x.id} onClick={() => switchNetwork?.(x.id)}>
+          {/* {chains.map((x) => (
+            <Button disabled={!switchNetwork || x.id === chainId} key={x.id} onClick={() => switchNetwork?.(x.id)}>
               {x.name}
               {isLoading && pendingChainId === x.id && ' (switching)'}
             </Button>
-          ))}
+          ))} */}
           <div>{error && error.message}</div>
         </Box>
         <Box className={styles.dialogContent}>
