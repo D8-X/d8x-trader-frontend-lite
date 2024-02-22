@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 import styles from './Web3AuthConnectButton.module.scss';
 
-import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 import classnames from 'classnames';
 import { useSetAtom } from 'jotai';
 import { socialUserInfoAtom } from 'store/app.store';
@@ -27,19 +27,43 @@ const clientId = config.web3AuthClientId;
 
 export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
   const { isConnected } = useAccount();
-  const { error, connectAsync } = useConnect();
+
   const { disconnect } = useDisconnect();
   const setUserInfo = useSetAtom(socialUserInfoAtom);
 
-  const chainId = useChainId();
+  const { chain: curChain } = useNetwork();
 
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [web3authIdToken, setIdToken] = useState<string | undefined>(undefined);
+
+  const { error, connectAsync } = useConnect({
+    connector: new Web3AuthConnector({
+      chains: chains,
+      options: {
+        web3AuthInstance: web3auth,
+        loginParams: {
+          loginProvider: 'jwt',
+          extraLoginOptions: {
+            id_token: web3authIdToken,
+            verifierIdField: 'sub',
+            domain: 'https://1acc-108-30-150-201.ngrok-free.app',
+          },
+        },
+      },
+    }),
+  });
+
+  useEffect(() => {
+    console.log('chainId', curChain?.id);
+  }, [curChain]);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const chain = chains.find((c) => c.id === chainId);
+        // console.log('init: chainId', chainId);
+        // const chain = chains.find((c) => c.id === chainId);
+        const chain = chains[0];
         const chainConfig = {
           chainNamespace: CHAIN_NAMESPACES.EIP155,
           chainId: numberToHex(chain?.id ?? 0), // Please use 0x1 for Mainnet
@@ -78,13 +102,25 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         if (web3authInstance.connected) {
           setLoggedIn(true);
         }
+
+        for (let i = 1; i < chains.length; i++) {
+          await web3authInstance.addChain({
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+            chainId: numberToHex(chains[i].id ?? 0), // Please use 0x1 for Mainnet
+            rpcTarget: chains[i].rpcUrls.default.http[0] ?? '',
+            displayName: chains[i].name ?? '',
+            blockExplorer: chains[i].blockExplorers?.default.url ?? '',
+            ticker: chains[i].nativeCurrency.symbol ?? '',
+            tickerName: chains[i].nativeCurrency.name ?? '',
+          });
+        }
       } catch (e) {
         console.error(e);
       }
     };
 
     init();
-  }, [chainId]);
+  }, []);
 
   const signInWithTwitter = async () => {
     try {
@@ -98,6 +134,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
       }
       console.log('login details', loginRes);
       const idToken = await loginRes.user.getIdToken(true);
+      setIdToken(idToken);
 
       await web3auth
         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
@@ -113,22 +150,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
       const info = await web3auth.getUserInfo();
       setUserInfo(info);
 
-      await connectAsync({
-        connector: new Web3AuthConnector({
-          chains: chains,
-          options: {
-            web3AuthInstance: web3auth,
-            loginParams: {
-              loginProvider: 'jwt',
-              extraLoginOptions: {
-                id_token: idToken,
-                verifierIdField: 'sub',
-                domain: 'https://1acc-108-30-150-201.ngrok-free.app',
-              },
-            },
-          },
-        }),
-      }).catch((e) => console.log(e));
+      await connectAsync();
     } catch (err) {
       console.error(err);
       // throw err;
@@ -143,6 +165,32 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
   //     });
   //   }
   // }, [isConnected, web3auth, setUserInfo]);
+
+  // useEffect(() => {
+  //   console.log(web3auth?.status, web3auth?.connected);
+  //   if (!web3auth || !web3auth.connected || !web3authIdToken || !isIdle) {
+  //     return;
+  //   }
+  //   const adddAndConnect = async () => {
+  //     console.log('add and connect', chainId);
+  //     const chain = chains.find((c) => c.id === chainId);
+  //     const chainConfig = {
+  //       chainNamespace: CHAIN_NAMESPACES.EIP155,
+  //       chainId: numberToHex(chain?.id ?? 0), // Please use 0x1 for Mainnet
+  //       rpcTarget: chain?.rpcUrls.default.http[0] ?? '',
+  //       displayName: chain?.name ?? '',
+  //       blockExplorer: chain?.blockExplorers?.default.url ?? '',
+  //       ticker: chain?.nativeCurrency.symbol ?? '',
+  //       tickerName: chain?.nativeCurrency.name ?? '',
+  //     };
+
+  //     await web3auth.addChain(chainConfig);
+  //     await web3auth.switchChain({ chainId: numberToHex(chainId) });
+  //     await connectAsync();
+  //   };
+
+  //   adddAndConnect();
+  // }, [web3auth, chainId, web3authIdToken, isIdle, connectAsync]);
 
   const handleDisconnect = () => {
     setUserInfo(null);

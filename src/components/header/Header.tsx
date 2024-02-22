@@ -150,7 +150,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     address,
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
-    enabled: !requestRef.current && address && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
+    enabled: !requestRef.current && address && traderAPI?.chainId === chainId && !!selectedPool?.marginTokenAddr,
   });
 
   const { data: gasTokenBalance, isError: isGasTokenFetchError } = useBalance({
