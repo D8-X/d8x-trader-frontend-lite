@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 
 import styles from './Web3AuthConnectButton.module.scss';
 
-import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import classnames from 'classnames';
 import { useSetAtom } from 'jotai';
 import { socialUserInfoAtom } from 'store/app.store';
@@ -19,11 +19,11 @@ import { auth } from 'FireBaseConfig';
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 
+const clientId = config.web3AuthClientId;
+const verifierName = config.web3AuthVerifier;
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
 }
-
-const clientId = config.web3AuthClientId;
 
 export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
   const { isConnected } = useAccount();
@@ -31,13 +31,11 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
   const { disconnect } = useDisconnect();
   const setUserInfo = useSetAtom(socialUserInfoAtom);
 
-  const { chain: curChain } = useNetwork();
-
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [web3authIdToken, setIdToken] = useState<string | undefined>(undefined);
 
-  const { error, connectAsync } = useConnect({
+  const { connectAsync } = useConnect({
     connector: new Web3AuthConnector({
       chains: chains,
       options: {
@@ -47,7 +45,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
           extraLoginOptions: {
             id_token: web3authIdToken,
             verifierIdField: 'sub',
-            domain: 'https://1acc-108-30-150-201.ngrok-free.app',
+            // domain: '...', // example included this, but works without it?
           },
         },
       },
@@ -55,23 +53,17 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
   });
 
   useEffect(() => {
-    console.log('chainId', curChain?.id);
-  }, [curChain]);
-
-  useEffect(() => {
     const init = async () => {
       try {
-        // console.log('init: chainId', chainId);
-        // const chain = chains.find((c) => c.id === chainId);
-        const chain = chains[0];
+        const chain = chains[0]; // make this index a user input instead of 0?
         const chainConfig = {
           chainNamespace: CHAIN_NAMESPACES.EIP155,
-          chainId: numberToHex(chain?.id ?? 0), // Please use 0x1 for Mainnet
-          rpcTarget: chain?.rpcUrls.default.http[0] ?? '',
-          displayName: chain?.name ?? '',
-          blockExplorer: chain?.blockExplorers?.default.url ?? '',
-          ticker: chain?.nativeCurrency.symbol ?? '',
-          tickerName: chain?.nativeCurrency.name ?? '',
+          chainId: numberToHex(chain.id),
+          rpcTarget: chain.rpcUrls.default.http[0],
+          displayName: chain.name,
+          blockExplorer: chain.blockExplorers?.default.url ?? '',
+          ticker: chain.nativeCurrency.symbol,
+          tickerName: chain.nativeCurrency.name,
         };
         const web3authInstance = new Web3AuthNoModal({
           clientId,
@@ -79,16 +71,14 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
           web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
           useCoreKitKey: false,
         });
-
         const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
-
         const openloginAdapter = new OpenloginAdapter({
           privateKeyProvider,
           adapterSettings: {
             uxMode: 'popup',
             loginConfig: {
               jwt: {
-                verifier: 'd8x-firebase-test',
+                verifier: verifierName,
                 typeOfLogin: 'jwt',
                 clientId,
               },
@@ -102,11 +92,11 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         if (web3authInstance.connected) {
           setLoggedIn(true);
         }
-
+        // so we can switch chains
         for (let i = 1; i < chains.length; i++) {
           await web3authInstance.addChain({
             chainNamespace: CHAIN_NAMESPACES.EIP155,
-            chainId: numberToHex(chains[i].id ?? 0), // Please use 0x1 for Mainnet
+            chainId: numberToHex(chains[i].id ?? 0),
             rpcTarget: chains[i].rpcUrls.default.http[0] ?? '',
             displayName: chains[i].name ?? '',
             blockExplorer: chains[i].blockExplorers?.default.url ?? '',
@@ -142,7 +132,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
           extraLoginOptions: {
             id_token: idToken,
             verifierIdField: 'sub',
-            domain: 'https://1acc-108-30-150-201.ngrok-free.app',
+            // domain: '...', // example included this, but works without it?
           },
         })
         .catch((e) => console.log(e));
@@ -153,44 +143,8 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
       await connectAsync();
     } catch (err) {
       console.error(err);
-      // throw err;
     }
   };
-
-  // useEffect(() => {
-  //   console.log(web3auth?.connected, isConnected);
-  //   if (web3auth?.connected && isConnected) {
-  //     web3auth.getUserInfo().then((info) => {
-  //       setUserInfo({ ...info, pubKey: '' });
-  //     });
-  //   }
-  // }, [isConnected, web3auth, setUserInfo]);
-
-  // useEffect(() => {
-  //   console.log(web3auth?.status, web3auth?.connected);
-  //   if (!web3auth || !web3auth.connected || !web3authIdToken || !isIdle) {
-  //     return;
-  //   }
-  //   const adddAndConnect = async () => {
-  //     console.log('add and connect', chainId);
-  //     const chain = chains.find((c) => c.id === chainId);
-  //     const chainConfig = {
-  //       chainNamespace: CHAIN_NAMESPACES.EIP155,
-  //       chainId: numberToHex(chain?.id ?? 0), // Please use 0x1 for Mainnet
-  //       rpcTarget: chain?.rpcUrls.default.http[0] ?? '',
-  //       displayName: chain?.name ?? '',
-  //       blockExplorer: chain?.blockExplorers?.default.url ?? '',
-  //       ticker: chain?.nativeCurrency.symbol ?? '',
-  //       tickerName: chain?.nativeCurrency.name ?? '',
-  //     };
-
-  //     await web3auth.addChain(chainConfig);
-  //     await web3auth.switchChain({ chainId: numberToHex(chainId) });
-  //     await connectAsync();
-  //   };
-
-  //   adddAndConnect();
-  // }, [web3auth, chainId, web3authIdToken, isIdle, connectAsync]);
 
   const handleDisconnect = () => {
     setUserInfo(null);
@@ -211,47 +165,15 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
     );
   } else {
     return (
-      <div className="main">
-        {/* {connectors
-          .filter((c) => c.name === 'Web3Auth')
-          .map((c) => {
-            return (
-              <Button
-                className={classnames(styles.connectWalletButton, buttonClassName)}
-                key={c.id}
-                onClick={() => connect({ connector: c })}
-                variant="primary"
-              >
-                {c.name}
-              </Button>
-            );
-          })} */}
-        {
-          <Button
-            className={classnames(styles.connectWalletButton, buttonClassName)}
-            key={'login'}
-            // disabled={!loggedIn}
-            onClick={signInWithTwitter}
-            variant="primary"
-          >
-            Login with Twitter
-          </Button>
-        }
-        {error && <div>{error.message}</div>}
-      </div>
+      <Button
+        className={classnames(styles.connectWalletButton, buttonClassName)}
+        key={'login'}
+        disabled={!web3auth}
+        onClick={signInWithTwitter}
+        variant="primary"
+      >
+        Login with Twitter
+      </Button>
     );
   }
-
-  // return (
-  //   <Button
-  //     onClick={() => {
-  //       isConnected ? disconnect() : connect({ connector });
-  //     }}
-  //     className={styles.chainButton}
-  //     variant="primary"
-  //     title={isConnected ? 'Disconnect' : 'Connect'}
-  //   >
-  //     {isConnected ? address : 'Twitter'}
-  //   </Button>
-  // );
 });
