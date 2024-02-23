@@ -123,7 +123,7 @@
     "vite": "4.5.2",
     "vite-bundle-visualizer": "0.10.0",
     "vite-plugin-checker": "0.6.4",
-    "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-plugin-node-polyfills": "0.21.0",
     "vite-plugin-stylelint": "5.3.1",
     "vite-plugin-svgr": "3.2.0",
     "vite-tsconfig-paths": "4.2.0"
