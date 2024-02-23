@@ -140,6 +140,20 @@ export async function postUseReferralCode(
   }
 }
 
+export async function postSocialVerify(chainId: number, idToken: string, pubKey: string) {
+  return fetch(`${getReferralUrlByChainId(chainId)}/social-verify`, {
+    ...getRequestOptions(RequestMethodE.Post),
+    headers: { ...getRequestOptions(RequestMethodE.Post).headers, Authorization: `Bearer ${idToken}` },
+    body: JSON.stringify({ appPubKey: pubKey }),
+  }).then((data) => {
+    if (!data.ok) {
+      console.error({ data });
+      throw new Error(data.statusText);
+    }
+    return;
+  });
+}
+
 export function getMyCodeSelection(chainId: number, address: string): Promise<ReferralResponseI<string>> {
   return fetchUrl(`my-code-selection?traderAddr=${address}`, chainId);
 }
