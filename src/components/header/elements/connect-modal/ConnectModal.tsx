@@ -1,21 +1,21 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
-
-import { Box, Button, Typography } from '@mui/material';
-
-import { Dialog } from 'components/dialog/Dialog';
-import { Separator } from 'components/separator/Separator';
-import { socialUserInfoAtom } from 'store/app.store';
-
-import styles from './ConnectModal.module.scss';
-import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
-import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
-import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
-import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { useCallback, useEffect, useRef } from 'react';
 import { PublicClient, useAccount, useChainId, useNetwork, usePublicClient, useSwitchNetwork } from 'wagmi';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+
+import { Box, Button, Typography } from '@mui/material';
+
+import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
+import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
+import { Dialog } from 'components/dialog/Dialog';
+import { Separator } from 'components/separator/Separator';
+import { socialUserInfoAtom } from 'store/app.store';
+import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
+import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { config } from 'config';
+
+import styles from './ConnectModal.module.scss';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
