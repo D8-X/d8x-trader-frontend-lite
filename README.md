@@ -95,7 +95,7 @@ This package is configured entirely via environment variables. You must specify:
     `VITE_WELCOME_MODAL=true`
 
 - **VITE_WEB3AUTH_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/dashboard-setup/projects-and-analytics).
-- **VITE_WEB3AUTH_VERIFIER** and **VITE_AUTH0_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter).
+- **VITE*FIREBASE***: Setup as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter#set-up-twitter-via-firebase).
 
 ---
 

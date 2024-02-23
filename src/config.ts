@@ -1,7 +1,6 @@
 const {
   VITE_PROJECT_ID: projectId = '',
   VITE_WEB3AUTH_CLIENT_ID: web3AuthClientId = '',
-  VITE_AUTH0_CLIENT_ID: auth0ClientId = '',
   VITE_WEB3AUTH_VERIFIER: web3AuthVerifier = '',
   VITE_GEONAMES_USERNAME: geonamesUsername = '',
   VITE_IP_GEOLOCATION_API_KEY: ipGeolocationApiKey = '',
@@ -50,7 +49,6 @@ export const config = {
   projectId,
   web3AuthClientId,
   web3AuthVerifier,
-  auth0ClientId,
   geonamesUsername,
   ipGeolocationApiKey,
   apiUrl: parseUrls(apiUrls),

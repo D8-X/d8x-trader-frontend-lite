@@ -32,7 +32,6 @@ export async function postOrder(
       args: [orders, signatures],
       account: walletClient.account,
       gasPrice: gasPrice,
-      // gas: 10000000n,
     })
     .then((tx) => ({ hash: tx }));
 }

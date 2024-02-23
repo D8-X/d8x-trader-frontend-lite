@@ -1,29 +1,31 @@
+import classnames from 'classnames';
 import { memo, useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
+import { numberToHex } from 'viem';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+
+import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
+import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
+import { Web3AuthNoModal } from '@web3auth/no-modal';
+import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
+import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 
 import { Button } from '@mui/material';
 
+import { chains } from 'blockchain-api/wagmi/wagmiClient';
+import { socialUserInfoAtom } from 'store/app.store';
+import { config } from 'config';
+import { auth } from 'FireBaseConfig';
+
 import styles from './Web3AuthConnectButton.module.scss';
 
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import classnames from 'classnames';
-import { useSetAtom } from 'jotai';
-import { socialUserInfoAtom } from 'store/app.store';
-import { Web3AuthNoModal } from '@web3auth/no-modal';
-import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
-import { numberToHex } from 'viem';
-import { config } from 'config';
-import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
-import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
-import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from 'FireBaseConfig';
-import { chains } from 'blockchain-api/wagmi/wagmiClient';
-import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
-
-const clientId = config.web3AuthClientId;
-const verifierName = config.web3AuthVerifier;
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
 }
+
+const clientId = config.web3AuthClientId;
+const verifierName = config.web3AuthVerifier;
 
 export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
   const { isConnected } = useAccount();
