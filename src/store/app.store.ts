@@ -1,11 +1,10 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { type WalletClient } from 'viem';
+import { OpenloginUserInfo } from '@web3auth/openlogin-adapter';
 
 import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
-import { OpenloginUserInfo } from '@web3auth/openlogin-adapter';
-import { Web3AuthNoModal } from '@web3auth/no-modal';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
@@ -48,8 +47,5 @@ export const showWelcomeModalAtom = atom(
   }
 );
 
-export const walletClientAtom = atom<WalletClient | null>(null);
 export const tradingClientAtom = atom<WalletClient | null>(null);
 export const socialUserInfoAtom = atom<Partial<OpenloginUserInfo> | null>(null);
-
-export const web3AuthAtom = atom<Web3AuthNoModal | null>(null);
