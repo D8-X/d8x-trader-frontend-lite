@@ -72,7 +72,7 @@
     "crypto-js": "4.2.0",
     "cryptocurrency-icons": "0.18.1",
     "date-fns": "2.30.0",
-    "firebase": "^10.8.0",
+    "firebase": "10.6.0",
     "geonames.js": "3.0.6",
     "html-to-image": "1.11.11",
     "i18next": "23.4.1",
