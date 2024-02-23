@@ -15,6 +15,13 @@ const {
   VITE_ENABLED_CHAINS: enabledChains = '',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
+  VITE_FIREBASE_APIKEY: firebaseApiKey = '',
+  VITE_FIREBASE_AUTHDOMAIN: firebaseAuthDomain = '',
+  VITE_FIREBASE_PROJECTID: firebaseProjectId = '',
+  VITE_FIREBASE_STORAGEBUCKET: firebaseStorageBucket = '',
+  VITE_FIREBASE_MESSAGINGSENDERID: firebaseMessengerId = '',
+  VITE_FIREBASE_APPID: firebaseAppId = '',
+  VITE_FIREBASE_MEASUREMENTID: firebaseMeasurementId = '',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
@@ -56,4 +63,11 @@ export const config = {
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
   showChallengeModal: showChallengeModal === 'true',
+  firebaseApiKey,
+  firebaseAuthDomain,
+  firebaseProjectId,
+  firebaseStorageBucket,
+  firebaseMessengerId,
+  firebaseAppId,
+  firebaseMeasurementId,
 };
