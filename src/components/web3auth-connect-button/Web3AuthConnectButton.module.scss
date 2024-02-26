@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   opacity: 0;
@@ -55,7 +55,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .buttonsHolder {
     gap: $d8x-spacing * 2;
   }
@@ -68,7 +67,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .buttonsHolder {
     justify-content: space-between;
 
@@ -79,7 +77,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .addressButton {
     padding: 0;
     min-width: 48px;

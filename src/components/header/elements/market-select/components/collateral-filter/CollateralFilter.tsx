@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Button, Menu, MenuItem, Typography } from '@mui/material';
 
-import { getDynamicLogo } from 'utils/tokens';
+import { TemporaryAnyT } from 'types/types';
+import { getDynamicLogo } from 'utils/getDynamicLogo';
 
 import { collateralFilterAtom, collateralsAtom } from '../../collaterals.store';
 
@@ -82,7 +83,7 @@ export const CollateralFilter = memo(() => {
           {t('common.select.option-all')}
         </MenuItem>
         {collaterals.map((collateral) => {
-          const IconComponent = getDynamicLogo(collateral.toLowerCase());
+          const IconComponent = getDynamicLogo(collateral.toLowerCase()) as TemporaryAnyT;
 
           return (
             <MenuItem

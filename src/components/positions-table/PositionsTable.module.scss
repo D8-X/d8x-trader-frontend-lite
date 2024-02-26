@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   overflow-x: auto;
@@ -40,7 +40,6 @@
 }
 
 .formControlLabel {
-
   :global(.MuiFormControlLabel-label) {
     font-size: 14px;
   }
@@ -63,9 +62,7 @@
 }
 
 @media screen and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
-
   .tableHolder {
-
     :global(.MuiTableCell-root) {
       padding: 4px;
       height: 48px;

@@ -6,7 +6,7 @@ import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNe
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
-import { ReactComponent as SwitchIcon } from 'assets/icons/switchSeparator.svg';
+import SwitchIcon from 'assets/icons/switchSeparator.svg?react';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { addLiquidity } from 'blockchain-api/contract-interactions/addLiquidity';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';

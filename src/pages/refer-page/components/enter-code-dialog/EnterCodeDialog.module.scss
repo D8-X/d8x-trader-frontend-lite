@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .dialogRoot {
   display: flex;
@@ -40,7 +40,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .actionButtonsContainer {
     flex-direction: column;
     align-items: stretch;

@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   margin-top: 4 * $d8x-spacing;
@@ -122,7 +122,6 @@
 }
 
 .navMobileItem {
-
   &.inactive {
     padding: 12px;
     margin: -8px;
@@ -188,7 +187,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .betaInfoLine {
     padding: 8px 16px;
   }
@@ -204,7 +202,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .root {
     margin-bottom: 0;
 
@@ -233,7 +230,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .betaInfoLine {
     padding: 4px 24px;
   }
@@ -256,7 +252,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .root {
     padding: 0 12px;
 

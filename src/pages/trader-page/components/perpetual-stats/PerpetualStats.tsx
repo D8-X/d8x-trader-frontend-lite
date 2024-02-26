@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as ViewChartIcon } from 'assets/icons/viewChart.svg';
+import ViewChartIcon from 'assets/icons/viewChart.svg?react';
 
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';

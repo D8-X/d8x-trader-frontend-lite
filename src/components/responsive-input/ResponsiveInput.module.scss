@@ -1,7 +1,6 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
-
   :global(.MuiOutlinedInput-input) {
     width: 100%;
   }
@@ -33,7 +32,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .inputAdornment {
     color: var(--d8x-color-text-main);
     min-width: 65px;

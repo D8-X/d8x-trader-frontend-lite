@@ -1,37 +1,37 @@
 @mixin dark-colors {
-  --d8x-color-action: #7860E3;
+  --d8x-color-action: #7860e3;
   --d8x-color-action-rgb: 102, 74, 223;
-  --d8x-color-action-secondary: #7860E333;
-  --d8x-color-text-main: #FFF;
-  --d8x-color-text-highlight: #C9CCFC;
-  --d8x-color-text-secondary: #F3F2F2;
-  --d8x-color-text-label-one: #AAA;
-  --d8x-color-text-label-two: #A4A4A4;
+  --d8x-color-action-secondary: #7860e333;
+  --d8x-color-text-main: #fff;
+  --d8x-color-text-highlight: #c9ccfc;
+  --d8x-color-text-secondary: #f3f2f2;
+  --d8x-color-text-label-one: #aaa;
+  --d8x-color-text-label-two: #a4a4a4;
   --d8x-color-text-primarytab-inactive: #818181;
   --d8x-color-text-buy: #089981;
-  --d8x-color-text-sell: #F23645;
-  --d8x-color-background: #201B35;
+  --d8x-color-text-sell: #f23645;
+  --d8x-color-background: #201b35;
   --d8x-color-background-page-rgb: 102, 74, 223;
   --d8x-color-background-items: #111216;
-  --d8x-color-background-items-second: #7860E333;
+  --d8x-color-background-items-second: #7860e333;
   --d8x-color-background-items-selected: rgba(102, 74, 223, 0.1);
-  --d8x-color-background-items-inactive: #2E2E2E;
-  --d8x-color-background-table-row: #201D2D;
+  --d8x-color-background-items-inactive: #2e2e2e;
+  --d8x-color-background-table-row: #201d2d;
   --d8x-color-background-table: transparent;
   --d8x-color-background-loader: rgba(102, 74, 223, 0.1);
   --d8x-color-background-buy-rgb: 8, 153, 129;
   --d8x-color-background-sell-rgb: 242, 54, 69;
   --d8x-color-background-buy-inactive-rgb: 129, 129, 129;
-  --d8x-color-border: #E5E3E3;
-  --d8x-color-icon: #7860E3;
+  --d8x-color-border: #e5e3e3;
+  --d8x-color-icon: #7860e3;
   --d8x-color-icon-second: #383838;
   --d8x-color-separator-border: #666;
   --d8x-color-input-border: #666;
   --d8x-color-logo-second: white;
-  --d8x-color-warning-main: #FFDA9F;
-  --d8x-color-warning-secondary: #FFBDBD;
+  --d8x-color-warning-main: #ffda9f;
+  --d8x-color-warning-secondary: #ffbdbd;
 
-  // Additional colors
+  //--Additional colors
   --d8x-color-background-header: var(--d8x-color-background-items);
   --d8x-color-background-icon: var(--d8x-color-background-items);
   --d8x-color-background-order-block: var(--d8x-color-background-items);
@@ -66,10 +66,10 @@
   --d8x-color-text-order-block-info: var(--d8x-color-text-main);
   --d8x-color-text-market-icon: var(--d8x-color-action);
 
-  // Override colors for toastify
-  --toastify-color-progress-success: #664ADF;
-  --toastify-color-progress-error: #FFBDBD;
-  --toastify-color-progress-warning: #FFBDBD;
-  --toastify-color-progress-info: #FFBDBD;
-  --toastify-color-progress-light: linear-gradient(to right, #FFDA9F, #FFBDBD, #000);
+  //--Override colors for toastify
+  --toastify-color-progress-success: #664adf;
+  --toastify-color-progress-error: #ffbdbd;
+  --toastify-color-progress-warning: #ffbdbd;
+  --toastify-color-progress-info: #ffbdbd;
+  --toastify-color-progress-light: linear-gradient(to right, #ffda9f, #ffbdbd, #000);
 }

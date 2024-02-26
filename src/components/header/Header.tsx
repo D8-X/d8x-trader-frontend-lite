@@ -8,7 +8,7 @@ import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wa
 import { Close, Menu } from '@mui/icons-material';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as LogoWithText } from 'assets/logoWithText.svg';
+import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';

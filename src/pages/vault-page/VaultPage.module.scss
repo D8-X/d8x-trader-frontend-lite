@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -19,7 +19,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .container {
     gap: $d8x-spacing * 4;
     margin-top: $d8x-spacing * 3;
@@ -27,7 +26,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .root {
     padding: 0 $d8x-spacing * 3;
   }

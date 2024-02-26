@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .iconButton {
   margin-left: 4 * $d8x-spacing;
@@ -13,7 +13,6 @@
 }
 
 .dialog {
-
   :global(.MuiPaper-root) {
     width: 100%;
     max-width: 450px;

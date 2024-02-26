@@ -1,7 +1,6 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
-
   &:nth-child(2n) {
     background-color: var(--d8x-color-background-table-row);
   }

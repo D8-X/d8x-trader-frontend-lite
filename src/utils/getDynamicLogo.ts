@@ -1,8 +1,10 @@
-import { FC, SVGProps, lazy } from 'react';
+import { ComponentType, lazy, LazyExoticComponent, ReactComponentElement, ReactNode } from 'react';
 
-const importedLogos: Record<string, FC<SVGProps<SVGSVGElement>>> = {};
+import { TemporaryAnyT } from 'types/types';
 
-export const getDynamicLogo = (symbol: string) =>
+const importedLogos: Record<string, ReactComponentElement<TemporaryAnyT>> = {};
+
+export const getDynamicLogo = (symbol: string): LazyExoticComponent<ComponentType<ReactNode>> =>
   lazy(async () => {
     const importedLogo = importedLogos[symbol];
     if (importedLogo) {
@@ -11,8 +13,7 @@ export const getDynamicLogo = (symbol: string) =>
       };
     }
     try {
-      const libraryLogo = (await import(`../../node_modules/cryptocurrency-icons/svg/color/${symbol}.svg`))
-        .ReactComponent;
+      const libraryLogo = (await import(`../../node_modules/cryptocurrency-icons/svg/color/${symbol}.svg`)).default;
       importedLogos[symbol] = libraryLogo;
       return {
         default: libraryLogo,
@@ -22,14 +23,14 @@ export const getDynamicLogo = (symbol: string) =>
     }
 
     try {
-      const localLogo = (await import(`~assets/crypto-icons/${symbol}.svg`)).ReactComponent;
+      const localLogo = (await import(`assets/crypto-icons/${symbol}.svg`)).default;
       importedLogos[symbol] = localLogo;
       return {
         default: localLogo,
       };
     } catch {
       const defaultLogo = (await import(`../../node_modules/cryptocurrency-icons/svg/color/generic.svg`))
-        .ReactComponent;
+        .default as TemporaryAnyT;
       importedLogos[symbol] = defaultLogo;
       return {
         default: defaultLogo,

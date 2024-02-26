@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   width: 100%;
@@ -22,7 +22,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .bottomCard {
     padding-top: 8px;
   }
@@ -35,7 +34,6 @@
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-
   .bottomCard {
     padding-top: $d8x-spacing;
   }

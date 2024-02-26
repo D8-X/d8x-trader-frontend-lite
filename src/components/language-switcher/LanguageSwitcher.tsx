@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ReactComponent as LanguageIcon } from 'assets/languageSelector.svg';
+import LanguageIcon from 'assets/languageSelector.svg?react';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { LanguageE } from 'types/enums';
 import type { LanguageMetaI } from 'types/types';

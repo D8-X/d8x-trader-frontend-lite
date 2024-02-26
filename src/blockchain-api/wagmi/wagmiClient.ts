@@ -13,10 +13,10 @@ import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia } fro
 import { publicProvider } from 'wagmi/providers/public';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
-import polygonTestIcon from 'assets/networks/polygonTest.svg';
-import zkMainIcon from 'assets/networks/zkEvmMain.svg';
-import zkTestIcon from 'assets/networks/zkEvmTest.svg';
-import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.svg';
+import polygonTestIcon from 'assets/networks/polygonTest.chain.svg';
+import zkMainIcon from 'assets/networks/zkEvmMain.chain.svg';
+import zkTestIcon from 'assets/networks/zkEvmTest.chain.svg';
+import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.chain.svg';
 import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
 import { x1, cardona } from 'utils/chains';

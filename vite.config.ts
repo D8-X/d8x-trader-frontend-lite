@@ -10,8 +10,7 @@ import svgr from 'vite-plugin-svgr';
 import { checker } from 'vite-plugin-checker';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import stylelintPlugin from 'vite-plugin-stylelint';
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -34,7 +33,11 @@ export default defineConfig({
     react(),
     viteTsconfigPaths(),
     // svgr options: https://react-svgr.com/docs/options/
-    svgr({ svgrOptions: { icon: true } }),
+    svgr({
+      svgrOptions: { icon: true },
+      include: ['**/*.svg', '**/*.svg?react'],
+      exclude: ['**/*.chain.svg'],
+    }),
     checker({
       typescript: true,
       eslint: {

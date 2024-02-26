@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   flex-direction: column;
@@ -16,7 +16,6 @@
 }
 
 .customPriceInput {
-
   :global(.MuiOutlinedInput-input) {
     padding: 8px 10px 6px;
   }
@@ -48,7 +47,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .priceOptions {
     width: 100%;
     display: flex;
@@ -65,7 +63,6 @@
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-
   .root {
     margin-bottom: $d8x-spacing * 2;
     margin-top: $d8x-spacing * 2;
@@ -76,7 +73,6 @@
   }
 
   .priceOptions {
-
     :global(.MuiButtonBase-root) {
       max-height: 30px;
     }

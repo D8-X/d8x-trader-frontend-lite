@@ -7,9 +7,9 @@ import { useAccount, useChainId } from 'wagmi';
 
 import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as WalletIcon } from 'assets/icons/walletIcon.svg';
-import { ReactComponent as EmptyStar } from 'assets/starEmpty.svg';
-import { ReactComponent as FilledStar } from 'assets/starFilled.svg';
+import WalletIcon from 'assets/icons/walletIcon.svg?react';
+import EmptyStar from 'assets/starEmpty.svg?react';
+import FilledStar from 'assets/starFilled.svg?react';
 import { config } from 'config';
 import { getTraderLoyalty } from 'network/network';
 import { loyaltyScoreAtom } from 'store/pools.store';

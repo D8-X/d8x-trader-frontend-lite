@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .dialogContent {
   display: flex;
@@ -19,7 +19,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .closeButton {
     width: 100%;
     height: 50px;

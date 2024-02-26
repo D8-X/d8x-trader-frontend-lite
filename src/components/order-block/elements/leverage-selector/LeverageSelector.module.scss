@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   width: 100%;
@@ -31,7 +31,6 @@
 }
 
 .inputHolder {
-
   :global(.MuiInputBase-root) {
     width: 116px;
     padding-right: 0;
@@ -48,7 +47,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .root {
     justify-content: space-between;
   }
@@ -59,7 +57,6 @@
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) {
-
   .sliderHolder {
     margin-bottom: 4px;
   }

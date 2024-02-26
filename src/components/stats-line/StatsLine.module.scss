@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   width: 100%;
@@ -50,21 +50,18 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .root {
     overflow-x: auto;
   }
 }
 
 @media screen and ($d8x-breakpoint-min-sm) and ($d8x-breakpoint-max-lg) {
-
   .statValue {
     font-size: 16px;
   }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .root {
     margin-top: $d8x-spacing * 3;
   }
@@ -75,7 +72,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .root {
     justify-content: flex-start;
   }
@@ -104,7 +100,6 @@
     }
 
     .groupedStat {
-
       & + .groupedStat {
         margin-top: $d8x-spacing * 0;
       }

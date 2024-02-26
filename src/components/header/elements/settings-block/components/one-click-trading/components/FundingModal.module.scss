@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .inputHolder {
   display: flex;
@@ -32,7 +32,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .actionButton,
   .closeButton {
     width: 100%;

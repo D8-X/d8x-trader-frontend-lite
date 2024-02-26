@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
@@ -32,14 +32,12 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .root {
     border-radius: 0 0 $d8x-border-radius $d8x-border-radius;
   }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .buttonContainer {
     display: block;
 

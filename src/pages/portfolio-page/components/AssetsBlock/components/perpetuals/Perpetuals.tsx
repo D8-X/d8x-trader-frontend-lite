@@ -1,10 +1,11 @@
 import { useAtom } from 'jotai';
 import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getDynamicLogo } from 'utils/tokens';
 
 import { realizedPnLListAtom } from 'pages/portfolio-page/store/fetchRealizedPnL';
 import { unrealizedPnLListAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
+import { TemporaryAnyT } from 'types/types';
+import { getDynamicLogo } from 'utils/getDynamicLogo';
 
 import styles from './Perpetuals.module.scss';
 
@@ -16,7 +17,8 @@ interface AssetLinePropsI {
 }
 
 export const AssetLine = ({ symbol, value }: AssetLinePropsI) => {
-  const IconComponent = getDynamicLogo(symbol.toLowerCase());
+  const IconComponent = getDynamicLogo(symbol.toLowerCase()) as TemporaryAnyT;
+
   return (
     <div className={styles.assetsLine}>
       <Suspense fallback={null}>

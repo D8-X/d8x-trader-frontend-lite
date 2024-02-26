@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .headerLabel {
   color: var(--d8x-color-text-table-header);
@@ -10,7 +10,6 @@
 }
 
 .sortIcon {
-
   svg {
     fill: var(--d8x-color-action-icon);
   }

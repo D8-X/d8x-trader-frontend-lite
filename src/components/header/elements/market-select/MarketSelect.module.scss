@@ -1,5 +1,5 @@
-@import '~styles/theme/_theme.scss';
-@import '~styles/theme/_utils.scss';
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .holderRoot {
   display: flex;
@@ -90,7 +90,6 @@
 }
 
 .dialog {
-
   :global(.MuiDialog-container) {
     align-items: flex-start;
   }
@@ -132,13 +131,11 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .selectedMarketLabel {
     line-height: 24px;
   }
 
   .selectedMarketValue {
-
     .selectedMarketPerpetual {
       font-size: 16px;
     }
@@ -146,7 +143,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .holderRoot {
     height: 72px;
     min-width: 350px;
@@ -163,7 +159,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .holderRoot {
     width: 100%;
     min-width: inherit;
@@ -171,7 +166,6 @@
   }
 
   .selectedMarketValue {
-
     .selectedMarketPerpetual {
       font-size: 14px;
       line-height: 8px;

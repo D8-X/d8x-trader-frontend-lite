@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { ReactComponent as SettingsIcon } from 'assets/icons/settingsIcon.svg';
+import SettingsIcon from 'assets/icons/settingsIcon.svg?react';
 import { Dialog } from 'components/dialog/Dialog';
 import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 import { Separator } from 'components/separator/Separator';

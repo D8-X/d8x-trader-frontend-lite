@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -22,7 +22,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .root {
     display: flex;
     padding-top: 10 * $d8x-spacing;

@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -11,7 +11,6 @@
 }
 
 .dialog {
-
   :global(.MuiPaper-root) {
     min-width: 350px;
     max-width: 450px;
@@ -85,7 +84,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .dialogContent {
     padding-top: 2 * $d8x-spacing !important;
   }

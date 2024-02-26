@@ -1,6 +1,9 @@
 import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TemporaryAnyT = any;
+
 import type {
   AlignE,
   FieldTypeE,
