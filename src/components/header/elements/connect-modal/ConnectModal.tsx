@@ -1,9 +1,9 @@
+import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef } from 'react';
-import { PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
-import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { type PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
 
 import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
 import { Button, DialogTitle, Typography } from '@mui/material';
@@ -12,9 +12,9 @@ import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3Au
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
+import { config } from 'config';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { config } from 'config';
 
 import styles from './ConnectModal.module.scss';
 
@@ -100,6 +100,14 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
       .catch((err) => console.log(err));
   }, [publicClient, chainId, loadSDK, unloadSDK]);
 
+  const handleWeb3AuthSuccessConnect = useCallback(() => {
+    // TODO: Do nothing at the moment
+  }, []);
+
+  const handleWeb3AuthErrorConnect = useCallback((error: string) => {
+    console.log(error);
+  }, []);
+
   return (
     <Dialog open={isOpen} onClose={onClose} className={styles.dialog}>
       {!isConnected && (
@@ -111,7 +119,11 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
           <Separator />
           <div className={styles.dialogContent}>
             <div className={styles.actionButtonsContainer}>
-              <Web3AuthConnectButton buttonClassName={styles.connectButton} />
+              <Web3AuthConnectButton
+                buttonClassName={styles.connectButton}
+                successCallback={handleWeb3AuthSuccessConnect}
+                errorCallback={handleWeb3AuthErrorConnect}
+              />
               <div className={styles.orSeparator}>
                 <Separator />
                 <div className={styles.orTextHolder}>

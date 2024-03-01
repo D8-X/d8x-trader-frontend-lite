@@ -58,11 +58,6 @@ export async function getPerpetualStaticInfo(
   }
 }
 
-// needs broker input: should go through backend
-export async function getTraderLoyalty(chainId: number, address: string): Promise<ValidatedResponseI<number>> {
-  return fetchUrl(`trader-loyalty?traderAddr=${address}`, chainId);
-}
-
 export async function getPositionRisk(
   chainId: number,
   traderAPI: TraderInterface | null,

@@ -4,7 +4,7 @@ import { useAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { bytesToHex, numberToHex } from 'viem';
-import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useChainId, useConnect } from 'wagmi';
 
 import { getPublicKey } from '@noble/secp256k1';
 import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
@@ -20,28 +20,32 @@ import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
 import { postSocialVerify } from 'network/referral';
-import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
+import { socialPKAtom, socialUserInfoAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
+import { TemporaryAnyT } from 'types/types';
 
 import styles from './Web3AuthConnectButton.module.scss';
 
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
+  successCallback?: () => void;
+  errorCallback?: (error: string) => void;
 }
 
 const clientId = web3AuthConfig.web3AuthClientId;
 const verifierName = web3AuthConfig.web3AuthVerifier;
 
-export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
+export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) => {
   const { t } = useTranslation();
 
+  const { buttonClassName, successCallback = () => {}, errorCallback = () => {} } = props;
+
   const { isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
 
   const [userInfo, setUserInfo] = useAtom(socialUserInfoAtom);
   const [socialPK, setSocialPK] = useAtom(socialPKAtom);
+  const [web3authIdToken, setWeb3authIdToken] = useAtom(web3authIdTokenAtom);
 
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
-  const [web3authIdToken, setIdToken] = useState<string | undefined>(undefined);
 
   const requestRef = useRef(false);
 
@@ -116,8 +120,8 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
             tickerName: chains[i].nativeCurrency.name ?? '',
           });
         }
-      } catch (e) {
-        console.error(e);
+      } catch (error: TemporaryAnyT) {
+        console.error(error);
       }
     };
 
@@ -150,7 +154,10 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
             // domain: '...', // example included this, but works without it?
           },
         })
-        .catch((e) => console.log(e));
+        .catch((error: TemporaryAnyT) => {
+          console.log(error);
+          errorCallback(error.message);
+        });
 
       const info = await web3auth.getUserInfo();
       const privateKey = await web3auth.provider?.request({
@@ -158,10 +165,12 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
       });
       await connectAsync();
       setUserInfo(info);
-      setIdToken(idToken);
+      setWeb3authIdToken(idToken);
       setSocialPK(privateKey as string);
-    } catch (err) {
-      console.error(err);
+      successCallback();
+    } catch (error: TemporaryAnyT) {
+      console.error(error);
+      errorCallback(error.message);
     }
   };
 
@@ -176,8 +185,8 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         await postSocialVerify(chainId, userInfo?.idToken, pubKey).catch((e) =>
           console.log('POST /social-verify error', e)
         );
-      } catch (e) {
-        console.log(e);
+      } catch (error: TemporaryAnyT) {
+        console.log(error);
       } finally {
         requestRef.current = false;
       }
@@ -185,39 +194,20 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
     verify().then();
   }, [userInfo, chainId, web3auth, socialPK]);
 
-  const handleDisconnect = () => {
-    setUserInfo(null);
-    setSocialPK('');
-    setIdToken(undefined);
-    disconnect();
-  };
-
-  console.log({ socialPK });
-
   if (isConnected) {
-    return (
-      isConnected && (
-        <Button
-          className={classnames(styles.connectWalletButton, buttonClassName)}
-          onClick={handleDisconnect}
-          variant="primary"
-        >
-          {t('common.connect-modal.disconnect')}
-        </Button>
-      )
-    );
-  } else {
-    return (
-      <Button
-        className={classnames(styles.connectWalletButton, buttonClassName)}
-        key={'login'}
-        disabled={!web3auth}
-        onClick={signInWithTwitter}
-        variant="primary"
-      >
-        <X />
-        {t('common.connect-modal.sign-in-with-x-button')}
-      </Button>
-    );
+    return null;
   }
+
+  return (
+    <Button
+      className={classnames(styles.connectWalletButton, buttonClassName)}
+      key={'login'}
+      disabled={!web3auth}
+      onClick={signInWithTwitter}
+      variant="primary"
+    >
+      <X />
+      {t('common.connect-modal.sign-in-with-x-button')}
+    </Button>
+  );
 });

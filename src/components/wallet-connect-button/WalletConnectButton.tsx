@@ -1,31 +1,29 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import classnames from 'classnames';
-import { useAtom } from 'jotai';
-import { memo, type ReactNode, useEffect, useRef } from 'react';
+import { useAtomValue } from 'jotai';
+import { memo, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
 
-import { Box, Button, useMediaQuery, useTheme } from '@mui/material';
+import { AccountBox } from '@mui/icons-material';
+import { Button, useMediaQuery, useTheme } from '@mui/material';
 
 import WalletIcon from 'assets/icons/walletIcon.svg?react';
-import EmptyStar from 'assets/starEmpty.svg?react';
-import FilledStar from 'assets/starFilled.svg?react';
-import { config } from 'config';
-import { getTraderLoyalty } from 'network/network';
-import { loyaltyScoreAtom } from 'store/pools.store';
-import { cutAddressName } from 'utils/cutAddressName';
+import { config, web3AuthConfig } from 'config';
+import { socialPKAtom } from 'store/web3-auth.store';
+import { cutAddress } from 'utils/cutAddress';
 
 import { LiFiWidgetButton } from './LiFiWidgetButton';
 import { OneClickTradingButton } from './OneClickTradingButton';
 
 import styles from './WalletConnectButton.module.scss';
-
-const loyaltyMap = ['Diamond', 'Platinum', 'Gold', 'Silver', '-'];
+import { AccountModal } from '../account-modal/AccountModal';
 
 interface WalletConnectButtonPropsI {
   connectButtonLabel?: ReactNode;
   buttonClassName?: string;
 }
+
+const isSocialLoginEnabled = web3AuthConfig.web3AuthClientId !== '';
 
 export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
   const { t } = useTranslation();
@@ -35,35 +33,14 @@ export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
     buttonClassName,
   } = props;
 
+  const [isAccountModalOpen, setAccountModalOpen] = useState(false);
+
+  const socialPK = useAtomValue(socialPKAtom);
+
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [loyaltyScore, setLoyaltyScore] = useAtom(loyaltyScoreAtom);
-
-  const loadingTraderLoyaltyRef = useRef(false);
-
-  const chainId = useChainId();
-  const { address } = useAccount();
-
-  useEffect(() => {
-    if (loadingTraderLoyaltyRef.current) {
-      return;
-    }
-
-    if (address) {
-      loadingTraderLoyaltyRef.current = true;
-      getTraderLoyalty(chainId, address)
-        .then((data) => {
-          setLoyaltyScore(data.data);
-        })
-        .catch(console.error)
-        .finally(() => {
-          loadingTraderLoyaltyRef.current = false;
-        });
-    } else {
-      setLoyaltyScore(5);
-    }
-  }, [chainId, address, setLoyaltyScore]);
+  const isSignedInSocially = isSocialLoginEnabled && socialPK != '';
 
   return (
     <ConnectButton.Custom>
@@ -94,43 +71,36 @@ export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
               }
 
               return (
-                <div className={styles.buttonsHolder}>
-                  <OneClickTradingButton />
-                  {config.activateLiFi && <LiFiWidgetButton />}
-                  <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
-                    <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
-                  </Button>
-                  <Button onClick={openAccountModal} variant="primary" className={styles.addressButton}>
-                    {!isMobileScreen && (
-                      <Box className={styles.starsHolder} title={loyaltyMap[loyaltyScore - 1]}>
-                        {loyaltyScore < 5 ? (
-                          <FilledStar width={12} height={12} />
-                        ) : (
-                          <EmptyStar width={12} height={12} />
+                <>
+                  <div className={styles.buttonsHolder}>
+                    {!isSignedInSocially && <OneClickTradingButton />}
+                    {config.activateLiFi && <LiFiWidgetButton />}
+                    <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
+                      <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
+                    </Button>
+                    {!isSignedInSocially && (
+                      <Button onClick={openAccountModal} variant="primary" className={styles.addressButton}>
+                        {!isMobileScreen && (
+                          <span className={styles.cutAddressName}>{cutAddress(account.address)}</span>
                         )}
-                        {loyaltyScore < 4 ? (
-                          <FilledStar width={12} height={12} />
-                        ) : (
-                          <EmptyStar width={12} height={12} />
-                        )}
-                        {loyaltyScore < 3 ? (
-                          <FilledStar width={12} height={12} />
-                        ) : (
-                          <EmptyStar width={12} height={12} />
-                        )}
-                        {loyaltyScore < 2 ? (
-                          <FilledStar width={12} height={12} />
-                        ) : (
-                          <EmptyStar width={12} height={12} />
-                        )}
-                      </Box>
+                        {isMobileScreen && <WalletIcon className={styles.icon} />}
+                      </Button>
                     )}
-                    {!isMobileScreen && (
-                      <span className={styles.cutAddressName}>{cutAddressName(account.address)}</span>
+                    {isSignedInSocially && (
+                      <Button
+                        onClick={() => setAccountModalOpen(true)}
+                        variant="primary"
+                        className={styles.addressButton}
+                      >
+                        {!isMobileScreen && <span className={styles.cutAddressName}>{t('common.account-button')}</span>}
+                        {isMobileScreen && <AccountBox className={styles.icon} />}
+                      </Button>
                     )}
-                    {isMobileScreen && <WalletIcon className={styles.icon} />}
-                  </Button>
-                </div>
+                  </div>
+                  {isSignedInSocially && (
+                    <AccountModal isOpen={isAccountModalOpen} onClose={() => setAccountModalOpen(false)} />
+                  )}
+                </>
               );
             })()}
           </div>

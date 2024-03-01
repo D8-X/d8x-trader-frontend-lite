@@ -577,6 +577,7 @@
   "common": {
     "change-language": "Changer de langue",
     "wallet-connect": "Connecter",
+    "account-button": "Account",
     "currency-label": "Currency",
     "copied": "Copié",
     "copy-error": "An error appeared with copy to clipboard",

@@ -263,20 +263,17 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               {!isSmallScreen && (
                 <Typography id="header-side" variant="h6" component="div" className={styles.selectBoxes} />
               )}
-              {!isMobileScreen && !isConnected && isSocialLoginEnabled && (
+              {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
-                    <Typography variant="bodyMedium" className={styles.modalButtonText}>
-                      {t('common.wallet-connect')}
-                    </Typography>
-                  </Button>
-                  <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
-                </Typography>
-              )}
-              {!isMobileScreen && (isConnected || !isSocialLoginEnabled) && (
-                <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
-                  <WalletConnectButton />
+                  {isSocialLoginEnabled && !isConnected && (
+                    <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
+                      <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
+                    </Button>
+                  )}
+                  {(!isSocialLoginEnabled || isConnected) && <WalletConnectButton />}
+                  {isSocialLoginEnabled && (
+                    <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
+                  )}
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}

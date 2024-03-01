@@ -577,6 +577,7 @@
   "common": {
     "change-language": "Change Language",
     "wallet-connect": "Connect",
+    "account-button": "Account",
     "currency-label": "Currency",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",
@@ -690,6 +691,9 @@
     },
     "info-modal": {
       "close": "Close"
+    },
+    "account-modal": {
+      "title": "Account"
     },
     "deposit-modal": {
       "title": "Deposit",

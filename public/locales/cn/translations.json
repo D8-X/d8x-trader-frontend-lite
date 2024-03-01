@@ -577,6 +577,7 @@
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",
+    "account-button": "Account",
     "currency-label": "Currency",
     "copied": "抄袭自",
     "copy-error": "An error appeared with copy to clipboard",

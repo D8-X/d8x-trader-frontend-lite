@@ -1,0 +1,17 @@
+@import '~styles/theme/theme.scss';
+
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
+.dialogContent {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.dialogAction {
+  justify-content: center;
+}
