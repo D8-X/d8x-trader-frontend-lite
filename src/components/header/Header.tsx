@@ -77,7 +77,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const [hideBetaText, setHideBetaText] = useAtom(hideBetaTextAtom);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isConnectModalOpen, setConnectModalOpen] = useState(true);
+  const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
   const requestRef = useRef(false);
 

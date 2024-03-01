@@ -691,6 +691,29 @@
     "info-modal": {
       "close": "Schliessen"
     },
+    "deposit-modal": {
+      "title": "Deposit",
+      "important-notice": {
+        "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
+        "1": "Important notice: send only <bold>{{currencyName}}</bold>",
+        "2": "(token address: ",
+        "3": ")",
+        "4": "to this address.",
+        "5": "Send over <bold>{{chainName}}</bold>."
+      },
+      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
+      "done-button": "Done"
+    },
+    "connect-modal": {
+      "title": "Sign in",
+      "description": "Sign in with X or web3 wallet",
+      "sign-in-with-x-button": "Sign in with X",
+      "sign-in-with-wallet-button": "Sign in with wallet",
+      "or-separator": "or",
+      "disconnect": "Disconnect",
+      "connected-title": "Welcome!",
+      "connected-description": "You have successfully signed in."
+    },
     "public-beta": {
       "info-text": "Dies ist eine öffentliche Betaphase – Mach deine eigene Recherche",
       "beta-tag": "[beta]"
