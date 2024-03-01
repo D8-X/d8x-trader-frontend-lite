@@ -1,0 +1,1 @@
+export const REFETCH_BALANCES_INTERVAL = 2000;

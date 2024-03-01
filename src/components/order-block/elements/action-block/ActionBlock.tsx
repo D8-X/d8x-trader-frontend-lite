@@ -1,14 +1,15 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
 
-import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
 import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
+import { DepositModal } from 'components/deposit-modal/DepositModal';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
@@ -143,6 +144,7 @@ export const ActionBlock = memo(() => {
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
+  const [showDepositModal, setShowDepositModal] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [maxOrderSize, setMaxOrderSize] = useState<{ maxBuy: number; maxSell: number }>();
@@ -554,20 +556,34 @@ export const ActionBlock = memo(() => {
     }
   }, [orderInfo]);
 
+  const handleDepositModalClose = useCallback(() => {
+    setShowDepositModal(false);
+  }, []);
+
   return (
-    <Box className={styles.root}>
-      <Button
-        variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
-        disabled={!isBuySellButtonActive}
-        onClick={openReviewOrderModal}
-        className={styles.buyButton}
-      >
-        {validityCheckButtonText}
-      </Button>
+    <div className={styles.root}>
+      {validityCheckButtonType === ValidityCheckButtonE.NoFunds && (
+        <>
+          <Button variant={'buy'} onClick={() => setShowDepositModal(true)} className={styles.buyButton}>
+            {validityCheckButtonText}
+          </Button>
+          <DepositModal isOpen={showDepositModal} onClose={handleDepositModalClose} />
+        </>
+      )}
+      {validityCheckButtonType !== ValidityCheckButtonE.NoFunds && (
+        <Button
+          variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
+          disabled={!isBuySellButtonActive}
+          onClick={openReviewOrderModal}
+          className={styles.buyButton}
+        >
+          {validityCheckButtonText}
+        </Button>
+      )}
       {orderInfo && (
         <Dialog open={showReviewOrderModal} className={styles.dialog}>
           <DialogTitle className={styles.dialogTitle}> {t('pages.trade.action-block.review.title')} </DialogTitle>
-          <Box className={styles.emphasis}>
+          <div className={styles.emphasis}>
             <SidesRow
               leftSide={
                 <Typography variant="bodyLargePopup" className={styles.semibold}>
@@ -581,9 +597,9 @@ export const ActionBlock = memo(() => {
                 </Typography>
               }
             />
-          </Box>
+          </div>
           <DialogContent>
-            <Box className={styles.orderDetails}>
+            <div className={styles.orderDetails}>
               <SidesRow
                 leftSide={
                   <Typography variant="bodySmallPopup" className={styles.left}>
@@ -690,16 +706,16 @@ export const ActionBlock = memo(() => {
                 }
                 rightSideStyles={styles.rightSide}
               />
-            </Box>
+            </div>
           </DialogContent>
           <Separator />
           <DialogContent>
-            <Box className={styles.newPositionHeader}>
+            <div className={styles.newPositionHeader}>
               <Typography variant="bodyMediumPopup" className={styles.bold}>
                 {t('pages.trade.action-block.review.details')}
               </Typography>
-            </Box>
-            <Box className={styles.newPositionDetails}>
+            </div>
+            <div className={styles.newPositionDetails}>
               <SidesRow
                 leftSide={
                   <Typography variant="bodySmallPopup" className={styles.left}>
@@ -759,9 +775,9 @@ export const ActionBlock = memo(() => {
                 }
                 rightSideStyles={styles.rightSide}
               />
-            </Box>
+            </div>
           </DialogContent>
-          <Box className={styles.emphasis}>
+          <div className={styles.emphasis}>
             <SidesRow
               leftSide={
                 <Typography variant="bodyMediumPopup" className={styles.semibold}>
@@ -770,9 +786,9 @@ export const ActionBlock = memo(() => {
               }
               rightSide={
                 !isValidityCheckDone ? (
-                  <Box>
+                  <div>
                     <CircularProgress color="primary" />
-                  </Box>
+                  </div>
                 ) : (
                   <Typography variant="bodyMediumPopup" className={styles.bold} style={{ color: validityColor }}>
                     {validityCheckType !== ValidityCheckE.Empty
@@ -788,14 +804,14 @@ export const ActionBlock = memo(() => {
                 )
               }
             />
-          </Box>
+          </div>
           <DialogContent>
             {isValidityCheckDone ? (
-              <Box className={styles.goMessage}>
+              <div className={styles.goMessage}>
                 <Typography variant="bodySmallPopup" className={styles.centered} style={{ color: validityColor }}>
                   {validityCheckText}
                 </Typography>
-              </Box>
+              </div>
             ) : (
               ''
             )}
@@ -821,6 +837,6 @@ export const ActionBlock = memo(() => {
           </DialogActions>
         </Dialog>
       )}
-    </Box>
+    </div>
   );
 });

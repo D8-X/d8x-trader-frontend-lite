@@ -47,8 +47,6 @@ function splitNumbers(numbers: string): number[] {
 
 export const config = {
   projectId,
-  web3AuthClientId,
-  web3AuthVerifier,
   geonamesUsername,
   ipGeolocationApiKey,
   apiUrl: parseUrls(apiUrls),
@@ -61,11 +59,19 @@ export const config = {
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
   showChallengeModal: showChallengeModal === 'true',
-  firebaseApiKey,
-  firebaseAuthDomain,
-  firebaseProjectId,
-  firebaseStorageBucket,
-  firebaseMessengerId,
-  firebaseAppId,
-  firebaseMeasurementId,
+};
+
+export const web3AuthConfig = {
+  web3AuthClientId,
+  web3AuthVerifier,
+};
+
+export const firebaseConfig = {
+  apiKey: firebaseApiKey,
+  authDomain: firebaseAuthDomain,
+  projectId: firebaseProjectId,
+  storageBucket: firebaseStorageBucket,
+  messagingSenderId: firebaseMessengerId,
+  appId: firebaseAppId,
+  measurementId: firebaseMeasurementId,
 };

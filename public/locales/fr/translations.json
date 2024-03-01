@@ -1,702 +1,705 @@
 {
-    "navigation": {
-      "trade": "Trader",
-      "refer": "Parrainage",
-      "vault": "Coffre-fort",
-      "portfolio": "Portefeuille"
+  "navigation": {
+    "trade": "Trader",
+    "refer": "Parrainage",
+    "vault": "Coffre-fort",
+    "portfolio": "Portefeuille"
+  },
+  "pages": {
+    "geolocation": {
+      "access-denied": "Pour continuer, veuillez activer les services de localisation dans votre navigateur. Veuillez consulter la documentation de votre navigateur pour savoir comment activer les services de localisation.",
+      "access-blocked": "LE LOGICIEL DU PROTOCOLE D8X N'A PAS ÉTÉ DÉPLOYÉ POUR ÊTRE ACCÉDÉ OU UTILISÉ PAR UN UTILISATEUR D'UNE JURIDICTION INTERDITE. LES JURIDICTIONS INTERDITES COMPRENNENT, MAIS NE SONT PAS LIMITÉES AUX, ÉTATS-UNIS D'AMÉRIQUE, BÉLARUS, BURUNDI, BIRMANIE (MYANMAR), RÉPUBLIQUE CENTRAFRICAINE, CONGO, RÉP. DÉMOCRATIQUE, RÉPUBLIQUE POPULAIRE DÉMOCRATIQUE DE CORÉE (RPDC), GUINÉE, GUINÉE-BISSAU, HAÏTI, IRAN, IRAK, YÉMEN, LIBAN, LIBYE, MALI, NICARAGUA, SOMALIE, SOUDAN, RÉPUBLIQUE DU SOUDAN DU SUD, SYRIE, VENEZUELA ET ZIMBABWE.",
+      "not-supported": "La localisation n'est pas supporté par votre navigateur. Pour continuer, veuillez passer à un navigateur qui supporte la localisation.",
+      "locating": "Localisation en cours...",
+      "getting-location": "Identification de la location..."
     },
-    "pages": {
-      "geolocation": {
-        "access-denied": "Pour continuer, veuillez activer les services de localisation dans votre navigateur. Veuillez consulter la documentation de votre navigateur pour savoir comment activer les services de localisation.",
-        "access-blocked": "LE LOGICIEL DU PROTOCOLE D8X N'A PAS ÉTÉ DÉPLOYÉ POUR ÊTRE ACCÉDÉ OU UTILISÉ PAR UN UTILISATEUR D'UNE JURIDICTION INTERDITE. LES JURIDICTIONS INTERDITES COMPRENNENT, MAIS NE SONT PAS LIMITÉES AUX, ÉTATS-UNIS D'AMÉRIQUE, BÉLARUS, BURUNDI, BIRMANIE (MYANMAR), RÉPUBLIQUE CENTRAFRICAINE, CONGO, RÉP. DÉMOCRATIQUE, RÉPUBLIQUE POPULAIRE DÉMOCRATIQUE DE CORÉE (RPDC), GUINÉE, GUINÉE-BISSAU, HAÏTI, IRAN, IRAK, YÉMEN, LIBAN, LIBYE, MALI, NICARAGUA, SOMALIE, SOUDAN, RÉPUBLIQUE DU SOUDAN DU SUD, SYRIE, VENEZUELA ET ZIMBABWE.",
-        "not-supported": "La localisation n'est pas supporté par votre navigateur. Pour continuer, veuillez passer à un navigateur qui supporte la localisation.",
-        "locating": "Localisation en cours...",
-        "getting-location": "Identification de la location..."
+    "trade": {
+      "stats": {
+        "mid-price": "Prix moyen",
+        "mark-price": "Prix de repère",
+        "index-price": "Prix d'indice",
+        "funding-rate": "Taux de financement",
+        "open-interest": "Intérêt ouvert",
+        "view-graph": "Voir le graphique",
+        "hide-graph": "Masquer le graphique"
       },
-      "trade": {
-        "stats": {
-          "mid-price": "Prix moyen",
-          "mark-price": "Prix de repère",
-          "index-price": "Prix d'indice",
-          "funding-rate": "Taux de financement",
-          "open-interest": "Intérêt ouvert",
-          "view-graph": "Voir le graphique",
-          "hide-graph": "Masquer le graphique"
+      "positions-table": {
+        "table-title": "Positions",
+        "table-header": {
+          "symbol": "Symbole",
+          "size": "Taille",
+          "side": "Direction",
+          "entry-price": "Prix d'entrée",
+          "liq-price": "Prix de liq.",
+          "margin": "Marge",
+          "pnl": "G et P",
+          "tp-sl": "TP/SL"
         },
-        "positions-table": {
-          "table-title": "Positions",
-          "table-header": {
-            "symbol": "Symbole",
-            "size": "Taille",
-            "side": "Direction",
-            "entry-price": "Prix d'entrée",
-            "liq-price": "Prix de liq.",
-            "margin": "Marge",
-            "pnl": "G et P",
-            "tp-sl": "TP/SL"
-          },
-          "table-content": {
-            "buy": "ACHETER",
-            "sell": "VENDRE",
-            "modify": "Modifier",
-            "connect": "Veuillez connecter votre portefeuille",
-            "no-open": "Aucune position ouverte",
-            "multiple": "multiple",
-            "partial": "partiel",
-            "exceeded": "surpassant"
-          },
-          "position-block-mobile": {
-            "symbol": "Symbole",
-            "modify": "Modifier"
-          },
-          "modify-modal": {
-            "title": "Modifier la position",
-            "tp-sl-title": "TP/SL",
-            "tp-sl-position": "Définissez un TP/SL pour votre position existante de {{positionSize}}",
-            "selector": {
-              "close": "Fermer",
-              "add": "Ajouter",
-              "remove": "Retirer"
-            },
-            "close": "Fermer la position",
-            "share": "Partager la position",
-            "add": "Ajouter du collatéral",
-            "remove": "Retirer du collatéral",
-            "pos-details": {
-              "title": "Détails de la nouvelle position",
-              "title-existing": "Existing position details",
-              "size": "Taille de la position:",
-              "margin": "Marge:",
-              "leverage": "Effet de levier:",
-              "liq-price": "Prix de liquidation:",
-              "side": "Direction:",
-              "unrealized": "PnL non réalisé:",
-              "close-tp-sl": "Fermer les TP/SL associés?"
-            },
-            "cancel": "Annuler",
-            "confirm": "Confirmer",
-            "create": "Créer"
-          },
-          "share-modal": {
-            "share-description": "Enregistrez l'image et partagez-la sur les réseaux sociaux"
-          },
-          "toasts": {
-            "submit-close": {
-              "title": "Soumission de l'ordre de clôture"
-            },
-            "submitted": {
-              "title": "Ordre soumis",
-              "body": "Symbole"
-            },
-            "tx-failed": {
-              "title": "Échec de la transaction",
-              "body": "Raison"
-            },
-            "error-processing": {
-              "title": "Erreur lors du traitement de la transaction",
-              "body": "Raison"
-            },
-            "adding-collateral": {
-              "title": "Ajout de collatéral"
-            },
-            "collateral-added": {
-              "title": "Collatéral ajoutée",
-              "body1": "Symbole",
-              "body2": "Montant"
-            },
-            "removing-collateral": {
-              "title": "Retrait de collatéral"
-            },
-            "collateral-removed": {
-              "title": "Collatéral retirée",
-              "body1": "Symbole",
-              "body2": "Montant"
-            },
-            "trade-executed": {
-              "title": "Échange exécuté",
-              "body": "Symbole"
-            },
-            "order-failed": {
-              "title": "Échec de l'ordre",
-              "body1": "Symbole",
-              "body2": "Raison"
-            }
-          }
+        "table-content": {
+          "buy": "ACHETER",
+          "sell": "VENDRE",
+          "modify": "Modifier",
+          "connect": "Veuillez connecter votre portefeuille",
+          "no-open": "Aucune position ouverte",
+          "multiple": "multiple",
+          "partial": "partiel",
+          "exceeded": "surpassant"
         },
-        "orders-table": {
-            "table-title": "Ordres Ouverts",
-            "table-header": {
-              "symbol": "Symbole",
-              "side": "Direction",
-              "type": "Type",
-              "order-size": "Taille de l'Ordre",
-              "limit-price": "Prix Limite",
-              "stop-price": "Prix Stop",
-              "reduce-only": "Réd. Uniquement",
-              "leverage": "Effet de Levier",
-              "good-until": "Valable jusqu'à"
-            },
-            "table-content": {
-              "buy": "ACHETER",
-              "sell": "VENDRE",
-              "connect": "Veuillez connecter votre portefeuille",
-              "no-open": "Aucun ordre ouvert",
-              "na": "N/A",
-              "cancel": "Annuler",
-              "limit": "Limite",
-              "market": "Marché",
-              "stop": "Stop",
-              "yes": "Oui",
-              "no": "Non"
-            },
-            "cancel-modal": {
-              "title": "Annuler l'Ordre Ouvert",
-              "content": "Êtes-vous sûr de vouloir annuler cet ordre?",
-              "back": "Retour",
-              "confirm": "Annuler l'ordre"
-            },
-            "order-block-mobile": {
-              "symbol": "Symbole",
-              "cancel": "Annuler"
-            },
-            "toasts": {
-              "cancel-order": {
-                "title": "Annulation de l'Ordre"
-              },
-              "order-cancelled": {
-                "title": "Ordre Annulé",
-                "body": "Symbole"
-              },
-              "tx-failed": {
-                "title": "Échec de la Transaction",
-                "body": "Raison"
-              },
-              "error-processing": {
-                "title": "Erreur lors du Traitement de la Transaction",
-                "body": "Raison"
-              }
-            }
-          },
-        "history-table": {
-            "table-title": "Historique des Trades",
-            "table-header": {
-                "time": "Temps",
-                "perpetual": "Perpétuel",
-                "side": "Direction",
-                "price": "Prix",
-                "quantity": "Quantité",
-                "fee": "Frais",
-                "realized-profit": "Profit Réalisé"
-            },
-            "table-content": {
-                "connect": "Veuillez connecter votre portefeuille",
-                "no-open": "Aucun historique des trades"
-            },
-            "history-block-mobile": {
-                "symbol": "Symbole"
-            }
+        "position-block-mobile": {
+          "symbol": "Symbole",
+          "modify": "Modifier"
         },
-        "funding-table": {
-            "table-title": "Paiements de Financement",
-            "table-header": {
-              "time": "Temps",
-              "perpetual": "Perpétuel",
-              "funding-payment": "Paiement de Financement"
-            },
-            "table-content": {
-              "connect": "Veuillez connecter votre portefeuille",
-              "no-open": "Aucune donnée de paiement de financement"
-            },
-            "funding-block-mobile": {
-              "symbol": "Symbole"
-            }
-          },
-        "order-block": {
+        "modify-modal": {
+          "title": "Modifier la position",
+          "tp-sl-title": "TP/SL",
+          "tp-sl-position": "Définissez un TP/SL pour votre position existante de {{positionSize}}",
           "selector": {
-            "long": "Long",
-            "short": "Short"
+            "close": "Fermer",
+            "add": "Ajouter",
+            "remove": "Retirer"
           },
-          "order-type": {
-            "market": "Marché",
-            "limit": "Limite",
-            "stop": "Stop"
+          "close": "Fermer la position",
+          "share": "Partager la position",
+          "add": "Ajouter du collatéral",
+          "remove": "Retirer du collatéral",
+          "pos-details": {
+            "title": "Détails de la nouvelle position",
+            "title-existing": "Existing position details",
+            "size": "Taille de la position:",
+            "margin": "Marge:",
+            "leverage": "Effet de levier:",
+            "liq-price": "Prix de liquidation:",
+            "side": "Direction:",
+            "unrealized": "PnL non réalisé:",
+            "close-tp-sl": "Fermer les TP/SL associés?"
           },
-          "order-size": {
-            "title": "Taille de l'ordre",
-            "body1": "Définit la taille de votre ordre.",
-            "body2": "Votre taille d'ordre maximale, en fonction de vos positions ouvertes et de l'état de la platforme d'échange, est:",
-            "body3": "La taille de position minimale pour ce perpétuel est:",
-            "body4": "Étape de quantité:"
-         },
-         "limit-price": {
-            "title": "Prix limite",
-            "body1": "Si vous spécifiez un prix limite, votre ordre sera exécuté au prix limite prédéterminé ou à un meilleur prix.",
-            "body2": "Pour un ordre stop, la fixation d'un prix limite est facultative. Un ordre stop avec un prix limite spécifié est un ordre stop-limite, un ordre stop sans prix limite spécifié est un ordre stop-marché."
-          },
-          "trigger-price": {
-            "title": "Prix déclencheur",
-            "body1": "Le prix déclencheur est le prix de repère auquel votre ordre d'arrêt est déclenché.",
-            "body2": "Si vous ne sélectionnez pas de prix limite en plus de votre prix déclencheur, vous passeriez un ordre stop-marché. Votre ordre sera exécuté au meilleur prix disponible une fois déclenché.",
-            "body3": "Si vous spécifiez un prix limite en plus de votre prix déclencheur, vous passeriez un ordre stop-limite. Votre ordre sera exécuté au prix limite prédéterminé ou à un meilleur prix."
-          },
-          "leverage": {
-            "title": "Effet de levier",
-            "body1": "Spécifie l'effet de levier de votre ordre.",
-            "body2": "Si votre ordre réduit une position existante ('fermeture partielle'), l'effet de levier que vous sélectionnez n'a aucun impact."
-          },
-          "slippage": {
-            "title": "Glissement",
-            "body": "Choisissez la tolérance au glissement",
-            "max": "Prix d'entrée max:",
-            "min": "Prix d'entrée min:",
-            "cancel": "Annuler",
-            "confirm": "Confirmer"
-          },
-          "reduce-only": "Réd. uniquement",
-          "expiry": {
-            "title": "Expiration",
-            "body": "Définissez le nombre de jours après lesquels votre ordre principal expirera (ce paramètre n'affecte pas vos ordres de prise de profit et de stop-loss).",
-            "close": "Fermer"
-          },
-          "stop-loss": {
-            "title": "Stop loss",
-            "body1": "Vous pouvez spécifier un ordre de stop loss pour accompagner votre ordre principal.",
-            "body2": "Si vous sélectionnez par exemple -50%, vous créez un second ordre qui sera déclenché si votre perte sur votre ordre principal atteint -50%.",
-            "body3": "Techniquement, vous spécifiez un ordre stop-marché, de direction opposé (si votre ordre principal est un ordre d'ACHAT, vous spécifiez un ordre stop-marché de VENTE). Le prix déclencheur est automatiquement calculé de telle sorte que votre perte globale corresponde à votre sélection.",
-            "none": "AUCUN"
-          },
-          "take-profit": {
-            "title": "Prise de profit",
-            "body1": "Vous pouvez spécifier un ordre de prise de profit pour accompagner votre ordre principal.",
-            "body2": "Si vous sélectionnez par exemple 100%, vous créez un second ordre qui sera déclenché si votre profit sur votre ordre principal atteint 100%.",
-            "body3": "Techniquement, vous spécifiez un ordre limite de direction opposé (si votre ordre principal est un ordre d'ACHAT, vous spécifiez un ordre limite de VENTE). Le prix limite est automatiquement calculé de telle sorte que votre profit global corresponde à votre sélection.",
-            "none": "AUCUN"
-          },
-          "info": {
-            "balance": "Solde du portefeuille",
-            "order-size": "Taille de l'ordre",
-            "fees": "Frais",
-            "gas": "Frais de gaz",
-            "rebate": "Rabais",
-            "approx-deposit": "Dépôt approximatif depuis le portefeuille"
-          },
-          "review": {
-            "title": "Réviser l'ordre"
-          }
+          "cancel": "Annuler",
+          "confirm": "Confirmer",
+          "create": "Créer"
         },
-        "action-block": {
+        "share-modal": {
+          "share-description": "Enregistrez l'image et partagez-la sur les réseaux sociaux"
+        },
         "toasts": {
-            "processed": {
-                "title": "Soumission de l'Ordre"
-            },
-            "orders-submitted": {
-                "title": "Ordres Soumis",
-                "body": "Symbole"
-            },
-            "order-submitted": {
-                "title": "Ordre Soumis",
-                "body": "Symbole"
-            },
-            "error": {
-                "title": "Erreur lors du Traitement de la Transaction"
-            },
-            "tx-failed": {
-                "title": "Échec de la Transaction",
-                "body": "Raison"
-            }
+          "submit-close": {
+            "title": "Soumission de l'ordre de clôture"
           },
-          "validity": {
-            "closed": "Les ordres ne seront pas exécutés avant l'ouverture du marché",
-            "order-too-large": "L'ordre échouera: la taille de l'ordre est trop grande",
-            "order-too-small": "L'ordre échouera: la taille de l'ordre est trop petite",
-            "position-too-small": "L'ordre échouera: la position résultante est trop petite (min.: {{minAmount}})",
-            "below-min-position": "Attention: taille de l'ordre en dessous de la taille de position minimale",
-            "slippage-too-large": "Attention: le glissement est supérieur à ce que vos paramètres de glissement autorisent. L'ordre échouera probablement.",
-            "insufficient-balance": "L'ordre échouera: solde de portefeuille insuffisant",
-            "undefined": "Ordre indéfini: la prise de profit est incompatible avec l'effet de levier",
-            "verify-tp-sl-orders": "Vérifiez vos TP/SL existantes - vous modifiez une position qui contient déjà des TP/SL",
-            "good-to-go": "Prêt à l'emploi",
-            "pass": "Passé",
-            "fail": "Échoué",
-            "button-no-address": "Connectez le portefeuille",
-            "button-no-funds": "Fonds insuffisants",
-            "button-no-amount": "Taille trop petite",
-            "button-no-limit": "Fixer prix limite",
-            "button-no-trigger": "Fixer prix déclencheur"
+          "submitted": {
+            "title": "Ordre soumis",
+            "body": "Symbole"
           },
-          "order-types": {
-            "market": "marché",
-            "limit": "limite",
-            "stop": "stop"
+          "tx-failed": {
+            "title": "Échec de la transaction",
+            "body": "Raison"
           },
-          "order-action": {
-            "long": "Acheter",
-            "short": "Vendre"
+          "error-processing": {
+            "title": "Erreur lors du traitement de la transaction",
+            "body": "Raison"
           },
-          "review": {
-            "title": "Réviser l'ordre",
-            "deposit": "Dépôt depuis le portefeuille",
-            "balance": "Solde du portefeuille",
-            "fee": "Frais de transaction",
-            "max": "Prix d'entrée max",
-            "min": "Prix d'entrée min",
-            "trigger-price": "Prix déclencheur",
-            "limit-price": "Prix limite",
-            "stop-loss": "Prix de stop-loss",
-            "take-profit": "Prix de prise de profit",
-            "details": "Détails de la nouvelle position",
-            "size": "Taille de la position",
-            "margin": "Marge",
-            "leverage": "Effet de levier",
-            "liq-price": "Prix de liquidation",
-            "validity-checks": "Vérifications",
-            "cancel": "Annuler",
-            "confirm": "Confirmer"
+          "adding-collateral": {
+            "title": "Ajout de collatéral"
+          },
+          "collateral-added": {
+            "title": "Collatéral ajoutée",
+            "body1": "Symbole",
+            "body2": "Montant"
+          },
+          "removing-collateral": {
+            "title": "Retrait de collatéral"
+          },
+          "collateral-removed": {
+            "title": "Collatéral retirée",
+            "body1": "Symbole",
+            "body2": "Montant"
+          },
+          "trade-executed": {
+            "title": "Échange exécuté",
+            "body": "Symbole"
+          },
+          "order-failed": {
+            "title": "Échec de l'ordre",
+            "body1": "Symbole",
+            "body2": "Raison"
           }
-        },
-        "filter": {
-          "field": "Champ:",
-          "type": "Type:",
-          "value": "Valeur:",
-          "value-placeholder": "Valeur à filter",
-          "clear": "Effacer le Filtre"
         }
       },
-      "refer": {
-        "tab-selector": {
-          "referrer": "Parrain",
-          "trader": "Trader"
+      "orders-table": {
+        "table-title": "Ordres Ouverts",
+        "table-header": {
+          "symbol": "Symbole",
+          "side": "Direction",
+          "type": "Type",
+          "order-size": "Taille de l'Ordre",
+          "limit-price": "Prix Limite",
+          "stop-price": "Prix Stop",
+          "reduce-only": "Réd. Uniquement",
+          "leverage": "Effet de Levier",
+          "good-until": "Valable jusqu'à"
         },
-        "referrer-tab": {
-          "disclaimer-text-block1": "Gagnez des commissions en invitant des traders à trader sur D8X. Les commissions sont déposées dans votre portefeuille chaque semaine.",
-          "disclaimer-text-block2": "Découvrez les détails sur le programme de parrainage D8X.",
-          "total-earned-commission": "Commission totale gagnée",
-          "commission-rate": "Votre taux de commission",
-          "title1": "Vos parrainages",
-          "title2": "Parrainez & Gagnez",
-          "codes": "Vos codes",
-          "add-partner": "Ajouter un partenaire",
-          "create-code": "Créer un code",
+        "table-content": {
+          "buy": "ACHETER",
+          "sell": "VENDRE",
+          "connect": "Veuillez connecter votre portefeuille",
+          "no-open": "Aucun ordre ouvert",
           "na": "N/A",
-          "referrer-rebate-rate": "Commission effective",
-          "trader-rebate-rate": "Taux de remise du partenaire",
-          "agency-rebate-rate": "Taux de remise de l'agence",
-          "share": "Partager",
-          "share-success": "Votre URL de parrainage a été copiée avec succès dans le presse-papiers",
-          "share-error": "Une erreur est survenue lors de la copie de votre URL de parrainage",
-          "modify": "Modifier",
-          "no-codes": "Pas de codes de remise"
-        },
-        "manage-code": {
-          "title-create": "Créer un Code de Parrainage",
-          "title-add": "Ajouter un partenaire",
-          "commission-rate": "Votre taux de commission:",
-          "you-receive": "Vous recevez",
-          "trader-receives": "Le trader reçoit",
-          "you": "Vous",
-          "partner": "Partenaire",
-          "trader-kickback": "Définissez le taux de commission du trader:",
-          "partner-kickback": "Définissez la commission du partenaire :",
-          "partner-address": "Adresse du partenaire:",
-          "enter-code": "Entrez un code",
-          "code-taken": "Code déjà pris",
-          "create-code": "Créer un code",
-          "add-partner": "Ajouter",
-          "instructions": "Seuls les caractères MAJUSCULES, les chiffres, les tirets bas (_) et les tirets (-) sont autorisés.",
           "cancel": "Annuler",
-          "enter-addr": "Entrez une adresse",
-          "error": "Veuillez entrer une adresse valide"
+          "limit": "Limite",
+          "market": "Marché",
+          "stop": "Stop",
+          "yes": "Oui",
+          "no": "Non"
         },
-        "toast": {
-          "success-create": "Code créé avec succès",
-          "success-add-partner": "Partenaire ajouté avec succès",
-          "success-modify": "Code modifié avec succès",
-          "success-apply": "Code appliqué avec succès"
+        "cancel-modal": {
+          "title": "Annuler l'Ordre Ouvert",
+          "content": "Êtes-vous sûr de vouloir annuler cet ordre?",
+          "back": "Retour",
+          "confirm": "Annuler l'ordre"
         },
-        "trader-tab": {
-          "title1": "Vos réductions",
-          "earned-rebates": "Total des remises gagnées",
-          "open-rewards": "Récompenses ouvertes",
-          "title2": "Tradez & Gagnez",
-          "disclaimer-text-block1": "Entrez un code de parrainage pour recevoir des réductions sur les frais de transaction.",
-          "disclaimer-text-block2": "Les réductions sont déposées chaque semaine dans votre portefeuille.",
-          "your-rebate-rate": "Votre taux de remise",
-          "your-active-code": "Votre code actif",
-          "enter-new-code": "Entrez un nouveau code",
-          "title3": "Entrez un Code de Parrainage",
-          "enter-a-code": "Entrez un code",
-          "instructions": "Vous ne pouvez lier qu'un seul code à votre adresse. Une fois la relation de parrainage établie, elle ne peut être modifiée.",
+        "order-block-mobile": {
+          "symbol": "Symbole",
+          "cancel": "Annuler"
+        },
+        "toasts": {
+          "cancel-order": {
+            "title": "Annulation de l'Ordre"
+          },
+          "order-cancelled": {
+            "title": "Ordre Annulé",
+            "body": "Symbole"
+          },
+          "tx-failed": {
+            "title": "Échec de la Transaction",
+            "body": "Raison"
+          },
+          "error-processing": {
+            "title": "Erreur lors du Traitement de la Transaction",
+            "body": "Raison"
+          }
+        }
+      },
+      "history-table": {
+        "table-title": "Historique des Trades",
+        "table-header": {
+          "time": "Temps",
+          "perpetual": "Perpétuel",
+          "side": "Direction",
+          "price": "Prix",
+          "quantity": "Quantité",
+          "fee": "Frais",
+          "realized-profit": "Profit Réalisé"
+        },
+        "table-content": {
+          "connect": "Veuillez connecter votre portefeuille",
+          "no-open": "Aucun historique des trades"
+        },
+        "history-block-mobile": {
+          "symbol": "Symbole"
+        }
+      },
+      "funding-table": {
+        "table-title": "Paiements de Financement",
+        "table-header": {
+          "time": "Temps",
+          "perpetual": "Perpétuel",
+          "funding-payment": "Paiement de Financement"
+        },
+        "table-content": {
+          "connect": "Veuillez connecter votre portefeuille",
+          "no-open": "Aucune donnée de paiement de financement"
+        },
+        "funding-block-mobile": {
+          "symbol": "Symbole"
+        }
+      },
+      "order-block": {
+        "selector": {
+          "long": "Long",
+          "short": "Short"
+        },
+        "order-type": {
+          "market": "Marché",
+          "limit": "Limite",
+          "stop": "Stop"
+        },
+        "order-size": {
+          "title": "Taille de l'ordre",
+          "body1": "Définit la taille de votre ordre.",
+          "body2": "Votre taille d'ordre maximale, en fonction de vos positions ouvertes et de l'état de la platforme d'échange, est:",
+          "body3": "La taille de position minimale pour ce perpétuel est:",
+          "body4": "Étape de quantité:"
+        },
+        "limit-price": {
+          "title": "Prix limite",
+          "body1": "Si vous spécifiez un prix limite, votre ordre sera exécuté au prix limite prédéterminé ou à un meilleur prix.",
+          "body2": "Pour un ordre stop, la fixation d'un prix limite est facultative. Un ordre stop avec un prix limite spécifié est un ordre stop-limite, un ordre stop sans prix limite spécifié est un ordre stop-marché."
+        },
+        "trigger-price": {
+          "title": "Prix déclencheur",
+          "body1": "Le prix déclencheur est le prix de repère auquel votre ordre d'arrêt est déclenché.",
+          "body2": "Si vous ne sélectionnez pas de prix limite en plus de votre prix déclencheur, vous passeriez un ordre stop-marché. Votre ordre sera exécuté au meilleur prix disponible une fois déclenché.",
+          "body3": "Si vous spécifiez un prix limite en plus de votre prix déclencheur, vous passeriez un ordre stop-limite. Votre ordre sera exécuté au prix limite prédéterminé ou à un meilleur prix."
+        },
+        "leverage": {
+          "title": "Effet de levier",
+          "body1": "Spécifie l'effet de levier de votre ordre.",
+          "body2": "Si votre ordre réduit une position existante ('fermeture partielle'), l'effet de levier que vous sélectionnez n'a aucun impact."
+        },
+        "slippage": {
+          "title": "Glissement",
+          "body": "Choisissez la tolérance au glissement",
+          "max": "Prix d'entrée max:",
+          "min": "Prix d'entrée min:",
           "cancel": "Annuler",
-          "enter-code": "Entrez un code",
-          "code-not-found": "Code introuvable",
-          "use-code": "Utiliser le code"
+          "confirm": "Confirmer"
         },
-        "use-code": {
-          "title": "Utiliser ce code de parrainage ?",
-          "base": "Code",
-          "trader-rebate": "Remise pour le trader",
-          "connect-wallet": "Veuillez connecter votre portefeuille pour continuer",
-          "already-linked": "Vous avez déjà appliqué un code de parrainage",
+        "reduce-only": "Réd. uniquement",
+        "expiry": {
+          "title": "Expiration",
+          "body": "Définissez le nombre de jours après lesquels votre ordre principal expirera (ce paramètre n'affecte pas vos ordres de prise de profit et de stop-loss).",
+          "close": "Fermer"
+        },
+        "stop-loss": {
+          "title": "Stop loss",
+          "body1": "Vous pouvez spécifier un ordre de stop loss pour accompagner votre ordre principal.",
+          "body2": "Si vous sélectionnez par exemple -50%, vous créez un second ordre qui sera déclenché si votre perte sur votre ordre principal atteint -50%.",
+          "body3": "Techniquement, vous spécifiez un ordre stop-marché, de direction opposé (si votre ordre principal est un ordre d'ACHAT, vous spécifiez un ordre stop-marché de VENTE). Le prix déclencheur est automatiquement calculé de telle sorte que votre perte globale corresponde à votre sélection.",
+          "none": "AUCUN"
+        },
+        "take-profit": {
+          "title": "Prise de profit",
+          "body1": "Vous pouvez spécifier un ordre de prise de profit pour accompagner votre ordre principal.",
+          "body2": "Si vous sélectionnez par exemple 100%, vous créez un second ordre qui sera déclenché si votre profit sur votre ordre principal atteint 100%.",
+          "body3": "Techniquement, vous spécifiez un ordre limite de direction opposé (si votre ordre principal est un ordre d'ACHAT, vous spécifiez un ordre limite de VENTE). Le prix limite est automatiquement calculé de telle sorte que votre profit global corresponde à votre sélection.",
+          "none": "AUCUN"
+        },
+        "info": {
+          "balance": "Solde du portefeuille",
+          "order-size": "Taille de l'ordre",
+          "fees": "Frais",
+          "gas": "Frais de gaz",
+          "rebate": "Rabais",
+          "approx-deposit": "Dépôt approximatif depuis le portefeuille"
+        },
+        "review": {
+          "title": "Réviser l'ordre"
+        }
+      },
+      "action-block": {
+        "toasts": {
+          "processed": {
+            "title": "Soumission de l'Ordre"
+          },
+          "orders-submitted": {
+            "title": "Ordres Soumis",
+            "body": "Symbole"
+          },
+          "order-submitted": {
+            "title": "Ordre Soumis",
+            "body": "Symbole"
+          },
+          "error": {
+            "title": "Erreur lors du Traitement de la Transaction"
+          },
+          "tx-failed": {
+            "title": "Échec de la Transaction",
+            "body": "Raison"
+          }
+        },
+        "validity": {
+          "closed": "Les ordres ne seront pas exécutés avant l'ouverture du marché",
+          "order-too-large": "L'ordre échouera: la taille de l'ordre est trop grande",
+          "order-too-small": "L'ordre échouera: la taille de l'ordre est trop petite",
+          "position-too-small": "L'ordre échouera: la position résultante est trop petite (min.: {{minAmount}})",
+          "below-min-position": "Attention: taille de l'ordre en dessous de la taille de position minimale",
+          "slippage-too-large": "Attention: le glissement est supérieur à ce que vos paramètres de glissement autorisent. L'ordre échouera probablement.",
+          "insufficient-balance": "L'ordre échouera: solde de portefeuille insuffisant",
+          "undefined": "Ordre indéfini: la prise de profit est incompatible avec l'effet de levier",
+          "verify-tp-sl-orders": "Vérifiez vos TP/SL existantes - vous modifiez une position qui contient déjà des TP/SL",
+          "good-to-go": "Prêt à l'emploi",
+          "pass": "Passé",
+          "fail": "Échoué",
+          "button-no-address": "Connectez le portefeuille",
+          "button-no-funds": "Dépôt",
+          "button-no-amount": "Taille trop petite",
+          "button-no-limit": "Fixer prix limite",
+          "button-no-trigger": "Fixer prix déclencheur"
+        },
+        "order-types": {
+          "market": "marché",
+          "limit": "limite",
+          "stop": "stop"
+        },
+        "order-action": {
+          "long": "Acheter",
+          "short": "Vendre"
+        },
+        "review": {
+          "title": "Réviser l'ordre",
+          "deposit": "Dépôt depuis le portefeuille",
+          "balance": "Solde du portefeuille",
+          "fee": "Frais de transaction",
+          "max": "Prix d'entrée max",
+          "min": "Prix d'entrée min",
+          "trigger-price": "Prix déclencheur",
+          "limit-price": "Prix limite",
+          "stop-loss": "Prix de stop-loss",
+          "take-profit": "Prix de prise de profit",
+          "details": "Détails de la nouvelle position",
+          "size": "Taille de la position",
+          "margin": "Marge",
+          "leverage": "Effet de levier",
+          "liq-price": "Prix de liquidation",
+          "validity-checks": "Vérifications",
           "cancel": "Annuler",
           "confirm": "Confirmer"
         }
       },
-      "vault": {
-        "personal-stats": {
-          "title": "Vos statistiques",
-          "amount": {
-            "title": "Montant",
-            "info": "Montant de d{{poolSymbol}} que vous possédez."
-          },
-          "earnings": {
-            "title": "Gains estimés",
-            "info1": "Les gains estimés sont une approximation de combien vous avez gagné.",
-            "info2": "Gains estimés = solde de d{{poolSymbol}} à la valeur marchande + total {{poolSymbol}} retiré - total {{poolSymbol}} déposé"
-          },
-          "initiated": {
-            "title": "Retrait initié?",
-            "info1": "Indique si vous avez initié une demande de retrait pour le pool {{poolSymbol}}."
-          },
-          "withdrawal-amount": {
-            "title": "Montant du retrait",
-            "info1": "Le montant de d{{poolSymbol}} que vous avez initié à retirer.",
-            "info2": "Votre liquidité continue de participer au PnL et aux revenus des frais du pool jusqu'à ce que vous retiriez."
-          },
-          "date": {
-            "title": "Peut être retiré le",
-            "info1": "Vous pouvez retirer votre liquidité deux jours après avoir initié le retrait.",
-            "info2": "Si vous ne retirez pas vos fonds dans les quatre jours après qu'ils soient prêts à être retirés, n'importe qui peut exécuter le retrait en votre nom. Dans ce cas, les fonds sont envoyés à votre adresse, et l'exécuteur gagnera une petite commission prélevée sur vos fonds."
-          }
+      "filter": {
+        "field": "Champ:",
+        "type": "Type:",
+        "value": "Valeur:",
+        "value-placeholder": "Valeur à filter",
+        "clear": "Effacer le Filtre"
+      }
+    },
+    "refer": {
+      "tab-selector": {
+        "referrer": "Parrain",
+        "trader": "Trader"
+      },
+      "referrer-tab": {
+        "disclaimer-text-block1": "Gagnez des commissions en invitant des traders à trader sur D8X. Les commissions sont déposées dans votre portefeuille chaque semaine.",
+        "disclaimer-text-block2": "Découvrez les détails sur le programme de parrainage D8X.",
+        "total-earned-commission": "Commission totale gagnée",
+        "commission-rate": "Votre taux de commission",
+        "title1": "Vos parrainages",
+        "title2": "Parrainez & Gagnez",
+        "codes": "Vos codes",
+        "add-partner": "Ajouter un partenaire",
+        "create-code": "Créer un code",
+        "na": "N/A",
+        "referrer-rebate-rate": "Commission effective",
+        "trader-rebate-rate": "Taux de remise du partenaire",
+        "agency-rebate-rate": "Taux de remise de l'agence",
+        "share": "Partager",
+        "share-success": "Votre URL de parrainage a été copiée avec succès dans le presse-papiers",
+        "share-error": "Une erreur est survenue lors de la copie de votre URL de parrainage",
+        "modify": "Modifier",
+        "no-codes": "Pas de codes de remise"
+      },
+      "manage-code": {
+        "title-create": "Créer un Code de Parrainage",
+        "title-add": "Ajouter un partenaire",
+        "commission-rate": "Votre taux de commission:",
+        "you-receive": "Vous recevez",
+        "trader-receives": "Le trader reçoit",
+        "you": "Vous",
+        "partner": "Partenaire",
+        "trader-kickback": "Définissez le taux de commission du trader:",
+        "partner-kickback": "Définissez la commission du partenaire :",
+        "partner-address": "Adresse du partenaire:",
+        "enter-code": "Entrez un code",
+        "code-taken": "Code déjà pris",
+        "create-code": "Créer un code",
+        "add-partner": "Ajouter",
+        "instructions": "Seuls les caractères MAJUSCULES, les chiffres, les tirets bas (_) et les tirets (-) sont autorisés.",
+        "cancel": "Annuler",
+        "enter-addr": "Entrez une adresse",
+        "error": "Veuillez entrer une adresse valide"
+      },
+      "toast": {
+        "success-create": "Code créé avec succès",
+        "success-add-partner": "Partenaire ajouté avec succès",
+        "success-modify": "Code modifié avec succès",
+        "success-apply": "Code appliqué avec succès"
+      },
+      "trader-tab": {
+        "title1": "Vos réductions",
+        "earned-rebates": "Total des remises gagnées",
+        "open-rewards": "Récompenses ouvertes",
+        "title2": "Tradez & Gagnez",
+        "disclaimer-text-block1": "Entrez un code de parrainage pour recevoir des réductions sur les frais de transaction.",
+        "disclaimer-text-block2": "Les réductions sont déposées chaque semaine dans votre portefeuille.",
+        "your-rebate-rate": "Votre taux de remise",
+        "your-active-code": "Votre code actif",
+        "enter-new-code": "Entrez un nouveau code",
+        "title3": "Entrez un Code de Parrainage",
+        "enter-a-code": "Entrez un code",
+        "instructions": "Vous ne pouvez lier qu'un seul code à votre adresse. Une fois la relation de parrainage établie, elle ne peut être modifiée.",
+        "cancel": "Annuler",
+        "enter-code": "Entrez un code",
+        "code-not-found": "Code introuvable",
+        "use-code": "Utiliser le code"
+      },
+      "use-code": {
+        "title": "Utiliser ce code de parrainage ?",
+        "base": "Code",
+        "trader-rebate": "Remise pour le trader",
+        "connect-wallet": "Veuillez connecter votre portefeuille pour continuer",
+        "already-linked": "Vous avez déjà appliqué un code de parrainage",
+        "cancel": "Annuler",
+        "confirm": "Confirmer"
+      }
+    },
+    "vault": {
+      "personal-stats": {
+        "title": "Vos statistiques",
+        "amount": {
+          "title": "Montant",
+          "info": "Montant de d{{poolSymbol}} que vous possédez."
         },
-        "global-stats": {
-          "apy": "APY Total",
-          "tvl": "TVL",
-          "price": "Prix de d{{poolSymbol}}",
-          "supply": "Approvisionnement de d{{poolSymbol}}"
+        "earnings": {
+          "title": "Gains estimés",
+          "info1": "Les gains estimés sont une approximation de combien vous avez gagné.",
+          "info2": "Gains estimés = solde de d{{poolSymbol}} à la valeur marchande + total {{poolSymbol}} retiré - total {{poolSymbol}} déposé"
         },
-        "add": {
-          "title": "Ajouter de la Liquidité",
-          "info1": "Ajoutez de la liquidité {{poolSymbol}} au pool et recevez d{{poolSymbol}}, un token ERC-20 qui représente votre propriété dans le pool de liquidité.",
-          "info2": "En tant que fournisseur de liquidité, vous gagnerez des frais de transaction et des paiements de taux de financement. Vous participerez également au PnL du pool. d{{poolSymbol}} accumule les frais, les paiements de taux de financement et le PnL en temps réel.",
-          "amount": {
-            "title": "Montant de {{poolSymbol}}",
-            "info1": "Indiquez le montant de {{poolSymbol}} que vous souhaitez ajouter au pool."
-          },
-          "receive": "Vous recevez d{{poolSymbol}}",
-          "max": "Max:",
-          "button": "Ajouter",
-          "validity-empty": "Connectez le portefeuille",
-          "validity-amount-too-big": "Fonds insuffisants" ,
+        "initiated": {
+          "title": "Retrait initié?",
+          "info1": "Indique si vous avez initié une demande de retrait pour le pool {{poolSymbol}}."
+        },
+        "withdrawal-amount": {
+          "title": "Montant du retrait",
+          "info1": "Le montant de d{{poolSymbol}} que vous avez initié à retirer.",
+          "info2": "Votre liquidité continue de participer au PnL et aux revenus des frais du pool jusqu'à ce que vous retiriez."
+        },
+        "date": {
+          "title": "Peut être retiré le",
+          "info1": "Vous pouvez retirer votre liquidité deux jours après avoir initié le retrait.",
+          "info2": "Si vous ne retirez pas vos fonds dans les quatre jours après qu'ils soient prêts à être retirés, n'importe qui peut exécuter le retrait en votre nom. Dans ce cas, les fonds sont envoyés à votre adresse, et l'exécuteur gagnera une petite commission prélevée sur vos fonds."
+        }
+      },
+      "global-stats": {
+        "apy": "APY Total",
+        "tvl": "TVL",
+        "price": "Prix de d{{poolSymbol}}",
+        "supply": "Approvisionnement de d{{poolSymbol}}"
+      },
+      "add": {
+        "title": "Ajouter de la Liquidité",
+        "info1": "Ajoutez de la liquidité {{poolSymbol}} au pool et recevez d{{poolSymbol}}, un token ERC-20 qui représente votre propriété dans le pool de liquidité.",
+        "info2": "En tant que fournisseur de liquidité, vous gagnerez des frais de transaction et des paiements de taux de financement. Vous participerez également au PnL du pool. d{{poolSymbol}} accumule les frais, les paiements de taux de financement et le PnL en temps réel.",
+        "amount": {
+          "title": "Montant de {{poolSymbol}}",
+          "info1": "Indiquez le montant de {{poolSymbol}} que vous souhaitez ajouter au pool."
+        },
+        "receive": "Vous recevez d{{poolSymbol}}",
+        "max": "Max:",
+        "button": "Ajouter",
+        "validity-empty": "Connectez le portefeuille",
+        "validity-amount-too-big": "Fonds insuffisants",
+        "validity-amount-below-min": "Montant inférieur au minimum",
+        "validity-no-amount": "Entrer un montant"
+      },
+      "withdraw": {
+        "title": "Retirer la Liquidité",
+        "info1": "Pour retirer la liquidité, vous devez d'abord initier votre retrait. Gardez à l'esprit que cela prend 48 heures pour traiter votre demande et vous ne pouvez avoir qu'une demande de retrait à la fois.",
+        "info2": "Après 48 heures, un montant retirable de d{{poolSymbol}} peut être échangé contre {{poolSymbol}} au prix de d{{poolSymbol}}.",
+        "initiate": {
+          "title": "1. Initier le retrait de {{poolSymbol}}",
+          "info1": "Indiquez le montant de d{{poolSymbol}} que vous souhaitez échanger contre {{poolSymbol}}.",
+          "info2": "Après 48 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool.",
+          "button": "Initier le retrait",
+          "validity-no-address": "Connectez le portefeuille",
+          "validity-empty": "-",
+          "validity-no-funds": "Pas de fonds à retirer",
+          "validity-amount-too-big": "Montant trop large",
           "validity-amount-below-min": "Montant inférieur au minimum",
           "validity-no-amount": "Entrer un montant"
         },
-        "withdraw": {
-          "title": "Retirer la Liquidité",
-          "info1": "Pour retirer la liquidité, vous devez d'abord initier votre retrait. Gardez à l'esprit que cela prend 48 heures pour traiter votre demande et vous ne pouvez avoir qu'une demande de retrait à la fois.",
-          "info2": "Après 48 heures, un montant retirable de d{{poolSymbol}} peut être échangé contre {{poolSymbol}} au prix de d{{poolSymbol}}.",
-          "initiate": {
-            "title": "1. Initier le retrait de {{poolSymbol}}",
-            "info1": "Indiquez le montant de d{{poolSymbol}} que vous souhaitez échanger contre {{poolSymbol}}.",
-            "info2": "Après 48 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool.",
-            "button": "Initier le retrait",
-            "validity-no-address": "Connectez le portefeuille",
-            "validity-empty": "-",
-            "validity-no-funds": "Pas de fonds à retirer",
-            "validity-amount-too-big": "Montant trop large",
-            "validity-amount-below-min": "Montant inférieur au minimum",
-            "validity-no-amount": "Entrer un montant"
-          },
-          "action": {
-            "title": "Retirer {{poolSymbol}}",
-            "info1": "Ce montant peut être converti en {{poolSymbol}}, qui peut être retiré du pool.",
-            "date": "Peut être retiré le:",
-            "receive": "Vous recevez:",
-            "button": "Retirer",
-            "validity-no-address": "Connectez le portefeuille",
-            "validity-no-funds": "Pas de fonds à retirer",
-            "validity-no-initiation": "Initiez le retrait et attendez 48h"
-          }
-        },
-        "na": "N/A", 
-        "overdue": "En retard",
-        "now": "Maintenant",
-        "toast": {
-          "adding": "Ajout de Liquidité",
-          "added": "Liquidité ajoutée",
-          "error": {
-            "title": "Erreur lors de l'ajout de liquidité",
-            "body": "Raison"
-          },
-          "withdrawing": "Retrait de liquidité",
-          "withdrawn": "Liquidité retirée",
-          "error-withdrawing": {
-            "title": "Erreur lors du retrait de liquidité",
-            "body": "Raison"
-          },
-          "initiating": "Initiation du retrait de liquidité",
-          "initiated": "Retrait de liquidité initié",
-          "error-initiating": {
-            "title": "Erreur lors de l'initiation du retrait",
-            "body": "Raison"
-          }
-        } 
+        "action": {
+          "title": "Retirer {{poolSymbol}}",
+          "info1": "Ce montant peut être converti en {{poolSymbol}}, qui peut être retiré du pool.",
+          "date": "Peut être retiré le:",
+          "receive": "Vous recevez:",
+          "button": "Retirer",
+          "validity-no-address": "Connectez le portefeuille",
+          "validity-no-funds": "Pas de fonds à retirer",
+          "validity-no-initiation": "Initiez le retrait et attendez 48h"
+        }
       },
-      "portfolio": {
-        "perpetuals": "Perpétuels",
-        "vault": "Coffre-fort",
-        "account-value": {
-          "main-title": "Votre compte",
-          "title": "Valeur du compte",
-          "details": {
-            "wallet": {
-              "title": "Détails du portefeuille",
-              "funds": "Fonds"
-            },
-            "perps": {
-              "title": "Détails des perpétuels",
-              "leverage": "Effet de levier",
-              "margin-total": "Marge",
-              "unrealized": "PnL non réalisé",
-              "realized": "PnL réalisé",
-              "referral": "Gains de parrainage"
-            },
-            "vault": {
-              "title": "Détails du coffre-fort",
-              "assets": "Actifs",
-              "assets-pool": "Actifs dans les pools",
-              "earnings-pool": "Gains par pool",
-              "total": ".. dont gains estimés"
-            }
-          }
+      "na": "N/A",
+      "overdue": "En retard",
+      "now": "Maintenant",
+      "toast": {
+        "adding": "Ajout de Liquidité",
+        "added": "Liquidité ajoutée",
+        "error": {
+          "title": "Erreur lors de l'ajout de liquidité",
+          "body": "Raison"
+        },
+        "withdrawing": "Retrait de liquidité",
+        "withdrawn": "Liquidité retirée",
+        "error-withdrawing": {
+          "title": "Erreur lors du retrait de liquidité",
+          "body": "Raison"
+        },
+        "initiating": "Initiation du retrait de liquidité",
+        "initiated": "Retrait de liquidité initié",
+        "error-initiating": {
+          "title": "Erreur lors de l'initiation du retrait",
+          "body": "Raison"
         }
       }
     },
+    "portfolio": {
+      "perpetuals": "Perpétuels",
+      "vault": "Coffre-fort",
+      "account-value": {
+        "main-title": "Votre compte",
+        "title": "Valeur du compte",
+        "details": {
+          "wallet": {
+            "title": "Détails du portefeuille",
+            "funds": "Fonds"
+          },
+          "perps": {
+            "title": "Détails des perpétuels",
+            "leverage": "Effet de levier",
+            "margin-total": "Marge",
+            "unrealized": "PnL non réalisé",
+            "realized": "PnL réalisé",
+            "referral": "Gains de parrainage"
+          },
+          "vault": {
+            "title": "Détails du coffre-fort",
+            "assets": "Actifs",
+            "assets-pool": "Actifs dans les pools",
+            "earnings-pool": "Gains par pool",
+            "total": ".. dont gains estimés"
+          }
+        }
+      }
+    }
+  },
   "footer": {
     "external-service-status": "Status des services externes"
   },
-    "common": {
-      "change-language": "Changer de langue",
-      "wallet-connect": "Connecter",
-      "one-click": {
-        "disable": "Activer le trading en un clic",
-        "enable": "Désactiver le trading en un clic"
-      },
-      "li-fi-widget": {
-        "button-title": "LI.FI widget",
-        "header-to": "Bridge in",
-        "header-from": "Bridge out"
-      },
-      "pagination": {
-        "per-page": "Par page"
-      },
-      "settings": {
-        "title": "Paramètres",
-        "ui-settings": {
-          "title": "Paramètres de l'interface",
-          "one-click-trading": {
-            "title": "Trading en un clic"
-          },
-          "order-block": {
-            "title": "Bloc de commande",
-            "left": "Gauche",
-            "right": "Droite"
-          },
-          "theme": {
-            "title": "Thème",
-            "dark": "Sombre",
-            "light": "Clair"
-          },
-          "default-currency": {
-            "title": "Devise par défaut",
-            "base": "Base",
-            "quote": "Cotation",
-            "pool": "Collatéral"
-          }
-        },
-        "one-click-modal": {
-          "title": "Trading en un clic",
-          "modal-button": "Config",
-          "description": "Le trading en un clic vous permet de passer et d'annuler des ordres en déléguant ces actions à un compte secondaire vous appartenant.",
-          "create-delegate": {
-            "title": "Créer un compte délégué",
-            "description": "Comme première étape, vous devez créer un compte délégué.",
-            "create-success-result": "Le compte délégué est créé et le trading en un clic est activé.",
-            "create": "Créer"
-          },
-          "manage-delegate": {
-            "title": "Gérer le compte délégué",
-            "remove-action-result": "Le trading en un clic est désactivé.",
-            "activate-success-result": "Trading en un clic activé. Si vous rechargez ou quittez la page, vous devrez réactiver le trading en un clic.",
-            "activate-error-result": "Portefeuille invalide. Réinitialisez votre délégué et réessayez.",
-            "activate": "Activer",
-            "deactivate": "Désactiver",
-            "status": {
-              "title": "Statut du trading en un clic",
-              "active": "Actif",
-              "inactive": "Inactif"
-            },
-            "address": "Adresse déléguée",
-            "amount": "Montant du portefeuille délégué (pour le gaz)",
-            "remove": "Supprimer",
-            "fund": "Financer"
-          },
-          "funding-modal": {
-            "title": "Financer le portefeuille délégué",
-            "description": "Déposer dans votre portefeuille délégué pour payer le gaz.",
-            "fund": "Financer"
-          }
-        }
-      },
-      "select": {
-        "option-all": "TOUT",
-        "collateral": {
-          "label": "Collatéral:",
-          "label2": "Pool de liquidité:",
-          "headers": {
-            "collateral": "Collatéral",
-            "num-of-perps": "Nb. de perpétuels"
-          }
-        },
-        "market": {
-          "label": "Marché",
-          "header": "Choisir un marché",
-          "crypto": "Crypto",
-          "fx": "Devises",
-          "commodity": "Matières premières",
-          "closed": "Fermé"
-        },
-        "search": "Rechercher...",
-        "perpetual": {
-          "label": "Perpétuel:",
-          "headers": {
-            "pair": "Paire",
-            "status": "Statut"
-          }
-        }
-      },
-      "usdc-swap-widget": {
-        "title": "Préparez-vous à échanger!",
-        "message": "Échangez vos ancien USDC contre noveaux USDC avec ZÉRO glissement!",
-        "item1": "Échangez votre ancien",
-        "item2": "contre un nouvel",
-        "item3": "Ce widget s'appuie sur",
-        "item4": "Polygon's NativeConverter",
-        "item5": "Vous pouvez en savoir plus dans",
-        "item6": "l'annonce de Polygon",
-        "swap": "Échangez"
-      },
-      "info-modal": {
-        "close": "Fermer"
-      },
-      "public-beta": {
-        "info-text": "Ceci est une version bêta publique - faites vos propres recherches",
-        "beta-tag": "[bêta]"
-      },
-      "refresh": "Actualiser",
-      "filter": "Filtrer"
+  "common": {
+    "change-language": "Changer de langue",
+    "wallet-connect": "Connecter",
+    "currency-label": "Currency",
+    "copied": "Copié",
+    "copy-error": "An error appeared with copy to clipboard",
+    "one-click": {
+      "disable": "Activer le trading en un clic",
+      "enable": "Désactiver le trading en un clic"
     },
-    "error": {
-      "wrong-network": "Chaine incorrecte"
-    }
+    "li-fi-widget": {
+      "button-title": "LI.FI widget",
+      "header-to": "Bridge in",
+      "header-from": "Bridge out"
+    },
+    "pagination": {
+      "per-page": "Par page"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "ui-settings": {
+        "title": "Paramètres de l'interface",
+        "one-click-trading": {
+          "title": "Trading en un clic"
+        },
+        "order-block": {
+          "title": "Bloc de commande",
+          "left": "Gauche",
+          "right": "Droite"
+        },
+        "theme": {
+          "title": "Thème",
+          "dark": "Sombre",
+          "light": "Clair"
+        },
+        "default-currency": {
+          "title": "Devise par défaut",
+          "base": "Base",
+          "quote": "Cotation",
+          "pool": "Collatéral"
+        }
+      },
+      "one-click-modal": {
+        "title": "Trading en un clic",
+        "modal-button": "Config",
+        "description": "Le trading en un clic vous permet de passer et d'annuler des ordres en déléguant ces actions à un compte secondaire vous appartenant.",
+        "create-delegate": {
+          "title": "Créer un compte délégué",
+          "description": "Comme première étape, vous devez créer un compte délégué.",
+          "create-success-result": "Le compte délégué est créé et le trading en un clic est activé.",
+          "create": "Créer"
+        },
+        "manage-delegate": {
+          "title": "Gérer le compte délégué",
+          "remove-action-result": "Le trading en un clic est désactivé.",
+          "activate-success-result": "Trading en un clic activé. Si vous rechargez ou quittez la page, vous devrez réactiver le trading en un clic.",
+          "activate-error-result": "Portefeuille invalide. Réinitialisez votre délégué et réessayez.",
+          "activate": "Activer",
+          "deactivate": "Désactiver",
+          "status": {
+            "title": "Statut du trading en un clic",
+            "active": "Actif",
+            "inactive": "Inactif"
+          },
+          "address": "Adresse déléguée",
+          "amount": "Montant du portefeuille délégué (pour le gaz)",
+          "remove": "Supprimer",
+          "fund": "Financer"
+        },
+        "funding-modal": {
+          "title": "Financer le portefeuille délégué",
+          "description": "Déposer dans votre portefeuille délégué pour payer le gaz.",
+          "fund": "Financer"
+        }
+      }
+    },
+    "select": {
+      "option-all": "TOUT",
+      "collateral": {
+        "label": "Collatéral:",
+        "label2": "Pool de liquidité:",
+        "headers": {
+          "collateral": "Collatéral",
+          "num-of-perps": "Nb. de perpétuels"
+        }
+      },
+      "market": {
+        "label": "Marché",
+        "header": "Choisir un marché",
+        "crypto": "Crypto",
+        "fx": "Devises",
+        "commodity": "Matières premières",
+        "closed": "Fermé"
+      },
+      "search": "Rechercher...",
+      "perpetual": {
+        "label": "Perpétuel:",
+        "headers": {
+          "pair": "Paire",
+          "status": "Statut"
+        }
+      }
+    },
+    "usdc-swap-widget": {
+      "title": "Préparez-vous à échanger!",
+      "message": "Échangez vos ancien USDC contre noveaux USDC avec ZÉRO glissement!",
+      "item1": "Échangez votre ancien",
+      "item2": "contre un nouvel",
+      "item3": "Ce widget s'appuie sur",
+      "item4": "Polygon's NativeConverter",
+      "item5": "Vous pouvez en savoir plus dans",
+      "item6": "l'annonce de Polygon",
+      "swap": "Échangez"
+    },
+    "info-modal": {
+      "close": "Fermer"
+    },
+    "public-beta": {
+      "info-text": "Ceci est une version bêta publique - faites vos propres recherches",
+      "beta-tag": "[bêta]"
+    },
+    "refresh": "Actualiser",
+    "filter": "Filtrer"
+  },
+  "error": {
+    "wrong-network": "Chaine incorrecte"
   }
+}
   

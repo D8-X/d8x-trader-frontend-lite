@@ -1,0 +1,12 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: inline-flex;
+  gap: $d8x-spacing * 2;
+  font-size: 16px;
+  padding: 0;
+}
+
+.icon {
+  font-size: 16px;
+}

@@ -186,6 +186,11 @@
   height: 48px;
 }
 
+.modalButton {
+  min-width: 195px;
+  height: 48px;
+}
+
 @media screen and ($d8x-breakpoint-max-lg) {
   .betaInfoLine {
     padding: 8px 16px;

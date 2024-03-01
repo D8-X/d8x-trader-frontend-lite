@@ -1,0 +1,11 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: $d8x-spacing * 4;
+}
+
+.noteText {
+  margin-top: $d8x-spacing * 4;
+}

@@ -1,44 +1,46 @@
 import classnames from 'classnames';
-import { memo, useEffect, useRef, useState } from 'react';
-import { useAtom } from 'jotai';
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useAtom } from 'jotai';
+import { memo, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { bytesToHex, numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 
+import { getPublicKey } from '@noble/secp256k1';
 import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 
+import { X } from '@mui/icons-material';
 import { Button } from '@mui/material';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
-import { socialPKAtom, socialUserInfoAtom } from 'store/app.store';
-import { config } from 'config';
+import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
+import { postSocialVerify } from 'network/referral';
+import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
 
 import styles from './Web3AuthConnectButton.module.scss';
-import { getPublicKey } from '@noble/secp256k1';
-import { postSocialVerify } from 'network/referral';
 
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
 }
 
-const clientId = config.web3AuthClientId;
-const verifierName = config.web3AuthVerifier;
+const clientId = web3AuthConfig.web3AuthClientId;
+const verifierName = web3AuthConfig.web3AuthVerifier;
 
 export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectButtonPropsI) => {
-  const { isConnected } = useAccount();
+  const { t } = useTranslation();
 
+  const { isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
   const [userInfo, setUserInfo] = useAtom(socialUserInfoAtom);
   const [socialPK, setSocialPK] = useAtom(socialPKAtom);
 
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
-  const [, setLoggedIn] = useState(false);
   const [web3authIdToken, setIdToken] = useState<string | undefined>(undefined);
 
   const requestRef = useRef(false);
@@ -100,7 +102,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
 
         await web3authInstance.init();
         if (web3authInstance.connected) {
-          setLoggedIn(true);
+          // setLoggedIn(true);
         }
         // so we can switch chains
         for (let i = 1; i < chains.length; i++) {
@@ -119,10 +121,15 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
       }
     };
 
-    init();
+    init().then();
   }, []);
 
   const signInWithTwitter = async () => {
+    if (!auth) {
+      console.log('auth not defined');
+      return;
+    }
+
     try {
       const twitterProvider = new TwitterAuthProvider();
       const loginRes = await signInWithPopup(auth, twitterProvider);
@@ -146,21 +153,17 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         .catch((e) => console.log(e));
 
       const info = await web3auth.getUserInfo();
-      const privKey = await web3auth.provider?.request({
+      const privateKey = await web3auth.provider?.request({
         method: 'eth_private_key',
       });
       await connectAsync();
       setUserInfo(info);
       setIdToken(idToken);
-      setSocialPK(privKey as string);
+      setSocialPK(privateKey as string);
     } catch (err) {
       console.error(err);
     }
   };
-
-  useEffect(() => {
-    console.log('idToken', web3authIdToken);
-  }, [web3authIdToken]);
 
   useEffect(() => {
     const verify = async () => {
@@ -179,14 +182,17 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         requestRef.current = false;
       }
     };
-    verify();
+    verify().then();
   }, [userInfo, chainId, web3auth, socialPK]);
 
   const handleDisconnect = () => {
     setUserInfo(null);
-    disconnect();
+    setSocialPK('');
     setIdToken(undefined);
+    disconnect();
   };
+
+  console.log({ socialPK });
 
   if (isConnected) {
     return (
@@ -196,7 +202,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
           onClick={handleDisconnect}
           variant="primary"
         >
-          Disconnect
+          {t('common.connect-modal.disconnect')}
         </Button>
       )
     );
@@ -209,7 +215,8 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
         onClick={signInWithTwitter}
         variant="primary"
       >
-        Login with Twitter
+        <X />
+        {t('common.connect-modal.sign-in-with-x-button')}
       </Button>
     );
   }

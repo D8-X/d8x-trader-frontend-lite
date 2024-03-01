@@ -1,9 +1,13 @@
 @import '~styles/theme/theme.scss';
 
 .root {
-  opacity: 0;
-  pointer-events: none;
-  user-select: none;
+  width: 100%;
+
+  &.connected {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+  }
 }
 
 .buttonsHolder {

@@ -319,7 +319,7 @@
           "pass": "Passed",
           "fail": "Failed",
           "button-no-address": "Connect wallet",
-          "button-no-funds": "No collateral in wallet",
+          "button-no-funds": "Deposit",
           "button-no-amount": "Order size too small",
           "button-no-limit": "Set limit price",
           "button-no-trigger": "Set trigger price"
@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Add",
         "validity-empty": "Connect wallet",
-        "validity-amount-too-big": "Insufficient funds" ,
+        "validity-amount-too-big": "Insufficient funds",
         "validity-amount-below-min": "Amount below min",
         "validity-no-amount": "Enter amount"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Connect wallet",
           "validity-empty": "-",
           "validity-no-funds": "No funds to withdraw",
-          "validity-amount-too-big": "Amount too large" ,
+          "validity-amount-too-big": "Amount too large",
           "validity-amount-below-min": "Amount below min",
           "validity-no-amount": "Enter amount"
         },
@@ -577,6 +577,9 @@
   "common": {
     "change-language": "Change Language",
     "wallet-connect": "Connect",
+    "currency-label": "Currency",
+    "copied": "Copied",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
@@ -687,6 +690,29 @@
     },
     "info-modal": {
       "close": "Close"
+    },
+    "deposit-modal": {
+      "title": "Deposit",
+      "important-notice": {
+        "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
+        "1": "Important notice: send only <bold>{{currencyName}}</bold>",
+        "2": "(token address: ",
+        "3": ")",
+        "4": "to this address.",
+        "5": "Send over <bold>{{chainName}}</bold>."
+      },
+      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
+      "done-button": "Done"
+    },
+    "connect-modal": {
+      "title": "Sign in",
+      "description": "Sign in with X or web3 wallet",
+      "sign-in-with-x-button": "Sign in with X",
+      "sign-in-with-wallet-button": "Sign in with wallet",
+      "or-separator": "or",
+      "disconnect": "Disconnect",
+      "connected-title": "Welcome!",
+      "connected-description": "You have successfully signed in."
     },
     "public-beta": {
       "info-text": "This is a public beta - do your own research.",

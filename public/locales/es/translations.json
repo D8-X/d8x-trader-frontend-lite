@@ -319,7 +319,7 @@
           "pass": "Pasó",
           "fail": "No Pasó",
           "button-no-address": "Conectar cartera",
-          "button-no-funds": "Cartera sin saldo",
+          "button-no-funds": "Depósito",
           "button-no-amount": "Orden menor que el mínimo",
           "button-no-limit": "Ingrese precio limite",
           "button-no-trigger": "Ingrese precio de parada"
@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Anadir",
         "validity-empty": "Conectar cartera",
-        "validity-amount-too-big": "Fondos insuficientes" ,
+        "validity-amount-too-big": "Fondos insuficientes",
         "validity-amount-below-min": "Cantidad por debajo del mínimo",
         "validity-no-amount": "Ingresar cantidad"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
           "validity-no-funds": "No hay fondos para retirar",
-          "validity-amount-too-big": "Cantidad demasiado grande" ,
+          "validity-amount-too-big": "Cantidad demasiado grande",
           "validity-amount-below-min": "Cantidad por debajo del mínimo",
           "validity-no-amount": "Ingresar cantidad"
         },
@@ -577,6 +577,9 @@
   "common": {
     "change-language": "Cambiar Idioma",
     "wallet-connect": "Conectar",
+    "currency-label": "Currency",
+    "copied": "Copiado",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "Deshabilitar el comercio con un clic",
       "enable": "Habilite el comercio con un solo clic"

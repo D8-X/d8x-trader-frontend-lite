@@ -3,15 +3,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PieChart } from 'react-minimal-pie-chart';
 
+import { AssetLine } from 'components/asset-line/AssetLine';
 import { earningsListAtom } from 'pages/portfolio-page/store/fetchEarnings';
 import { poolShareTokensShareAtom } from 'pages/portfolio-page/store/fetchPoolShare';
+import { formatCurrency } from 'utils/formatCurrency';
 
-import { AssetLine } from '../perpetuals/Perpetuals';
 import styles from './Vault.module.scss';
 
 const colorsArray = ['#6649DF', '#FDA13A', '#F24141', '#515151'];
-
-const formatCurrency = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
 
 export const Vault = () => {
   const { t } = useTranslation();

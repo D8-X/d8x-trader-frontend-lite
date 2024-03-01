@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
@@ -11,7 +11,9 @@ import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTh
 import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
+import { Separator } from 'components/separator/Separator';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
+import { web3AuthConfig } from 'config';
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo } from 'network/network';
 import { authPages, pages } from 'routes/pages';
@@ -30,15 +32,13 @@ import {
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 
+import { ConnectModal } from './elements/connect-modal/ConnectModal';
 import { collateralsAtom } from './elements/market-select/collaterals.store';
 import { SettingsBlock } from './elements/settings-block/SettingsBlock';
 import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { Separator } from '../separator/Separator';
-import { ConnectModal } from './elements/connect-modal/ConnectModal';
-import { config } from 'config';
 
 interface HeaderPropsI {
   /**
@@ -49,7 +49,7 @@ interface HeaderPropsI {
 }
 
 const DRAWER_WIDTH_FOR_TABLETS = 340;
-const isSocialLoginEnabled = config.web3AuthClientId !== '';
+const isSocialLoginEnabled = web3AuthConfig.web3AuthClientId !== '';
 
 export const Header = memo(({ window }: HeaderPropsI) => {
   const theme = useTheme();
@@ -71,14 +71,15 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const setPoolTokenBalance = useSetAtom(poolTokenBalanceAtom);
   const setGasTokenSymbol = useSetAtom(gasTokenSymbolAtom);
   const setPoolTokenDecimals = useSetAtom(poolTokenDecimalsAtom);
-  const [triggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
   const [hideBetaText, setHideBetaText] = useAtom(hideBetaTextAtom);
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isConnectModalOpen, setConnectModalOpen] = useState(true);
+
   const requestRef = useRef(false);
-  const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
   const setExchangeInfo = useCallback(
     (data: ExchangeInfoI | null) => {
@@ -266,7 +267,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
                   <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
                     <Typography variant="bodyMedium" className={styles.modalButtonText}>
-                      {'Connect'}
+                      {t('common.wallet-connect')}
                     </Typography>
                   </Button>
                   <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />

@@ -319,7 +319,7 @@
           "pass": "Bestanden",
           "fail": "Nicht bestanden",
           "button-no-address": "Brieftasche verbinden",
-          "button-no-funds": "Keine Margenwährung in Brieftasche",
+          "button-no-funds": "Ablagerung",
           "button-no-amount": "Order Grösse zu klein",
           "button-no-limit": "Limit Preis setzen",
           "button-no-trigger": "Trigger Preis setzen"
@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Hinzufügen",
         "validity-empty": "Brieftasche verbinden",
-        "validity-amount-too-big": "Zu wenig Mittel" ,
+        "validity-amount-too-big": "Zu wenig Mittel",
         "validity-amount-below-min": "Betrag unter Minimum",
         "validity-no-amount": "Betrag eingeben"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Brieftasche verbinden",
           "validity-empty": "-",
           "validity-no-funds": "Keine auszahlbaren Mittel",
-          "validity-amount-too-big": "Betrag zu gross" ,
+          "validity-amount-too-big": "Betrag zu gross",
           "validity-amount-below-min": "Betrag unter Minimum",
           "validity-no-amount": "Betrag eingeben"
         },
@@ -577,6 +577,9 @@
   "common": {
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
+    "currency-label": "Currency",
+    "copied": "Kopiert",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "Deaktivieren Sie den One-Click-Handel",
       "enable": "Aktivieren Sie den One-Click-Handel"

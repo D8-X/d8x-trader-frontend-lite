@@ -319,7 +319,7 @@
           "pass": "通过",
           "fail": "失败",
           "button-no-address": "连接钱包",
-          "button-no-funds": "钱包内无抵押品",
+          "button-no-funds": "存款",
           "button-no-amount": "订单规模太小",
           "button-no-limit": "设置限价",
           "button-no-trigger": "设置触发价格"
@@ -486,7 +486,7 @@
         "max": "最大：",
         "button": "添加",
         "validity-empty": "连接钱包",
-        "validity-amount-too-big": "资金不足" ,
+        "validity-amount-too-big": "资金不足",
         "validity-amount-below-min": "金额低于最小值",
         "validity-no-amount": "输入金额"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "连接钱包",
           "validity-empty": "-",
           "validity-no-funds": "无资金可提取",
-          "validity-amount-too-big": "金额太大" ,
+          "validity-amount-too-big": "金额太大",
           "validity-amount-below-min": "金额低于最小",
           "validity-no-amount": "输入金额"
         },
@@ -577,6 +577,9 @@
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",
+    "currency-label": "Currency",
+    "copied": "抄袭自",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "禁用一键交易",
       "enable": "启用一键交易"
@@ -684,7 +687,7 @@
       "item5": "您可以在",
       "item6": "Polygon的公告中了解更多",
       "swap": "兑换"
-    },    
+    },
     "info-modal": {
       "close": "关闭"
     },

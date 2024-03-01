@@ -1,7 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import classnames from 'classnames';
 import { useAtom } from 'jotai';
-import { memo, useEffect, useRef } from 'react';
+import { memo, type ReactNode, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -23,11 +23,17 @@ import styles from './WalletConnectButton.module.scss';
 const loyaltyMap = ['Diamond', 'Platinum', 'Gold', 'Silver', '-'];
 
 interface WalletConnectButtonPropsI {
+  connectButtonLabel?: ReactNode;
   buttonClassName?: string;
 }
 
-export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButtonPropsI) => {
+export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
   const { t } = useTranslation();
+
+  const {
+    connectButtonLabel = <span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>,
+    buttonClassName,
+  } = props;
 
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -65,12 +71,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
         const connected = mounted && account && chain;
 
         return (
-          <div
-            {...(!mounted && {
-              'aria-hidden': true,
-              className: styles.root,
-            })}
-          >
+          <div className={classnames(styles.root, { [styles.connected]: !mounted })} aria-hidden={mounted}>
             {(() => {
               if (!connected) {
                 return (
@@ -79,7 +80,7 @@ export const WalletConnectButton = memo(({ buttonClassName }: WalletConnectButto
                     variant="primary"
                     className={classnames(styles.connectWalletButton, buttonClassName)}
                   >
-                    {<span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>}
+                    {connectButtonLabel}
                   </Button>
                 );
               }

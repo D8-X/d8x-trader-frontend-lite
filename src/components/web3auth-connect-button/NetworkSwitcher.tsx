@@ -1,5 +1,6 @@
-import { Button } from '@mui/material';
 import { useNetwork, usePublicClient, useSwitchNetwork, useWalletClient } from 'wagmi';
+
+import { Button } from '@mui/material';
 
 export const NetworkSwitcher = () => {
   const { chain } = useNetwork();

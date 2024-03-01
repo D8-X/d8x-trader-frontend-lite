@@ -1,7 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { type WalletClient } from 'viem';
-import { OpenloginUserInfo } from '@web3auth/openlogin-adapter';
 
 import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
@@ -48,5 +47,3 @@ export const showWelcomeModalAtom = atom(
 );
 
 export const tradingClientAtom = atom<WalletClient | null>(null);
-export const socialUserInfoAtom = atom<Partial<OpenloginUserInfo> | null>(null);
-export const socialPKAtom = atom<string | undefined>(undefined);

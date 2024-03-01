@@ -313,7 +313,7 @@
           "pass": "Passed",
           "fail": "Failed",
           "button-no-address": "Connect wallet",
-          "button-no-funds": "No collateral in wallet",
+          "button-no-funds": "Deposit",
           "button-no-amount": "Order size too small",
           "button-no-limit": "Set limit price",
           "button-no-trigger": "Set trigger price"
@@ -557,6 +557,9 @@
   "common": {
     "change-language": "Change Language",
     "wallet-connect": "Connect",
+    "currency-label": "Currency",
+    "copied": "Copied",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
