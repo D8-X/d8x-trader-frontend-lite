@@ -1,5 +1,5 @@
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
@@ -42,6 +42,7 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
+import { depositModalOpenAtom } from '../../../../store/global-modals.store';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -142,9 +143,9 @@ export const ActionBlock = memo(() => {
   const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
+  const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
-  const [showDepositModal, setShowDepositModal] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [maxOrderSize, setMaxOrderSize] = useState<{ maxBuy: number; maxSell: number }>();
@@ -556,18 +557,14 @@ export const ActionBlock = memo(() => {
     }
   }, [orderInfo]);
 
-  const handleDepositModalClose = useCallback(() => {
-    setShowDepositModal(false);
-  }, []);
-
   return (
     <div className={styles.root}>
       {validityCheckButtonType === ValidityCheckButtonE.NoFunds && (
         <>
-          <Button variant={'buy'} onClick={() => setShowDepositModal(true)} className={styles.buyButton}>
+          <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.buyButton}>
             {validityCheckButtonText}
           </Button>
-          <DepositModal isOpen={showDepositModal} onClose={handleDepositModalClose} />
+          <DepositModal />
         </>
       )}
       {validityCheckButtonType !== ValidityCheckButtonE.NoFunds && (

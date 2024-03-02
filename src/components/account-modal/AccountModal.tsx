@@ -1,6 +1,5 @@
 import classnames from 'classnames';
-import { useAtomValue } from 'jotai';
-import { useCallback, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
@@ -11,6 +10,7 @@ import { Translate } from 'components/translate/Translate';
 import { Separator } from 'components/separator/Separator';
 import { Web3AuthDisconnectButton } from 'components/web3auth-connect-button/Web3AuthDisconnectButton';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
+import { depositModalOpenAtom, exportPKModalOpenAtom, withdrawModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 
 import styles from './AccountModal.module.scss';
@@ -23,13 +23,10 @@ interface AccountModalPropsI {
 export const AccountModal = ({ isOpen, onClose }: AccountModalPropsI) => {
   const { t } = useTranslation();
 
-  const [showDepositModal, setShowDepositModal] = useState(false);
-
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
-
-  const handleDepositModalClose = useCallback(() => {
-    setShowDepositModal(false);
-  }, []);
+  const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
+  const setWithdrawModalOpen = useSetAtom(withdrawModalOpenAtom);
+  const setExportPKModalOpen = useSetAtom(exportPKModalOpenAtom);
 
   return (
     <>
@@ -37,13 +34,13 @@ export const AccountModal = ({ isOpen, onClose }: AccountModalPropsI) => {
         <DialogTitle>{t('common.account-modal.title')}</DialogTitle>
         <DialogContent className={styles.dialogContent}>
           <div className={classnames(styles.section, styles.buttons)}>
-            <Button onClick={() => setShowDepositModal(true)} variant="primary" className={styles.button}>
+            <Button onClick={() => setDepositModalOpen(true)} variant="primary" className={styles.button}>
               {t('common.account-modal.deposit-button')}
             </Button>
-            <Button onClick={() => setShowDepositModal(true)} variant="primary" className={styles.button}>
+            <Button onClick={() => setWithdrawModalOpen(true)} variant="primary" className={styles.button}>
               {t('common.account-modal.withdraw-button')}
             </Button>
-            <Button onClick={() => setShowDepositModal(true)} variant="primary" className={styles.button}>
+            <Button onClick={() => setExportPKModalOpen(true)} variant="primary" className={styles.button}>
               {t('common.account-modal.export-pk-button')}
             </Button>
           </div>
@@ -64,7 +61,7 @@ export const AccountModal = ({ isOpen, onClose }: AccountModalPropsI) => {
         </DialogActions>
       </Dialog>
 
-      <DepositModal isOpen={showDepositModal} onClose={handleDepositModalClose} />
+      <DepositModal />
     </>
   );
 };

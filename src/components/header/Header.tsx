@@ -13,6 +13,7 @@ import { Container } from 'components/container/Container';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { Separator } from 'components/separator/Separator';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
+import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
 import { web3AuthConfig } from 'config';
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo } from 'network/network';
@@ -270,11 +271,16 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                       <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
                     </Button>
                   )}
-                  {(!isSocialLoginEnabled || isConnected) && <WalletConnectButton />}
-                  {isSocialLoginEnabled && (
-                    <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
+                  {(!isSocialLoginEnabled || isConnected) && (
+                    <>
+                      <WalletConnectButton />
+                      <WalletConnectedButtons />
+                    </>
                   )}
                 </Typography>
+              )}
+              {isSocialLoginEnabled && (
+                <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
               )}
               {!isTabletScreen && <SettingsButton />}
               {isTabletScreen && (
@@ -287,7 +293,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               <div className={styles.mobileButtonsBlock}>
                 <Separator />
                 <div className={styles.mobileWalletButtons}>
-                  <WalletConnectButton />
+                  <WalletConnectedButtons />
                 </div>
               </div>
             )}

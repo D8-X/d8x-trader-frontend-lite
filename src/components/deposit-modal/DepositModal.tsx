@@ -1,4 +1,4 @@
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useNetwork } from 'wagmi';
@@ -12,31 +12,30 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
+import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { PoolWithIdI } from 'types/types';
 import { cutAddress } from 'utils/cutAddress';
 
 import styles from './DepositModal.module.scss';
 
-interface DepositModalPropsI {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const DepositModal = ({ isOpen, onClose }: DepositModalPropsI) => {
+export const DepositModal = () => {
   const { t } = useTranslation();
 
   const [selectedPool, setSelectedPool] = useState<PoolWithIdI>();
 
+  const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
 
   const { chain } = useNetwork();
   const { address } = useAccount();
 
+  const handleOnClose = () => setDepositModalOpen(false);
+
   const poolAddress = selectedPool?.poolShareTokenAddr || '';
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className={styles.dialog}>
+    <Dialog open={isDepositModalOpen} onClose={handleOnClose} className={styles.dialog}>
       <DialogTitle>{t('common.deposit-modal.title')}</DialogTitle>
       <DialogContent className={styles.dialogContent}>
         <Separator />
@@ -68,7 +67,7 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalPropsI) => {
         <Separator />
       </DialogContent>
       <DialogActions className={styles.dialogAction}>
-        <Button onClick={onClose} variant="secondary" size="small">
+        <Button onClick={handleOnClose} variant="secondary" size="small">
           {t('common.deposit-modal.done-button')}
         </Button>
       </DialogActions>
