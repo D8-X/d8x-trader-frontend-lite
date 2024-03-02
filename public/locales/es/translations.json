@@ -692,6 +692,13 @@
     "info-modal": {
       "close": "Cerrar"
     },
+    "account-modal": {
+      "title": "Account",
+      "deposit-button": "Deposit",
+      "withdraw-button": "Withdraw",
+      "export-pk-button": "Export PK",
+      "notice-block": "Important notice: Make sure to have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral."
+    },
     "deposit-modal": {
       "title": "Deposit",
       "important-notice": {

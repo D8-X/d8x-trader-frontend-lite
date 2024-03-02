@@ -1,5 +1,7 @@
+import { useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAccount, useNetwork } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -10,11 +12,11 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
+import { gasTokenSymbolAtom } from 'store/pools.store';
 import { PoolWithIdI } from 'types/types';
 import { cutAddress } from 'utils/cutAddress';
 
 import styles from './DepositModal.module.scss';
-import { useAccount, useNetwork } from 'wagmi';
 
 interface DepositModalPropsI {
   isOpen: boolean;
@@ -25,6 +27,8 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalPropsI) => {
   const { t } = useTranslation();
 
   const [selectedPool, setSelectedPool] = useState<PoolWithIdI>();
+
+  const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
 
   const { chain } = useNetwork();
   const { address } = useAccount();
@@ -57,6 +61,9 @@ export const DepositModal = ({ isOpen, onClose }: DepositModalPropsI) => {
         <Separator />
         <div className={styles.section}>
           <WalletBalances />
+          <Typography variant="bodyTiny" className={styles.noteText}>
+            <Translate i18nKey="common.deposit-modal.deposit-note" values={{ currencyName: gasTokenSymbol }} />
+          </Typography>
         </div>
         <Separator />
       </DialogContent>

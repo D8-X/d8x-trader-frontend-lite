@@ -10,8 +10,6 @@ import { REFETCH_BALANCES_INTERVAL } from './constants';
 import { PoolLine } from './elements/pool-line/PoolLine';
 
 import styles from './WalletBalances.module.scss';
-import { Typography } from '@mui/material';
-import { Translate } from '../translate/Translate';
 
 export const WalletBalances = () => {
   const pools = useAtomValue(poolsAtom);
@@ -48,9 +46,6 @@ export const WalletBalances = () => {
       {activePools.map((pool) => (
         <PoolLine key={pool.poolSymbol} pool={pool} />
       ))}
-      <Typography variant="bodyTiny" className={styles.noteText}>
-        <Translate i18nKey="common.deposit-modal.deposit-note" values={{ currencyName: gasTokenSymbol }} />{' '}
-      </Typography>
     </div>
   );
 };
