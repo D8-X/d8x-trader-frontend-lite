@@ -1,10 +1,10 @@
+import { OpenloginUserInfo } from '@web3auth/openlogin-adapter';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { OpenloginUserInfo } from '@web3auth/openlogin-adapter';
 
-const WEB3_AUTH_PK_LS_KEY = 'd8x_web3AuthPK';
+const WEB3_AUTH_ID_TOKEN_LS_KEY = 'd8x_web3AuthIdToken';
 
-export const socialPKAtom = atomWithStorage(WEB3_AUTH_PK_LS_KEY, '');
+export const web3authIdTokenAtom = atomWithStorage(WEB3_AUTH_ID_TOKEN_LS_KEY, '');
 
 export const socialUserInfoAtom = atom<Partial<OpenloginUserInfo> | null>(null);
-export const web3authIdTokenAtom = atom<string | undefined>(undefined);
+export const socialPKAtom = atom<string | undefined>(undefined);

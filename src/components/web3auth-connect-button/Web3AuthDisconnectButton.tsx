@@ -28,8 +28,8 @@ export const Web3AuthDisconnectButton = memo(({ buttonClassName }: Web3AuthConne
 
   const handleDisconnect = () => {
     setUserInfo(null);
-    setSocialPK('');
-    setWeb3authIdToken(undefined);
+    setSocialPK(undefined);
+    setWeb3authIdToken('');
     setAccountModalOpen(false);
     disconnect();
   };
