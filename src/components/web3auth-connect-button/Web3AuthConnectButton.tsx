@@ -51,7 +51,7 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
   const { connectAsync } = useConnect({
     connector: new Web3AuthConnector({
-      chains: chains,
+      chains,
       options: {
         web3AuthInstance: web3auth,
         loginParams: {
@@ -69,9 +69,15 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
   const chainId = useChainId();
 
   useEffect(() => {
+    const chain = chains.find(({ id }) => id === chainId);
+    if (!chain) {
+      return;
+    }
+
+    console.log({ contractAddress: chain.contracts?.multicall3?.address });
+
     const init = async () => {
       try {
-        const chain = chains[0]; // make this index a user input instead of 0?
         const chainConfig = {
           chainNamespace: CHAIN_NAMESPACES.EIP155,
           chainId: numberToHex(chain.id),
@@ -126,7 +132,7 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
     };
 
     init().then();
-  }, []);
+  }, [chainId]);
 
   const signInWithTwitter = async () => {
     if (!auth) {

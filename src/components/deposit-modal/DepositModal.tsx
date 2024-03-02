@@ -8,13 +8,13 @@ import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@
 import { CopyInput } from 'components/copy-input/CopyInput';
 import { CopyLink } from 'components/copy-link/CopyLink';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
+import { CurrencyItemI } from 'components/currency-selector/types';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
-import { PoolWithIdI } from 'types/types';
 import { cutAddress } from 'utils/cutAddress';
 
 import styles from './DepositModal.module.scss';
@@ -22,7 +22,7 @@ import styles from './DepositModal.module.scss';
 export const DepositModal = () => {
   const { t } = useTranslation();
 
-  const [selectedPool, setSelectedPool] = useState<PoolWithIdI>();
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyItemI>();
 
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
@@ -32,7 +32,7 @@ export const DepositModal = () => {
 
   const handleOnClose = () => setDepositModalOpen(false);
 
-  const poolAddress = selectedPool?.poolShareTokenAddr || '';
+  const poolAddress = selectedCurrency?.contractAddress || '';
 
   return (
     <Dialog open={isDepositModalOpen} onClose={handleOnClose} className={styles.dialog}>
@@ -40,17 +40,26 @@ export const DepositModal = () => {
       <DialogContent className={styles.dialogContent}>
         <Separator />
         <div className={styles.section}>
-          <CurrencySelect selectedPool={selectedPool} setSelectedPool={setSelectedPool} />
+          <CurrencySelect selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
         </div>
         <div className={styles.section}>
           <Typography variant="bodyTiny" className={styles.noteText}>
             <Translate
               i18nKey="common.deposit-modal.important-notice.1"
-              values={{ currencyName: selectedPool?.poolSymbol }}
+              values={{ currencyName: selectedCurrency?.name }}
             />{' '}
-            {t('common.deposit-modal.important-notice.2')}
-            <CopyLink elementToShow={cutAddress(poolAddress)} textToCopy={poolAddress} classname={styles.copyText} />
-            {t('common.deposit-modal.important-notice.3')} {t('common.deposit-modal.important-notice.4')}{' '}
+            {poolAddress && (
+              <>
+                {t('common.deposit-modal.important-notice.2')}
+                <CopyLink
+                  elementToShow={cutAddress(poolAddress)}
+                  textToCopy={poolAddress}
+                  classname={styles.copyText}
+                />
+                {t('common.deposit-modal.important-notice.3')}{' '}
+              </>
+            )}
+            {t('common.deposit-modal.important-notice.4')}{' '}
             <Translate i18nKey="common.deposit-modal.important-notice.5" values={{ chainName: chain?.name }} />
           </Typography>
         </div>
@@ -67,7 +76,7 @@ export const DepositModal = () => {
         <Separator />
       </DialogContent>
       <DialogActions className={styles.dialogAction}>
-        <Button onClick={handleOnClose} variant="secondary" size="small">
+        <Button onClick={handleOnClose} variant="secondary">
           {t('common.deposit-modal.done-button')}
         </Button>
       </DialogActions>

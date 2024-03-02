@@ -20,6 +20,35 @@
   margin: $d8x-spacing * 4 0;
 }
 
+.dataLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $d8x-spacing * 4;
+
+  .label {
+    min-width: 80px;
+  }
+
+  .inputHolder {
+    flex: 1;
+
+    .input {
+      width: 100%;
+    }
+  }
+
+  @include media-phone {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .label {
+      min-width: inherit;
+    }
+  }
+}
+
 .noteText {
   display: block;
   margin: $d8x-spacing * 8 0;

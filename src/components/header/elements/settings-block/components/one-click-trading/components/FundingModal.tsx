@@ -50,7 +50,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
           </Typography>
         </Box>
         <ResponsiveInput
-          id="fund amount"
+          id="fund-amount"
           className={styles.inputHolder}
           inputValue={inputValue}
           setInputValue={setInputValue}

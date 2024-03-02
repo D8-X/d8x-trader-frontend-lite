@@ -5,28 +5,62 @@ import { useTranslation } from 'react-i18next';
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { SidesRow } from 'components/sides-row/SidesRow';
-import { poolsAtom } from 'store/pools.store';
-import type { PoolWithIdI } from 'types/types';
+import { gasTokenSymbolAtom, poolsAtom } from 'store/pools.store';
+
+import { CurrencyItemI } from './types';
 
 interface CurrencySelectPropsI {
-  selectedPool?: PoolWithIdI | null;
-  setSelectedPool: Dispatch<SetStateAction<PoolWithIdI | undefined>>;
+  selectedCurrency?: CurrencyItemI | null;
+  setSelectedCurrency: Dispatch<SetStateAction<CurrencyItemI | undefined>>;
 }
 
-export const CurrencySelect = ({ selectedPool, setSelectedPool }: CurrencySelectPropsI) => {
+export const CurrencySelect = ({ selectedCurrency, setSelectedCurrency }: CurrencySelectPropsI) => {
   const { t } = useTranslation();
 
   const pools = useAtomValue(poolsAtom);
+  const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const activePools = useMemo(() => pools.filter((pool) => pool.isRunning), [pools]);
+  const currencyItems = useMemo(() => {
+    const currencies: CurrencyItemI[] = [];
+
+    if (gasTokenSymbol) {
+      currencies.push({ id: gasTokenSymbol, name: gasTokenSymbol, isGasToken: true, isActiveToken: true });
+    }
+
+    if (pools.length) {
+      const activePools = pools.filter((pool) => pool.isRunning);
+      activePools.forEach((pool) =>
+        currencies.push({
+          id: `${pool.poolId}`,
+          name: pool.poolSymbol,
+          isGasToken: false,
+          isActiveToken: true,
+          contractAddress: pool.marginTokenAddr,
+        })
+      );
+
+      const inactivePools = pools.filter((pool) => !pool.isRunning);
+      inactivePools.forEach((pool) =>
+        currencies.push({
+          id: `${pool.poolId}`,
+          name: pool.poolSymbol,
+          isGasToken: false,
+          isActiveToken: false,
+          contractAddress: pool.marginTokenAddr,
+        })
+      );
+    }
+
+    return currencies;
+  }, [gasTokenSymbol, pools]);
 
   useEffect(() => {
-    if (activePools.length > 0) {
-      setSelectedPool(activePools[0]);
+    if (currencyItems.length > 0) {
+      setSelectedCurrency(currencyItems[0]);
     }
-  }, [activePools, setSelectedPool]);
+  }, [currencyItems, setSelectedCurrency]);
 
   return (
     <SidesRow
@@ -34,18 +68,18 @@ export const CurrencySelect = ({ selectedPool, setSelectedPool }: CurrencySelect
       rightSide={
         <DropDownSelect
           id="currency-dropdown"
-          selectedValue={selectedPool?.poolSymbol}
+          selectedValue={selectedCurrency?.name}
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
           fullWidth
         >
-          {activePools.map((pool) => (
+          {currencyItems.map((item) => (
             <DropDownMenuItem
-              key={pool.poolId}
-              option={pool.poolSymbol}
-              isActive={pool.poolId === selectedPool?.poolId}
+              key={item.id}
+              option={item.name}
+              isActive={item.id === selectedCurrency?.id}
               onClick={() => {
-                setSelectedPool(pool);
+                setSelectedCurrency(item);
                 setAnchorEl(null);
               }}
             />

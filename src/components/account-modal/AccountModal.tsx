@@ -58,7 +58,7 @@ export const AccountModal = () => {
           <Separator />
         </DialogContent>
         <DialogActions className={styles.dialogAction}>
-          <Button onClick={handleOnClose} variant="secondary">
+          <Button onClick={handleOnClose} variant="secondary" className={styles.actionButton}>
             {t('common.info-modal.close')}
           </Button>
           <Web3AuthDisconnectButton />
