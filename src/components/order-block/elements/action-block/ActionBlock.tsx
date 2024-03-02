@@ -9,7 +9,6 @@ import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Ty
 import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
-import { DepositModal } from 'components/deposit-modal/DepositModal';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
@@ -560,12 +559,9 @@ export const ActionBlock = memo(() => {
   return (
     <div className={styles.root}>
       {validityCheckButtonType === ValidityCheckButtonE.NoFunds && (
-        <>
-          <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.buyButton}>
-            {validityCheckButtonText}
-          </Button>
-          <DepositModal />
-        </>
+        <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.buyButton}>
+          {validityCheckButtonText}
+        </Button>
       )}
       {validityCheckButtonType !== ValidityCheckButtonE.NoFunds && (
         <Button

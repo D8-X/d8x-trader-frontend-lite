@@ -579,6 +579,8 @@
     "wallet-connect": "Connect",
     "account-button": "Account",
     "currency-label": "Currency",
+    "amount-label": "Amount",
+    "address-label": "Address",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
@@ -696,7 +698,7 @@
       "title": "Account",
       "deposit-button": "Deposit",
       "withdraw-button": "Withdraw",
-      "export-pk-button": "Export PK",
+      "extract-pk-button": "Extract PK",
       "notice-block": "Important notice: Make sure to have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral."
     },
     "deposit-modal": {
@@ -711,6 +713,15 @@
       },
       "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
       "done-button": "Done"
+    },
+    "extract-pk-modal": {
+      "title": "Extract Private Key",
+      "important-notice": "Important notice: never share your private key with anyone. Only reveal key if you know what you are doing.",
+      "reveal-key-button": "Reveal key"
+    },
+    "withdraw-modal": {
+      "title": "Withdraw",
+      "withdraw-button": "Withdraw"
     },
     "connect-modal": {
       "title": "Sign in",

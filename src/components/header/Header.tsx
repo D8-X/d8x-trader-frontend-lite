@@ -10,6 +10,7 @@ import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTh
 
 import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
+import { DepositModal } from 'components/deposit-modal/DepositModal';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { Separator } from 'components/separator/Separator';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
@@ -297,6 +298,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 </div>
               </div>
             )}
+            {isConnected && <DepositModal />}
           </PageAppBar>
           <Box component="nav">
             <Drawer

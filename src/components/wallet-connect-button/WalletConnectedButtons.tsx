@@ -1,6 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import classnames from 'classnames';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,7 @@ const isSocialLoginEnabled = web3AuthConfig.web3AuthClientId !== '';
 export const WalletConnectedButtons = memo(() => {
   const { t } = useTranslation();
 
-  const [isAccountModalOpen, setAccountModalOpen] = useAtom(accountModalOpenAtom);
+  const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
   const socialPK = useAtomValue(socialPKAtom);
 
   const theme = useTheme();
@@ -71,9 +71,7 @@ export const WalletConnectedButtons = memo(() => {
                       </Button>
                     )}
                   </div>
-                  {isSignedInSocially && (
-                    <AccountModal isOpen={isAccountModalOpen} onClose={() => setAccountModalOpen(false)} />
-                  )}
+                  {isSignedInSocially && <AccountModal />}
                 </>
               );
             })()}
