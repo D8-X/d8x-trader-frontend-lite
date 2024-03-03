@@ -49,3 +49,28 @@ export const cardona = {
     },
   },
 } as const satisfies Chain;
+
+export const artio = {
+  id: 80085,
+  name: 'Berachain Artio',
+  network: 'Berachain Artio',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'BERA',
+    symbol: 'BERA',
+  },
+  rpcUrls: {
+    public: { http: ['https://rpc.ankr.com/berachain_testnet'] },
+    default: { http: ['https://rpc.ankr.com/berachain_testnet'] },
+  },
+  blockExplorers: {
+    etherscan: { name: 'Beratrail', url: 'https://artio.beratrail.io/' },
+    default: { name: 'Beratrail', url: 'https://artio.beratrail.io/' },
+  },
+  contracts: {
+    multicall3: {
+      address: '0x9d1dB8253105b007DDDE65Ce262f701814B91125',
+      blockCreated: 0,
+    },
+  },
+} as const satisfies Chain;

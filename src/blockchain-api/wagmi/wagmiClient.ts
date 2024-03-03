@@ -19,7 +19,8 @@ import zkTestIcon from 'assets/networks/zkEvmTest.svg';
 import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.svg';
 import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
-import { x1, cardona } from 'utils/chains';
+import berachainIcon from 'assets/networks/berachain.svg';
+import { x1, cardona, artio } from 'utils/chains';
 
 const defaultChains: Chain[] = [
   { ...polygonZkEvm, iconUrl: zkMainIcon, iconBackground: 'transparent' },
@@ -27,6 +28,7 @@ const defaultChains: Chain[] = [
   { ...polygonZkEvmTestnet, iconUrl: zkTestIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: zkTestIcon, iconBackground: 'transparent' },
+  { ...artio, iconUrl: berachainIcon, iconBackground: 'transparent' },
   {
     ...arbitrumSepolia,
     iconUrl: arbitrumSepoliaIcon,
