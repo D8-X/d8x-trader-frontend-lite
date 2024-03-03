@@ -42,13 +42,13 @@ export const WithdrawModal = () => {
     if (selectedCurrency && walletClient) {
       if (selectedCurrency.contractAddress) {
         writeContract({
+          account: walletClient.account,
           abi: ERC20_ABI,
           address: selectedCurrency.contractAddress as Address,
-          functionName: 'transferFrom',
+          functionName: 'transfer',
           args: [
-            walletClient.account.address,
             addressValue,
-            parseUnits(amountValue, 18), // selectedCurrency.decimals), // <- need the currency decimals here
+            parseUnits(amountValue, 6), // selectedCurrency.decimals), // <- need the currency decimals here
           ],
         }).then();
       } else {
