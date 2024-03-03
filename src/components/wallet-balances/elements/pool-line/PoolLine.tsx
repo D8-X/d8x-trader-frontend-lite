@@ -9,9 +9,10 @@ import { REFETCH_BALANCES_INTERVAL } from '../../constants';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
+  showEmpty?: boolean;
 }
 
-export const PoolLine = memo(({ pool }: PoolLinePropsI) => {
+export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
 
   const { data: tokenBalanceData, refetch } = useBalance({
@@ -31,6 +32,10 @@ export const PoolLine = memo(({ pool }: PoolLinePropsI) => {
       clearInterval(intervalId);
     };
   }, [refetch, isConnected]);
+
+  if (!showEmpty && tokenBalanceData?.value === 0n) {
+    return null;
+  }
 
   return (
     <AssetLine symbol={pool.poolSymbol} value={tokenBalanceData ? formatCurrency(+tokenBalanceData?.formatted) : ''} />

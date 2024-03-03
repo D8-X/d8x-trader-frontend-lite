@@ -49,6 +49,17 @@
   }
 }
 
+.helperText {
+  cursor: pointer;
+  text-align: right;
+  margin-top: calc($d8x-spacing / 2);
+
+  a {
+    cursor: pointer;
+    color: var(--d8x-color-action);
+  }
+}
+
 .noteText {
   display: block;
   margin: $d8x-spacing * 8 0;

@@ -194,7 +194,7 @@ export function UsdcSwapWidget() {
       {poolTokenBalance && (
         <div className={`${styles.row} ${styles.applyMax}`}>
           <Typography className={styles.helperText} variant="bodyTiny">
-            Max:{' '}
+            {t('common.max')}{' '}
             <Link
               className={styles.addMaxLink}
               onClick={() => {

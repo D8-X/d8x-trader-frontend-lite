@@ -242,7 +242,7 @@ export const Add = memo(() => {
         </Box>
         {poolTokenBalance ? (
           <Typography className={styles.helperText} variant="bodyTiny">
-            {t('pages.vault.add.max')} {/* //TODO: Link? To where? */}
+            {t('common.max')}{' '}
             <Link
               onClick={() => {
                 if (poolTokenBalance) {

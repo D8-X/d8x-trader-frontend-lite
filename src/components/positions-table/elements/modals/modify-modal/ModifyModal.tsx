@@ -497,7 +497,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                   leftSide=" "
                   rightSide={
                     <Typography className={styles.helperText} variant="bodyTiny">
-                      Max: <Link onClick={handleMaxCollateral}>{formatNumber(maxCollateral)}</Link>
+                      {t('common.max')} <Link onClick={handleMaxCollateral}>{formatNumber(maxCollateral)}</Link>
                     </Typography>
                   }
                 />

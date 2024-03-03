@@ -483,7 +483,6 @@
           "info1": "Especifica la cantidad de {{poolSymbol}} que quieres añadir a las reservas."
         },
         "receive": "d{{poolSymbol}} que recibes",
-        "max": "Max:",
         "button": "Anadir",
         "validity-empty": "Conectar cartera",
         "validity-amount-too-big": "Fondos insuficientes",
@@ -581,6 +580,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "max": "Max:",
     "copied": "Copiado",
     "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
@@ -721,7 +721,8 @@
     },
     "withdraw-modal": {
       "title": "Withdraw",
-      "withdraw-button": "Withdraw"
+      "withdraw-button": "Withdraw",
+      "withdraw-address-error": "Por favor ingresar una dirección valida"
     },
     "connect-modal": {
       "title": "Sign in",

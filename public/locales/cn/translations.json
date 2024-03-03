@@ -483,7 +483,6 @@
           "info1": "设置您要添加到池中的{{poolSymbol}}数量。"
         },
         "receive": "您会收到d{{poolSymbol}}",
-        "max": "最大：",
         "button": "添加",
         "validity-empty": "连接钱包",
         "validity-amount-too-big": "资金不足",
@@ -581,6 +580,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "max": "最大：",
     "copied": "抄袭自",
     "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
@@ -721,7 +721,8 @@
     },
     "withdraw-modal": {
       "title": "Withdraw",
-      "withdraw-button": "Withdraw"
+      "withdraw-button": "Withdraw",
+      "withdraw-address-error": "请输入有效地址"
     },
     "connect-modal": {
       "title": "Sign in",

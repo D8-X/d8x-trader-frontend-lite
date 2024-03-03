@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'wagmi';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
@@ -37,7 +38,7 @@ export const CurrencySelect = ({ selectedCurrency, setSelectedCurrency }: Curren
           name: pool.poolSymbol,
           isGasToken: false,
           isActiveToken: true,
-          contractAddress: pool.marginTokenAddr,
+          contractAddress: pool.marginTokenAddr as Address,
         })
       );
 
@@ -48,7 +49,7 @@ export const CurrencySelect = ({ selectedCurrency, setSelectedCurrency }: Curren
           name: pool.poolSymbol,
           isGasToken: false,
           isActiveToken: false,
-          contractAddress: pool.marginTokenAddr,
+          contractAddress: pool.marginTokenAddr as Address,
         })
       );
     }

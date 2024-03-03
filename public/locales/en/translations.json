@@ -483,7 +483,6 @@
           "info1": "Specify the amount of {{poolSymbol}} you want to add to the pool."
         },
         "receive": "You receive d{{poolSymbol}}",
-        "max": "Max:",
         "button": "Add",
         "validity-empty": "Connect wallet",
         "validity-amount-too-big": "Insufficient funds",
@@ -581,6 +580,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "max": "Max:",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
@@ -721,7 +721,8 @@
     },
     "withdraw-modal": {
       "title": "Withdraw",
-      "withdraw-button": "Withdraw"
+      "withdraw-button": "Withdraw",
+      "withdraw-address-error": "Please enter a valid address"
     },
     "connect-modal": {
       "title": "Sign in",

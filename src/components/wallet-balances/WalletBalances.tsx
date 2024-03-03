@@ -35,6 +35,7 @@ export const WalletBalances = () => {
   }, [refetch, isConnected]);
 
   const activePools = useMemo(() => pools.filter((pool) => pool.isRunning), [pools]);
+  const inactivePools = useMemo(() => pools.filter((pool) => !pool.isRunning), [pools]);
 
   return (
     <div className={styles.root}>
@@ -45,6 +46,9 @@ export const WalletBalances = () => {
       />
       {activePools.map((pool) => (
         <PoolLine key={pool.poolSymbol} pool={pool} />
+      ))}
+      {inactivePools.map((pool) => (
+        <PoolLine key={pool.poolSymbol} pool={pool} showEmpty={false} />
       ))}
     </div>
   );

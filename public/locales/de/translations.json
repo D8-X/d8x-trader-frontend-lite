@@ -483,7 +483,6 @@
           "info1": "Geben Sie die Menge an {{poolSymbol}} an, die Sie dem Pool hinzufügen möchten."
         },
         "receive": "Sie erhalten d{{poolSymbol}}",
-        "max": "Max:",
         "button": "Hinzufügen",
         "validity-empty": "Brieftasche verbinden",
         "validity-amount-too-big": "Zu wenig Mittel",
@@ -581,6 +580,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "max": "Max:",
     "copied": "Kopiert",
     "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
@@ -721,7 +721,8 @@
     },
     "withdraw-modal": {
       "title": "Withdraw",
-      "withdraw-button": "Withdraw"
+      "withdraw-button": "Withdraw",
+      "withdraw-address-error": "Bitte geben Sie eine gültige Adresse ein"
     },
     "connect-modal": {
       "title": "Sign in",

@@ -1,8 +1,8 @@
 import { useAtom } from 'jotai';
-import { type ChangeEvent, useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, DialogActions, DialogContent, DialogTitle, OutlinedInput } from '@mui/material';
+import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';
 
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
 import { CurrencyItemI } from 'components/currency-selector/types';
@@ -14,10 +14,12 @@ import { withdrawModalOpenAtom } from 'store/global-modals.store';
 
 import styles from './WithdrawModal.module.scss';
 import { transferFunds } from 'blockchain-api/transferFunds';
-import { Address, useWalletClient } from 'wagmi';
+import { Address, useAccount, useBalance, useWalletClient } from 'wagmi';
 import { writeContract } from '@wagmi/core';
 import { ERC20_ABI } from '@d8x/perpetuals-sdk';
 import { parseUnits } from 'viem';
+import { isValidAddress } from '../../utils/isValidAddress';
+import { formatToCurrency } from '../../utils/formatToCurrency';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();
@@ -26,11 +28,31 @@ export const WithdrawModal = () => {
   const [amountValue, setAmountValue] = useState('');
   const [addressValue, setAddressValue] = useState('');
 
+  const addressInputTouchedRef = useRef(false);
+
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useAtom(withdrawModalOpenAtom);
 
   const { data: walletClient } = useWalletClient();
+  const { address, isConnected } = useAccount();
 
-  const handleValueChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const { data: selectedTokenBalanceData } = useBalance({
+    address,
+    token: selectedCurrency?.contractAddress,
+    enabled: address && selectedCurrency && isConnected,
+  });
+
+  const isAddressValid = useMemo(() => {
+    if (addressValue.length > 42) {
+      return false;
+    }
+    return isValidAddress(addressValue);
+  }, [addressValue]);
+
+  const handleValueChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    if (!addressInputTouchedRef.current) {
+      addressInputTouchedRef.current = true;
+    }
+
     setAddressValue(event.target.value);
   }, []);
 
@@ -39,19 +61,17 @@ export const WithdrawModal = () => {
   const handleOnClose = () => setWithdrawModalOpen(false);
 
   const handleWithdraw = () => {
-    if (selectedCurrency && walletClient) {
+    if (selectedCurrency && selectedTokenBalanceData && walletClient && isAddressValid) {
       if (selectedCurrency.contractAddress) {
         writeContract({
           account: walletClient.account,
           abi: ERC20_ABI,
-          address: selectedCurrency.contractAddress as Address,
+          address: selectedCurrency.contractAddress,
           functionName: 'transfer',
-          args: [
-            addressValue,
-            parseUnits(amountValue, 6), // selectedCurrency.decimals), // <- need the currency decimals here
-          ],
+          args: [addressValue, parseUnits(amountValue, selectedTokenBalanceData.decimals)],
         }).then();
       } else {
+        // Transfer GAS token without contractAddress
         transferFunds(walletClient, addressValue as Address, +amountValue).then();
       }
     }
@@ -76,21 +96,47 @@ export const WithdrawModal = () => {
               setInputValue={setAmountValue}
               currency={selectedCurrency?.name}
               min={0}
+              max={
+                selectedTokenBalanceData && selectedTokenBalanceData.value > 0
+                  ? Number(selectedTokenBalanceData.formatted)
+                  : undefined
+              }
             />
+            {selectedTokenBalanceData?.formatted && selectedTokenBalanceData.value > 0 ? (
+              <Typography className={styles.helperText} variant="bodyTiny">
+                {t('common.max')}{' '}
+                <Link
+                  onClick={() => {
+                    if (selectedTokenBalanceData?.value > 0) {
+                      setAmountValue(selectedTokenBalanceData.formatted);
+                    }
+                  }}
+                >
+                  {formatToCurrency(Number(selectedTokenBalanceData.formatted), selectedCurrency?.name)}
+                </Link>
+              </Typography>
+            ) : null}
           </div>
         </div>
         <div className={styles.section}>
           <div className={styles.dataLine}>
             <div className={styles.label}>{t('common.address-label')}</div>
-            <OutlinedInput
-              id="withdraw-address"
-              type="text"
-              className={styles.inputHolder}
-              placeholder="0x..."
-              onChange={handleValueChange}
-              onBlur={handleInputBlur}
-              value={addressValue}
-            />
+            <div className={styles.inputHolder}>
+              <OutlinedInput
+                id="withdraw-address"
+                type="text"
+                className={styles.input}
+                placeholder="0x..."
+                onChange={handleValueChange}
+                onBlur={handleInputBlur}
+                value={addressValue}
+              />
+              {!isAddressValid && addressInputTouchedRef.current && (
+                <Typography variant="bodySmall" color="red" component="p" mt={1}>
+                  {t('common.withdraw-modal.withdraw-address-error')}
+                </Typography>
+              )}
+            </div>
           </div>
         </div>
         <Separator />
@@ -103,7 +149,11 @@ export const WithdrawModal = () => {
         <Button onClick={handleOnClose} variant="secondary">
           {t('common.info-modal.close')}
         </Button>
-        <Button onClick={handleWithdraw} variant="primary">
+        <Button
+          onClick={handleWithdraw}
+          variant="primary"
+          disabled={!address || !amountValue || +amountValue <= 0 || !isAddressValid}
+        >
           {t('common.withdraw-modal.withdraw-button')}
         </Button>
       </DialogActions>
