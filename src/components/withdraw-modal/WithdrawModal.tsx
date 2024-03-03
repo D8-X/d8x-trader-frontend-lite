@@ -13,6 +13,11 @@ import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { withdrawModalOpenAtom } from 'store/global-modals.store';
 
 import styles from './WithdrawModal.module.scss';
+import { transferFunds } from 'blockchain-api/transferFunds';
+import { Address, useWalletClient } from 'wagmi';
+import { writeContract } from '@wagmi/core';
+import { ERC20_ABI } from '@d8x/perpetuals-sdk';
+import { parseUnits } from 'viem';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();
@@ -23,6 +28,8 @@ export const WithdrawModal = () => {
 
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useAtom(withdrawModalOpenAtom);
 
+  const { data: walletClient } = useWalletClient();
+
   const handleValueChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setAddressValue(event.target.value);
   }, []);
@@ -30,6 +37,25 @@ export const WithdrawModal = () => {
   const handleInputBlur = useCallback(() => {}, []);
 
   const handleOnClose = () => setWithdrawModalOpen(false);
+
+  const handleWithdraw = () => {
+    if (selectedCurrency && walletClient) {
+      if (selectedCurrency.contractAddress) {
+        writeContract({
+          abi: ERC20_ABI,
+          address: selectedCurrency.contractAddress as Address,
+          functionName: 'transferFrom',
+          args: [
+            walletClient.account.address,
+            addressValue,
+            parseUnits(amountValue, 18), // selectedCurrency.decimals), // <- need the currency decimals here
+          ],
+        }).then();
+      } else {
+        transferFunds(walletClient, addressValue as Address, +amountValue).then();
+      }
+    }
+  };
 
   return (
     <Dialog open={isWithdrawModalOpen} onClose={handleOnClose} className={styles.dialog}>
@@ -77,7 +103,9 @@ export const WithdrawModal = () => {
         <Button onClick={handleOnClose} variant="secondary">
           {t('common.info-modal.close')}
         </Button>
-        <Button variant="primary">{t('common.withdraw-modal.withdraw-button')}</Button>
+        <Button onClick={handleWithdraw} variant="primary">
+          {t('common.withdraw-modal.withdraw-button')}
+        </Button>
       </DialogActions>
     </Dialog>
   );
