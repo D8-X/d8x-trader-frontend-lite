@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "거래",
+    "pump-station": "PumpStation",
     "refer": "추천",
     "vault": "Vault",
     "portfolio": "포트폴리오"
@@ -354,6 +355,17 @@
         "value": "값:",
         "value-placeholder": "필터링할 값",
         "clear": "필터 지우기"
+      }
+    },
+    "pump-station": {
+      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "pumped-volume": {
+        "title": "PUMPED Volume",
+        "modal-text": "PUMPED Volume Description"
+      },
+      "pump-o-meter": {
+        "title": "PUMP-O-METER",
+        "modal-text": "PUMP-O-METER Description"
       }
     },
     "refer": {

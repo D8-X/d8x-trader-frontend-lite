@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "交易",
+    "pump-station": "PumpStation",
     "refer": "邀请返佣",
     "vault": "金库",
     "portfolio": "投资组合"
@@ -360,6 +361,17 @@
         "value": "价值:",
         "value-placeholder": "要过滤的值",
         "clear": "清除过滤器"
+      }
+    },
+    "pump-station": {
+      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "pumped-volume": {
+        "title": "PUMPED Volume",
+        "modal-text": "PUMPED Volume Description"
+      },
+      "pump-o-meter": {
+        "title": "PUMP-O-METER",
+        "modal-text": "PUMP-O-METER Description"
       }
     },
     "refer": {

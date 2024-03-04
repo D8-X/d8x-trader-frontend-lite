@@ -12,6 +12,10 @@ const {
   VITE_PRICE_FEEDS: priceFeedEndpoints = '',
   VITE_HTTP_RPC: httpRPCs = '',
   VITE_ENABLED_CHAINS: enabledChains = '',
+  VITE_ENABLED_REFER_PAGE: enabledReferPage = 'true',
+  VITE_ENABLED_VAULT_PAGE: enabledVaultPage = 'true',
+  VITE_ENABLED_PUMP_STATION_PAGE: enabledPumpStationPage = 'true',
+  VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
   VITE_FIREBASE_APIKEY: firebaseApiKey = '',
@@ -59,6 +63,13 @@ export const config = {
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
   showChallengeModal: showChallengeModal === 'true',
+};
+
+export const pagesConfig = {
+  enabledPumpStationPage: enabledPumpStationPage === 'true',
+  enabledReferPage: enabledReferPage === 'true',
+  enabledVaultPage: enabledVaultPage === 'true',
+  enabledPortfolioPage: enabledPortfolioPage === 'true',
 };
 
 export const web3AuthConfig = {

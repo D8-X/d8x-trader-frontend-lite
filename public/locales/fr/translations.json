@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Trader",
+    "pump-station": "PumpStation",
     "refer": "Parrainage",
     "vault": "Coffre-fort",
     "portfolio": "Portefeuille"
@@ -360,6 +361,17 @@
         "value": "Valeur:",
         "value-placeholder": "Valeur à filter",
         "clear": "Effacer le Filtre"
+      }
+    },
+    "pump-station": {
+      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "pumped-volume": {
+        "title": "PUMPED Volume",
+        "modal-text": "PUMPED Volume Description"
+      },
+      "pump-o-meter": {
+        "title": "PUMP-O-METER",
+        "modal-text": "PUMP-O-METER Description"
       }
     },
     "refer": {
