@@ -52,9 +52,11 @@ export const InfoBlock = memo(() => {
 
   const feeReduction = useMemo(() => {
     if (orderInfo?.baseFee && orderInfo?.tradingFee) {
-      return (1 - orderInfo.baseFee / orderInfo.tradingFee) * 100;
+      return (1 - orderInfo.tradingFee / orderInfo.baseFee) * 100;
     }
   }, [orderInfo]);
+
+  console.log(orderInfo?.tradingFee);
 
   const baseFeeInCC = useMemo(() => {
     if (!orderInfo?.baseFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
