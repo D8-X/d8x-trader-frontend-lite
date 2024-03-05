@@ -96,6 +96,11 @@
   gap: $d8x-spacing * 6;
 }
 
+.pageIcon {
+  margin-bottom: -$d8x-spacing;
+  margin-right: $d8x-spacing * 2;
+}
+
 .navMobileItem,
 .navItem {
   font-weight: 500;

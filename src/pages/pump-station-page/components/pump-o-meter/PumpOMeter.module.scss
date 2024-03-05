@@ -1,0 +1,34 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  display: flex;
+  align-items: center;
+  border-radius: $d8x-button-border-radius;
+  border: 1px solid var(--d8x-meter-color-border);
+  padding: 2 * $d8x-spacing 4 * $d8x-spacing;
+}
+
+.divisionsHolder {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  height: 30px;
+
+  .division {
+    width: 3px;
+    transition: background-color 300ms ease-in;
+    background-color: var(--d8x-meter-background-division);
+
+    &.done {
+      background-color: var(--d8x-meter-background-division-done);
+    }
+  }
+}
+
+.value {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 40px;
+  margin-bottom: -$d8x-spacing;
+}

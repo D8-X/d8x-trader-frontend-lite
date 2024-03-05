@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Handeln",
+    "pump-station": "PumpStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
     "portfolio": "Portfolio"
@@ -360,6 +361,17 @@
         "value": "Wert:",
         "value-placeholder": "Wert, der gefiltert werden soll",
         "clear": "Filter Löschen"
+      }
+    },
+    "pump-station": {
+      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "pumped-volume": {
+        "title": "PUMPED Volume",
+        "modal-text": "PUMPED Volume Description"
+      },
+      "pump-o-meter": {
+        "title": "PUMP-O-METER",
+        "modal-text": "PUMP-O-METER Description"
       }
     },
     "refer": {

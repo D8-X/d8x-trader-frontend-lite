@@ -178,9 +178,9 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     setMobileOpen(!mobileOpen);
   };
 
-  const availablePages = [...pages];
+  const availablePages = [...pages.filter((page) => page.enabled)];
   if (address) {
-    availablePages.push(...authPages);
+    availablePages.push(...authPages.filter((page) => page.enabled));
   }
   const drawer = (
     <>
@@ -201,6 +201,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             to={page.path}
             className={({ isActive }) => `${styles.navMobileItem} ${isActive ? styles.active : styles.inactive}`}
           >
+            {page.IconComponent && <page.IconComponent className={styles.pageIcon} />}
             {t(page.translationKey)}
           </NavLink>
         ))}
@@ -249,6 +250,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                         to={page.path}
                         className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : styles.inactive}`}
                       >
+                        {page.IconComponent && <page.IconComponent className={styles.pageIcon} />}
                         {t(page.translationKey)}
                       </NavLink>
                     ))}
