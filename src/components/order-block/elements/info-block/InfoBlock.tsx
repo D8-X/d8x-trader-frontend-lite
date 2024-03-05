@@ -56,8 +56,6 @@ export const InfoBlock = memo(() => {
     }
   }, [orderInfo]);
 
-  console.log(orderInfo?.tradingFee);
-
   const baseFeeInCC = useMemo(() => {
     if (!orderInfo?.baseFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
       return undefined;
