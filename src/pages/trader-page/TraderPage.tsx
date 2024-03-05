@@ -28,6 +28,7 @@ import {
   openOrdersAtom,
   perpetualStatisticsAtom,
   poolFeeAtom,
+  addr0FeeAtom,
   positionsAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -58,6 +59,7 @@ export const TraderPage = () => {
   const fetchPositionsRef = useRef(false);
   const fetchOrdersRef = useRef(false);
   const fetchFeeRef = useRef(false);
+  const fetchAddr0FeeRef = useRef(false);
   const isPageUrlAppliedRef = useRef(false);
 
   const { dialogOpen, openDialog, closeDialog } = useDialog();
@@ -70,6 +72,7 @@ export const TraderPage = () => {
   const [positions, setPositions] = useAtom(positionsAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const setPoolFee = useSetAtom(poolFeeAtom);
+  const setAddr0Fee = useSetAtom(addr0FeeAtom);
 
   const chainId = useChainId();
   const { address } = useAccount();
@@ -158,6 +161,24 @@ export const TraderPage = () => {
     [setPoolFee]
   );
 
+  const fetchAddr0Fee = useCallback(
+    async (_chainId: number, _poolSymbol: string, _address: Address) => {
+      if (fetchAddr0FeeRef.current) {
+        return;
+      }
+      fetchAddr0FeeRef.current = true;
+      try {
+        const { data } = await getTradingFee(_chainId, _poolSymbol, _address);
+        setAddr0Fee(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        fetchAddr0FeeRef.current = false;
+      }
+    },
+    [setAddr0Fee]
+  );
+
   useEffect(() => {
     if (location.hash || !selectedPool || selectedPool.perpetuals.length < 1 || isPageUrlAppliedRef.current) {
       return;
@@ -174,7 +195,8 @@ export const TraderPage = () => {
       return;
     }
     fetchFee(chainId, selectedPool.poolSymbol, address).then();
-  }, [chainId, selectedPool?.poolSymbol, address, fetchFee]);
+    fetchAddr0Fee(chainId, selectedPool.poolSymbol, '0x0000000000000000000000000000000000000000').then();
+  }, [chainId, selectedPool?.poolSymbol, address, fetchFee, fetchAddr0Fee]);
 
   useEffect(() => {
     if (!chainId || !address) {

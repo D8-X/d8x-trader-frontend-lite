@@ -22,6 +22,7 @@ export const traderAPIBusyAtom = atom(false);
 export const poolsAtom = atom<PoolWithIdI[]>([]);
 export const perpetualsAtom = atom<PerpetualDataI[]>([]);
 export const poolFeeAtom = atom<number | undefined>(undefined);
+export const addr0FeeAtom = atom<number | undefined>(undefined);
 export const oracleFactoryAddrAtom = atom('');
 export const proxyAddrAtom = atom<string | undefined>(undefined);
 export const perpetualStatisticsAtom = atom<PerpetualStatisticsI | null>(null);

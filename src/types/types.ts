@@ -161,6 +161,7 @@ export interface OrderInfoI {
   size: number;
   midPrice: number;
   tradingFee: number | null;
+  baseFee: number | null;
   collateral: number;
   maxMinEntryPrice: number | null;
   keepPositionLeverage: boolean;
