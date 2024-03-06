@@ -70,15 +70,7 @@ export interface OnUpdateMarkPriceWsMessageI extends CommonWsMessageI {
 }
 
 export interface UpdateMarginAccountI extends MarginAccountI {
-  // id of the perpetual
-  perpetualId: number;
-  // address of the trader
   traderAddr: string;
-  // id of position
-  positionId: string;
-  // funding payment paid when
-  // margin account was changed
-  fundingPaymentCC: number;
 }
 
 export interface OnUpdateMarginAccountWsMessageI extends CommonWsMessageI {
@@ -106,7 +98,6 @@ export interface OnTradeWsMessageI extends CommonWsMessageI {
     name: MessageNameE.Trade;
     obj: {
       symbol: string;
-      perpetualId: number;
       traderAddr: string;
       orderId: string;
     };
