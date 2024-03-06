@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { memo, type ReactNode } from 'react';
+import { memo, type ReactNode, useMemo } from 'react';
 
 import styles from './PumpOMeter.module.scss';
 
@@ -20,10 +20,20 @@ export const PumpOMeter = memo(({ percent }: PumpOMeterPropsI) => {
     );
   }
 
+  const percentFixed = useMemo(() => {
+    if (percent <= 10) {
+      return percent.toFixed(2);
+    }
+    if (percent < 100) {
+      return percent.toFixed(1);
+    }
+    return '100';
+  }, [percent]);
+
   return (
     <div className={styles.root}>
       <div className={styles.divisionsHolder}>{divisions}</div>
-      <div className={styles.value}>{percent}</div>
+      <div className={styles.value}>{percentFixed}</div>
     </div>
   );
 });

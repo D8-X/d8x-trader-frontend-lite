@@ -62,11 +62,15 @@ export const TableDataFetcher = memo(() => {
   }, [latestOrderSentTimestamp]);
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setSlowTicker((prevState) => {
         return prevState + 1;
       });
     }, INTERVAL_FOR_TICKER_SLOW);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   const handleRemovedOrders = useCallback(

@@ -14,6 +14,8 @@ import { PumpOMeter } from '../pump-o-meter/PumpOMeter';
 
 import styles from './PumpStationBlock.module.scss';
 
+const INTERVAL_FOR_DATA_POLLING = 10000; // Each 10 sec
+
 export const PumpStationBlock = () => {
   const { t } = useTranslation();
 
@@ -28,9 +30,6 @@ export const PumpStationBlock = () => {
       return;
     }
 
-    setVolumeValue(undefined);
-    setBoosts([]);
-
     getPumpStationData(address).then((response) => {
       setVolumeValue(response.crossChainScore);
       setBoosts(response.boosts);
@@ -38,13 +37,26 @@ export const PumpStationBlock = () => {
   }, [isConnected, address]);
 
   useEffect(() => {
+    setVolumeValue(undefined);
+    setBoosts([]);
+
     fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, INTERVAL_FOR_DATA_POLLING);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [fetchData]);
 
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
   const percent =
     boostByChainId && volumeValue
-      ? Math.round(boostByChainId.nxtBoost + (boostByChainId.nxtRndBoost / volumeValue) * 100)
+      ? Math.round(boostByChainId.nxtBoost + (boostByChainId.nxtRndBoost / volumeValue) * 10000) / 100
       : 0;
 
   return (
