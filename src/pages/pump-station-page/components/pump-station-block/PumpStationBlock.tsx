@@ -54,10 +54,7 @@ export const PumpStationBlock = () => {
   }, [fetchData]);
 
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
-  const percent =
-    boostByChainId && volumeValue
-      ? Math.round(boostByChainId.nxtBoost + (boostByChainId.nxtRndBoost / volumeValue) * 10000) / 100
-      : 0;
+  const percentageBoost = boostByChainId ? ((boostByChainId.nxtBoost + boostByChainId.nxtRndBoost) / 105) * 100 : 0;
 
   return (
     <div className={styles.root}>
@@ -71,7 +68,7 @@ export const PumpStationBlock = () => {
         />
       </div>
       <Typography variant="h4" className={styles.volumeValue}>
-        {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'} $
+        $ {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'}
       </Typography>
 
       <div className={styles.labelHolder}>
@@ -81,7 +78,7 @@ export const PumpStationBlock = () => {
         />
       </div>
       <div className={styles.meterHolder}>
-        <PumpOMeter percent={percent} />
+        <PumpOMeter percent={percentageBoost} />
       </div>
     </div>
   );

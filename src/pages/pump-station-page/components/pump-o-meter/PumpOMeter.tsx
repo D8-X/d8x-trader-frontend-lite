@@ -27,7 +27,7 @@ export const PumpOMeter = memo(({ percent }: PumpOMeterPropsI) => {
     if (percent < 100) {
       return percent.toFixed(1);
     }
-    return '100';
+    return percent.toFixed(0);
   }, [percent]);
 
   return (
