@@ -51,7 +51,7 @@ export const InfoBlock = memo(() => {
   }, [orderInfo]);
 
   const feeReduction = useMemo(() => {
-    if (orderInfo?.baseFee && orderInfo?.tradingFee) {
+    if (orderInfo?.baseFee && orderInfo?.tradingFee !== undefined && orderInfo?.tradingFee !== null) {
       return (1 - orderInfo.tradingFee / orderInfo.baseFee) * 100;
     }
   }, [orderInfo]);

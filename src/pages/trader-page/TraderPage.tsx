@@ -162,13 +162,13 @@ export const TraderPage = () => {
   );
 
   const fetchAddr0Fee = useCallback(
-    async (_chainId: number, _poolSymbol: string, _address: Address) => {
+    async (_chainId: number, _poolSymbol: string) => {
       if (fetchAddr0FeeRef.current) {
         return;
       }
       fetchAddr0FeeRef.current = true;
       try {
-        const { data } = await getTradingFee(_chainId, _poolSymbol, _address);
+        const { data } = await getTradingFee(_chainId, _poolSymbol, '0x0000000000000000000000000000000000000000');
         setAddr0Fee(data);
       } catch (err) {
         console.error(err);
@@ -195,7 +195,7 @@ export const TraderPage = () => {
       return;
     }
     fetchFee(chainId, selectedPool.poolSymbol, address).then();
-    fetchAddr0Fee(chainId, selectedPool.poolSymbol, '0x0000000000000000000000000000000000000000').then();
+    fetchAddr0Fee(chainId, selectedPool.poolSymbol).then();
   }, [chainId, selectedPool?.poolSymbol, address, fetchFee, fetchAddr0Fee]);
 
   useEffect(() => {
