@@ -13,7 +13,10 @@ export const PumpOMeter = memo(({ percent }: PumpOMeterPropsI) => {
   const divisions: ReactNode[] = [];
   for (let i = 0; i < DIVISIONS_COUNT; i++) {
     divisions.push(
-      <div key={i} className={classnames(styles.division, { [styles.done]: (i / 20) * 100 <= percent })} />
+      <div
+        key={i}
+        className={classnames(styles.division, { [styles.done]: percent > 0 && (i / 20) * 100 <= percent })}
+      />
     );
   }
 

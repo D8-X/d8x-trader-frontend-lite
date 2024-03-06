@@ -1,9 +1,14 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAccount, useChainId } from 'wagmi';
 
 import { Typography } from '@mui/material';
 
 import { ReactComponent as D8XLogoWithText } from 'assets/logos/d8xLogoWithText.svg';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { getPumpStationData } from 'network/network';
+import { BoostI } from 'types/types';
+import { formatNumber } from 'utils/formatNumber';
 
 import { PumpOMeter } from '../pump-o-meter/PumpOMeter';
 
@@ -11,6 +16,36 @@ import styles from './PumpStationBlock.module.scss';
 
 export const PumpStationBlock = () => {
   const { t } = useTranslation();
+
+  const [volumeValue, setVolumeValue] = useState<number>();
+  const [boosts, setBoosts] = useState<BoostI[]>([]);
+
+  const chainId = useChainId();
+  const { address, isConnected } = useAccount();
+
+  const fetchData = useCallback(() => {
+    if (!isConnected || !address) {
+      return;
+    }
+
+    setVolumeValue(undefined);
+    setBoosts([]);
+
+    getPumpStationData(address).then((response) => {
+      setVolumeValue(response.crossChainScore);
+      setBoosts(response.boosts);
+    });
+  }, [isConnected, address]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
+  const percent =
+    boostByChainId && volumeValue
+      ? Math.round(boostByChainId.nxtBoost + (boostByChainId.nxtRndBoost / volumeValue) * 100)
+      : 0;
 
   return (
     <div className={styles.root}>
@@ -24,7 +59,7 @@ export const PumpStationBlock = () => {
         />
       </div>
       <Typography variant="h4" className={styles.volumeValue}>
-        500,000 $
+        {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'} $
       </Typography>
 
       <div className={styles.labelHolder}>
@@ -34,7 +69,7 @@ export const PumpStationBlock = () => {
         />
       </div>
       <div className={styles.meterHolder}>
-        <PumpOMeter percent={10} />
+        <PumpOMeter percent={percent} />
       </div>
     </div>
   );

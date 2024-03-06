@@ -206,13 +206,17 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           </NavLink>
         ))}
       </nav>
-      <Divider />
-      <Box className={styles.settings}>
-        <SettingsBlock />
-      </Box>
-      <Box className={styles.languageSwitcher}>
-        <LanguageSwitcher />
-      </Box>
+      {isTabletScreen && (
+        <>
+          <Divider />
+          <Box className={styles.settings}>
+            <SettingsBlock />
+          </Box>
+          <Box className={styles.languageSwitcher}>
+            <LanguageSwitcher />
+          </Box>
+        </>
+      )}
       <Box className={styles.closeAction}>
         <Button onClick={handleDrawerToggle} variant="secondary" size="small">
           {t('common.info-modal.close')}
@@ -242,7 +246,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   </a>
                   <span className={styles.betaTag}>{t('common.public-beta.beta-tag')}</span>
                 </Typography>
-                {!isTabletScreen && (
+                {!isSmallScreen && (
                   <nav className={styles.navWrapper}>
                     {availablePages.map((page) => (
                       <NavLink
@@ -266,7 +270,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 </Typography>
               )}
               {!isTabletScreen && <SettingsButton />}
-              {isTabletScreen && (
+              {isSmallScreen && (
                 <Button onClick={handleDrawerToggle} variant="primary" className={styles.menuButton}>
                   <Menu />
                 </Button>
@@ -292,7 +296,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 keepMounted: true, // Better open performance on mobile.
               }}
               sx={{
-                display: { sm: 'block', md: 'none' },
+                display: { md: 'block', lg: 'none' },
                 '& .MuiDrawer-paper': {
                   boxSizing: 'border-box',
                   width: isMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,

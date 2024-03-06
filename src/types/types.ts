@@ -247,6 +247,18 @@ export interface PriceFeedResponseI {
   };
 }
 
+export interface BoostI {
+  chainId: number;
+  nxtBoost: number;
+  nxtRndBoost: number;
+}
+
+export interface PumpStationResponseI {
+  addr: string;
+  crossChainScore: number;
+  boosts: BoostI[];
+}
+
 export interface TableHeaderI<T> {
   label: ReactElement | string;
   align: AlignE;
