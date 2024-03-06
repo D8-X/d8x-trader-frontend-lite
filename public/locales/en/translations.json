@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Add",
         "validity-empty": "Connect wallet",
-        "validity-amount-too-big": "Insufficient funds" ,
+        "validity-amount-too-big": "Insufficient funds",
         "validity-amount-below-min": "Amount below min",
         "validity-no-amount": "Enter amount"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Connect wallet",
           "validity-empty": "-",
           "validity-no-funds": "No funds to withdraw",
-          "validity-amount-too-big": "Amount too large" ,
+          "validity-amount-too-big": "Amount too large",
           "validity-amount-below-min": "Amount below min",
           "validity-no-amount": "Enter amount"
         },
@@ -580,6 +580,14 @@
     "one-click": {
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
+    },
+    "maintenance-mode": {
+      "header": "Maintenance mode",
+      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "visit-text": {
+        "1": "Visit",
+        "2": "for more information."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",

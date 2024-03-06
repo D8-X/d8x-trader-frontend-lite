@@ -11,6 +11,7 @@ import { Container } from 'components/container/Container';
 import { FundingTable } from 'components/funding-table/FundingTable';
 import { MarketSelect } from 'components/header/elements/market-select/MarketSelect';
 import { Helmet } from 'components/helmet/Helmet';
+import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { OpenOrdersTable } from 'components/open-orders-table/OpenOrdersTable';
 import { OrderBlock } from 'components/order-block/OrderBlock';
 import { PositionsTable } from 'components/positions-table/PositionsTable';
@@ -278,59 +279,61 @@ export const TraderPage = () => {
         } | D8X App`}
       />
       <Box className={styles.root}>
-        <Container
-          className={classnames(styles.headerContainer, {
-            [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
-          })}
-        >
-          <Box className={styles.leftBlock}>
-            <PerpetualStats />
-          </Box>
-          <Box className={styles.rightBlock}>
-            <MarketSelect />
-          </Box>
-        </Container>
-        {!isSmallScreen && (
+        <MaintenanceWrapper>
           <Container
-            className={classnames(styles.sidesContainer, {
-              [styles.swapSides]: orderBlockPosition === OrderBlockPositionE.Left,
+            className={classnames(styles.headerContainer, {
+              [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
             })}
           >
             <Box className={styles.leftBlock}>
-              <ChartHolder />
-              <TableSelector
-                selectorItems={selectorForAllItems}
-                activeIndex={activeAllIndex}
-                setActiveIndex={handleActiveAllIndex}
-              />
+              <PerpetualStats />
             </Box>
             <Box className={styles.rightBlock}>
-              <OrderBlock />
+              <MarketSelect />
             </Box>
           </Container>
-        )}
-        {isSmallScreen && (
-          <Container className={styles.columnContainer}>
-            <ChartHolder />
-            <OrderBlock />
-            {isMobile ? (
-              <TableSelectorMobile selectorItems={selectorForAllItems} />
-            ) : (
-              <>
+          {!isSmallScreen && (
+            <Container
+              className={classnames(styles.sidesContainer, {
+                [styles.swapSides]: orderBlockPosition === OrderBlockPositionE.Left,
+              })}
+            >
+              <Box className={styles.leftBlock}>
+                <ChartHolder />
                 <TableSelector
-                  selectorItems={positionItems}
-                  activeIndex={activePositionIndex}
-                  setActiveIndex={handlePositionsIndex}
+                  selectorItems={selectorForAllItems}
+                  activeIndex={activeAllIndex}
+                  setActiveIndex={handleActiveAllIndex}
                 />
-                <TableSelector
-                  selectorItems={historyItems}
-                  activeIndex={activeHistoryIndex}
-                  setActiveIndex={handleHistoryIndex}
-                />
-              </>
-            )}
-          </Container>
-        )}
+              </Box>
+              <Box className={styles.rightBlock}>
+                <OrderBlock />
+              </Box>
+            </Container>
+          )}
+          {isSmallScreen && (
+            <Container className={styles.columnContainer}>
+              <ChartHolder />
+              <OrderBlock />
+              {isMobile ? (
+                <TableSelectorMobile selectorItems={selectorForAllItems} />
+              ) : (
+                <>
+                  <TableSelector
+                    selectorItems={positionItems}
+                    activeIndex={activePositionIndex}
+                    setActiveIndex={handlePositionsIndex}
+                  />
+                  <TableSelector
+                    selectorItems={historyItems}
+                    activeIndex={activeHistoryIndex}
+                    setActiveIndex={handleHistoryIndex}
+                  />
+                </>
+              )}
+            </Container>
+          )}
+        </MaintenanceWrapper>
       </Box>
 
       <UsdcSwapModal isOpen={dialogOpen} onClose={closeDialog} />

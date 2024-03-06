@@ -29,6 +29,10 @@ const fetchUrl = async (url: string, chainId: number) => {
   return data.json();
 };
 
+export async function getMaintenanceStatus(chainId: number): Promise<ValidatedResponseI<boolean>> {
+  return fetchUrl('check-maintenance', chainId);
+}
+
 export async function getExchangeInfo(
   chainId: number,
   traderAPI: TraderInterface | null

@@ -1,0 +1,39 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--d8x-color-background-items);
+  border-radius: $d8x-border-radius;
+  overflow-x: auto;
+  margin: 0 auto;
+  max-width: 1450px;
+  width: 100%;
+  padding: $d8x-spacing * 10 $d8x-spacing * 8;
+
+  @include media-tablet {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.title {
+  font-size: 24px;
+  padding: $d8x-spacing * 3 0;
+}
+
+.description {
+  font-size: 16px;
+  margin-top: $d8x-spacing * 8;
+  margin-bottom: $d8x-spacing * 3;
+}
+
+.visitText {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+
+  .chainIcon {
+    margin: 0 $d8x-spacing * 3;
+  }
+}

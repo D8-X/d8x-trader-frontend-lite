@@ -7,6 +7,7 @@ import { Box } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
+import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { useQuery } from 'hooks/useQuery';
 import { getMyReferrals, getReferCut, getTokenInfo } from 'network/referral';
 import {
@@ -157,10 +158,12 @@ export const ReferPage = () => {
     <>
       <Helmet title="Refer | D8X App" />
       <Box className={styles.root}>
-        <Container className={styles.container}>
-          <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
-          {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
-        </Container>
+        <MaintenanceWrapper>
+          <Container className={styles.container}>
+            <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
+            {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
+          </Container>
+        </MaintenanceWrapper>
       </Box>
     </>
   );

@@ -561,6 +561,14 @@
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
     },
+    "maintenance-mode": {
+      "header": "Maintenance mode",
+      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "visit-text": {
+        "1": "Visit",
+        "2": "for more information."
+      }
+    },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
       "header-to": "Bridge in",

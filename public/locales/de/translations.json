@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Hinzufügen",
         "validity-empty": "Brieftasche verbinden",
-        "validity-amount-too-big": "Zu wenig Mittel" ,
+        "validity-amount-too-big": "Zu wenig Mittel",
         "validity-amount-below-min": "Betrag unter Minimum",
         "validity-no-amount": "Betrag eingeben"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Brieftasche verbinden",
           "validity-empty": "-",
           "validity-no-funds": "Keine auszahlbaren Mittel",
-          "validity-amount-too-big": "Betrag zu gross" ,
+          "validity-amount-too-big": "Betrag zu gross",
           "validity-amount-below-min": "Betrag unter Minimum",
           "validity-no-amount": "Betrag eingeben"
         },
@@ -580,6 +580,14 @@
     "one-click": {
       "disable": "Deaktivieren Sie den One-Click-Handel",
       "enable": "Aktivieren Sie den One-Click-Handel"
+    },
+    "maintenance-mode": {
+      "header": "Maintenance mode",
+      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "visit-text": {
+        "1": "Visit",
+        "2": "for more information."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",

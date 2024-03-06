@@ -486,7 +486,7 @@
         "max": "Max:",
         "button": "Anadir",
         "validity-empty": "Conectar cartera",
-        "validity-amount-too-big": "Fondos insuficientes" ,
+        "validity-amount-too-big": "Fondos insuficientes",
         "validity-amount-below-min": "Cantidad por debajo del mínimo",
         "validity-no-amount": "Ingresar cantidad"
       },
@@ -502,7 +502,7 @@
           "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
           "validity-no-funds": "No hay fondos para retirar",
-          "validity-amount-too-big": "Cantidad demasiado grande" ,
+          "validity-amount-too-big": "Cantidad demasiado grande",
           "validity-amount-below-min": "Cantidad por debajo del mínimo",
           "validity-no-amount": "Ingresar cantidad"
         },
@@ -580,6 +580,14 @@
     "one-click": {
       "disable": "Deshabilitar el comercio con un clic",
       "enable": "Habilite el comercio con un solo clic"
+    },
+    "maintenance-mode": {
+      "header": "Maintenance mode",
+      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "visit-text": {
+        "1": "Visit",
+        "2": "for more information."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
