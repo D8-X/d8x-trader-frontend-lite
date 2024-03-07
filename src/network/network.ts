@@ -15,8 +15,7 @@ import type {
   PriceFeedResponseI,
   ValidatedResponseI,
 } from 'types/types';
-import { MaintenanceStatusI } from 'types/types';
-import { PumpStationResponseI } from 'types/types';
+import { MaintenanceStatusI, PumpStationResponseI } from 'types/types';
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[chainId] || config.apiUrl.default;
