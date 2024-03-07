@@ -364,14 +364,16 @@
       }
     },
     "pump-station": {
-      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "title": "Participa en el comercio para BOMBEAR tu bolsa de Airdrop de $D8X",
       "pumped-volume": {
-        "title": "PUMPED Volume",
-        "modal-text": "PUMPED Volume Description"
+        "title": "Volumen BOMBEADO",
+        "modal-text": "El Airdrop de $D8X se calcula en función del volumen BOMBEADO. Para cada operación calculamos el volumen comercial x el aumento. El volumen BOMBEADO es la suma del mismo."
       },
       "pump-o-meter": {
-        "title": "PUMP-O-METER",
-        "modal-text": "PUMP-O-METER Description"
+        "title": "BOMBA-METRO",
+        "modal-text": "El BOMBA-METRO muestra el estímulo que se aplica a tu PRÓXIMA operación. El estímulo varía de 1x a 105x y tiene dos partes:",
+        "modal-text2": "Volumen Boost - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y 5 veces. ¡Cuanto más opere, mayor será su potencial estímulo!",
+        "modal-text3": "Fortune Boost: - cada operación te brinda la oportunidad de obtener Fortune Boost, ¡un bono que puede dispararse desde 0x hasta un increíble 100x!"
       }
     },
     "refer": {

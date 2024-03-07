@@ -58,7 +58,7 @@ export const PumpStationBlock = () => {
 
   return (
     <div className={styles.root}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
         <D8XLogoWithText width={86} height={20} />
       </Typography>
       <div className={styles.labelHolder}>
@@ -74,7 +74,15 @@ export const PumpStationBlock = () => {
       <div className={styles.labelHolder}>
         <InfoLabelBlock
           title={t('pages.pump-station.pump-o-meter.title')}
-          content={<Typography>{t('pages.pump-station.pump-o-meter.modal-text')}</Typography>}
+          content={
+            <Typography>
+              {t('pages.pump-station.pump-o-meter.modal-text')}
+              <ol>
+                <li>{t('pages.pump-station.pump-o-meter.modal-text2')}</li>
+                <li>{t('pages.pump-station.pump-o-meter.modal-text3')}</li>
+              </ol>
+            </Typography>
+          }
         />
       </div>
       <div className={styles.meterHolder}>
