@@ -2,7 +2,8 @@ import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useSta
 import { useTranslation } from 'react-i18next';
 import { useNetwork } from 'wagmi';
 
-import { Typography } from '@mui/material';
+import { X } from '@mui/icons-material';
+import { Link, Typography } from '@mui/material';
 
 import { Translate } from 'components/translate/Translate';
 import { getMaintenanceStatus } from 'network/network';
@@ -72,23 +73,26 @@ export const MaintenanceWrapper = ({ children }: PropsWithChildren) => {
 
   return (
     <div className={styles.root}>
-      <Typography variant="h5" className={styles.title}>
-        {t('common.maintenance-mode.header')}
-      </Typography>
-      <Typography variant="bodyMedium" className={styles.description}>
-        <Translate i18nKey={'common.maintenance-mode.description'} values={{ chainName: chain.name }} />
-      </Typography>
-      <Typography variant="bodyMedium" className={styles.visitText}>
-        {t('common.maintenance-mode.visit-text.1')}
-        <img
-          src={(chain as { iconUrl?: string }).iconUrl}
-          alt={chain.name}
-          className={styles.chainIcon}
-          width={22}
-          height={22}
-        />
-        {t('common.maintenance-mode.visit-text.2')}
-      </Typography>
+      <div className={styles.content}>
+        <Typography variant="h5" className={styles.title}>
+          {t('common.maintenance-mode.header')}
+        </Typography>
+        <Typography variant="bodyMedium" className={styles.description}>
+          <Translate i18nKey={'common.maintenance-mode.description'} values={{ chainName: chain.name }} />
+        </Typography>
+        <Typography variant="bodyMedium" className={styles.visitText}>
+          {t('common.maintenance-mode.visit-text.1')}
+          <Link
+            href="https://twitter.com/d8x_exchange"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.chainIcon}
+          >
+            <X />
+          </Link>
+          {t('common.maintenance-mode.visit-text.2')}
+        </Typography>
+      </div>
     </div>
   );
 };

@@ -1,11 +1,10 @@
 import { memo } from 'react';
 
+import { GitHub, X } from '@mui/icons-material';
 import { Link, Typography } from '@mui/material';
 
 import { ReactComponent as Logo } from 'assets/logo.svg';
-import { ReactComponent as GithubLogo } from 'assets/social/github.svg';
 import { ReactComponent as MediumLogo } from 'assets/social/medium.svg';
-import { ReactComponent as TwitterLogo } from 'assets/social/twitter.svg';
 import { ReactComponent as DiscordLogo } from 'assets/social/discord.svg';
 import { ReactComponent as GitbookLogo } from 'assets/social/gitbook.svg';
 import { ReactComponent as PythLogo } from 'assets/icons/pbp_pyth.svg';
@@ -51,7 +50,7 @@ export const Footer = memo(() => {
               rel="noopener noreferrer"
               className={styles.footerSocialLogo}
             >
-              <GithubLogo />
+              <GitHub />
             </Link>
             <Link
               href="https://medium.com/@d8x.exchange"
@@ -75,7 +74,7 @@ export const Footer = memo(() => {
               rel="noopener noreferrer"
               className={styles.footerSocialLogo}
             >
-              <TwitterLogo />
+              <X />
             </Link>
             <Link
               href="https://d8x.gitbook.io/d8x"
