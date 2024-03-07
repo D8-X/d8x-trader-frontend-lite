@@ -1,6 +1,6 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef } from 'react';
 import { type PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
@@ -17,6 +17,10 @@ import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 
 import styles from './ConnectModal.module.scss';
+import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
+import { getPublicKey } from '@noble/secp256k1';
+import { bytesToHex } from 'viem';
+import { postSocialVerify } from 'network/referral';
 
 interface ConnectModalPropsI {
   isOpen: boolean;
@@ -28,11 +32,15 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
 
   const { isConnected } = useAccount();
 
+  const userInfo = useAtomValue(socialUserInfoAtom);
+  const socialPK = useAtomValue(socialPKAtom);
+
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
 
   const loadingAPIRef = useRef(false);
+  const verifyRef = useRef(false);
 
   const chainId = useChainId();
 
@@ -101,8 +109,24 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   }, [publicClient, chainId, loadSDK, unloadSDK]);
 
   const handleWeb3AuthSuccessConnect = useCallback(() => {
-    // TODO: Do nothing at the moment
-  }, []);
+    const verify = async () => {
+      if (!chainId || !userInfo?.idToken || verifyRef.current || !socialPK) {
+        return;
+      }
+      try {
+        verifyRef.current = true;
+        const pubKey = bytesToHex(getPublicKey(socialPK));
+        await postSocialVerify(chainId, userInfo.idToken, pubKey).catch((e) =>
+          console.log('POST /social-verify error', e)
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+        verifyRef.current = false;
+      }
+    };
+    verify().then();
+  }, [chainId, socialPK, userInfo]);
 
   const handleWeb3AuthErrorConnect = useCallback((error: string) => {
     console.log(error);

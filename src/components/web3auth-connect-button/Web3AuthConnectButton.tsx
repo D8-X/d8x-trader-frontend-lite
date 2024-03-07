@@ -1,12 +1,12 @@
 import classnames from 'classnames';
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAtom } from 'jotai';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { bytesToHex, numberToHex } from 'viem';
+import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect } from 'wagmi';
 
-import { getPublicKey } from '@noble/secp256k1';
+// import { getPublicKey } from '@noble/secp256k1';
 import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
@@ -19,8 +19,8 @@ import { Button } from '@mui/material';
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
-import { postSocialVerify } from 'network/referral';
-import { socialPKAtom, socialUserInfoAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
+// import { postSocialVerify } from 'network/referral';
+import { socialPKAtom, socialUserInfoAtom, web3authIdTokenAtom, web3authProviderAtom } from 'store/web3-auth.store';
 import { TemporaryAnyT } from 'types/types';
 
 import styles from './Web3AuthConnectButton.module.scss';
@@ -41,13 +41,12 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
   const { isConnected } = useAccount();
 
-  const [userInfo, setUserInfo] = useAtom(socialUserInfoAtom);
-  const [socialPK, setSocialPK] = useAtom(socialPKAtom);
+  const [, setUserInfo] = useAtom(socialUserInfoAtom);
+  const [, setSocialPK] = useAtom(socialPKAtom);
   const [web3authIdToken, setWeb3authIdToken] = useAtom(web3authIdTokenAtom);
+  const [, setWeb3authProvider] = useAtom(web3authProviderAtom);
 
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
-
-  const requestRef = useRef(false);
 
   const { connectAsync } = useConnect({
     connector: new Web3AuthConnector({
@@ -111,8 +110,8 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
         setWeb3auth(web3authInstance);
 
         await web3authInstance.init();
-        if (web3authInstance.connected) {
-          // setLoggedIn(true);
+        if (web3authInstance.provider) {
+          setWeb3authProvider(web3authInstance.provider);
         }
         // so we can switch chains
         for (let i = 1; i < chains.length; i++) {
@@ -132,7 +131,7 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
     };
 
     init().then();
-  }, [chainId]);
+  }, [chainId, setWeb3authProvider]);
 
   const signInWithTwitter = async () => {
     if (!auth) {
@@ -179,26 +178,6 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
       errorCallback(error.message);
     }
   };
-
-  useEffect(() => {
-    const verify = async () => {
-      if (!chainId || !userInfo?.idToken || !web3auth || requestRef.current || !socialPK) {
-        return;
-      }
-      try {
-        requestRef.current = true;
-        const pubKey = bytesToHex(getPublicKey(socialPK));
-        await postSocialVerify(chainId, userInfo?.idToken, pubKey).catch((e) =>
-          console.log('POST /social-verify error', e)
-        );
-      } catch (error: TemporaryAnyT) {
-        console.log(error);
-      } finally {
-        requestRef.current = false;
-      }
-    };
-    verify().then();
-  }, [userInfo, chainId, web3auth, socialPK]);
 
   if (isConnected) {
     return null;
