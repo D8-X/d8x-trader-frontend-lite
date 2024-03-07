@@ -582,11 +582,11 @@
       "enable": "Aktivieren Sie den One-Click-Handel"
     },
     "maintenance-mode": {
-      "header": "Maintenance mode",
-      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "header": "Wartungsmodus",
+      "description": "Der Handlesplatz auf <bold>{{chainName}}</bold> ist im Wartungsmodus.",
       "visit-text": {
-        "1": "Visit",
-        "2": "for more information."
+        "1": "Klick",
+        "2": "für mehr Informationen."
       }
     },
     "li-fi-widget": {

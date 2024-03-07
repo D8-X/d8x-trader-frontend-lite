@@ -582,11 +582,11 @@
       "enable": "启用一键交易"
     },
     "maintenance-mode": {
-      "header": "Maintenance mode",
-      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "header": "维护模式",
+      "description": "<bold>{{chainName}}</bold> 上的期货交易所处于维护模式。",
       "visit-text": {
-        "1": "Visit",
-        "2": "for more information."
+        "1": "点击",
+        "2": "f了解更多信息。"
       }
     },
     "li-fi-widget": {

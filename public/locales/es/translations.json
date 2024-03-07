@@ -582,11 +582,11 @@
       "enable": "Habilite el comercio con un solo clic"
     },
     "maintenance-mode": {
-      "header": "Maintenance mode",
-      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "header": "Modo de mantenimiento",
+      "description": "La bolsa en <bold>{{chainName}}</bold> está en modo de mantenimiento.",
       "visit-text": {
-        "1": "Visit",
-        "2": "for more information."
+        "1": "Visita",
+        "2": "para más información."
       }
     },
     "li-fi-widget": {

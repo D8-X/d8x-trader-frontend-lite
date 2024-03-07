@@ -582,11 +582,11 @@
       "enable": "Désactiver le trading en un clic"
     },
     "maintenance-mode": {
-      "header": "Maintenance mode",
-      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "header": "Mode de Maintenance",
+      "description": "L'échange sur <bold>{{chainName}}</bold> est en mode maintenance.",
       "visit-text": {
-        "1": "Visit",
-        "2": "for more information."
+        "1": "Visitez",
+        "2": "pour plus d'informations."
       }
     },
     "li-fi-widget": {
