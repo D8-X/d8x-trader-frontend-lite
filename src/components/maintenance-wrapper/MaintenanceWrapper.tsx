@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
+import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNetwork } from 'wagmi';
 
@@ -6,41 +6,65 @@ import { Typography } from '@mui/material';
 
 import { Translate } from 'components/translate/Translate';
 import { getMaintenanceStatus } from 'network/network';
+import { MaintenanceStatusI } from 'types/types';
 
 import styles from './MaintenanceWrapper.module.scss';
+
+const INTERVAL_FOR_DATA_POLLING = 60000; // Each 60 sec
 
 export const MaintenanceWrapper = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
 
   const { chain } = useNetwork();
 
-  const [isMaintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceStatuses, setMaintenanceStatuses] = useState<MaintenanceStatusI[]>([]);
 
   const isRequestSent = useRef(false);
 
   const fetchMaintenanceStatus = useCallback(() => {
-    if (isRequestSent.current || !chain?.id) {
+    if (isRequestSent.current) {
       return;
     }
 
     isRequestSent.current = true;
 
-    getMaintenanceStatus(chain.id)
+    getMaintenanceStatus()
       .then((response) => {
-        setMaintenanceMode(response.data);
+        setMaintenanceStatuses(response);
       })
       .catch((error) => {
         console.error(error);
-        setMaintenanceMode(false);
+        setMaintenanceStatuses([]);
       })
       .finally(() => {
         isRequestSent.current = false;
       });
-  }, [chain]);
+  }, []);
 
   useEffect(() => {
     fetchMaintenanceStatus();
   }, [fetchMaintenanceStatus]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchMaintenanceStatus();
+    }, INTERVAL_FOR_DATA_POLLING);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchMaintenanceStatus]);
+
+  const isMaintenanceMode = useMemo(() => {
+    if (maintenanceStatuses.length === 0 || !chain?.id) {
+      return false;
+    }
+    const foundStatus = maintenanceStatuses.find((status) => status.chainId === chain.id);
+    if (foundStatus) {
+      return foundStatus.isMaintenance;
+    }
+    return false;
+  }, [chain, maintenanceStatuses]);
 
   if (!isMaintenanceMode || !chain) {
     return children;

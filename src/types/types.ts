@@ -88,6 +88,11 @@ export interface ValidatedResponseI<T> extends ReferralResponseI<T> {
   msg: string;
 }
 
+export interface MaintenanceStatusI {
+  chainId: number;
+  isMaintenance: boolean;
+}
+
 export interface ExchangeInfoI {
   pools: PoolI[];
   oracleFactoryAddr: string;
