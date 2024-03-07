@@ -54,7 +54,7 @@ export const PumpStationBlock = () => {
   }, [fetchData]);
 
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
-  const percentageBoost = boostByChainId ? ((boostByChainId.nxtBoost + boostByChainId.nxtRndBoost) / 105) * 100 : 0;
+  const totalBoost = boostByChainId ? boostByChainId.nxtBoost + boostByChainId.nxtRndBoost : 0;
 
   return (
     <div className={styles.root}>
@@ -78,7 +78,7 @@ export const PumpStationBlock = () => {
         />
       </div>
       <div className={styles.meterHolder}>
-        <PumpOMeter percent={percentageBoost} />
+        <PumpOMeter totalBoost={totalBoost} />
       </div>
     </div>
   );
