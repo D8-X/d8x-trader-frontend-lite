@@ -1,5 +1,3 @@
-import { MarginAccountI } from 'types/types';
-
 export enum MessageTypeE {
   Connect = 'connect',
   Error = 'error',
@@ -69,15 +67,13 @@ export interface OnUpdateMarkPriceWsMessageI extends CommonWsMessageI {
   };
 }
 
-export interface UpdateMarginAccountI extends MarginAccountI {
-  traderAddr: string;
-}
-
 export interface OnUpdateMarginAccountWsMessageI extends CommonWsMessageI {
   type: MessageTypeE.OnUpdateMarginAccount;
   data: {
     name: MessageNameE.UpdateMarginAccount;
-    obj: UpdateMarginAccountI;
+    obj: {
+      traderAddr: string;
+    };
   };
 }
 

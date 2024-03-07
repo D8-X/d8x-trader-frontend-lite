@@ -18,7 +18,7 @@ export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAdd
         address: pool.marginTokenAddr as Address,
         abi: erc20ABI,
         functionName: 'balanceOf',
-        args: [userAddress as Address],
+        args: [userAddress],
       })),
     }),
     multicall({
