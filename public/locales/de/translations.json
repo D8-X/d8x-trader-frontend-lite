@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Handeln",
+    "pump-station": "PumpStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
     "portfolio": "Portfolio"
@@ -360,6 +361,19 @@
         "value": "Wert:",
         "value-placeholder": "Wert, der gefiltert werden soll",
         "clear": "Filter Löschen"
+      }
+    },
+    "pump-station": {
+      "title": "Trade um deinen $D8X Airdrop Bag zu PUMPEN",
+      "pumped-volume": {
+        "title": "GEPUMPTES Volumen",
+        "modal-text": "Der $D8X Airdrop wird basierend auf dem GEPUMPTEN Volumen berechnet. Für jeden Trade berechnen wir Handelsvolumen x Boost. Das gepumpte Volumen ist die Summe davon."
+      },
+      "pump-o-meter": {
+        "title": "PUMP-METER",
+        "modal-text": "Der PUMP-METER zeigt den Boost an, der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis 105x und besteht aus zwei Teilen:",
+        "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren. Je mehr du handelst, desto höher dein Boost.",
+        "modal-text3": "Fortune Boost - Fortune Boost – Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0-fachen auf das unglaubliche 100-fache ansteigen kann!"
       }
     },
     "refer": {

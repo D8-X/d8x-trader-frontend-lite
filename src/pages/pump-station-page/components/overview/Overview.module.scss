@@ -1,0 +1,21 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  background-color: var(--d8x-color-background-items-second);
+  padding: 10 * $d8x-spacing;
+  border-radius: $d8x-border-radius 0 0 $d8x-border-radius;
+  box-sizing: content-box;
+  min-width: 195px;
+  max-width: 270px;
+
+  @include media-tablet {
+    border-radius: $d8x-border-radius $d8x-border-radius 0 0;
+    max-width: inherit;
+  }
+}
+
+.title {
+  font-size: 32px;
+  line-height: 44px;
+  color: var(--d8x-color-text-main);
+}

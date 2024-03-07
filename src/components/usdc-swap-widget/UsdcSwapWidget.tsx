@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { parseUnits } from 'viem/utils';
 import {
-  Address,
+  type Address,
   erc20ABI,
   useAccount,
   useBalance,

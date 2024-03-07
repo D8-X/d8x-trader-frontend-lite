@@ -1,0 +1,10 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  display: flex;
+  border-radius: $d8x-border-radius;
+
+  @include media-tablet {
+    flex-direction: column;
+  }
+}

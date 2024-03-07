@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
@@ -30,8 +30,8 @@ export const FundingTable = memo(() => {
   const { t } = useTranslation();
 
   const [fundingList, setFundingList] = useAtom(fundingListAtom);
-  const [perpetuals] = useAtom(perpetualsAtom);
-  const [positions] = useAtom(positionsAtom);
+  const perpetuals = useAtomValue(perpetualsAtom);
+  const positions = useAtomValue(positionsAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
 
   const updateTradesHistoryRef = useRef(false);

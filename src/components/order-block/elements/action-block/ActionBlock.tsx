@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -123,25 +123,25 @@ export const ActionBlock = memo(() => {
     },
   });
 
-  const [orderInfo] = useAtom(orderInfoAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [selectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
-  const [positions] = useAtom(positionsAtom);
-  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [hasTpSlOrders] = useAtom(hasTpSlOrdersAtom);
-  const [poolFee] = useAtom(poolFeeAtom);
-  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedCurrency = useAtomValue(selectedCurrencyAtom);
+  const selectedPerpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const positions = useAtomValue(positionsAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const hasTpSlOrders = useAtomValue(hasTpSlOrdersAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
+  const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
+  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
+  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
