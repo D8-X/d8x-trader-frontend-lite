@@ -29,8 +29,9 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
     // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
     const wagmiConnected = localStorage.getItem('wagmi.connected');
     const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
+
     const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
-    const isWeb3Wallet = wagmiLastWallet === 'web3auth';
+    const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
 
     if (!isWagmiConnected || !isWeb3Wallet) return;
 
