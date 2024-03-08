@@ -717,44 +717,44 @@
       "close": "关闭"
     },
     "account-modal": {
-      "title": "Account",
-      "deposit-button": "Deposit",
-      "withdraw-button": "Withdraw",
-      "extract-pk-button": "Extract PK",
-      "notice-block": "Important notice: Make sure to have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral."
+      "title": "账户",
+      "deposit-button": "存款",
+      "withdraw-button": "提款",
+      "extract-pk-button": "提取私钥",
+      "notice-block": "重要通知：确保有足够的 <bold>{{currencyName}}</bold> 作为燃料费，并至少有一份抵押品。"
     },
     "deposit-modal": {
-      "title": "Deposit",
+      "title": "存款",
       "important-notice": {
-        "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
-        "1": "Important notice: send only <bold>{{currencyName}}</bold>",
-        "2": "(token address: ",
+        "full": "重要通知：只发送 <bold>{{currencyName}}</bold> (代币地址: <bold>{{currencyContractAddress}}</bold) 到这个地址。通过 <bold>{{chainName}}</bold>发送。",
+        "1": "重要通知：只发送 <bold>{{currencyName}}</bold>",
+        "2": "(代币地址: ",
         "3": ")",
-        "4": "to this address.",
-        "5": "Send over <bold>{{chainName}}</bold>."
+        "4": "到这个地址。",
+        "5": "通过 <bold>{{chainName}}</bold>发送。"
       },
-      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
-      "done-button": "Done"
+      "deposit-note": "确保存入足够的<bold>{{currencyName}}</bold>作为燃料费，并至少有一份抵押品。",
+      "done-button": "完成"
     },
     "extract-pk-modal": {
-      "title": "Extract Private Key",
-      "important-notice": "Important notice: never share your private key with anyone. Only reveal key if you know what you are doing.",
-      "reveal-key-button": "Reveal key"
+      "title": "提取私钥",
+      "important-notice": "重要通知：永远不要与任何人分享您的私钥。只有在你知道自己在做什么的情况下才揭示密钥。",
+      "reveal-key-button": "显示密钥"
     },
     "withdraw-modal": {
-      "title": "Withdraw",
-      "withdraw-button": "Withdraw",
+      "title": "提款",
+      "withdraw-button": "提款",
       "withdraw-address-error": "请输入有效地址"
     },
     "connect-modal": {
-      "title": "Sign in",
-      "description": "Sign in with X or web3 wallet",
-      "sign-in-with-x-button": "Sign in with X",
-      "sign-in-with-wallet-button": "Sign in with wallet",
-      "or-separator": "or",
-      "disconnect": "Disconnect",
-      "connected-title": "Welcome!",
-      "connected-description": "You have successfully signed in."
+      "title": "登录",
+      "description": "使用X或web3钱包登录t",
+      "sign-in-with-x-button": "使用X登录",
+      "sign-in-with-wallet-button": "使用钱包登录",
+      "or-separator": "或",
+      "disconnect": "断开连接",
+      "connected-title": "欢迎！",
+      "connected-description": "您已成功登录。"
     },
     "public-beta": {
       "info-text": "测试版 - 请自行研究",
