@@ -1,7 +1,7 @@
 import { ERC20_ABI } from '@d8x/perpetuals-sdk';
 import { writeContract } from '@wagmi/core';
 import { useAtom } from 'jotai';
-import { type ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { parseUnits } from 'viem';
 import { Address, useAccount, useBalance, useWalletClient } from 'wagmi';
@@ -31,6 +31,10 @@ export const WithdrawModal = () => {
   const addressInputTouchedRef = useRef(false);
 
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useAtom(withdrawModalOpenAtom);
+
+  useEffect(() => {
+    setAmountValue('');
+  }, [selectedCurrency]);
 
   const { data: walletClient } = useWalletClient();
   const { address, isConnected } = useAccount();
