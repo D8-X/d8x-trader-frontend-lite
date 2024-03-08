@@ -2,9 +2,9 @@ import { getPublicKey } from '@noble/secp256k1';
 import classnames from 'classnames';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { bytesToHex } from 'viem';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 
 import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
 import { Button, DialogTitle, Typography } from '@mui/material';
@@ -35,8 +35,6 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
 
   const chainId = useChainId();
 
-  const walletClient = useWalletClient({ chainId });
-
   const handleWeb3AuthSuccessConnect = useCallback(() => {
     const verify = async () => {
       if (!chainId || !userInfo?.idToken || verifyRef.current || !socialPK) {
@@ -56,14 +54,6 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
     };
     verify().then();
   }, [chainId, socialPK, userInfo]);
-
-  // TODO: remove me later
-  useEffect(() => {
-    if (walletClient) {
-      console.log('walletClient.status', walletClient.status);
-      console.log('walletClient chainid', walletClient.data?.chain.id);
-    }
-  }, [walletClient]);
 
   const handleWeb3AuthErrorConnect = useCallback((error: string) => {
     console.log(error);

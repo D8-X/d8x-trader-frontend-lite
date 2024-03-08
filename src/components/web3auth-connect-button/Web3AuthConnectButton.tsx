@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect } from 'wagmi';
@@ -18,7 +18,7 @@ import { Button } from '@mui/material';
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
-import { socialPKAtom, socialUserInfoAtom, web3authIdTokenAtom, web3authProviderAtom } from 'store/web3-auth.store';
+import { socialPKAtom, socialUserInfoAtom, web3authAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
 import { TemporaryAnyT } from 'types/types';
 
 import styles from './Web3AuthConnectButton.module.scss';
@@ -41,10 +41,10 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
   const setSocialPK = useSetAtom(socialPKAtom);
-  const setWeb3authProvider = useSetAtom(web3authProviderAtom);
+  const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [web3authIdToken, setWeb3authIdToken] = useAtom(web3authIdTokenAtom);
 
-  const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
+  // const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
 
   const { connectAsync } = useConnect({
     connector: new Web3AuthConnector({
@@ -64,6 +64,8 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
   });
 
   const chainId = useChainId();
+
+  const signInRef = useRef(false);
 
   useEffect(() => {
     const chain = chains.find(({ id }) => id === chainId);
@@ -107,9 +109,9 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
         // TODO: remove this
         console.log('init', web3authInstance.status, web3authInstance.connected);
         await web3authInstance.init();
-        if (web3authInstance.provider) {
-          setWeb3authProvider(web3authInstance.provider);
-        }
+        // if (web3authInstance.provider) {
+        //   setWeb3authProvider(web3authInstance.provider);
+        // }
         // so we can switch chains
         for (let i = 1; i < chains.length; i++) {
           await web3authInstance.addChain({
@@ -128,14 +130,14 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
     };
 
     init().then();
-  }, [chainId, setWeb3authProvider]);
+  }, [chainId, setWeb3auth]);
 
   const signInWithTwitter = async () => {
-    if (!auth) {
+    if (!auth || signInRef.current) {
       console.log('auth not defined');
       return;
     }
-
+    signInRef.current = true;
     try {
       const twitterProvider = new TwitterAuthProvider();
       console.log('signInWithPopup', web3auth?.status, web3auth?.connected);
@@ -179,6 +181,7 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
       console.error(error);
       errorCallback(error.message);
     }
+    signInRef.current = false;
   };
 
   if (isConnected) {

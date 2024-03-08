@@ -8,21 +8,47 @@ import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { config } from 'config';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
+import { web3authAtom } from 'store/web3-auth.store';
+// import { hexToNumber, numberToHex } from 'viem';
+// import { ADAPTER_STATUS } from '@web3auth/base';
 
 export const SDKLoader = memo(() => {
   const { isConnected } = useAccount();
   const chainId = useChainId();
 
   const publicClient = usePublicClient();
-  const { data: walletClient, isSuccess } = useWalletClient();
+  const { data: walletClient, isSuccess, refetch } = useWalletClient();
 
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
+  const web3auth = useAtomValue(web3authAtom);
+
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTradingClient = useSetAtom(tradingClientAtom);
 
   const loadingAPIRef = useRef(false);
+
+  useEffect(() => {
+    console.log('publicClient chain id', publicClient.chain.id);
+    console.log('web3auth', web3auth?.status, web3auth?.connected);
+    console.log('walletClient', walletClient?.chain.id, isSuccess);
+    console.log(web3auth);
+    // if (web3auth?.status === ADAPTER_STATUS.READY) {
+    //   console.log(
+    //     'web3auth.switchChain, from-to:',
+    //     hexToNumber((web3auth.provider?.chainId as `0x${string}`) ?? '0x0'),
+    //     publicClient.chain.id,
+    //     web3auth.status,
+    //     web3auth.connected
+    //   );
+    //   refetch();
+    //   web3auth.switchChain({ chainId: numberToHex(publicClient.chain.id) });
+    // }
+    // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
+    //   web3auth.init();
+    // }
+  }, [web3auth, publicClient, walletClient, isSuccess, refetch]);
 
   useEffect(() => {
     console.log('SDKLoader::setTradingClient', walletClient?.account, walletClient?.chain.id, isSuccess);
