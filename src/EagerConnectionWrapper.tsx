@@ -28,9 +28,11 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
     // to reconnect user wallet, but instead will use prev connection
     // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
     const wagmiConnected = localStorage.getItem('wagmi.connected');
+    const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
     const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
+    const isWeb3Wallet = wagmiLastWallet === 'web3auth';
 
-    if (!isWagmiConnected) return;
+    if (!isWagmiConnected || !isWeb3Wallet) return;
 
     const chain = chains.find(({ id }) => id === chainId);
     if (!chain) {
