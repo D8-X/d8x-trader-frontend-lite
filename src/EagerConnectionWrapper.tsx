@@ -3,13 +3,14 @@ import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
-import { chains } from 'blockchain-api/wagmi/wagmiClient';
-import { web3AuthConfig } from 'config';
-import { useAtomValue } from 'jotai';
-import { ReactNode, useEffect } from 'react';
-import { web3authIdTokenAtom } from 'store/web3-auth.store';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { ReactNode, useEffect, useRef } from 'react';
 import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect } from 'wagmi';
+
+import { chains } from 'blockchain-api/wagmi/wagmiClient';
+import { web3AuthConfig } from 'config';
+import { web3authAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
 
 const clientId = web3AuthConfig.web3AuthClientId;
 const verifierName = web3AuthConfig.web3AuthVerifier;
@@ -20,9 +21,12 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
   const chainId = useChainId();
 
   const web3authIdToken = useAtomValue(web3authIdTokenAtom);
+  const setWeb3Auth = useSetAtom(web3authAtom);
+
+  const isInstanceCreatedRef = useRef(false);
 
   useEffect(() => {
-    if (!isDisconnected) {
+    if (!isDisconnected || isInstanceCreatedRef.current) {
       return;
     }
 
@@ -74,7 +78,6 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
       },
     });
     web3authInstance.configureAdapter(openloginAdapter);
-    //   setWeb3auth(web3authInstance); ?
 
     web3authInstance.init().then(() => {
       connect({
@@ -94,7 +97,10 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
         }),
       });
     });
-  }, [connect, isDisconnected, chainId, web3authIdToken]);
+
+    setWeb3Auth(web3authInstance);
+    isInstanceCreatedRef.current = true;
+  }, [connect, isDisconnected, chainId, web3authIdToken, setWeb3Auth]);
 
   return children;
 };

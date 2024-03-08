@@ -17,7 +17,7 @@ export const SDKLoader = memo(() => {
   const chainId = useChainId();
 
   const publicClient = usePublicClient();
-  const { data: walletClient, isSuccess, refetch } = useWalletClient();
+  const { data: walletClient, isSuccess } = useWalletClient();
 
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
   const web3auth = useAtomValue(web3authAtom);
@@ -33,7 +33,8 @@ export const SDKLoader = memo(() => {
     console.log('publicClient chain id', publicClient.chain.id);
     console.log('web3auth', web3auth?.status, web3auth?.connected);
     console.log('walletClient', walletClient?.chain.id, isSuccess);
-    console.log(web3auth);
+    console.log({ publicClient, walletClient, web3auth, isSuccess });
+
     // if (web3auth?.status === ADAPTER_STATUS.READY) {
     //   console.log(
     //     'web3auth.switchChain, from-to:',
@@ -48,7 +49,14 @@ export const SDKLoader = memo(() => {
     // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
     //   web3auth.init();
     // }
-  }, [web3auth, publicClient, walletClient, isSuccess, refetch]);
+  }, [web3auth, publicClient, walletClient, isSuccess]);
+
+  // useEffect(() => {
+  //   if (web3auth && chainId) {
+  //     console.log({ web3auth });
+  //     web3auth.switchChain({ chainId: `${chainId}` }).then();
+  //   }
+  // }, [web3auth, chainId]);
 
   useEffect(() => {
     console.log('SDKLoader::setTradingClient', walletClient?.account, walletClient?.chain.id, isSuccess);
