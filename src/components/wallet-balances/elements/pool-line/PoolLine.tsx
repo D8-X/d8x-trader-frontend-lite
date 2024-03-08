@@ -3,7 +3,6 @@ import { type Address, useAccount, useBalance } from 'wagmi';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
-import { formatCurrency } from 'utils/formatCurrency';
 
 import { REFETCH_BALANCES_INTERVAL } from '../../constants';
 
@@ -37,7 +36,5 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
     return null;
   }
 
-  return (
-    <AssetLine symbol={pool.poolSymbol} value={tokenBalanceData ? formatCurrency(+tokenBalanceData?.formatted) : ''} />
-  );
+  return <AssetLine symbol={pool.poolSymbol} value={tokenBalanceData ? +tokenBalanceData?.formatted : ''} />;
 });

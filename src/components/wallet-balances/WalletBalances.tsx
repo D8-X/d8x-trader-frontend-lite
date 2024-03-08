@@ -4,7 +4,6 @@ import { useAccount, useBalance } from 'wagmi';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { gasTokenSymbolAtom, poolsAtom } from 'store/pools.store';
-import { formatCurrency } from 'utils/formatCurrency';
 
 import { REFETCH_BALANCES_INTERVAL } from './constants';
 import { PoolLine } from './elements/pool-line/PoolLine';
@@ -42,7 +41,7 @@ export const WalletBalances = () => {
       <AssetLine
         key={gasTokenSymbol || 'gas-token'}
         symbol={gasTokenSymbol || ''}
-        value={gasTokenBalanceData ? formatCurrency(+gasTokenBalanceData.formatted) : ''}
+        value={gasTokenBalanceData ? gasTokenBalanceData.formatted : ''}
       />
       {activePools.map((pool) => (
         <PoolLine key={pool.poolSymbol} pool={pool} />

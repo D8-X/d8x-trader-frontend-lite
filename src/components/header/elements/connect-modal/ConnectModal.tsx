@@ -1,8 +1,10 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { getPublicKey } from '@noble/secp256k1';
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef } from 'react';
+import { bytesToHex } from 'viem';
 import { type PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
 
 import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
@@ -13,14 +15,12 @@ import { WalletConnectButton } from 'components/wallet-connect-button/WalletConn
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { config } from 'config';
+import { postSocialVerify } from 'network/referral';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
+import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
 
 import styles from './ConnectModal.module.scss';
-import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
-import { getPublicKey } from '@noble/secp256k1';
-import { bytesToHex } from 'viem';
-import { postSocialVerify } from 'network/referral';
 
 interface ConnectModalPropsI {
   isOpen: boolean;

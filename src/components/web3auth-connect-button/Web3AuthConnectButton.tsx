@@ -1,12 +1,11 @@
 import classnames from 'classnames';
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect } from 'wagmi';
 
-// import { getPublicKey } from '@noble/secp256k1';
 import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
@@ -19,7 +18,6 @@ import { Button } from '@mui/material';
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
-// import { postSocialVerify } from 'network/referral';
 import { socialPKAtom, socialUserInfoAtom, web3authIdTokenAtom, web3authProviderAtom } from 'store/web3-auth.store';
 import { TemporaryAnyT } from 'types/types';
 
@@ -41,10 +39,10 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
   const { isConnected } = useAccount();
 
-  const [, setUserInfo] = useAtom(socialUserInfoAtom);
-  const [, setSocialPK] = useAtom(socialPKAtom);
+  const setUserInfo = useSetAtom(socialUserInfoAtom);
+  const setSocialPK = useSetAtom(socialPKAtom);
+  const setWeb3authProvider = useSetAtom(web3authProviderAtom);
   const [web3authIdToken, setWeb3authIdToken] = useAtom(web3authIdTokenAtom);
-  const [, setWeb3authProvider] = useAtom(web3authProviderAtom);
 
   const [web3auth, setWeb3auth] = useState<Web3AuthNoModal | null>(null);
 
@@ -72,8 +70,6 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
     if (!chain) {
       return;
     }
-
-    console.log({ contractAddress: chain.contracts?.multicall3?.address });
 
     const init = async () => {
       try {
