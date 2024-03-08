@@ -104,7 +104,8 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
         });
         web3authInstance.configureAdapter(openloginAdapter);
         setWeb3auth(web3authInstance);
-
+        // TODO: remove this
+        console.log('init', web3authInstance.status, web3authInstance.connected);
         await web3authInstance.init();
         if (web3authInstance.provider) {
           setWeb3authProvider(web3authInstance.provider);
@@ -137,6 +138,7 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
     try {
       const twitterProvider = new TwitterAuthProvider();
+      console.log('signInWithPopup', web3auth?.status, web3auth?.connected);
       const loginRes = await signInWithPopup(auth, twitterProvider);
 
       if (!web3auth) {
@@ -144,8 +146,10 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
         return;
       }
       console.log('login details', loginRes);
+      console.log('getIdToken', web3auth.status, web3auth.connected);
       const idToken = await loginRes.user.getIdToken(true);
 
+      console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN,', web3auth?.status, web3auth?.connected);
       await web3auth
         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
           loginProvider: 'jwt',
@@ -159,15 +163,17 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
           console.log(error);
           errorCallback(error.message);
         });
-
+      console.log('info & pk', web3auth.status, web3auth.connected);
       const info = await web3auth.getUserInfo();
       const privateKey = await web3auth.provider?.request({
         method: 'eth_private_key',
       });
+      console.log('connectAsync', web3auth.status, web3auth.connected);
       await connectAsync();
       setUserInfo(info);
       setWeb3authIdToken(idToken);
       setSocialPK(privateKey as string);
+      console.log('successCallback', web3auth.status, web3auth.connected);
       successCallback();
     } catch (error: TemporaryAnyT) {
       console.error(error);

@@ -1,11 +1,10 @@
-import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { getPublicKey } from '@noble/secp256k1';
 import classnames from 'classnames';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useRef } from 'react';
 import { bytesToHex } from 'viem';
-import { type PublicClient, useAccount, useChainId, usePublicClient } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
 import { Button, DialogTitle, Typography } from '@mui/material';
@@ -14,10 +13,7 @@ import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3Au
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
-import { config } from 'config';
 import { postSocialVerify } from 'network/referral';
-import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
-import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { socialPKAtom, socialUserInfoAtom } from 'store/web3-auth.store';
 
 import styles from './ConnectModal.module.scss';
@@ -35,78 +31,11 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
   const userInfo = useAtomValue(socialUserInfoAtom);
   const socialPK = useAtomValue(socialPKAtom);
 
-  const setTraderAPI = useSetAtom(traderAPIAtom);
-  const setSDKConnected = useSetAtom(sdkConnectedAtom);
-  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
-
-  const loadingAPIRef = useRef(false);
   const verifyRef = useRef(false);
 
   const chainId = useChainId();
 
-  const publicClient = usePublicClient();
-
-  const loadSDK = useCallback(
-    async (_publicClient: PublicClient, _chainId: number) => {
-      if (loadingAPIRef.current) {
-        return;
-      }
-      loadingAPIRef.current = true;
-      setTraderAPI(null);
-      setSDKConnected(false);
-      setAPIBusy(true);
-      const configSDK = PerpetualDataHandler.readSDKConfig(_chainId);
-      if (config.priceFeedEndpoint[_chainId] && config.priceFeedEndpoint[_chainId] !== '') {
-        const pythPriceServiceIdx = configSDK.priceFeedEndpoints?.findIndex(({ type }) => type === 'pyth');
-        if (pythPriceServiceIdx !== undefined && pythPriceServiceIdx >= 0) {
-          if (configSDK.priceFeedEndpoints !== undefined) {
-            configSDK.priceFeedEndpoints[pythPriceServiceIdx].endpoints.push(config.priceFeedEndpoint[_chainId]);
-          }
-        } else {
-          configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoints: [config.priceFeedEndpoint[_chainId]] }];
-        }
-      }
-      const newTraderAPI = new TraderInterface(configSDK);
-      newTraderAPI
-        .createProxyInstance()
-        .then(() => {
-          loadingAPIRef.current = false;
-          setAPIBusy(false);
-          setSDKConnected(true);
-          setTraderAPI(newTraderAPI);
-        })
-        .catch((e) => {
-          console.log('error loading SDK', e);
-          loadingAPIRef.current = false;
-          setAPIBusy(false);
-        });
-    },
-    [setTraderAPI, setSDKConnected, setAPIBusy]
-  );
-
-  const unloadSDK = useCallback(() => {
-    setSDKConnected(false);
-    setAPIBusy(false);
-    setTraderAPI(null);
-  }, [setTraderAPI, setSDKConnected, setAPIBusy]);
-
-  // disconnect SDK on wallet disconnected
-  useEffect(() => {
-    if (!isConnected) {
-      unloadSDK();
-    }
-  }, [isConnected, unloadSDK]);
-
-  // connect SDK on change of provider/chain/wallet
-  useEffect(() => {
-    if (loadingAPIRef.current || !publicClient || !chainId) {
-      return;
-    }
-    unloadSDK();
-    loadSDK(publicClient, chainId)
-      .then()
-      .catch((err) => console.log(err));
-  }, [publicClient, chainId, loadSDK, unloadSDK]);
+  const walletClient = useWalletClient({ chainId });
 
   const handleWeb3AuthSuccessConnect = useCallback(() => {
     const verify = async () => {
@@ -127,6 +56,14 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
     };
     verify().then();
   }, [chainId, socialPK, userInfo]);
+
+  // TODO: remove me later
+  useEffect(() => {
+    if (walletClient) {
+      console.log('walletClient.status', walletClient.status);
+      console.log('walletClient chainid', walletClient.data?.chain.id);
+    }
+  }, [walletClient]);
 
   const handleWeb3AuthErrorConnect = useCallback((error: string) => {
     console.log(error);

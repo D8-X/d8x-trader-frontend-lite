@@ -158,6 +158,9 @@ export const ActionBlock = memo(() => {
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI || !poolFee) {
+      // TODO: remove this
+      console.log('openReviewOrderModal');
+      console.log(!orderInfo, !address, !traderAPI, !poolFee);
       return;
     }
     validityCheckRef.current = true;
@@ -345,6 +348,17 @@ export const ActionBlock = memo(() => {
       !proxyAddr ||
       !poolTokenDecimals
     ) {
+      // TODO: remove this
+      console.log(
+        'handleOrderConfirm',
+        !address,
+        !walletClient,
+        !tradingClient,
+        !parsedOrders,
+        !selectedPool,
+        !proxyAddr,
+        !poolTokenDecimals
+      );
       return;
     }
     setRequestSent(true);

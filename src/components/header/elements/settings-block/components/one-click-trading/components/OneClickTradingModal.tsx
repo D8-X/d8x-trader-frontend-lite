@@ -223,9 +223,6 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
         return;
       }
     }
-    if (walletClient) {
-      setTradingClient(walletClient);
-    }
   }, [address, walletClient, storageKey, activatedOneClickTrading, setTradingClient]);
 
   return (
