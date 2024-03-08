@@ -180,8 +180,9 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
     } catch (error: TemporaryAnyT) {
       console.error(error);
       errorCallback(error.message);
+    } finally {
+      signInRef.current = false;
     }
-    signInRef.current = false;
   };
 
   if (isConnected) {

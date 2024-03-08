@@ -1,9 +1,14 @@
+import { ERC20_ABI } from '@d8x/perpetuals-sdk';
+import { writeContract } from '@wagmi/core';
 import { useAtom } from 'jotai';
 import { type ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { parseUnits } from 'viem';
+import { Address, useAccount, useBalance, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';
 
+import { transferFunds } from 'blockchain-api/transferFunds';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
 import { CurrencyItemI } from 'components/currency-selector/types';
 import { Dialog } from 'components/dialog/Dialog';
@@ -11,15 +16,10 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { Separator } from 'components/separator/Separator';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { withdrawModalOpenAtom } from 'store/global-modals.store';
+import { isValidAddress } from 'utils/isValidAddress';
+import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './WithdrawModal.module.scss';
-import { transferFunds } from 'blockchain-api/transferFunds';
-import { Address, useAccount, useBalance, useWalletClient } from 'wagmi';
-import { writeContract } from '@wagmi/core';
-import { ERC20_ABI } from '@d8x/perpetuals-sdk';
-import { parseUnits } from 'viem';
-import { isValidAddress } from '../../utils/isValidAddress';
-import { formatToCurrency } from '../../utils/formatToCurrency';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();

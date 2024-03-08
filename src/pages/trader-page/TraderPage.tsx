@@ -77,7 +77,7 @@ export const TraderPage = () => {
   const setAddr0Fee = useSetAtom(addr0FeeAtom);
 
   const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -85,14 +85,14 @@ export const TraderPage = () => {
     address,
     token: OLD_USDC_ADDRESS,
     chainId: 1101,
-    enabled: !!address && chainId === 1101,
+    enabled: address && chainId === 1101 && isConnected,
   });
 
   const { data: newTokenData } = useBalance({
     address,
     token: NEW_USDC_ADDRESS,
     chainId: 1101,
-    enabled: !!address && chainId === 1101,
+    enabled: address && chainId === 1101 && isConnected,
   });
 
   useEffect(() => {

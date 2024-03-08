@@ -65,7 +65,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const chainId = useChainId();
   const { chain } = useNetwork();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
@@ -180,11 +180,18 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
     enabled:
-      !exchangeRequestRef.current && address && traderAPI?.chainId === chain?.id && !!selectedPool?.marginTokenAddr,
+      !exchangeRequestRef.current &&
+      address &&
+      traderAPI?.chainId === chain?.id &&
+      !!selectedPool?.marginTokenAddr &&
+      isConnected &&
+      !isReconnecting &&
+      !isConnecting,
   });
 
   const { data: gasTokenBalance, isError: isGasTokenFetchError } = useBalance({
     address,
+    enabled: address && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting,
   });
 
   useEffect(() => {

@@ -51,7 +51,7 @@ export const ReferPage = () => {
   const setReferralCodesRefetchHandler = useSetAtom(referralCodesRefetchHandlerRefAtom);
 
   const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -65,7 +65,7 @@ export const ReferPage = () => {
     address,
     token: tokenInfo?.tokenAddr as Address,
     chainId: chainId,
-    enabled: !!address && !!chainId && !!tokenInfo?.tokenAddr,
+    enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected,
   });
 
   const handleTabChange = useCallback(

@@ -22,7 +22,9 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
   const web3authIdToken = useAtomValue(web3authIdTokenAtom);
 
   useEffect(() => {
-    if (!isDisconnected) return;
+    if (!isDisconnected) {
+      return;
+    }
 
     // if wagmi.connected set to true, then wagmi will not show modal
     // to reconnect user wallet, but instead will use prev connection
@@ -33,7 +35,9 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
     const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
     const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
 
-    if (!isWagmiConnected || !isWeb3Wallet) return;
+    if (!isWagmiConnected || !isWeb3Wallet) {
+      return;
+    }
 
     const chain = chains.find(({ id }) => id === chainId);
     if (!chain) {
@@ -92,5 +96,5 @@ export const EagerConnectionWrapper = ({ children }: { children: ReactNode }) =>
     });
   }, [connect, isDisconnected, chainId, web3authIdToken]);
 
-  return <>{children}</>;
+  return children;
 };

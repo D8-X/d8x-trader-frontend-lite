@@ -118,10 +118,7 @@ export const ActionBlock = memo(() => {
   const { chain } = useNetwork();
 
   const { data: walletClient } = useWalletClient({
-    chainId: chainId,
-    onError(error) {
-      console.log(error);
-    },
+    chainId,
   });
 
   const orderInfo = useAtomValue(orderInfoAtom);

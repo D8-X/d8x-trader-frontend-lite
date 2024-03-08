@@ -17,6 +17,7 @@ interface FundingModalPropsI {
 
 export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalPropsI) => {
   const { t } = useTranslation();
+
   const { data: walletClient } = useWalletClient();
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
 

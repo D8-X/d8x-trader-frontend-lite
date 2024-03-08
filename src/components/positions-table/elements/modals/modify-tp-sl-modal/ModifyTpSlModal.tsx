@@ -56,16 +56,9 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const chainId = useChainId();
-
-  const { data: walletClient } = useWalletClient({
-    chainId,
-    onError(error) {
-      console.log(error);
-    },
-  });
 
   const [pools] = useAtom(poolsAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
@@ -83,6 +76,10 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
 
   const validityCheckRef = useRef(false);
   const requestSentRef = useRef(false);
+
+  const { data: walletClient } = useWalletClient({
+    chainId,
+  });
 
   useEffect(() => {
     if (validityCheckRef.current) {
@@ -120,7 +117,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     address,
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
-    enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
+    enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected,
   });
 
   useWaitForTransaction({

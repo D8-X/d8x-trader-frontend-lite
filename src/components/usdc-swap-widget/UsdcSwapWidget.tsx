@@ -40,7 +40,7 @@ export function UsdcSwapWidget() {
     address,
     token: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
     chainId: 1101,
-    enabled: !!address && wallet?.chain?.id === 1101,
+    enabled: address && wallet?.chain?.id === 1101 && isConnected,
   });
 
   const handleInputCapture = useCallback((orderSizeValue: string) => {
