@@ -717,44 +717,44 @@
       "close": "Cerrar"
     },
     "account-modal": {
-      "title": "Account",
-      "deposit-button": "Deposit",
-      "withdraw-button": "Withdraw",
-      "extract-pk-button": "Extract PK",
-      "notice-block": "Important notice: Make sure to have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral."
+      "title": "Cuenta",
+      "deposit-button": "Depósito",
+      "withdraw-button": "Retirar",
+      "extract-pk-button": "Extraer PK",
+      "notice-block": "Aviso importante: asegúrese de tener suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía."
     },
     "deposit-modal": {
-      "title": "Deposit",
+      "title": "Depósito",
       "important-notice": {
-        "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
-        "1": "Important notice: send only <bold>{{currencyName}}</bold>",
-        "2": "(token address: ",
+        "full": "Aviso importante: envíe solo <bold>{{currencyName}}</bold> (dirección del token: <bold>{{currencyContractAddress}}</bold) a esta dirección. Envíe por <bold>{{chainName}}</bold>.",
+        "1": "Aviso importante: envíe solo <bold>{{currencyName}}</bold>",
+        "2": "(dirección del token: ",
         "3": ")",
-        "4": "to this address.",
-        "5": "Send over <bold>{{chainName}}</bold>."
+        "4": "a esta dirección.",
+        "5": "Envíe por <bold>{{chainName}}</bold>."
       },
-      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
-      "done-button": "Done"
+      "deposit-note": "Asegúrese de depositar suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía.",
+      "done-button": "Hecho"
     },
     "extract-pk-modal": {
-      "title": "Extract Private Key",
-      "important-notice": "Important notice: never share your private key with anyone. Only reveal key if you know what you are doing.",
-      "reveal-key-button": "Reveal key"
+      "title": "Extraer clave privada",
+      "important-notice": "Aviso importante: nunca compartas tu clave privada con nadie. Sólo revela la clave si sabes lo que estás haciendo.",
+      "reveal-key-button": "Revelar clave"
     },
     "withdraw-modal": {
-      "title": "Withdraw",
-      "withdraw-button": "Withdraw",
+      "title": "Retirar",
+      "withdraw-button": "Retirar",
       "withdraw-address-error": "Por favor ingresar una dirección valida"
     },
     "connect-modal": {
-      "title": "Sign in",
-      "description": "Sign in with X or web3 wallet",
-      "sign-in-with-x-button": "Sign in with X",
-      "sign-in-with-wallet-button": "Sign in with wallet",
-      "or-separator": "or",
-      "disconnect": "Disconnect",
-      "connected-title": "Welcome!",
-      "connected-description": "You have successfully signed in."
+      "title": "Acceso",
+      "description": "Inicie sesión con X o billetera web3",
+      "sign-in-with-x-button": "Inicie sesión con X",
+      "sign-in-with-wallet-button": "Inicie sesión con billetera web3",
+      "or-separator": "o",
+      "disconnect": "Desconectar",
+      "connected-title": "Bienvenido!",
+      "connected-description": "Has iniciado sesión correctamente."
     },
     "public-beta": {
       "info-text": "Esta es una versión beta pública: haz tu propia investigación",
