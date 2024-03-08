@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 
 import 'wagmi/window';
+import { EagerConnectionWrapper } from 'EagerConnectionWrapper';
 
 const container = document.getElementById('root');
 
@@ -38,14 +39,16 @@ if (container) {
             <ThemeProvider theme={theme}>
               <GeoBlockingProvider>
                 <WagmiConfig config={wagmiConfig}>
-                  <RainbowKitProviderWrapper>
-                    <WebSocketContextProvider>
-                      <BrowserRouter>
-                        <StaticBackground />
-                        <App />
-                      </BrowserRouter>
-                    </WebSocketContextProvider>
-                  </RainbowKitProviderWrapper>
+                  <EagerConnectionWrapper>
+                    <RainbowKitProviderWrapper>
+                      <WebSocketContextProvider>
+                        <BrowserRouter>
+                          <StaticBackground />
+                          <App />
+                        </BrowserRouter>
+                      </WebSocketContextProvider>
+                    </RainbowKitProviderWrapper>
+                  </EagerConnectionWrapper>
                 </WagmiConfig>
               </GeoBlockingProvider>
               <ThemeApplier />
