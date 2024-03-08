@@ -590,13 +590,13 @@
   "common": {
     "change-language": "Cambiar Idioma",
     "wallet-connect": "Conectar",
-    "account-button": "Account",
-    "currency-label": "Currency",
-    "amount-label": "Amount",
-    "address-label": "Address",
+    "account-button": "Cuenta",
+    "currency-label": "Divisa",
+    "amount-label": "Cantidad",
+    "address-label": "Direccion",
     "max": "Max:",
     "copied": "Copiado",
-    "copy-error": "An error appeared with copy to clipboard",
+    "copy-error": "Apareció un error al copiar al portapapeles.",
     "one-click": {
       "disable": "Deshabilitar el comercio con un clic",
       "enable": "Habilite el comercio con un solo clic"

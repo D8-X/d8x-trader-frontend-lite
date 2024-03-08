@@ -590,13 +590,13 @@
   "common": {
     "change-language": "Changer de langue",
     "wallet-connect": "Connecter",
-    "account-button": "Account",
-    "currency-label": "Currency",
-    "amount-label": "Amount",
-    "address-label": "Address",
+    "account-button": "Compte",
+    "currency-label": "Devise",
+    "amount-label": "Montant",
+    "address-label": "Adresse",
     "max": "Max:",
     "copied": "Copié",
-    "copy-error": "An error appeared with copy to clipboard",
+    "copy-error": "Une erreur est apparue lors de la copie dans le presse-papiers",
     "one-click": {
       "disable": "Activer le trading en un clic",
       "enable": "Désactiver le trading en un clic"
@@ -750,7 +750,7 @@
       "title": "Connecter",
       "description": "Connectez-vous avec X ou le portefeuille web3",
       "sign-in-with-x-button": "Connectez-vous avec X",
-      "sign-in-with-wallet-button": "Connectez-vous avec un portefeuille web3 ",
+      "sign-in-with-wallet-button": "Connectez-vous avec un wallet",
       "or-separator": "ou",
       "disconnect": "Déconnecter",
       "connected-title": "Bienvenu",

@@ -590,13 +590,13 @@
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",
-    "account-button": "Account",
-    "currency-label": "Currency",
-    "amount-label": "Amount",
-    "address-label": "Address",
+    "account-button": "账户",
+    "currency-label": "货币",
+    "amount-label": "数量",
+    "address-label": "地址",
     "max": "最大：",
     "copied": "抄袭自",
-    "copy-error": "An error appeared with copy to clipboard",
+    "copy-error": "复制到剪贴板时出现错误",
     "one-click": {
       "disable": "禁用一键交易",
       "enable": "启用一键交易"

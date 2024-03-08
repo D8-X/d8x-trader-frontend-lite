@@ -590,13 +590,13 @@
   "common": {
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
-    "account-button": "Account",
-    "currency-label": "Currency",
-    "amount-label": "Amount",
-    "address-label": "Address",
+    "account-button": "Konto",
+    "currency-label": "Währung",
+    "amount-label": "Anzahl",
+    "address-label": "Adresse",
     "max": "Max:",
     "copied": "Kopiert",
-    "copy-error": "An error appeared with copy to clipboard",
+    "copy-error": "Beim Kopieren in die Zwischenablage ist ein Fehler aufgetreten",
     "one-click": {
       "disable": "Deaktivieren Sie den One-Click-Handel",
       "enable": "Aktivieren Sie den One-Click-Handel"
