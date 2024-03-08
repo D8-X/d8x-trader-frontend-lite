@@ -35,7 +35,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   const [inputValue, setInputValue] = useState('');
 
   const { data: delegateBalance } = useBalance({
-    address: delegateAddress as Address,
+    address: delegateAddress,
   });
 
   return (

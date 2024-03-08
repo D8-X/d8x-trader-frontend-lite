@@ -15,6 +15,7 @@ import type {
   PriceFeedResponseI,
   ValidatedResponseI,
 } from 'types/types';
+import { MaintenanceStatusI, PumpStationResponseI } from 'types/types';
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[chainId] || config.apiUrl.default;
@@ -28,6 +29,16 @@ const fetchUrl = async (url: string, chainId: number) => {
   }
   return data.json();
 };
+
+export async function getMaintenanceStatus(): Promise<MaintenanceStatusI[]> {
+  return fetch('https://drip.d8x.xyz/status', getRequestOptions()).then((data) => {
+    if (!data.ok) {
+      console.error({ data });
+      throw new Error(data.statusText);
+    }
+    return data.json();
+  });
+}
 
 export async function getExchangeInfo(
   chainId: number,
@@ -340,7 +351,7 @@ export function getAvailableMargin(
   }
 }
 
-export function getRemoveCollateral(
+export async function getRemoveCollateral(
   chainId: number,
   traderAPI: TraderInterface | null,
   symbol: string,
@@ -351,63 +362,68 @@ export function getRemoveCollateral(
     const proxyAddr = traderAPI.getProxyAddress();
     const proxyABI = traderAPI.getProxyABI('withdraw');
     const amountHex = floatToABK64x64(amount);
-    return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-      return {
-        type: 'remove-collateral',
-        msg: '',
-        data: {
-          perpId: perpId,
-          proxyAddr: proxyAddr,
-          abi: proxyABI,
-          amountHex: amountHex.toString(),
-          priceUpdate: {
-            updateData: submission.priceFeedVaas,
-            publishTimes: submission.timestamps,
-            updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
-          },
+    const submission = await traderAPI.fetchLatestFeedPriceInfo(symbol);
+    return {
+      type: 'remove-collateral',
+      msg: '',
+      data: {
+        perpId: perpId,
+        proxyAddr: proxyAddr,
+        abi: proxyABI,
+        amountHex: amountHex.toString(),
+        priceUpdate: {
+          updateData: submission.priceFeedVaas,
+          publishTimes: submission.timestamps,
+          updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
         },
-      };
-    });
+      },
+    };
   } else {
-    return fetch(
+    const data = await fetch(
       `${getApiUrlByChainId(chainId)}/remove-collateral?symbol=${symbol}&amount=${amount}`,
       getRequestOptions()
-    ).then((data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    });
-  }
-}
-
-export function getPythID(symbol: string): Promise<{ id: string }[]> {
-  return fetch(
-    `https://benchmarks.pyth.network/v1/price_feeds/?query=crypto.${symbol}/usd&asset_type=crypto`,
-    getRequestOptions()
-  ).then((data) => {
+    );
     if (!data.ok) {
       console.error({ data });
       throw new Error(data.statusText);
     }
     return data.json();
-  });
+  }
 }
 
-export function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI[]> {
-  return getPythID(symbol).then((res) => {
-    if (res.length < 1) {
-      throw new Error(`Pyth Id not found for symbol ${symbol}`);
-    }
-    return fetch(`https://hermes.pyth.network/api/latest_price_feeds?ids[]=${res[0].id}`, getRequestOptions()).then(
-      (data) => {
-        if (!data.ok) {
-          console.error({ data });
-          throw new Error(data.statusText);
-        }
-        return data.json();
-      }
-    );
-  });
+export async function getPythID(symbol: string): Promise<{ id: string }[]> {
+  const data = await fetch(
+    `https://benchmarks.pyth.network/v1/price_feeds/?query=crypto.${symbol}/usd&asset_type=crypto`,
+    getRequestOptions()
+  );
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+}
+
+export async function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI[]> {
+  const res = await getPythID(symbol);
+  if (res.length < 1) {
+    throw new Error(`Pyth Id not found for symbol ${symbol}`);
+  }
+  const data = await fetch(
+    `https://hermes.pyth.network/api/latest_price_feeds?ids[]=${res[0].id}`,
+    getRequestOptions()
+  );
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+}
+
+export async function getPumpStationData(traderAddr: string): Promise<PumpStationResponseI> {
+  const data = await fetch(`https://drip.d8x.xyz/score?addr=${traderAddr}`, getRequestOptions());
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
 }

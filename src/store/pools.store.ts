@@ -22,6 +22,7 @@ export const traderAPIBusyAtom = atom(false);
 export const poolsAtom = atom<PoolWithIdI[]>([]);
 export const perpetualsAtom = atom<PerpetualDataI[]>([]);
 export const poolFeeAtom = atom<number | undefined>(undefined);
+export const addr0FeeAtom = atom<number | undefined>(undefined);
 export const oracleFactoryAddrAtom = atom('');
 export const proxyAddrAtom = atom<string | undefined>(undefined);
 export const perpetualStatisticsAtom = atom<PerpetualStatisticsI | null>(null);
@@ -36,6 +37,7 @@ export const gasTokenSymbolAtom = atom<string | undefined>(undefined);
 export const poolTokenDecimalsAtom = atom<number | undefined>(undefined);
 export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);
+export const triggerPositionsUpdateAtom = atom(true);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
 const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});

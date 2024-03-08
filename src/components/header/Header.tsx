@@ -17,7 +17,7 @@ import { WalletConnectButton } from 'components/wallet-connect-button/WalletConn
 import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
 import { web3AuthConfig } from 'config';
 import { createSymbol } from 'helpers/createSymbol';
-import { getExchangeInfo } from 'network/network';
+import { getExchangeInfo, getPositionRisk } from 'network/network';
 import { authPages, pages } from 'routes/pages';
 import { hideBetaTextAtom } from 'store/app.store';
 import {
@@ -27,9 +27,11 @@ import {
   poolsAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
+  positionsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  triggerPositionsUpdateAtom,
 } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
@@ -68,11 +70,13 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
   const setPerpetuals = useSetAtom(perpetualsAtom);
+  const setPositions = useSetAtom(positionsAtom);
   const setOracleFactoryAddr = useSetAtom(oracleFactoryAddrAtom);
   const setProxyAddr = useSetAtom(proxyAddrAtom);
   const setPoolTokenBalance = useSetAtom(poolTokenBalanceAtom);
   const setGasTokenSymbol = useSetAtom(gasTokenSymbolAtom);
   const setPoolTokenDecimals = useSetAtom(poolTokenDecimalsAtom);
+  const triggerPositionsUpdate = useAtomValue(triggerPositionsUpdateAtom);
   const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -81,7 +85,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
-  const requestRef = useRef(false);
+  const exchangeRequestRef = useRef(false);
+  const positionsRequestRef = useRef(false);
 
   const setExchangeInfo = useCallback(
     (data: ExchangeInfoI | null) => {
@@ -132,17 +137,36 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   );
 
   useEffect(() => {
-    if (!requestRef.current && chainId && (!traderAPI || traderAPI.chainId === chainId)) {
-      requestRef.current = true;
+    if (positionsRequestRef.current) {
+      return;
+    }
+
+    if (chainId && (!traderAPI || traderAPI.chainId === chainId) && address) {
+      positionsRequestRef.current = true;
+      getPositionRisk(chainId, traderAPI, address, Date.now())
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            data.map(setPositions);
+          }
+        })
+        .catch(console.error)
+        .finally(() => {
+          positionsRequestRef.current = false;
+        });
+    }
+  }, [triggerPositionsUpdate, setPositions, chainId, traderAPI, address]);
+
+  useEffect(() => {
+    if (!exchangeRequestRef.current && chainId && (!traderAPI || traderAPI.chainId === chainId)) {
+      exchangeRequestRef.current = true;
       setExchangeInfo(null);
       getExchangeInfo(chainId, traderAPI)
         .then(({ data }) => {
           setExchangeInfo(data);
-          requestRef.current = false;
         })
-        .catch((err) => {
-          console.error(err);
-          requestRef.current = false;
+        .catch(console.error)
+        .finally(() => {
+          exchangeRequestRef.current = false;
         });
     }
   }, [chainId, setExchangeInfo, traderAPI]);
@@ -155,7 +179,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     address,
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
-    enabled: !requestRef.current && address && traderAPI?.chainId === chainId && !!selectedPool?.marginTokenAddr,
+    enabled:
+      !exchangeRequestRef.current && address && traderAPI?.chainId === chain?.id && !!selectedPool?.marginTokenAddr,
   });
 
   const { data: gasTokenBalance, isError: isGasTokenFetchError } = useBalance({
@@ -185,9 +210,9 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     setMobileOpen(!mobileOpen);
   };
 
-  const availablePages = [...pages];
+  const availablePages = [...pages.filter((page) => page.enabled)];
   if (address) {
-    availablePages.push(...authPages);
+    availablePages.push(...authPages.filter((page) => page.enabled));
   }
   const drawer = (
     <>
@@ -208,17 +233,22 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             to={page.path}
             className={({ isActive }) => `${styles.navMobileItem} ${isActive ? styles.active : styles.inactive}`}
           >
+            {page.IconComponent && <page.IconComponent className={styles.pageIcon} />}
             {t(page.translationKey)}
           </NavLink>
         ))}
       </nav>
-      <Divider />
-      <Box className={styles.settings}>
-        <SettingsBlock />
-      </Box>
-      <Box className={styles.languageSwitcher}>
-        <LanguageSwitcher />
-      </Box>
+      {isTabletScreen && (
+        <>
+          <Divider />
+          <Box className={styles.settings}>
+            <SettingsBlock />
+          </Box>
+          <Box className={styles.languageSwitcher}>
+            <LanguageSwitcher />
+          </Box>
+        </>
+      )}
       <Box className={styles.closeAction}>
         <Button onClick={handleDrawerToggle} variant="secondary" size="small">
           {t('common.info-modal.close')}
@@ -248,7 +278,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   </a>
                   <span className={styles.betaTag}>{t('common.public-beta.beta-tag')}</span>
                 </Typography>
-                {!isTabletScreen && (
+                {!isSmallScreen && (
                   <nav className={styles.navWrapper}>
                     {availablePages.map((page) => (
                       <NavLink
@@ -256,6 +286,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                         to={page.path}
                         className={({ isActive }) => `${styles.navItem} ${isActive ? styles.active : styles.inactive}`}
                       >
+                        {page.IconComponent && <page.IconComponent className={styles.pageIcon} />}
                         {t(page.translationKey)}
                       </NavLink>
                     ))}
@@ -284,7 +315,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
               )}
               {!isTabletScreen && <SettingsButton />}
-              {isTabletScreen && (
+              {isSmallScreen && (
                 <Button onClick={handleDrawerToggle} variant="primary" className={styles.menuButton}>
                   <Menu />
                 </Button>
@@ -311,7 +342,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 keepMounted: true, // Better open performance on mobile.
               }}
               sx={{
-                display: { sm: 'block', md: 'none' },
+                display: { md: 'block', lg: 'none' },
                 '& .MuiDrawer-paper': {
                   boxSizing: 'border-box',
                   width: isMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,

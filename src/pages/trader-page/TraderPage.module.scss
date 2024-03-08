@@ -5,6 +5,10 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
+
+  @include media-tablet {
+    padding: 0 $d8x-spacing * 3;
+  }
 }
 
 .headerContainer {
@@ -82,10 +86,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-  .root {
-    padding: 0 12px;
-  }
-
   .headerContainer {
     .rightBlock {
       width: 100%;

@@ -8,6 +8,7 @@ import { Container } from 'components/container/Container';
 import { HeaderPortal } from 'components/header/HeaderPortal';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { Helmet } from 'components/helmet/Helmet';
+import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { getOpenWithdrawals } from 'network/history';
 import { GlobalStats } from 'pages/vault-page/components/global-stats/GlobalStats';
 import { LiquidityBlock } from 'pages/vault-page/components/liquidity-block/LiquidityBlock';
@@ -53,18 +54,20 @@ export const VaultPage = () => {
     <>
       <Helmet title={`${selectedPool?.poolSymbol} Vault | D8X App`} />
       <Box className={styles.root}>
-        <HeaderPortal>
-          <CollateralsSelect />
-        </HeaderPortal>
-        {isSmallScreen && (
-          <Box className={styles.mobileSelectBoxes}>
+        <MaintenanceWrapper>
+          <HeaderPortal>
             <CollateralsSelect />
-          </Box>
-        )}
-        <Container className={styles.container}>
-          <GlobalStats />
-          <LiquidityBlock />
-        </Container>
+          </HeaderPortal>
+          {isSmallScreen && (
+            <Box className={styles.mobileSelectBoxes}>
+              <CollateralsSelect />
+            </Box>
+          )}
+          <Container className={styles.container}>
+            <GlobalStats />
+            <LiquidityBlock />
+          </Container>
+        </MaintenanceWrapper>
       </Box>
     </>
   );

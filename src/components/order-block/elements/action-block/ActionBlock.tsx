@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -15,8 +15,10 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
+import { orderSubmitted } from 'network/broker';
 import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
+import { depositModalOpenAtom } from 'store/global-modals.store';
 import { clearInputsDataAtom, latestOrderSentTimestampAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralDepositAtom,
@@ -41,7 +43,6 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
-import { depositModalOpenAtom } from '../../../../store/global-modals.store';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -123,26 +124,26 @@ export const ActionBlock = memo(() => {
     },
   });
 
-  const [orderInfo] = useAtom(orderInfoAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [selectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
-  const [positions] = useAtom(positionsAtom);
-  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [hasTpSlOrders] = useAtom(hasTpSlOrdersAtom);
-  const [poolFee] = useAtom(poolFeeAtom);
-  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedCurrency = useAtomValue(selectedCurrencyAtom);
+  const selectedPerpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const positions = useAtomValue(positionsAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const hasTpSlOrders = useAtomValue(hasTpSlOrdersAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
+  const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
+  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
+  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -366,7 +367,10 @@ export const ActionBlock = memo(() => {
               postOrder(tradingClient, signatures, data.data)
                 .then((tx) => {
                   setShowReviewOrderModal(false);
-                  // success submitting order to the node
+                  // success submitting order to the node - inform backend
+                  orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                    .then()
+                    .catch((error) => console.log(error));
                   // order was sent
                   clearInputsData();
                   toast.success(

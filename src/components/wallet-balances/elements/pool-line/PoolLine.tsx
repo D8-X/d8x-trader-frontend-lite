@@ -1,5 +1,5 @@
 import { memo, useEffect } from 'react';
-import { type Address, useAccount, useBalance } from 'wagmi';
+import { type Address, useAccount, useBalance, useConnect } from 'wagmi';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
@@ -13,10 +13,12 @@ interface PoolLinePropsI {
 
 export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
+  const { isLoading } = useConnect();
 
   const { data: tokenBalanceData, refetch } = useBalance({
     address,
     token: pool.marginTokenAddr as Address,
+    enabled: address && pool.marginTokenAddr !== undefined && !isLoading && isConnected,
   });
 
   useEffect(() => {

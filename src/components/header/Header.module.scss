@@ -96,6 +96,11 @@
   gap: $d8x-spacing * 6;
 }
 
+.pageIcon {
+  margin-bottom: -$d8x-spacing;
+  margin-right: $d8x-spacing * 2;
+}
+
 .navMobileItem,
 .navItem {
   font-weight: 500;
@@ -254,7 +259,7 @@
   .mobileButtonsBlock {
     background-color: var(--d8x-color-background-items);
     padding: 0 4 * $d8x-spacing;
-    margin: 0 -4 * $d8x-spacing;
+    margin: 0 (-3 * $d8x-spacing);
   }
 
   .mobileWalletButtons {

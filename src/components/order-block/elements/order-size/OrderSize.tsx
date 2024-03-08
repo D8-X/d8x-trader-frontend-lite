@@ -138,7 +138,7 @@ export const OrderSize = memo(() => {
         } else {
           maxAmount = data?.data?.sell;
         }
-        return maxAmount === undefined ? undefined : +roundToLotString(maxAmount, _lotSizeBC);
+        return maxAmount === undefined || maxAmount < _lotSizeBC ? undefined : +roundToLotString(maxAmount, _lotSizeBC);
       }
     },
     [traderAPI]
@@ -153,9 +153,7 @@ export const OrderSize = memo(() => {
         perpetualStaticInfo.id,
         orderBlock === OrderBlockE.Long
       ).then((result) => {
-        if (result) {
-          setMaxOrderSize(result * 0.995);
-        }
+        setMaxOrderSize(result !== undefined ? result * 0.995 : 0);
       });
     }
   }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]);
@@ -182,7 +180,7 @@ export const OrderSize = memo(() => {
 
   const maxOrderSizeCurrent = useMemo(() => {
     if (maxOrderSize !== undefined) {
-      return maxOrderSize && maxOrderSize * currencyMultiplier;
+      return maxOrderSize * currencyMultiplier;
     }
   }, [maxOrderSize, currencyMultiplier]);
 
@@ -218,7 +216,7 @@ export const OrderSize = memo(() => {
           }
           step={orderSizeStep}
           min={0}
-          max={maxOrderSizeCurrent && roundMaxOrderSize(maxOrderSizeCurrent)}
+          max={maxOrderSizeCurrent !== undefined ? roundMaxOrderSize(maxOrderSizeCurrent) : undefined}
           className={styles.inputHolder}
           adornmentAction={
             <div ref={anchorRef}>

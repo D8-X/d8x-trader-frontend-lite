@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "交易",
+    "pump-station": "加速站",
     "refer": "邀请返佣",
     "vault": "金库",
     "portfolio": "投资组合"
@@ -362,6 +363,19 @@
         "clear": "清除过滤器"
       }
     },
+    "pump-station": {
+      "title": "交易来加速你的$D8X空投数量",
+      "pumped-volume": {
+        "title": "加速后的交易量",
+        "modal-text": "$D8X空投是基于加速后的交易量计算的。对于每一笔交易，我们计算交易量乘以加速倍数。加速后的交易量=实际交易量:heavy_multiplication_x:加速倍数。"
+      },
+      "pump-o-meter": {
+        "title": "加速仪表盘",
+        "modal-text": "加速仪表盘显示应用于你下一次交易的加速。提升范围从1倍到105倍，有两个部分：",
+        "modal-text2": "交易量加速 - 过去7天的交易可以为你获得1倍到5倍的交易量加速。你交易得越多，潜在的加速就越高！",
+        "modal-text3": "幸运加速 - 每一笔交易都给你一个获得幸运加速的机会——一个奖励，可以从0倍一直飙升到令人难以置信的100倍！"
+      }
+    },
     "refer": {
       "tab-selector": {
         "referrer": "作为邀请人",
@@ -586,6 +600,14 @@
     "one-click": {
       "disable": "禁用一键交易",
       "enable": "启用一键交易"
+    },
+    "maintenance-mode": {
+      "header": "维护模式",
+      "description": "<bold>{{chainName}}</bold> 上的期货交易所处于维护模式。",
+      "visit-text": {
+        "1": "点击",
+        "2": "f了解更多信息。"
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",

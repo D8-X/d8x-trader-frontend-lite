@@ -50,6 +50,21 @@ export const InfoBlock = memo(() => {
     }
   }, [orderInfo]);
 
+  const feeReduction = useMemo(() => {
+    if (orderInfo?.baseFee && orderInfo?.tradingFee !== undefined && orderInfo?.tradingFee !== null) {
+      return (1 - orderInfo.tradingFee / orderInfo.baseFee) * 100;
+    }
+  }, [orderInfo]);
+
+  const baseFeeInCC = useMemo(() => {
+    if (!orderInfo?.baseFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
+      return undefined;
+    }
+    return (
+      (orderSize * orderInfo.baseFee * selectedPerpetual.indexPrice) / selectedPerpetual.collToQuoteIndexPrice / 1e4
+    );
+  }, [orderSize, orderInfo, selectedPerpetual]);
+
   const gasFee = useMemo(() => {
     if (orderInfo && gasPriceUSD) {
       return (
@@ -116,9 +131,20 @@ export const InfoBlock = memo(() => {
           {t('pages.trade.order-block.info.fees')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
-          {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
-          {formatToCurrency(feePct, '%', false, 3)}
-          {')'}
+          {feeReduction !== undefined && feeReduction > 0 && feeInCC !== undefined ? (
+            <>
+              <span style={{ textDecoration: 'line-through' }}>
+                {formatToCurrency(baseFeeInCC, selectedPool?.poolSymbol)}
+              </span>
+              <span> {formatToCurrency(feeInCC, selectedPool?.poolSymbol)}</span>
+            </>
+          ) : (
+            <>
+              {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
+              {formatToCurrency(feePct, '%', false, 3)}
+              {')'}
+            </>
+          )}
         </Typography>
       </Box>
       {chainId !== undefined && chainId === 1101 && (

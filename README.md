@@ -94,8 +94,13 @@ This package is configured entirely via environment variables. You must specify:
   - Enable it as follows:
     `VITE_WELCOME_MODAL=true`
 
+- **VITE_BROKER_URL**: This is an optional variable that explicitly specifies the broker backend.
+  - This entry should take the form:
+    `VITE_BROKER_URL=1442::https://broker.mybackend.com;195::https://broker-x1.mybackend.com`
+
 - **VITE_WEB3AUTH_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/dashboard-setup/projects-and-analytics).
 - **VITE_FIREBASE**-prefixed variables: Setup as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter#set-up-twitter-via-firebase).
+
 
 ---
 

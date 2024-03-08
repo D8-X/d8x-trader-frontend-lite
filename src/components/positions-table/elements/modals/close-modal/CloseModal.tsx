@@ -28,6 +28,7 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
+import { orderSubmitted } from 'network/broker';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -140,6 +141,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);
+                orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                  .then()
+                  .catch((error) => console.log(error));
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />
                 );

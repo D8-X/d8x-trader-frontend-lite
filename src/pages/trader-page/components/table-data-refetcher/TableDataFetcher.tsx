@@ -1,6 +1,6 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { type Address, useAccount, useChainId } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
@@ -62,11 +62,15 @@ export const TableDataFetcher = memo(() => {
   }, [latestOrderSentTimestamp]);
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       setSlowTicker((prevState) => {
         return prevState + 1;
       });
     }, INTERVAL_FOR_TICKER_SLOW);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   const handleRemovedOrders = useCallback(
@@ -117,7 +121,7 @@ export const TableDataFetcher = memo(() => {
     }
     if ((fastTicker > 0 || slowTicker > 0) && chainId && address) {
       setLastFetch(Date.now());
-      getOpenOrders(chainId, traderAPI, address as Address)
+      getOpenOrders(chainId, traderAPI, address)
         .then(({ data: d }) => {
           handleRemovedOrders(d).then();
           clearOpenOrders();
@@ -126,7 +130,7 @@ export const TableDataFetcher = memo(() => {
           }
         })
         .catch(console.error);
-      getPositionRisk(chainId, traderAPI, address as Address, Date.now())
+      getPositionRisk(chainId, traderAPI, address, Date.now())
         .then(({ data }) => {
           if (data && data.length > 0) {
             data.map(setPositions);

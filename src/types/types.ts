@@ -91,6 +91,11 @@ export interface ValidatedResponseI<T> extends ReferralResponseI<T> {
   msg: string;
 }
 
+export interface MaintenanceStatusI {
+  chainId: number;
+  isMaintenance: boolean;
+}
+
 export interface ExchangeInfoI {
   pools: PoolI[];
   oracleFactoryAddr: string;
@@ -164,6 +169,7 @@ export interface OrderInfoI {
   size: number;
   midPrice: number;
   tradingFee: number | null;
+  baseFee: number | null;
   collateral: number;
   maxMinEntryPrice: number | null;
   keepPositionLeverage: boolean;
@@ -248,6 +254,18 @@ export interface PriceFeedResponseI {
     expo: number;
     publish_time: number;
   };
+}
+
+export interface BoostI {
+  chainId: number;
+  nxtBoost: number;
+  nxtRndBoost: number;
+}
+
+export interface PumpStationResponseI {
+  addr: string;
+  crossChainScore: number;
+  boosts: BoostI[];
 }
 
 export interface TableHeaderI<T> {

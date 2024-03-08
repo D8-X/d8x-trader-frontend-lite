@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Handeln",
+    "pump-station": "PumpStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
     "portfolio": "Portfolio"
@@ -362,6 +363,19 @@
         "clear": "Filter Löschen"
       }
     },
+    "pump-station": {
+      "title": "Trade um deinen $D8X Airdrop Bag zu PUMPEN",
+      "pumped-volume": {
+        "title": "GEPUMPTES Volumen",
+        "modal-text": "Der $D8X Airdrop wird basierend auf dem GEPUMPTEN Volumen berechnet. Für jeden Trade berechnen wir Handelsvolumen x Boost. Das gepumpte Volumen ist die Summe davon."
+      },
+      "pump-o-meter": {
+        "title": "PUMP-METER",
+        "modal-text": "Der PUMP-METER zeigt den Boost an, der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis 105x und besteht aus zwei Teilen:",
+        "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren. Je mehr du handelst, desto höher dein Boost.",
+        "modal-text3": "Fortune Boost - Fortune Boost – Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0-fachen auf das unglaubliche 100-fache ansteigen kann!"
+      }
+    },
     "refer": {
       "tab-selector": {
         "referrer": "Als Empfehlungsgeber",
@@ -586,6 +600,14 @@
     "one-click": {
       "disable": "Deaktivieren Sie den One-Click-Handel",
       "enable": "Aktivieren Sie den One-Click-Handel"
+    },
+    "maintenance-mode": {
+      "header": "Wartungsmodus",
+      "description": "Der Handlesplatz auf <bold>{{chainName}}</bold> ist im Wartungsmodus.",
+      "visit-text": {
+        "1": "Klick",
+        "2": "für mehr Informationen."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",

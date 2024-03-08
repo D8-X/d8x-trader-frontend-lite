@@ -15,11 +15,11 @@ import {
   mainWsLatestMessageTimeAtom,
   openOrdersAtom,
   perpetualStatisticsAtom,
-  positionsAtom,
   removeOpenOrderAtom,
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  triggerPositionsUpdateAtom,
   webSocketReadyAtom,
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
@@ -91,11 +91,11 @@ export function useWsMessageHandler() {
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
   const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
-  const setPositions = useSetAtom(positionsAtom);
   const setOpenOrders = useSetAtom(openOrdersAtom);
   const removeOpenOrder = useSetAtom(removeOpenOrderAtom);
   const failOpenOrder = useSetAtom(failOrderAtom);
   const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
+  const setTriggerPositionsUpdate = useSetAtom(triggerPositionsUpdateAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
   const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
@@ -191,7 +191,7 @@ export function useWsMessageHandler() {
           return;
         }
 
-        setPositions(parsedMessage.data.obj);
+        setTriggerPositionsUpdate((prevValue) => !prevValue);
       } else if (isLimitOrderCreatedMessage(parsedMessage)) {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
@@ -255,7 +255,7 @@ export function useWsMessageHandler() {
     [
       updatePerpetualStats,
       setWebSocketReady,
-      setPositions,
+      setTriggerPositionsUpdate,
       setOpenOrders,
       removeOpenOrder,
       failOpenOrder,
