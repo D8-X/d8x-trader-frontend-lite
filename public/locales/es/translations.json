@@ -750,7 +750,7 @@
       "title": "Acceso",
       "description": "Inicie sesión con X o billetera web3",
       "sign-in-with-x-button": "Inicie sesión con X",
-      "sign-in-with-wallet-button": "Inicie sesión con billetera web3",
+      "sign-in-with-wallet-button": "Inicie sesión con billetera",
       "or-separator": "o",
       "disconnect": "Desconectar",
       "connected-title": "Bienvenido!",

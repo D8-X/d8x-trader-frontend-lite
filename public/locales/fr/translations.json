@@ -364,7 +364,7 @@
       }
     },
     "pump-station": {
-      "title": "Échangez pour POMPER votre Airdrop de $D8X",
+      "title": "Tradez pour POMPER votre Airdrop de $D8X",
       "pumped-volume": {
         "title": "Volume POMPÉ",
         "modal-text": "L'Airdrop $D8X est calculé en fonction du volume POMPÉ. Pour chaque transaction, nous calculons le volume des échanges x le boost. Le volume pompé est la somme de celui-ci."

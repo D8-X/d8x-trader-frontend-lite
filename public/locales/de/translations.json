@@ -372,8 +372,8 @@
       "pump-o-meter": {
         "title": "PUMP-METER",
         "modal-text": "Der PUMP-METER zeigt den Boost an, der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis 105x und besteht aus zwei Teilen:",
-        "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren. Je mehr du handelst, desto höher dein Boost.",
-        "modal-text3": "Fortune Boost - Fortune Boost – Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0-fachen auf das unglaubliche 100-fache ansteigen kann!"
+        "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren, der von 1x bis 5x reicht. Je mehr du handelst, desto höher dein Boost.",
+        "modal-text3": "Fortune Boost - Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0x auf einen unglaublichen 100x ansteigen kann!"
       }
     },
     "refer": {
@@ -739,7 +739,7 @@
     "extract-pk-modal": {
       "title": "Privaten Schlüssel extrahieren",
       "important-notice": "Wichtiger Hinweis: Geben Sie Ihren privaten Schlüssel niemals an Dritte weiter. Geben Sie den Schlüssel nur preis, wenn Sie wissen, was Sie tun.",
-      "reveal-key-button": "Schlüssel aufdecken"
+      "reveal-key-button": "Aufdecken"
     },
     "withdraw-modal": {
       "title": "Abheben",
@@ -749,8 +749,8 @@
     "connect-modal": {
       "title": "Anmelden",
       "description": "Melden Sie sich mit X oder einer Web3-Wallet an",
-      "sign-in-with-x-button": "Melden Sie sich mit X an",
-      "sign-in-with-wallet-button": "Melden Sie sich mit einer Wallet an",
+      "sign-in-with-x-button": "Mit X anmelden",
+      "sign-in-with-wallet-button": "Mit einer Wallet anmelden",
       "or-separator": "ooder",
       "disconnect": "Abmelden",
       "connected-title": "Willkommen!",

@@ -367,7 +367,7 @@
       "title": "Trade to PUMP your $D8X Airdrop Bag",
       "pumped-volume": {
         "title": "PUMPED Volume",
-        "modal-text": "The $D8X Airdrop is calculated based on PUMPED Volume. For every trade we compute trade volume x boost. PUMPED Volume is the sum of it."
+        "modal-text": "The $D8X Airdrop is calculated based on PUMPED Volume. For every trade we compute volume x boost. PUMPED Volume is the sum of it over all your trades."
       },
       "pump-o-meter": {
         "title": "PUMP-O-METER",
