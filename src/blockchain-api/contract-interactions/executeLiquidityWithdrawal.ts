@@ -1,7 +1,6 @@
 import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
-import type { Account, Address, Transport, WalletClient } from 'viem';
-import type { Chain } from 'wagmi';
+import type { Account, Address, Chain, Transport, WalletClient } from 'viem';
 
 export async function executeLiquidityWithdrawal(
   walletClient: WalletClient<Transport, Chain, Account>,

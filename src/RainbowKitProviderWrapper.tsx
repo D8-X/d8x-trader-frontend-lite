@@ -2,7 +2,6 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { useAtom } from 'jotai';
 import { ReactNode } from 'react';
 
-import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { Disclaimer } from 'components/disclaimer/disclaimer';
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -13,7 +12,6 @@ export const RainbowKitProviderWrapper = ({ children }: { children: ReactNode })
 
   return (
     <RainbowKitProvider
-      chains={chains}
       appInfo={{ appName: 'D8X', disclaimer: Disclaimer, learnMoreUrl: 'https://d8x.exchange/' }}
       modalSize="compact"
       theme={enabledDarkMode ? darkTheme() : undefined}

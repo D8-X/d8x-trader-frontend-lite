@@ -1,8 +1,9 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
-import { publicClient } from 'blockchain-api/wagmi/wagmiClient';
 import { PrivateKeyAccount, type Address, type WalletClient } from 'viem';
+import { getBalance, getGasPrice as getGasPriceWagmi } from '@wagmi/core';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 export async function removeDelegate(
   walletClient: WalletClient,
@@ -28,10 +29,10 @@ export async function removeDelegate(
   if (account !== delegateAccount.address) {
     const chainId = walletClient.chain?.id;
     if (!gasPrice) {
-      gasPrice = await publicClient({ chainId }).getGasPrice();
+      gasPrice = await getGasPriceWagmi(wagmiConfig, { chainId });
     }
     const gasLimit = getGasLimit({ chainId: walletClient.chain?.id, method: 'transfer' });
-    const balance = await publicClient({ chainId }).getBalance({ address: delegateAccount.address });
+    const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
     if (gasLimit * gasPrice < balance) {
       await walletClient.sendTransaction({
         to: account,
