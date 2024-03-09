@@ -63,7 +63,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     const wagmiStore = localStorage.getItem('wagmi.store');
     if (wagmiStore) {
       const parsedStore = JSON.parse(wagmiStore);
-      console.log({ parsedStore });
       if (parsedStore?.state?.data?.chain?.id) {
         activeChainId = parsedStore.state.data.chain.id;
       }
@@ -155,7 +154,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         //   setWeb3authProvider(web3AuthInstance.provider);
         // }
         // so we can switch chains
-        for (let i = 1; i < chains.length; i++) {
+        for (let i = 0; i < chains.length; i++) {
           await web3AuthInstance.addChain({
             chainNamespace: CHAIN_NAMESPACES.EIP155,
             chainId: numberToHex(chains[i].id ?? 0),

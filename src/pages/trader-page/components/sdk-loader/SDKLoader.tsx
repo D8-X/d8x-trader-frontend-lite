@@ -65,7 +65,7 @@ export const SDKLoader = memo(() => {
       setTradingClient(walletClient);
       return;
     }
-  }, [isSuccess, walletClient, activatedOneClickTrading, setTradingClient]);
+  }, [isSuccess, web3Auth, walletClient, activatedOneClickTrading, setTradingClient]);
 
   const loadSDK = useCallback(
     async (_publicClient: PublicClient, _chainId: number) => {
