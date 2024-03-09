@@ -11,7 +11,7 @@ import WalletIcon from 'assets/icons/walletIcon.svg?react';
 import { config, web3AuthConfig } from 'config';
 import { AccountModal } from 'components/account-modal/AccountModal';
 import { accountModalOpenAtom } from 'store/global-modals.store';
-import { web3authIdTokenAtom } from 'store/web3-auth.store';
+import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { cutAddress } from 'utils/cutAddress';
 
 import { LiFiWidgetButton } from './LiFiWidgetButton';
@@ -25,7 +25,7 @@ export const WalletConnectedButtons = memo(() => {
   const { t } = useTranslation();
 
   const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
-  const web3authIdToken = useAtomValue(web3authIdTokenAtom);
+  const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
 
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));

@@ -1,15 +1,13 @@
 import classnames from 'classnames';
-import { useSetAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Button } from '@mui/material';
 
-import { socialPKAtom, socialUserInfoAtom, web3authAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
+import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 
 import styles from './Web3AuthConnectButton.module.scss';
-import { accountModalOpenAtom } from '../../store/global-modals.store';
 
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
@@ -19,33 +17,15 @@ export const Web3AuthDisconnectButton = memo(({ buttonClassName }: Web3AuthConne
   const { t } = useTranslation();
 
   const { isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
 
-  const setUserInfo = useSetAtom(socialUserInfoAtom);
-  const setSocialPK = useSetAtom(socialPKAtom);
-  const setWeb3authIdToken = useSetAtom(web3authIdTokenAtom);
-  const setWeb3auth = useSetAtom(web3authAtom);
-  const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
-
-  const handleDisconnect = () => {
-    setUserInfo(null);
-    setSocialPK(undefined);
-    setWeb3authIdToken('');
-    setAccountModalOpen(false);
-    disconnect();
-    setWeb3auth(null);
-  };
+  const { disconnect } = useWeb3Auth();
 
   if (!isConnected) {
     return null;
   }
 
   return (
-    <Button
-      className={classnames(styles.connectWalletButton, buttonClassName)}
-      onClick={handleDisconnect}
-      variant="primary"
-    >
+    <Button className={classnames(styles.connectWalletButton, buttonClassName)} onClick={disconnect} variant="primary">
       {t('common.connect-modal.disconnect')}
     </Button>
   );

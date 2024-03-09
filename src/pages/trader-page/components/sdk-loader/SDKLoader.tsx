@@ -4,11 +4,11 @@ import { PublicClient, useAccount, useChainId, usePublicClient, useWalletClient 
 
 import { useAtomValue, useSetAtom } from 'jotai';
 
+import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { config } from 'config';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
-import { web3authAtom } from 'store/web3-auth.store';
 // import { hexToNumber, numberToHex } from 'viem';
 // import { ADAPTER_STATUS } from '@web3auth/base';
 
@@ -20,7 +20,8 @@ export const SDKLoader = memo(() => {
   const { data: walletClient, isSuccess } = useWalletClient();
 
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
-  const web3auth = useAtomValue(web3authAtom);
+
+  const { web3Auth } = useWeb3Auth();
 
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
@@ -31,9 +32,9 @@ export const SDKLoader = memo(() => {
 
   useEffect(() => {
     console.log('publicClient chain id', publicClient.chain.id);
-    console.log('web3auth', web3auth?.status, web3auth?.connected);
+    console.log('web3auth', web3Auth?.status, web3Auth?.connected);
     console.log('walletClient', walletClient?.chain.id, isSuccess);
-    console.log({ publicClient, walletClient, web3auth, isSuccess });
+    console.log({ publicClient, walletClient, web3Auth, isSuccess });
 
     // if (web3auth?.status === ADAPTER_STATUS.READY) {
     //   console.log(
@@ -49,7 +50,7 @@ export const SDKLoader = memo(() => {
     // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
     //   web3auth.init();
     // }
-  }, [web3auth, publicClient, walletClient, isSuccess]);
+  }, [web3Auth, publicClient, walletClient, isSuccess]);
 
   // useEffect(() => {
   //   if (web3auth && chainId) {

@@ -11,6 +11,7 @@ import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { StaticBackground } from 'components/static-background/StaticBackground';
 import { ThemeApplier } from 'components/theme-applier/ThemeApplier';
 import { GeoBlockingProvider } from 'context/geo-blocking-context/GeoBlockingContext';
+import { Web3AuthProvider } from 'context/web3-auth-context/Web3AuthContext';
 import { WebSocketContextProvider } from 'context/websocket-context/d8x/WebSocketContextProvider';
 import { theme } from 'styles/theme/theme';
 
@@ -24,7 +25,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 
 import 'wagmi/window';
-import { EagerConnectionWrapper } from 'EagerConnectionWrapper';
 
 const container = document.getElementById('root');
 
@@ -39,16 +39,16 @@ if (container) {
             <ThemeProvider theme={theme}>
               <GeoBlockingProvider>
                 <WagmiConfig config={wagmiConfig}>
-                  <EagerConnectionWrapper>
-                    <RainbowKitProviderWrapper>
+                  <RainbowKitProviderWrapper>
+                    <Web3AuthProvider>
                       <WebSocketContextProvider>
                         <BrowserRouter>
                           <StaticBackground />
                           <App />
                         </BrowserRouter>
                       </WebSocketContextProvider>
-                    </RainbowKitProviderWrapper>
-                  </EagerConnectionWrapper>
+                    </Web3AuthProvider>
+                  </RainbowKitProviderWrapper>
                 </WagmiConfig>
               </GeoBlockingProvider>
               <ThemeApplier />

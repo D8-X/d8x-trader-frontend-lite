@@ -1,19 +1,19 @@
+import { WALLET_ADAPTERS } from '@web3auth/base';
+import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 import classnames from 'classnames';
 import { TwitterAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { memo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useConnect } from 'wagmi';
-
-import { WALLET_ADAPTERS } from '@web3auth/base';
-import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 
 import { X } from '@mui/icons-material';
 import { Button } from '@mui/material';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
+import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 import { auth } from 'FireBaseConfig';
-import { socialPKAtom, socialUserInfoAtom, web3authAtom, web3authIdTokenAtom } from 'store/web3-auth.store';
+import { socialPKAtom, socialUserInfoAtom, web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { TemporaryAnyT } from 'types/types';
 
 import styles from './Web3AuthConnectButton.module.scss';
@@ -33,8 +33,9 @@ export const Web3AuthConnectButton = memo((props: Web3AuthConnectButtonPropsI) =
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
   const setSocialPK = useSetAtom(socialPKAtom);
-  const web3Auth = useAtomValue(web3authAtom);
-  const [web3AuthIdToken, setWeb3AuthIdToken] = useAtom(web3authIdTokenAtom);
+  const [web3AuthIdToken, setWeb3AuthIdToken] = useAtom(web3AuthIdTokenAtom);
+
+  const { web3Auth } = useWeb3Auth();
 
   const { connectAsync } = useConnect({
     connector: new Web3AuthConnector({
