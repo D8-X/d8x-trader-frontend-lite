@@ -20,6 +20,7 @@ export const PumpStationBlock = () => {
   const { t } = useTranslation();
 
   const [volumeValue, setVolumeValue] = useState<number>();
+  const [pumpValue, setPumpValue] = useState<number>();
   const [boosts, setBoosts] = useState<BoostI[]>([]);
 
   const chainId = useChainId();
@@ -32,6 +33,7 @@ export const PumpStationBlock = () => {
 
     getPumpStationData(address).then((response) => {
       setVolumeValue(response.crossChainScore);
+      setPumpValue(response.lastBoostedVol);
       setBoosts(response.boosts);
     });
   }, [isConnected, address]);
@@ -58,19 +60,33 @@ export const PumpStationBlock = () => {
 
   return (
     <div className={styles.root}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        <D8XLogoWithText width={86} height={20} />
-      </Typography>
-      <div className={styles.labelHolder}>
-        <InfoLabelBlock
-          title={t('pages.pump-station.pumped-volume.title')}
-          content={<Typography>{t('pages.pump-station.pumped-volume.modal-text')}</Typography>}
-        />
+      <div className={styles.firstComponent}>
+        <div className={styles.subComponent}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            <D8XLogoWithText width={86} height={20} />
+          </Typography>
+          <div className={styles.labelHolder}>
+            <InfoLabelBlock
+              title={t('pages.pump-station.pumped-volume.title')}
+              content={<Typography>{t('pages.pump-station.pumped-volume.modal-text')}</Typography>}
+            />
+          </div>
+          <Typography variant="h4" className={styles.volumeValue}>
+            $ {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'}
+          </Typography>
+        </div>
+        <div className={styles.secondSubComponent}>
+          <div className={styles.labelHolder}>
+            <InfoLabelBlock
+              title={t('pages.pump-station.last-pump.title')}
+              content={<Typography>{t('pages.pump-station.last-pump.modal-text')}</Typography>}
+            />
+          </div>
+          <Typography variant="h4" className={styles.volumeValue}>
+            + $ {pumpValue !== undefined ? formatNumber(pumpValue, 0) : '--'}
+          </Typography>
+        </div>
       </div>
-      <Typography variant="h4" className={styles.volumeValue}>
-        $ {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'}
-      </Typography>
-
       <div className={styles.labelHolder}>
         <InfoLabelBlock
           title={t('pages.pump-station.pump-o-meter.title')}

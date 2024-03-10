@@ -262,6 +262,7 @@ export interface BoostI {
 export interface PumpStationResponseI {
   addr: string;
   crossChainScore: number;
+  lastBoostedVol: number;
   boosts: BoostI[];
 }
 

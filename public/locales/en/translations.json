@@ -374,6 +374,10 @@
         "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade. The boost ranges from 1x to 105x and has two parts:",
         "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to 5x. The more you trade, the higher your potential boost!",
         "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible 100x!"
+      },
+      "last-pump": {
+        "title": "Last PUMP",
+        "modal-text": "The amount PUMPED Volume increased from your last trade. LFG!"
       }
     },
     "refer": {

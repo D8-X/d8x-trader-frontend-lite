@@ -374,6 +374,10 @@
         "modal-text": "El BOMBA-METRO muestra el estímulo que se aplica a tu PRÓXIMA operación. El estímulo varía de 1x a 105x y tiene dos partes:",
         "modal-text2": "Volumen Boost - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y 5 veces. ¡Cuanto más opere, mayor será su potencial estímulo!",
         "modal-text3": "Fortune Boost: - cada operación te brinda la oportunidad de obtener Fortune Boost, ¡un bono que puede dispararse desde 0x hasta un increíble 100x!"
+      },
+      "last-pump": {
+        "title": "Última BOMBA",
+        "modal-text": "La cantidad de Volumen BOMBEADO aumentó desde su última operación. ¡LFG!"
       }
     },
     "refer": {

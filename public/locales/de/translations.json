@@ -374,6 +374,10 @@
         "modal-text": "Der PUMP-METER zeigt den Boost an, der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis 105x und besteht aus zwei Teilen:",
         "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren. Je mehr du handelst, desto höher dein Boost.",
         "modal-text3": "Fortune Boost - Fortune Boost – Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0-fachen auf das unglaubliche 100-fache ansteigen kann!"
+      },
+      "last-pump": {
+        "title": "Letzer PUMP",
+        "modal-text": "Dein letzer Trade hat GEPUMPES Volume um diesen Betrag erhöht. LFG!"
       }
     },
     "refer": {

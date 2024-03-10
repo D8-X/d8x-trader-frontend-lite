@@ -3,16 +3,18 @@
 .root {
   display: flex;
   align-items: center;
-  border-radius: $d8x-button-border-radius;
-  border: 1px solid var(--d8x-meter-color-border);
-  padding: 2 * $d8x-spacing 4 * $d8x-spacing;
 }
 
 .divisionsHolder {
   display: flex;
   justify-content: space-between;
   flex: 1;
-  height: 30px;
+  height: 48px;
+  min-width: 220px;
+  padding: 2 * $d8x-spacing 4 * $d8x-spacing;
+  border: 1px solid var(--d8x-meter-color-border);
+  border-top-left-radius: $d8x-button-border-radius;
+  border-bottom-left-radius: $d8x-button-border-radius;
 
   .division {
     width: 3px;
@@ -26,9 +28,18 @@
 }
 
 .value {
+  background-color: var(--d8x-color-action);
+  border-top-right-radius: $d8x-button-border-radius;
+  border-bottom-right-radius: $d8x-button-border-radius;
   display: flex;
-  justify-content: flex-end;
+  font-size: 24px;
+  justify-content: center;
   align-items: center;
-  width: 40px;
-  margin-bottom: -$d8x-spacing;
+  min-width: 80px;
+  height: 48px;
+  padding-top: 2px;
+
+  @include media-phone {
+    font-size: 20px;
+  }
 }
