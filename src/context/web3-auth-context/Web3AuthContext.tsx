@@ -72,7 +72,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
   // create & init web3auth when chain changes
   useEffect(() => {
-    if (!chain || isInitializingRef.current || isConnectingRef.current) {
+    if (!chain || isInitializingRef.current || isConnectingRef.current || web3AuthIdToken === '') {
       return;
     }
 
