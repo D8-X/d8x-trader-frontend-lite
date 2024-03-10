@@ -30,27 +30,27 @@ export const SDKLoader = memo(() => {
 
   const loadingAPIRef = useRef(false);
 
-  useEffect(() => {
-    console.log('publicClient chain id', publicClient.chain.id);
-    console.log('web3auth', web3Auth?.status, web3Auth?.connected);
-    console.log('walletClient', walletClient?.chain.id, isSuccess);
-    console.log({ publicClient, walletClient, web3Auth, isSuccess });
+  // useEffect(() => {
+  //   console.log('publicClient chain id', publicClient.chain.id);
+  //   console.log('web3auth', web3Auth?.status, web3Auth?.connected);
+  //   console.log('walletClient', walletClient?.chain.id, isSuccess);
+  //   console.log({ publicClient, walletClient, web3Auth, isSuccess });
 
-    // if (web3auth?.status === ADAPTER_STATUS.READY) {
-    //   console.log(
-    //     'web3auth.switchChain, from-to:',
-    //     hexToNumber((web3auth.provider?.chainId as `0x${string}`) ?? '0x0'),
-    //     publicClient.chain.id,
-    //     web3auth.status,
-    //     web3auth.connected
-    //   );
-    //   refetch();
-    //   web3auth.switchChain({ chainId: numberToHex(publicClient.chain.id) });
-    // }
-    // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
-    //   web3auth.init();
-    // }
-  }, [web3Auth, publicClient, walletClient, isSuccess]);
+  //   // if (web3auth?.status === ADAPTER_STATUS.READY) {
+  //   //   console.log(
+  //   //     'web3auth.switchChain, from-to:',
+  //   //     hexToNumber((web3auth.provider?.chainId as `0x${string}`) ?? '0x0'),
+  //   //     publicClient.chain.id,
+  //   //     web3auth.status,
+  //   //     web3auth.connected
+  //   //   );
+  //   //   refetch();
+  //   //   web3auth.switchChain({ chainId: numberToHex(publicClient.chain.id) });
+  //   // }
+  //   // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
+  //   //   web3auth.init();
+  //   // }
+  // }, [web3Auth, publicClient, walletClient, isSuccess]);
 
   // useEffect(() => {
   //   if (web3auth && chainId) {
@@ -60,7 +60,7 @@ export const SDKLoader = memo(() => {
   // }, [web3auth, chainId]);
 
   useEffect(() => {
-    console.log('SDKLoader::setTradingClient', walletClient?.account, walletClient?.chain.id, isSuccess);
+    // console.log('SDKLoader::setTradingClient', walletClient?.account, walletClient?.chain.id, isSuccess);
     if (walletClient && isSuccess && !activatedOneClickTrading) {
       setTradingClient(walletClient);
       return;
