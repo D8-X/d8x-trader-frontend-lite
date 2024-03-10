@@ -131,7 +131,7 @@ export const OpenOrdersTable = memo(() => {
     setTxHash(undefined);
     refreshOpenOrders().then();
     setLatestOrderSentTimestamp(Date.now());
-  }, [isFetched, setTxHash]);
+  }, [isFetched, setTxHash, refreshOpenOrders, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
     if (!error || !isError) {
@@ -143,7 +143,7 @@ export const OpenOrdersTable = memo(() => {
         bodyLines={[{ label: t('pages.trade.orders-table.toasts.tx-failed.body'), value: error.message }]}
       />
     );
-  }, [error, isError]);
+  }, [error, isError, t]);
 
   useEffect(() => {
     if (!receipt || !isSuccess) {
@@ -152,18 +152,13 @@ export const OpenOrdersTable = memo(() => {
     {
       const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
       if (cancelEventIdx >= 0) {
-        const { args } = decodeEventLog({
-          abi: PROXY_ABI as readonly string[],
-          data: receipt.logs[cancelEventIdx].data,
-          topics: receipt.logs[cancelEventIdx].topics,
-        });
         toast.success(
           <ToastContent
             title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
             bodyLines={[
               {
                 label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
-                value: traderAPI?.getSymbolFromPerpId((args as unknown as { perpetualId: number }).perpetualId),
+                value: '',
               },
               {
                 label: '',
@@ -201,7 +196,7 @@ export const OpenOrdersTable = memo(() => {
         );
       }
     }
-  }, [receipt, isSuccess]);
+  }, [receipt, isSuccess, t, chain, txHash]);
 
   const handleCancelOrderConfirm = () => {
     if (!selectedOrder) {
@@ -230,14 +225,14 @@ export const OpenOrdersTable = memo(() => {
               );
               setTxHash(tx.hash);
             })
-            .catch((error) => {
-              console.error(error);
+            .catch((e) => {
+              console.error(e);
               setRequestSent(false);
             });
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((e) => {
+        console.error(e);
         setRequestSent(false);
       });
   };

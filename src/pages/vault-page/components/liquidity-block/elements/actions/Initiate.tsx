@@ -91,7 +91,7 @@ export const Initiate = memo(() => {
     }
     setTxHash(undefined);
     setTriggerUserStatsUpdate((prevValue) => !prevValue);
-  }, [isFetched]);
+  }, [isFetched, setTriggerUserStatsUpdate]);
 
   useEffect(() => {
     if (!isError || !reason) {
@@ -103,7 +103,7 @@ export const Initiate = memo(() => {
         bodyLines={[{ label: t('pages.vault.toast.error-initiating.body'), value: reason.message }]}
       />
     );
-  }, [isError]);
+  }, [isError, reason, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -129,7 +129,7 @@ export const Initiate = memo(() => {
         ]}
       />
     );
-  }, [isSuccess, txHash]);
+  }, [isSuccess, txHash, chain, t]);
 
   const handleInitiateLiquidity = useCallback(() => {
     if (requestSentRef.current) {

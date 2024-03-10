@@ -27,7 +27,7 @@ export const LiFiWidgetHolder = () => {
   const { i18n, t } = useTranslation();
 
   const chainId = useChainId();
-  const { connectAsync, connectors } = useConnect();
+  const { connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const signer = useEthersSigner();
   const widgetEvents = useWidgetEvents();
@@ -101,19 +101,7 @@ export const LiFiWidgetHolder = () => {
       },
     };
     return config;
-  }, [
-    triggerSwap,
-    chainId,
-    selectedPool,
-    signer,
-    connectAsync,
-    connectors,
-    disconnect,
-    t,
-    i18n,
-    enabledDarkMode,
-    admissibleTokens,
-  ]);
+  }, [triggerSwap, chainId, selectedPool, signer, connectors, disconnect, t, i18n, enabledDarkMode, admissibleTokens]);
 
   useEffect(() => {
     const onExchangeReversed = () => {

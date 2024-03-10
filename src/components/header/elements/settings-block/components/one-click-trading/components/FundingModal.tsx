@@ -32,7 +32,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
       setTxHash(undefined);
       onClose();
     }
-  }, [isFetched]);
+  }, [isFetched, onClose]);
 
   const [inputValue, setInputValue] = useState('');
 

@@ -164,15 +164,14 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       return;
     }
     setTxHash(undefined);
-    setLatestOrderSentTimestamp(Date.now());
-  }, [isFetched]);
+  }, [isFetched, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
     if (!isError) {
       return;
     }
     toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-  }, [isError]);
+  }, [isError, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -203,7 +202,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         ]}
       />
     );
-  }, [isSuccess, txHash]);
+  }, [isSuccess, txHash, chain, selectedPosition?.symbol, setLatestOrderSentTimestamp, t]);
 
   if (!selectedPosition) {
     return null;

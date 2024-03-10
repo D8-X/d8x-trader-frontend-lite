@@ -307,14 +307,14 @@ export const ActionBlock = memo(() => {
     }
     setTxHash(undefined);
     setLatestOrderSentTimestamp(Date.now());
-  }, [isFetched, txHash, setTxHash]);
+  }, [isFetched, txHash, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
     if (!isError) {
       return;
     }
     toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-  }, [isError]);
+  }, [isError, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -345,7 +345,7 @@ export const ActionBlock = memo(() => {
         ]}
       />
     );
-  }, [isSuccess, txHash]);
+  }, [isSuccess, txHash, chain, orderInfo?.symbol, setLatestOrderSentTimestamp, t]);
 
   const handleOrderConfirm = () => {
     if (

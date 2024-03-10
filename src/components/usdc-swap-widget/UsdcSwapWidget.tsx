@@ -111,7 +111,7 @@ export function UsdcSwapWidget() {
       return;
     }
     refetchAllowance?.().then();
-  }, [isApproveFetched]);
+  }, [isApproveFetched, refetchAllowance]);
 
   useEffect(() => {
     if (!isApproveError || !approveError) {
@@ -185,11 +185,11 @@ export function UsdcSwapWidget() {
     }
     setInAction(true);
     if (allowance < depositAmountUnits) {
-      if (!!approveConfig?.request) {
+      if (approveConfig?.request) {
         await approve?.(approveConfig?.request);
       }
     } else {
-      if (!!swapConfig?.request) {
+      if (swapConfig?.request) {
         await execute?.(swapConfig?.request);
       }
     }

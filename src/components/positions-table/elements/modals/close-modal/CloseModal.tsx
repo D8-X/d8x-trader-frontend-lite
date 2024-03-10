@@ -75,7 +75,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     setTxHash(undefined);
     setSymbolForTx('');
     setLatestOrderSentTimestamp(Date.now());
-  }, [isFetched, txHash, setTxHash]);
+  }, [isFetched, txHash, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
     if (!isError || !reason) {
@@ -87,7 +87,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
       />
     );
-  }, [isError, reason]);
+  }, [isError, reason, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -117,7 +117,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         ]}
       />
     );
-  }, [isSuccess, txHash]);
+  }, [isSuccess, txHash, chain, symbolForTx, t]);
 
   const handleClosePositionConfirm = async () => {
     if (requestSentRef.current) {

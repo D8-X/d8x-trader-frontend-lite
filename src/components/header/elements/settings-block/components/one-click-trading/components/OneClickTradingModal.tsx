@@ -57,7 +57,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
       setActivatedOneClickTrading(false);
       setStorageKey(null);
     }
-  }, [isDisconnected]);
+  }, [isDisconnected, setActivatedOneClickTrading, setStorageKey]);
 
   useEffect(() => {
     if (!address || !traderAPI || traderAPI?.chainId !== publicClient?.chain.id) {

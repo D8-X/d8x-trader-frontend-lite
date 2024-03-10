@@ -148,7 +148,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         ]}
       />
     );
-  }, [isAddSucces, txHashForAdd]);
+  }, [isAddSucces, txHashForAdd, amountForAdd, chain, symbolForTx, t]);
 
   const {
     isSuccess: isRemoveSuccess,
@@ -157,49 +157,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     error: removeReason,
   } = useWaitForTransactionReceipt({
     hash: txHashForRemove,
-    // onSuccess() {
-    //   toast.success(
-    //     <ToastContent
-    //       title={t('pages.trade.positions-table.toasts.collateral-removed.title')}
-    //       bodyLines={[
-    //         {
-    //           label: t('pages.trade.positions-table.toasts.collateral-removed.body1'),
-    //           value: symbolForTx,
-    //         },
-    //         {
-    //           label: t('pages.trade.positions-table.toasts.collateral-removed.body2'),
-    //           value: formatNumber(amountForRemove),
-    //         },
-    //         {
-    //           label: '',
-    //           value: (
-    //             <a
-    //               href={getTxnLink(chain?.blockExplorers?.default?.url, txHashForRemove)}
-    //               target="_blank"
-    //               rel="noreferrer"
-    //               className={styles.shareLink}
-    //             >
-    //               {txHashForRemove}
-    //             </a>
-    //           ),
-    //         },
-    //       ]}
-    //     />
-    //   );
-    // },
-    // onError(reason) {
-    //   toast.error(
-    //     <ToastContent
-    //       title={t('pages.trade.positions-table.toasts.tx-failed.title')}
-    //       bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
-    //     />
-    //   );
-    // },
-    // onSettled() {
-    //   setTxHashForRemove(undefined);
-    //   setAmountForRemove(0);
-    //   setSymbolForTx('');
-    // },
     query: { enabled: !!address && !!txHashForRemove },
   });
 
@@ -222,7 +179,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: removeReason.message }]}
       />
     );
-  }, [isRemoveError, removeReason]);
+  }, [isRemoveError, removeReason, t]);
 
   useEffect(() => {
     if (!isRemoveSuccess || !txHashForRemove) {
@@ -256,7 +213,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         ]}
       />
     );
-  }, [isRemoveSuccess, txHashForRemove]);
+  }, [isRemoveSuccess, txHashForRemove, amountForRemove, chain, symbolForTx, t]);
 
   const handleMaxCollateral = () => {
     if (maxCollateral) {

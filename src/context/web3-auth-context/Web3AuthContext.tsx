@@ -1,5 +1,5 @@
 import { getPublicKey } from '@noble/secp256k1';
-import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS } from '@web3auth/base';
+import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter, OpenloginUserInfo } from '@web3auth/openlogin-adapter';
@@ -85,14 +85,16 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           tickerName: chain.nativeCurrency.name,
         };
 
-        const web3AuthInstance = new Web3AuthNoModal({
+        const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
+
+        const web3AuthOptions: Web3AuthNoModalOptions = {
           clientId,
           chainConfig,
           web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
-          useCoreKitKey: false,
-        });
+          privateKeyProvider,
+        };
+        const web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);
 
-        const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
         const openloginAdapter = new OpenloginAdapter({
           privateKeyProvider,
           adapterSettings: {
@@ -133,16 +135,25 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           isConnectedRef.current = true;
 
           connect({
-            connector: new Web3AuthConnector({
-              chains,
-              options: {
-                web3AuthInstance,
-                loginParams: {
-                  loginProvider: 'jwt',
-                  extraLoginOptions: {
-                    id_token: web3AuthIdToken,
-                    verifierIdField: 'sub',
-                    // domain: '...', // example included this, but works without it?
+            connector: Web3AuthConnector({
+              web3AuthInstance,
+              loginParams: {
+                loginProvider: 'jwt',
+                extraLoginOptions: {
+                  id_token: web3AuthIdToken,
+                  verifierIdField: 'sub',
+                  // domain: '...', // example included this, but works without it?
+                },
+              },
+              modalConfig: {
+                openloginAdapter: {
+                  uxMode: 'popup',
+                  loginConfig: {
+                    jwt: {
+                      verifier: verifierName,
+                      typeOfLogin: 'jwt',
+                      clientId,
+                    },
                   },
                 },
               },
@@ -160,7 +171,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
             chainId: numberToHex(chains[i].id ?? 0),
             rpcTarget: chains[i].rpcUrls.default.http[0] ?? '',
             displayName: chains[i].name ?? '',
-            blockExplorer: chains[i].blockExplorers?.default.url ?? '',
+            blockExplorerUrl: chains[i].blockExplorers?.default.url ?? '',
             ticker: chains[i].nativeCurrency.symbol ?? '',
             tickerName: chains[i].nativeCurrency.name ?? '',
           });
@@ -247,16 +258,25 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       });
       console.log('connectAsync', web3Auth.status, web3Auth.connected);
       await connectAsync({
-        connector: new Web3AuthConnector({
-          chains,
-          options: {
-            web3AuthInstance: web3Auth,
-            loginParams: {
-              loginProvider: 'jwt',
-              extraLoginOptions: {
-                id_token: idToken,
-                verifierIdField: 'sub',
-                // domain: '...', // example included this, but works without it?
+        connector: Web3AuthConnector({
+          web3AuthInstance: web3Auth,
+          loginParams: {
+            loginProvider: 'jwt',
+            extraLoginOptions: {
+              id_token: web3AuthIdToken,
+              verifierIdField: 'sub',
+              // domain: '...', // example included this, but works without it?
+            },
+          },
+          modalConfig: {
+            openloginAdapter: {
+              uxMode: 'popup',
+              loginConfig: {
+                jwt: {
+                  verifier: verifierName,
+                  typeOfLogin: 'jwt',
+                  clientId,
+                },
               },
             },
           },
@@ -272,7 +292,15 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     } finally {
       signInRef.current = false;
     }
-  }, [connectAsync, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo, setWeb3AuthIdToken, web3Auth]);
+  }, [
+    connectAsync,
+    handleWeb3AuthSuccessConnect,
+    setSocialPK,
+    setUserInfo,
+    setWeb3AuthIdToken,
+    web3Auth,
+    web3AuthIdToken,
+  ]);
 
   return (
     <Web3AuthContext.Provider
