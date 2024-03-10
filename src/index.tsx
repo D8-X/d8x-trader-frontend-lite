@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
-import { WagmiConfig } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
@@ -25,8 +25,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 
-import 'wagmi/window';
-
 const container = document.getElementById('root');
 
 const queryClient = new QueryClient();
@@ -41,7 +39,7 @@ if (container) {
           <StyledEngineProvider injectFirst>
             <ThemeProvider theme={theme}>
               <GeoBlockingProvider>
-                <WagmiConfig config={wagmiConfig}>
+                <WagmiProvider config={wagmiConfig}>
                   <QueryClientProvider client={queryClient}>
                     <RainbowKitProviderWrapper>
                       <Web3AuthProvider>
@@ -54,7 +52,7 @@ if (container) {
                       </Web3AuthProvider>
                     </RainbowKitProviderWrapper>
                   </QueryClientProvider>
-                </WagmiConfig>
+                </WagmiProvider>
               </GeoBlockingProvider>
               <ThemeApplier />
             </ThemeProvider>

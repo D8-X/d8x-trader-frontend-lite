@@ -15,6 +15,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { bytesToHex, numberToHex } from 'viem';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
@@ -39,7 +40,7 @@ const verifierName = web3AuthConfig.web3AuthVerifier;
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
-  const { connect, connectAsync } = useConnect();
+  const { connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
@@ -49,16 +50,16 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
   const [web3Auth, setWeb3Auth] = useState<Web3AuthNoModal | null>(null);
 
+  const isInitializingRef = useRef(false);
   const isInstanceCreatedRef = useRef(false);
-  const isConnectedRef = useRef(false);
+  // const isConnectingRef = useRef(false);
   const signInRef = useRef(false);
   const verifyRef = useRef(false);
 
-  useEffect(() => {
-    if (!web3AuthConfig.web3AuthClientId && isInstanceCreatedRef.current) {
+  const chain = useMemo(() => {
+    if (!web3AuthConfig.web3AuthClientId) {
       return;
     }
-
     let activeChainId = chainId;
     const wagmiStore = localStorage.getItem('wagmi.store');
     if (wagmiStore) {
@@ -67,11 +68,19 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         activeChainId = parsedStore.state.data.chain.id;
       }
     }
+    return chains.find(({ id }) => id === activeChainId);
+  }, [chainId]);
 
-    const chain = chains.find(({ id }) => id === activeChainId);
-    if (!chain) {
+  useEffect(() => {
+    if (!chain || !web3AuthConfig.web3AuthClientId || isInitializingRef.current || isInstanceCreatedRef.current) {
       return;
     }
+    // TODO: Should be removed
+    console.log('--------------');
+    console.log('Init Web3Auth');
+    console.log('--------------');
+
+    isInitializingRef.current = true;
 
     const init = async () => {
       try {
@@ -110,56 +119,55 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         });
 
         web3AuthInstance.configureAdapter(openloginAdapter);
-        setWeb3Auth(web3AuthInstance);
 
         // TODO: remove this
         console.log('init', web3AuthInstance.status, web3AuthInstance.connected);
-        await web3AuthInstance.init().then(() => {
-          if (isConnectedRef.current || !web3AuthIdToken) {
-            return;
-          }
+        await web3AuthInstance.init();
+        //   if (isConnectedRef.current || !web3AuthIdToken) {
+        //     return;
+        //   }
 
-          // if wagmi.connected set to true, then wagmi will not show modal
-          // to reconnect user wallet, but instead will use prev connection
-          // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
-          const wagmiConnected = localStorage.getItem('wagmi.connected');
-          const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
+        //   // if wagmi.connected set to true, then wagmi will not show modal
+        //   // to reconnect user wallet, but instead will use prev connection
+        //   // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
+        //   const wagmiConnected = localStorage.getItem('wagmi.connected');
+        //   const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
 
-          const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
-          const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
+        //   const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
+        //   const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
 
-          if (!isWagmiConnected || !isWeb3Wallet) {
-            return;
-          }
+        //   if (!isWagmiConnected || !isWeb3Wallet) {
+        //     return;
+        //   }
 
-          isConnectedRef.current = true;
+        //   isConnectedRef.current = true;
 
-          connect({
-            connector: Web3AuthConnector({
-              web3AuthInstance,
-              loginParams: {
-                loginProvider: 'jwt',
-                extraLoginOptions: {
-                  id_token: web3AuthIdToken,
-                  verifierIdField: 'sub',
-                  // domain: '...', // example included this, but works without it?
-                },
-              },
-              modalConfig: {
-                openloginAdapter: {
-                  uxMode: 'popup',
-                  loginConfig: {
-                    jwt: {
-                      verifier: verifierName,
-                      typeOfLogin: 'jwt',
-                      clientId,
-                    },
-                  },
-                },
-              },
-            }),
-          });
-        });
+        //   connect({
+        //     connector: Web3AuthConnector({
+        //       web3AuthInstance,
+        //       loginParams: {
+        //         loginProvider: 'jwt',
+        //         extraLoginOptions: {
+        //           id_token: web3AuthIdToken,
+        //           verifierIdField: 'sub',
+        //           // domain: '...', // example included this, but works without it?
+        //         },
+        //       },
+        //       modalConfig: {
+        //         openloginAdapter: {
+        //           uxMode: 'popup',
+        //           loginConfig: {
+        //             jwt: {
+        //               verifier: verifierName,
+        //               typeOfLogin: 'jwt',
+        //               clientId,
+        //             },
+        //           },
+        //         },
+        //       },
+        //     }),
+        //   });
+        // });
 
         // if (web3AuthInstance.provider) {
         //   setWeb3authProvider(web3AuthInstance.provider);
@@ -176,6 +184,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
             tickerName: chains[i].nativeCurrency.name ?? '',
           });
         }
+        setWeb3Auth(web3AuthInstance);
       } catch (error) {
         console.error(error);
       }
@@ -183,8 +192,61 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
     init().then(() => {
       isInstanceCreatedRef.current = true;
+      isInitializingRef.current = false;
     });
-  }, [chainId, web3AuthIdToken, connect]);
+  }, [chainId, chain, web3AuthIdToken]);
+
+  // useEffect(() => {
+  //   if (isConnectingRef.current || !web3AuthIdToken || !chain || !web3Auth) {
+  //     return;
+  //   }
+
+  //   // TODO: Should be removed
+  //   console.log('--------------');
+  //   console.log('Social relogin');
+  //   console.log('--------------');
+
+  //   // if wagmi.connected set to true, then wagmi will not show modal
+  //   // to reconnect user wallet, but instead will use prev connection
+  //   // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
+  //   const wagmiConnected = localStorage.getItem('wagmi.connected');
+  //   const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
+
+  //   const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
+  //   const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
+
+  //   if (!isWagmiConnected || !isWeb3Wallet) {
+  //     return;
+  //   }
+
+  //   isConnectingRef.current = true;
+
+  //   connect({
+  //     connector: Web3AuthConnector({
+  //       web3AuthInstance: web3Auth,
+  //       loginParams: {
+  //         loginProvider: 'jwt',
+  //         extraLoginOptions: {
+  //           id_token: web3AuthIdToken,
+  //           verifierIdField: 'sub',
+  //           // domain: '...', // example included this, but works without it?
+  //         },
+  //       },
+  //       modalConfig: {
+  //         openloginAdapter: {
+  //           uxMode: 'popup',
+  //           loginConfig: {
+  //             jwt: {
+  //               verifier: verifierName,
+  //               typeOfLogin: 'jwt',
+  //               clientId,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }),
+  //   });
+  // }, [connect, chain, web3Auth, web3AuthIdToken]);
 
   const handleDisconnect = useCallback(() => {
     setUserInfo(null);
@@ -192,7 +254,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     setWeb3AuthIdToken('');
     setAccountModalOpen(false);
     disconnect();
-    setWeb3Auth(null);
   }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, disconnect]);
 
   const handleWeb3AuthSuccessConnect = useCallback(
@@ -219,7 +280,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   );
 
   const signInWithTwitter = useCallback(async () => {
-    if (!auth || signInRef.current) {
+    if (!chain || !auth || signInRef.current) {
       console.log('auth not defined');
       return;
     }
@@ -258,6 +319,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       });
       console.log('connectAsync', web3Auth.status, web3Auth.connected);
       await connectAsync({
+        chainId,
         connector: Web3AuthConnector({
           web3AuthInstance: web3Auth,
           loginParams: {
@@ -293,6 +355,8 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       signInRef.current = false;
     }
   }, [
+    chain,
+    chainId,
     connectAsync,
     handleWeb3AuthSuccessConnect,
     setSocialPK,
