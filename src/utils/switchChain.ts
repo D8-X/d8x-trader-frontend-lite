@@ -1,18 +1,19 @@
-import { getNetwork, switchNetwork } from '@wagmi/core';
+import { getAccount, switchChain as switchChainWagmi } from '@wagmi/core';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 import { walletClientToSignerAsync } from 'hooks/useEthersSigner';
 
 export const switchChain = async (chainId: number) => {
-  const network = getNetwork();
+  const { chainId: connectedChainId } = getAccount(wagmiConfig);
 
-  if (network.chain?.id !== chainId) {
+  if (connectedChainId !== chainId) {
     try {
-      const chain = await switchNetwork({ chainId });
-      console.debug(`${network.chain?.id} => ${chain?.id}`);
+      const chain = await switchChainWagmi(wagmiConfig, { chainId });
+      console.debug(`${connectedChainId} => ${chain?.id}`);
       return await walletClientToSignerAsync(chain?.id);
     } catch {
       throw new Error("Couldn't switch chain.");
     }
   }
-  return walletClientToSignerAsync(network.chain?.id);
+  return walletClientToSignerAsync(connectedChainId);
 };

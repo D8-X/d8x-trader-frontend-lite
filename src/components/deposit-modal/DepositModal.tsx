@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -27,8 +27,7 @@ export const DepositModal = () => {
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
 
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
 
   const handleOnClose = () => setDepositModalOpen(false);
 

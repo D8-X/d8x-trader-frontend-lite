@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { type Address, useAccount, useBalance, useChainId, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useChainId } from 'wagmi';
 
 import { Close, Menu } from '@mui/icons-material';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -43,6 +43,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { Address } from 'viem';
 
 interface HeaderPropsI {
   /**
@@ -64,8 +65,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
-  const { chain } = useNetwork();
-  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
@@ -179,19 +179,21 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     address,
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
-    enabled:
-      !exchangeRequestRef.current &&
-      address &&
-      traderAPI?.chainId === chain?.id &&
-      !!selectedPool?.marginTokenAddr &&
-      isConnected &&
-      !isReconnecting &&
-      !isConnecting,
+    query: {
+      enabled:
+        !exchangeRequestRef.current &&
+        address &&
+        traderAPI?.chainId === chain?.id &&
+        !!selectedPool?.marginTokenAddr &&
+        isConnected &&
+        !isReconnecting &&
+        !isConnecting,
+    },
   });
 
   const { data: gasTokenBalance, isError: isGasTokenFetchError } = useBalance({
     address,
-    enabled: address && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting,
+    query: { enabled: address && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting },
   });
 
   useEffect(() => {

@@ -1,9 +1,9 @@
-import { Chain } from 'wagmi';
+import { Chain } from 'wagmi/chains';
 
 export const x1 = {
   id: 195,
   name: 'X1',
-  network: 'avalanche',
+  // network: 'avalanche',
   nativeCurrency: {
     decimals: 18,
     name: 'OKX',
@@ -28,7 +28,7 @@ export const x1 = {
 export const cardona = {
   id: 2442,
   name: 'Cardona',
-  network: 'cardona',
+  // network: 'cardona',
   nativeCurrency: {
     decimals: 18,
     name: 'ETH',
@@ -53,7 +53,7 @@ export const cardona = {
 export const artio = {
   id: 80085,
   name: 'Berachain Artio',
-  network: 'Berachain Artio',
+  // network: 'Berachain Artio',
   nativeCurrency: {
     decimals: 18,
     name: 'BERA',

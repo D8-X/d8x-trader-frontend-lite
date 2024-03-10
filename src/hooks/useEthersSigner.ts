@@ -1,6 +1,8 @@
 import { Web3Provider } from '@ethersproject/providers';
-import { getWalletClient, type WalletClient } from '@wagmi/core';
+import { getWalletClient } from '@wagmi/core';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { useMemo } from 'react';
+import { WalletClient } from 'viem';
 import { useWalletClient } from 'wagmi';
 
 export function walletClientToSigner(walletClient?: WalletClient | null) {
@@ -13,7 +15,7 @@ export function walletClientToSigner(walletClient?: WalletClient | null) {
 }
 
 export async function walletClientToSignerAsync(chainId?: number) {
-  const walletClient = await getWalletClient({ chainId });
+  const walletClient = await getWalletClient(wagmiConfig, { chainId });
   return walletClientToSigner(walletClient);
 }
 

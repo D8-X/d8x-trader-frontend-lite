@@ -1,10 +1,11 @@
 import { memo, useEffect } from 'react';
-import { type Address, useAccount, useBalance, useConnect } from 'wagmi';
+import { useAccount, useBalance, useConnect } from 'wagmi';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
 
 import { REFETCH_BALANCES_INTERVAL } from '../../constants';
+import { Address } from 'viem/accounts';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
@@ -13,12 +14,12 @@ interface PoolLinePropsI {
 
 export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
-  const { isLoading } = useConnect();
+  const { isPending } = useConnect();
 
   const { data: tokenBalanceData, refetch } = useBalance({
     address,
     token: pool.marginTokenAddr as Address,
-    enabled: address && pool.marginTokenAddr !== undefined && !isLoading && isConnected,
+    query: { enabled: address && pool.marginTokenAddr !== undefined && !isPending && isConnected },
   });
 
   useEffect(() => {

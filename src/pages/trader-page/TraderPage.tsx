@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { type Address, useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useBalance, useChainId } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -45,6 +45,7 @@ import { TableDataFetcher } from './components/table-data-refetcher/TableDataFet
 import { SDKLoader } from './components/sdk-loader/SDKLoader';
 
 import styles from './TraderPage.module.scss';
+import { Address } from 'viem/accounts';
 
 const MIN_REQUIRED_USDC = 20;
 
@@ -85,14 +86,14 @@ export const TraderPage = () => {
     address,
     token: OLD_USDC_ADDRESS,
     chainId: 1101,
-    enabled: address && chainId === 1101 && isConnected,
+    query: { enabled: address && chainId === 1101 && isConnected },
   });
 
   const { data: newTokenData } = useBalance({
     address,
     token: NEW_USDC_ADDRESS,
     chainId: 1101,
-    enabled: address && chainId === 1101 && isConnected,
+    query: { enabled: address && chainId === 1101 && isConnected },
   });
 
   useEffect(() => {

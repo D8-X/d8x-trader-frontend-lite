@@ -1,6 +1,6 @@
 import { type PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { X } from '@mui/icons-material';
 import { Link, Typography } from '@mui/material';
@@ -16,7 +16,7 @@ const INTERVAL_FOR_DATA_POLLING = 60000; // Each 60 sec
 export const MaintenanceWrapper = ({ children }: PropsWithChildren) => {
   const { t } = useTranslation();
 
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   const [maintenanceStatuses, setMaintenanceStatuses] = useState<MaintenanceStatusI[]>([]);
 

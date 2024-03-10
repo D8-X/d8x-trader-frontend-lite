@@ -1,7 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'wagmi';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
@@ -9,6 +8,7 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { gasTokenSymbolAtom, poolsAtom } from 'store/pools.store';
 
 import { CurrencyItemI } from './types';
+import { Address } from 'viem';
 
 interface CurrencySelectPropsI {
   selectedCurrency?: CurrencyItemI | null;

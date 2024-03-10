@@ -11,6 +11,8 @@ import { enabledDarkModeAtom } from 'store/app.store';
 import { poolsAtom, selectedPoolAtom } from 'store/pools.store';
 import { LanguageE } from 'types/enums';
 import { switchChain } from 'utils/switchChain';
+import { getWalletClient } from '@wagmi/core';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 const WIDGET_CN_KEY = 'zh';
 
@@ -51,8 +53,7 @@ export const LiFiWidgetHolder = () => {
       walletManagement: {
         signer,
         connect: async () => {
-          const result = await connectAsync({ connector: connectors[0] });
-          const walletClient = await result.connector?.getWalletClient();
+          const walletClient = await getWalletClient(wagmiConfig, { connector: connectors[0] });
           if (walletClient) {
             return walletClientToSigner(walletClient);
           } else {

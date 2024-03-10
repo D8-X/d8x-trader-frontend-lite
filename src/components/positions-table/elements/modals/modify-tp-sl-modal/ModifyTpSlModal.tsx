@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Address, useAccount, useBalance, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useBalance, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -28,6 +28,7 @@ import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
 import styles from '../Modal.module.scss';
+import { Address } from 'viem';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -56,8 +57,7 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const { address, isConnected } = useAccount();
-  const { chain } = useNetwork();
+  const { address, chain, isConnected } = useAccount();
   const chainId = useChainId();
 
   const [pools] = useAtom(poolsAtom);
@@ -117,47 +117,93 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     address,
     token: selectedPool?.marginTokenAddr as Address,
     chainId: chain?.id,
-    enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected,
+    query: { enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected },
   });
 
-  useWaitForTransaction({
+  const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      setLatestOrderSentTimestamp(Date.now());
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.action-block.toasts.order-submitted.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.action-block.toasts.order-submitted.body'),
-              value: selectedPosition?.symbol,
-            },
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError() {
-      toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!selectedPosition?.symbol && !!txHash,
+    // onSuccess() {
+    //   setLatestOrderSentTimestamp(Date.now());
+    //   toast.success(
+    //     <ToastContent
+    //       title={t('pages.trade.action-block.toasts.order-submitted.title')}
+    //       bodyLines={[
+    //         {
+    //           label: t('pages.trade.action-block.toasts.order-submitted.body'),
+    //           value: selectedPosition?.symbol,
+    //         },
+    //         {
+    //           label: '',
+    //           value: (
+    //             <a
+    //               href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+    //               target="_blank"
+    //               rel="noreferrer"
+    //               className={styles.shareLink}
+    //             >
+    //               {txHash}
+    //             </a>
+    //           ),
+    //         },
+    //       ]}
+    //     />
+    //   );
+    // },
+    // onError() {
+    //   toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
+    // },
+    // onSettled() {
+    //   setTxHash(undefined);
+    //   setLatestOrderSentTimestamp(Date.now());
+    // },
+    query: { enabled: !!address && !!selectedPosition?.symbol && !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched) {
+      return;
+    }
+    setTxHash(undefined);
+    setLatestOrderSentTimestamp(Date.now());
+  }, [isFetched]);
+
+  useEffect(() => {
+    if (!isError) {
+      return;
+    }
+    toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
+  }, [isError]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    setLatestOrderSentTimestamp(Date.now());
+    toast.success(
+      <ToastContent
+        title={t('pages.trade.action-block.toasts.order-submitted.title')}
+        bodyLines={[
+          {
+            label: t('pages.trade.action-block.toasts.order-submitted.body'),
+            value: selectedPosition?.symbol,
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash]);
 
   if (!selectedPosition) {
     return null;

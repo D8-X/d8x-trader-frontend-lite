@@ -1,11 +1,11 @@
 import { multicall } from '@wagmi/core';
 import { atom } from 'jotai';
-import { Address } from 'viem';
-import { erc20ABI } from 'wagmi';
+import { Address, erc20Abi } from 'viem';
 
 import { poolsAtom } from 'store/pools.store';
 
 import { poolUsdPriceAtom } from './fetchPortfolio';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 export const poolTokensUSDBalanceAtom = atom(0);
 export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAddress: Address) => {
@@ -13,18 +13,18 @@ export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAdd
   const poolUsdPrice = get(poolUsdPriceAtom);
 
   const [poolTokensBalances, poolTokensDecimals] = await Promise.all([
-    multicall({
+    multicall(wagmiConfig, {
       contracts: pools.map((pool) => ({
         address: pool.marginTokenAddr as Address,
-        abi: erc20ABI,
+        abi: erc20Abi,
         functionName: 'balanceOf',
         args: [userAddress],
       })),
     }),
-    multicall({
+    multicall(wagmiConfig, {
       contracts: pools.map((pool) => ({
         address: pool.marginTokenAddr as Address,
-        abi: erc20ABI,
+        abi: erc20Abi,
         functionName: 'decimals',
       })),
     }),

@@ -1,7 +1,6 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
-import { WalletClient } from 'viem';
-import type { ChainConfig, ChainConstants } from 'viem/_types/types/chain';
+import { Chain, WalletClient } from 'viem';
 
 import { HashZero } from 'app-constants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
@@ -15,7 +14,7 @@ import styles from '../elements/modals/Modal.module.scss';
 interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
   chainId: number;
-  chain: (ChainConstants & ChainConfig & { unsupported?: boolean | undefined }) | undefined;
+  chain: (Chain & { unsupported?: boolean | undefined }) | undefined;
   traderAPI: TraderInterface | null;
   tradingClient: WalletClient;
   toastTitle: string;

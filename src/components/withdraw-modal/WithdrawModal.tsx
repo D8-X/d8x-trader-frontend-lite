@@ -3,8 +3,8 @@ import { writeContract } from '@wagmi/core';
 import { useAtom } from 'jotai';
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { parseUnits } from 'viem';
-import { Address, useAccount, useBalance, useWalletClient } from 'wagmi';
+import { Address, parseUnits } from 'viem';
+import { useAccount, useBalance, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -20,6 +20,7 @@ import { isValidAddress } from 'utils/isValidAddress';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './WithdrawModal.module.scss';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();
@@ -42,7 +43,7 @@ export const WithdrawModal = () => {
   const { data: selectedTokenBalanceData } = useBalance({
     address,
     token: selectedCurrency?.contractAddress,
-    enabled: address && selectedCurrency && isConnected,
+    query: { enabled: address && selectedCurrency && isConnected },
   });
 
   const isAddressValid = useMemo(() => {
@@ -67,7 +68,7 @@ export const WithdrawModal = () => {
   const handleWithdraw = () => {
     if (selectedCurrency && selectedTokenBalanceData && walletClient && isAddressValid) {
       if (selectedCurrency.contractAddress) {
-        writeContract({
+        writeContract(wagmiConfig, {
           account: walletClient.account,
           abi: ERC20_ABI,
           address: selectedCurrency.contractAddress,

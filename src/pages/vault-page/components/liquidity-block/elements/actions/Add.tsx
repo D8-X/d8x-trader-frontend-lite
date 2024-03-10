@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -24,6 +24,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
+import { Address } from 'viem';
 
 enum ValidityCheckAddE {
   Empty = '-',
@@ -36,13 +37,8 @@ enum ValidityCheckAddE {
 
 export const Add = memo(() => {
   const { t } = useTranslation();
-  const { address } = useAccount();
-  const { chain } = useNetwork();
-  const { data: walletClient } = useWalletClient({
-    onError(error) {
-      console.log(error);
-    },
-  });
+  const { address, chain } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
   const [proxyAddr] = useAtom(proxyAddrAtom);
   const [selectedPool] = useAtom(selectedPoolAtom);
@@ -80,44 +76,61 @@ export const Add = memo(() => {
     inputValueChangedRef.current = false;
   }, [addAmount]);
 
-  useWaitForTransaction({
+  const {
+    isSuccess,
+    isError,
+    isFetched,
+    error: reason,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      toast.success(
-        <ToastContent
-          title={t('pages.vault.toast.added')}
-          bodyLines={[
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError(reason) {
-      toast.error(
-        <ToastContent
-          title={t('pages.vault.toast.error.title')}
-          bodyLines={[{ label: t('pages.vault.toast.error.body'), value: reason.message }]}
-        />
-      );
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setTriggerUserStatsUpdate((prevValue) => !prevValue);
-    },
-    enabled: !!txHash,
+    query: { enabled: !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched) {
+      return;
+    }
+    setTxHash(undefined);
+    setTriggerUserStatsUpdate((prevValue) => !prevValue);
+  }, [isFetched]);
+
+  useEffect(() => {
+    if (!isError || !reason) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('pages.vault.toast.error.title')}
+        bodyLines={[{ label: t('pages.vault.toast.error.body'), value: reason.message }]}
+      />
+    );
+  }, [isError]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title={t('pages.vault.toast.added')}
+        bodyLines={[
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash]);
 
   const handleAddLiquidity = () => {
     if (requestSentRef.current) {

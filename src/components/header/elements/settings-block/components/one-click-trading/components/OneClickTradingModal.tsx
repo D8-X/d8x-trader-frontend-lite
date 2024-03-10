@@ -50,15 +50,17 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
 
-  const { address } = useAccount({
-    onDisconnect: () => {
-      setActivatedOneClickTrading(false);
-      setStorageKey(null);
-    },
-  });
+  const { address, isDisconnected } = useAccount();
 
   useEffect(() => {
-    if (!address || !traderAPI || traderAPI?.chainId !== publicClient.chain.id) {
+    if (isDisconnected) {
+      setActivatedOneClickTrading(false);
+      setStorageKey(null);
+    }
+  }, [isDisconnected]);
+
+  useEffect(() => {
+    if (!address || !traderAPI || traderAPI?.chainId !== publicClient?.chain.id) {
       return;
     }
 
@@ -157,7 +159,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
 
   const { data: delegateBalance, refetch } = useBalance({
     address: delegateAddress as Address,
-    enabled: delegateAddress !== '',
+    query: { enabled: delegateAddress !== '' },
   });
 
   useEffect(() => {

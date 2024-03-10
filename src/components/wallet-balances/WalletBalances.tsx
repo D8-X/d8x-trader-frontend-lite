@@ -18,7 +18,7 @@ export const WalletBalances = () => {
 
   const { data: gasTokenBalanceData, refetch } = useBalance({
     address,
-    enabled: isConnected,
+    query: { enabled: isConnected },
   });
 
   useEffect(() => {

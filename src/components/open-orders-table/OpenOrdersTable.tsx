@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
 import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
-import { useAccount, useChainId, useNetwork, useWaitForTransaction } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt } from 'wagmi';
 
 import {
   Button,
@@ -52,9 +52,8 @@ const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'Executio
 export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
 
-  const { address, isDisconnected, isConnected } = useAccount();
+  const { chain, address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
-  const { chain } = useNetwork();
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
@@ -114,13 +113,47 @@ export const OpenOrdersTable = memo(() => {
     }
   }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders, traderAPI]);
 
-  useWaitForTransaction({
+  const {
+    data: receipt,
+    isSuccess,
+    isError,
+    error,
+    isFetched,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess(receipt) {
+    query: { enabled: !!address && !!txHash },
+  });
+
+  useEffect(() => {
+    if (!isFetched) {
+      return;
+    }
+    setTxHash(undefined);
+    refreshOpenOrders().then();
+    setLatestOrderSentTimestamp(Date.now());
+  }, [isFetched, setTxHash]);
+
+  useEffect(() => {
+    if (!error || !isError) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('pages.trade.orders-table.toasts.tx-failed.title')}
+        bodyLines={[{ label: t('pages.trade.orders-table.toasts.tx-failed.body'), value: error.message }]}
+      />
+    );
+  }, [error, isError]);
+
+  useEffect(() => {
+    if (!receipt || !isSuccess) {
+      return;
+    }
+    {
       const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
       if (cancelEventIdx >= 0) {
         const { args } = decodeEventLog({
-          abi: PROXY_ABI,
+          abi: PROXY_ABI as readonly string[],
           data: receipt.logs[cancelEventIdx].data,
           topics: receipt.logs[cancelEventIdx].topics,
         });
@@ -130,7 +163,7 @@ export const OpenOrdersTable = memo(() => {
             bodyLines={[
               {
                 label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
-                value: traderAPI?.getSymbolFromPerpId((args as { perpetualId: number }).perpetualId),
+                value: traderAPI?.getSymbolFromPerpId((args as unknown as { perpetualId: number }).perpetualId),
               },
               {
                 label: '',
@@ -151,7 +184,7 @@ export const OpenOrdersTable = memo(() => {
       } else {
         const execFailedIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_FAIL);
         const { args } = decodeEventLog({
-          abi: LOB_ABI,
+          abi: LOB_ABI as readonly string[],
           data: receipt.logs[execFailedIdx].data,
           topics: receipt.logs[execFailedIdx].topics,
         });
@@ -161,28 +194,14 @@ export const OpenOrdersTable = memo(() => {
             bodyLines={[
               {
                 label: t('pages.trade.orders-table.toasts.tx-failed.body'),
-                value: (args as { reason: string }).reason,
+                value: (args as unknown as { reason: string }).reason,
               },
             ]}
           />
         );
       }
-    },
-    onError(reason) {
-      toast.error(
-        <ToastContent
-          title={t('pages.trade.orders-table.toasts.tx-failed.title')}
-          bodyLines={[{ label: t('pages.trade.orders-table.toasts.tx-failed.body'), value: reason.message }]}
-        />
-      );
-    },
-    onSettled() {
-      setTxHash(undefined);
-      refreshOpenOrders().then();
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!txHash,
-  });
+    }
+  }, [receipt, isSuccess]);
 
   const handleCancelOrderConfirm = () => {
     if (!selectedOrder) {

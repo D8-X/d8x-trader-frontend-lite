@@ -1,13 +1,14 @@
 import { Box, Button, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, useBalance, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useBalance, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 
 import styles from './FundingModal.module.scss';
+import { Address } from 'viem';
 
 interface FundingModalPropsI {
   isOpen: boolean;
@@ -21,17 +22,17 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   const { data: walletClient } = useWalletClient();
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
 
-  useWaitForTransaction({
+  const { isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      onClose();
-    },
-    onSettled() {
+    query: { enabled: !!txHash },
+  });
+
+  useEffect(() => {
+    if (isFetched) {
       setTxHash(undefined);
       onClose();
-    },
-    enabled: !!txHash,
-  });
+    }
+  }, [isFetched]);
 
   const [inputValue, setInputValue] = useState('');
 

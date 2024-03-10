@@ -1,13 +1,12 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
-import { useChainId, useNetwork } from 'wagmi';
+import { useChainId } from 'wagmi';
 
 import { createSymbol } from 'helpers/createSymbol';
 import { getPerpetualStaticInfo } from 'network/network';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 
 export const PerpetualInfoFetcher = () => {
-  const { chain } = useNetwork();
   const chainId = useChainId();
 
   const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
@@ -27,14 +26,14 @@ export const PerpetualInfoFetcher = () => {
   }, [selectedPool, selectedPerpetual]);
 
   useEffect(() => {
-    if (symbol && chainId && chainId === chain?.id) {
+    if (symbol && chainId && chainId === traderAPI?.chainId) {
       getPerpetualStaticInfo(chainId, traderAPI, symbol)
         .then(({ data }) => {
           setPerpetualStaticInfo(data);
         })
         .catch(console.error);
     }
-  }, [chain, chainId, symbol, setPerpetualStaticInfo, traderAPI]);
+  }, [chainId, symbol, setPerpetualStaticInfo, traderAPI]);
 
   return null;
 };

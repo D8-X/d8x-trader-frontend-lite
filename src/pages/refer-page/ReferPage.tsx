@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Address, useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useBalance, useChainId } from 'wagmi';
 
 import { Box } from '@mui/material';
 
@@ -24,6 +24,7 @@ import { TraderTab } from './components/trader-tab/TraderTab';
 import { QueryParamE, ReferTabIdE } from './constants';
 
 import styles from './ReferPage.module.scss';
+import { Address } from 'viem/accounts';
 
 const tabComponents = [
   {
@@ -65,7 +66,7 @@ export const ReferPage = () => {
     address,
     token: tokenInfo?.tokenAddr as Address,
     chainId: chainId,
-    enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected,
+    query: { enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected },
   });
 
   const handleTabChange = useCallback(

@@ -1,6 +1,6 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { memo, useCallback, useEffect, useRef } from 'react';
-import { PublicClient, useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 
@@ -9,6 +9,7 @@ import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { config } from 'config';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
+import { Client } from 'viem';
 // import { hexToNumber, numberToHex } from 'viem';
 // import { ADAPTER_STATUS } from '@web3auth/base';
 
@@ -31,7 +32,6 @@ export const SDKLoader = memo(() => {
   const loadingAPIRef = useRef(false);
 
   useEffect(() => {
-    console.log('publicClient chain id', publicClient.chain.id);
     console.log('web3auth', web3Auth?.status, web3Auth?.connected);
     console.log('walletClient', walletClient?.chain.id, isSuccess);
     console.log({ publicClient, walletClient, web3Auth, isSuccess });
@@ -68,7 +68,7 @@ export const SDKLoader = memo(() => {
   }, [isSuccess, web3Auth, walletClient, activatedOneClickTrading, setTradingClient]);
 
   const loadSDK = useCallback(
-    async (_publicClient: PublicClient, _chainId: number) => {
+    async (_publicClient: Client, _chainId: number) => {
       if (loadingAPIRef.current) {
         console.log('not loading sdk because ref');
         return;

@@ -2,7 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -29,6 +29,7 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
 import { orderSubmitted } from 'network/broker';
+import { Address } from 'viem';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -47,8 +48,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [traderAPI] = useAtom(traderAPIAtom);
 
   const chainId = useChainId();
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
@@ -58,49 +58,66 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
 
   const requestSentRef = useRef(false);
 
-  useWaitForTransaction({
+  const {
+    isSuccess,
+    isError,
+    isFetched,
+    error: reason,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.positions-table.toasts.submitted.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.positions-table.toasts.submitted.body'),
-              value: symbolForTx,
-            },
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={modalStyles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError(reason) {
-      toast.error(
-        <ToastContent
-          title={t('pages.trade.positions-table.toasts.tx-failed.title')}
-          bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
-        />
-      );
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setSymbolForTx('');
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!txHash,
+    query: { enabled: !!address && !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched || !txHash) {
+      return;
+    }
+    setTxHash(undefined);
+    setSymbolForTx('');
+    setLatestOrderSentTimestamp(Date.now());
+  }, [isFetched, txHash, setTxHash]);
+
+  useEffect(() => {
+    if (!isError || !reason) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('pages.trade.positions-table.toasts.tx-failed.title')}
+        bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
+      />
+    );
+  }, [isError, reason]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title={t('pages.trade.positions-table.toasts.submitted.title')}
+        bodyLines={[
+          {
+            label: t('pages.trade.positions-table.toasts.submitted.body'),
+            value: symbolForTx,
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={modalStyles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash]);
 
   const handleClosePositionConfirm = async () => {
     if (requestSentRef.current) {
