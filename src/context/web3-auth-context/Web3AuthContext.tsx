@@ -31,6 +31,7 @@ interface Web3AuthContextPropsI {
   web3Auth: Web3AuthNoModal | null;
   disconnect: () => void;
   signInWithTwitter: () => void;
+  isConnecting: boolean;
 }
 
 const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefined);
@@ -41,7 +42,7 @@ const verifierName = web3AuthConfig.web3AuthVerifier;
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
   const { connectAsync } = useConnect();
-  const { disconnect } = useDisconnect();
+  const { disconnectAsync } = useDisconnect();
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
   const setSocialPK = useSetAtom(socialPKAtom);
@@ -49,6 +50,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const [web3AuthIdToken, setWeb3AuthIdToken] = useAtom(web3AuthIdTokenAtom);
 
   const [web3Auth, setWeb3Auth] = useState<Web3AuthNoModal | null>(null);
+  const [web3AuthSigning, setWeb3AuthSigning] = useState(false);
 
   const isInitializingRef = useRef(false);
   const isInstanceCreatedRef = useRef(false);
@@ -127,53 +129,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         console.log('init', web3AuthInstance.status, web3AuthInstance.connected);
         await web3AuthInstance.init();
 
-        // if (!isConnectedRef.current && web3AuthIdToken) {
-        //   // if wagmi.connected set to true, then wagmi will not show modal
-        //   // to reconnect user wallet, but instead will use prev connection
-        //   // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
-        //   const wagmiConnected = localStorage.getItem('wagmi.connected');
-        //   const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
-        //
-        //   const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
-        //   const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
-        //
-        //   if (!isWagmiConnected || !isWeb3Wallet) {
-        //     return;
-        //   }
-        //
-        //   isConnectedRef.current = true;
-        //
-        //   await connectAsync({
-        //     chainId: chain.id,
-        //     connector: Web3AuthConnector({
-        //       web3AuthInstance,
-        //       loginParams: {
-        //         loginProvider: 'jwt',
-        //         extraLoginOptions: {
-        //           id_token: web3AuthIdToken,
-        //           verifierIdField: 'sub',
-        //           // domain: '...', // example included this, but works without it?
-        //         },
-        //       },
-        //       modalConfig: {
-        //         openloginAdapter: {
-        //           uxMode: 'popup',
-        //           loginConfig: {
-        //             jwt: {
-        //               verifier: verifierName,
-        //               typeOfLogin: 'jwt',
-        //               clientId,
-        //             },
-        //           },
-        //         },
-        //       },
-        //     }),
-        //   });
-        // }
-
-        // if (web3AuthInstance.provider) {
-        //   setWeb3authProvider(web3AuthInstance.provider);
-        // }
         // so we can switch chains
         for (let i = 0; i < chains.length; i++) {
           await web3AuthInstance.addChain({
@@ -196,67 +151,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       isInstanceCreatedRef.current = true;
       isInitializingRef.current = false;
     });
-  }, [chain]); // web3AuthIdToken, connectAsync
-
-  // useEffect(() => {
-  //   if (isConnectingRef.current || !web3AuthIdToken || !chain || !web3Auth) {
-  //     return;
-  //   }
-
-  //   // TODO: Should be removed
-  //   console.log('--------------');
-  //   console.log('Social relogin');
-  //   console.log('--------------');
-
-  //   // if wagmi.connected set to true, then wagmi will not show modal
-  //   // to reconnect user wallet, but instead will use prev connection
-  //   // I found this example in this public repo: https://github.com/sumicet/web3auth-modal-wagmi
-  //   const wagmiConnected = localStorage.getItem('wagmi.connected');
-  //   const wagmiLastWallet = localStorage.getItem('wagmi.wallet');
-
-  //   const isWagmiConnected = wagmiConnected ? JSON.parse(wagmiConnected) : false;
-  //   const isWeb3Wallet = wagmiLastWallet ? JSON.parse(wagmiLastWallet) === 'web3auth' : false;
-
-  //   if (!isWagmiConnected || !isWeb3Wallet) {
-  //     return;
-  //   }
-
-  //   isConnectingRef.current = true;
-
-  //   connect({
-  //     connector: Web3AuthConnector({
-  //       web3AuthInstance: web3Auth,
-  //       loginParams: {
-  //         loginProvider: 'jwt',
-  //         extraLoginOptions: {
-  //           id_token: web3AuthIdToken,
-  //           verifierIdField: 'sub',
-  //           // domain: '...', // example included this, but works without it?
-  //         },
-  //       },
-  //       modalConfig: {
-  //         openloginAdapter: {
-  //           uxMode: 'popup',
-  //           loginConfig: {
-  //             jwt: {
-  //               verifier: verifierName,
-  //               typeOfLogin: 'jwt',
-  //               clientId,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }),
-  //   });
-  // }, [connect, chain, web3Auth, web3AuthIdToken]);
-
-  const handleDisconnect = useCallback(() => {
-    setUserInfo(null);
-    setSocialPK(undefined);
-    setWeb3AuthIdToken('');
-    setAccountModalOpen(false);
-    disconnect();
-  }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, disconnect]);
+  }, [chain]);
 
   const handleWeb3AuthSuccessConnect = useCallback(
     (userInfo: Partial<OpenloginUserInfo>, privateKey: string) => {
@@ -281,45 +176,49 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     [chainId]
   );
 
-  const signInWithTwitter = useCallback(async () => {
-    if (!chain || !auth || signInRef.current) {
-      console.log('auth not defined');
+  // Connect Web3Auth to OPENLOGIN if we have token ID saved
+  useEffect(() => {
+    console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN)', {
+      web3AuthStatus: web3Auth?.status,
+      web3AuthConnected: web3Auth?.connected,
+      web3AuthIdToken,
+    });
+
+    if (!chain || !web3AuthConfig.web3AuthClientId || !web3AuthIdToken || !web3Auth) {
       return;
     }
-    signInRef.current = true;
 
-    try {
-      const twitterProvider = new TwitterAuthProvider();
-      console.log('signInWithPopup', web3Auth?.status, web3Auth?.connected);
-      const loginRes = await signInWithPopup(auth, twitterProvider);
+    const connectWeb3Auth = async () => {
+      setWeb3AuthSigning(true);
 
-      if (!web3Auth) {
-        console.log('web3Auth not initialized yet');
-        return;
-      }
-      console.log('login details', loginRes);
-      console.log('getIdToken', web3Auth.status, web3Auth.connected);
-      const idToken = await loginRes.user.getIdToken(true);
-
-      console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN,', web3Auth?.status, web3Auth?.connected);
       await web3Auth
         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
           loginProvider: 'jwt',
           extraLoginOptions: {
-            id_token: idToken,
+            id_token: web3AuthIdToken,
             verifierIdField: 'sub',
-            // domain: '...', // example included this, but works without it?
           },
         })
         .catch((error) => {
           console.error(error);
         });
-      console.log('info & pk', web3Auth.status, web3Auth.connected);
+
+      console.log('info & pk', {
+        web3AuthStatus: web3Auth?.status,
+        web3AuthConnected: web3Auth?.connected,
+      });
       const info = await web3Auth.getUserInfo();
+      setUserInfo(info);
+
       const privateKey = await web3Auth.provider?.request({
         method: 'eth_private_key',
       });
-      console.log('connectAsync', web3Auth.status, web3Auth.connected);
+      setSocialPK(privateKey as string);
+
+      console.log('connectAsync', {
+        web3AuthStatus: web3Auth?.status,
+        web3AuthConnected: web3Auth?.connected,
+      });
       await connectAsync({
         chainId: chain.id,
         connector: Web3AuthConnector({
@@ -346,33 +245,81 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           },
         }),
       });
-      setUserInfo(info);
-      setWeb3AuthIdToken(idToken);
-      setSocialPK(privateKey as string);
-      console.log('successCallback', web3Auth.status, web3Auth.connected);
+
+      console.log('successCallback', {
+        web3AuthStatus: web3Auth?.status,
+        web3AuthConnected: web3Auth?.connected,
+      });
       handleWeb3AuthSuccessConnect(info, privateKey as string);
+
+      setWeb3AuthSigning(false);
+    };
+
+    connectWeb3Auth().then();
+  }, [chain, web3Auth, web3AuthIdToken, connectAsync, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]);
+
+  const signInWithTwitter = useCallback(async () => {
+    if (!auth || signInRef.current) {
+      console.log('auth not defined');
+      return;
+    }
+
+    if (!web3Auth) {
+      console.log('web3Auth not initialized yet');
+      return;
+    }
+
+    setWeb3AuthSigning(true);
+    signInRef.current = true;
+    try {
+      const twitterProvider = new TwitterAuthProvider();
+      console.log('signInWithPopup', web3Auth?.status, web3Auth?.connected);
+      const loginRes = await signInWithPopup(auth, twitterProvider);
+
+      console.log('login details', loginRes);
+      console.log('getIdToken', web3Auth.status, web3Auth.connected);
+      const idToken = await loginRes.user.getIdToken(true);
+      setWeb3AuthIdToken(idToken);
     } catch (error) {
       console.error(error);
     } finally {
       signInRef.current = false;
     }
-  }, [
-    chain,
-    connectAsync,
-    handleWeb3AuthSuccessConnect,
-    setSocialPK,
-    setUserInfo,
-    setWeb3AuthIdToken,
-    web3Auth,
-    web3AuthIdToken,
-  ]);
+  }, [setWeb3AuthIdToken, web3Auth]);
+
+  const handleDisconnect = useCallback(async () => {
+    console.log('handleDisconnect', {
+      web3AuthStatus: web3Auth?.status,
+      web3AuthConnected: web3Auth?.connected,
+    });
+
+    if (web3Auth && web3Auth.connected) {
+      await web3Auth.logout();
+      console.log('web3Auth.logout', {
+        web3AuthStatus: web3Auth.status,
+        web3AuthConnected: web3Auth.connected,
+      });
+
+      setUserInfo(null);
+      setSocialPK(undefined);
+      setAccountModalOpen(false);
+      setWeb3AuthIdToken('');
+
+      await disconnectAsync();
+      console.log('disconnect', {
+        web3AuthStatus: web3Auth.status,
+        web3AuthConnected: web3Auth.connected,
+      });
+    }
+  }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, disconnectAsync, web3Auth]);
 
   return (
     <Web3AuthContext.Provider
       value={{
         web3Auth,
-        disconnect: handleDisconnect,
         signInWithTwitter,
+        disconnect: handleDisconnect,
+        isConnecting: web3AuthSigning,
       }}
     >
       {children}

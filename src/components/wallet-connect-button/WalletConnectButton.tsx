@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mui/material';
 
+import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
+
 import styles from './WalletConnectButton.module.scss';
 
 interface WalletConnectButtonPropsI {
@@ -14,6 +16,8 @@ interface WalletConnectButtonPropsI {
 
 export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
   const { t } = useTranslation();
+
+  const { isConnecting } = useWeb3Auth();
 
   const {
     connectButtonLabel = <span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>,
@@ -34,6 +38,7 @@ export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
                     onClick={openConnectModal}
                     variant="primary"
                     className={classnames(styles.connectWalletButton, buttonClassName)}
+                    disabled={isConnecting}
                   >
                     {connectButtonLabel}
                   </Button>

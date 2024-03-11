@@ -19,7 +19,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
 
   const { isConnected } = useAccount();
 
-  const { web3Auth, signInWithTwitter } = useWeb3Auth();
+  const { web3Auth, signInWithTwitter, isConnecting } = useWeb3Auth();
 
   if (isConnected) {
     return null;
@@ -29,7 +29,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName }: Web3AuthConnectB
     <Button
       className={classnames(styles.connectWalletButton, buttonClassName)}
       key={'login'}
-      disabled={!web3Auth}
+      disabled={!web3Auth || isConnecting}
       onClick={signInWithTwitter}
       variant="primary"
     >
