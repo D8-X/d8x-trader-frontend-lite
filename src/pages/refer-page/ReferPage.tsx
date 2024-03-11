@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
 
 import { Box } from '@mui/material';
 
@@ -25,6 +25,7 @@ import { QueryParamE, ReferTabIdE } from './constants';
 
 import styles from './ReferPage.module.scss';
 import { Address } from 'viem/accounts';
+import { erc20Abi } from 'viem';
 
 const tabComponents = [
   {
@@ -62,10 +63,21 @@ export const ReferPage = () => {
   const referralCodesRequestRef = useRef(false);
   const isAgencyRequestRef = useRef(false);
 
-  const { data: tokenBalance } = useBalance({
-    address,
-    token: tokenInfo?.tokenAddr as Address,
-    chainId: chainId,
+  const { data: tokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: tokenInfo?.tokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: tokenInfo?.tokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected },
   });
 
@@ -130,7 +142,7 @@ export const ReferPage = () => {
 
     isAgencyRequestRef.current = true;
 
-    getReferCut(chainId, address, tokenBalance.value)
+    getReferCut(chainId, address, tokenBalance[0])
       .then(({ data }) => {
         setIsAgency(data.isAgency);
         setCommissionRate(data.passed_on_percent);

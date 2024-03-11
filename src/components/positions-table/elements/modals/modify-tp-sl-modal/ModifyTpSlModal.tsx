@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useBalance, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -28,7 +28,7 @@ import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
 import styles from '../Modal.module.scss';
-import { Address } from 'viem';
+import { Address, erc20Abi } from 'viem';
 
 interface ModifyModalPropsI {
   isOpen: boolean;
@@ -113,49 +113,26 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     }
   }, [selectedPosition, pools]);
 
-  const { data: poolTokenBalance } = useBalance({
-    address,
-    token: selectedPool?.marginTokenAddr as Address,
-    chainId: chain?.id,
+  const { data: poolTokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected },
   });
 
   const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
-    // onSuccess() {
-    //   setLatestOrderSentTimestamp(Date.now());
-    //   toast.success(
-    //     <ToastContent
-    //       title={t('pages.trade.action-block.toasts.order-submitted.title')}
-    //       bodyLines={[
-    //         {
-    //           label: t('pages.trade.action-block.toasts.order-submitted.body'),
-    //           value: selectedPosition?.symbol,
-    //         },
-    //         {
-    //           label: '',
-    //           value: (
-    //             <a
-    //               href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-    //               target="_blank"
-    //               rel="noreferrer"
-    //               className={styles.shareLink}
-    //             >
-    //               {txHash}
-    //             </a>
-    //           ),
-    //         },
-    //       ]}
-    //     />
-    //   );
-    // },
-    // onError() {
-    //   toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-    // },
-    // onSettled() {
-    //   setTxHash(undefined);
-    //   setLatestOrderSentTimestamp(Date.now());
-    // },
     query: { enabled: !!address && !!selectedPosition?.symbol && !!txHash },
   });
 
@@ -221,7 +198,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       !walletClient ||
       collateralDeposit === null ||
       !poolTokenBalance ||
-      !poolTokenBalance.decimals
+      !poolTokenBalance[1]
     ) {
       return;
     }
@@ -296,7 +273,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               selectedPool.marginTokenAddr,
               proxyAddr,
               collateralDeposit,
-              poolTokenBalance.decimals
+              poolTokenBalance[1]
             )
               .then(() => {
                 // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes

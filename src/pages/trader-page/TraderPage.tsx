@@ -3,7 +3,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -46,6 +46,7 @@ import { SDKLoader } from './components/sdk-loader/SDKLoader';
 
 import styles from './TraderPage.module.scss';
 import { Address } from 'viem/accounts';
+import { erc20Abi, formatUnits } from 'viem';
 
 const MIN_REQUIRED_USDC = 20;
 
@@ -82,17 +83,39 @@ export const TraderPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { data: legacyTokenData } = useBalance({
-    address,
-    token: OLD_USDC_ADDRESS,
-    chainId: 1101,
+  const { data: legacyTokenData } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: OLD_USDC_ADDRESS,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: OLD_USDC_ADDRESS,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && chainId === 1101 && isConnected },
   });
 
-  const { data: newTokenData } = useBalance({
-    address,
-    token: NEW_USDC_ADDRESS,
-    chainId: 1101,
+  const { data: newTokenData } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: NEW_USDC_ADDRESS,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: NEW_USDC_ADDRESS,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && chainId === 1101 && isConnected },
   });
 
@@ -101,11 +124,11 @@ export const TraderPage = () => {
       return;
     }
 
-    if (+newTokenData.formatted >= MIN_REQUIRED_USDC) {
+    if (+formatUnits(newTokenData[0], newTokenData[1]) >= MIN_REQUIRED_USDC) {
       return;
     }
 
-    if (+legacyTokenData.formatted >= MIN_REQUIRED_USDC) {
+    if (+formatUnits(legacyTokenData[0], legacyTokenData[1]) >= MIN_REQUIRED_USDC) {
       openDialog();
     }
   }, [legacyTokenData, newTokenData, chainId, address, openDialog]);

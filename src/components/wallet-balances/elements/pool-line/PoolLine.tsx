@@ -1,11 +1,12 @@
 import { memo, useEffect } from 'react';
-import { useAccount, useBalance, useConnect } from 'wagmi';
+import { useAccount, useConnect, useReadContracts } from 'wagmi';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
 
 import { REFETCH_BALANCES_INTERVAL } from '../../constants';
 import { Address } from 'viem/accounts';
+import { erc20Abi, formatUnits } from 'viem';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
@@ -16,9 +17,21 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
   const { isPending } = useConnect();
 
-  const { data: tokenBalanceData, refetch } = useBalance({
-    address,
-    token: pool.marginTokenAddr as Address,
+  const { data: tokenBalanceData, refetch } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: pool.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: pool.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && pool.marginTokenAddr !== undefined && !isPending && isConnected },
   });
 
@@ -35,9 +48,14 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
     };
   }, [refetch, isConnected]);
 
-  if (!showEmpty && tokenBalanceData?.value === 0n) {
+  if (!showEmpty && tokenBalanceData?.[0] === 0n) {
     return null;
   }
 
-  return <AssetLine symbol={pool.poolSymbol} value={tokenBalanceData ? +tokenBalanceData?.formatted : ''} />;
+  return (
+    <AssetLine
+      symbol={pool.poolSymbol}
+      value={tokenBalanceData ? +formatUnits(tokenBalanceData[0], tokenBalanceData[1]) : ''}
+    />
+  );
 });

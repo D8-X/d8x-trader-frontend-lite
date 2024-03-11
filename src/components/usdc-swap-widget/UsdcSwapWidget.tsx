@@ -2,11 +2,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { parseUnits } from 'viem/utils';
+import { formatUnits, parseUnits } from 'viem/utils';
 import {
   useAccount,
-  useBalance,
   useReadContract,
+  useReadContracts,
   useSimulateContract,
   useWaitForTransactionReceipt,
   useWalletClient,
@@ -35,10 +35,21 @@ export function UsdcSwapWidget() {
 
   const inputValueChangedRef = useRef(false);
 
-  const { data: poolTokenBalance } = useBalance({
-    address,
-    token: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
-    chainId: 1101,
+  const { data: poolTokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && chainId === 1101 && isConnected },
   });
 
@@ -203,10 +214,10 @@ export function UsdcSwapWidget() {
 
   const handleInputBlur = useCallback(() => {
     if (poolTokenBalance && depositAmount > 0) {
-      const maxAllowed = +poolTokenBalance.formatted;
+      const maxAllowed = +formatUnits(poolTokenBalance[0], poolTokenBalance[1]);
       if (maxAllowed > 0 && depositAmount > maxAllowed) {
         setDepositAmount(+maxAllowed);
-        setInputValue(poolTokenBalance.formatted);
+        setInputValue(formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
       }
     }
   }, [poolTokenBalance, depositAmount]);
@@ -233,10 +244,10 @@ export function UsdcSwapWidget() {
             <Link
               className={styles.addMaxLink}
               onClick={() => {
-                handleInputCapture(poolTokenBalance.formatted);
+                handleInputCapture(formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
               }}
             >
-              {(+poolTokenBalance.formatted).toFixed(2)}
+              {(+formatUnits(poolTokenBalance[0], poolTokenBalance[1])).toFixed(2)}
             </Link>
           </Typography>
         </div>
@@ -305,7 +316,7 @@ export function UsdcSwapWidget() {
           disabled={
             !isConnected ||
             depositAmountUnits < 1n ||
-            poolTokenBalance?.formatted === '0' ||
+            poolTokenBalance?.[0] === 0n ||
             isApproveLoading ||
             isExecuteLoading ||
             inAction

@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useBalance, useChainId, useReadContracts } from 'wagmi';
 
 import { Close, Menu } from '@mui/icons-material';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -43,7 +43,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { Address } from 'viem';
+import { Address, erc20Abi, formatUnits } from 'viem';
 
 interface HeaderPropsI {
   /**
@@ -175,10 +175,21 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     data: poolTokenBalance,
     isError,
     refetch,
-  } = useBalance({
-    address,
-    token: selectedPool?.marginTokenAddr as Address,
-    chainId: chain?.id,
+  } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: {
       enabled:
         !exchangeRequestRef.current &&
@@ -204,8 +215,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   useEffect(() => {
     if (poolTokenBalance && selectedPool && chain && !isError) {
-      setPoolTokenBalance(Number(poolTokenBalance.formatted));
-      setPoolTokenDecimals(poolTokenBalance.decimals);
+      setPoolTokenBalance(+formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
+      setPoolTokenDecimals(poolTokenBalance[1]);
     }
   }, [selectedPool, chain, poolTokenBalance, isError, setPoolTokenBalance, setPoolTokenDecimals]);
 

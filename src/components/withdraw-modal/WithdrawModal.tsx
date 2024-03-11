@@ -3,8 +3,8 @@ import { writeContract } from '@wagmi/core';
 import { useAtom } from 'jotai';
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, parseUnits } from 'viem';
-import { useAccount, useBalance, useWalletClient } from 'wagmi';
+import { Address, erc20Abi, formatUnits, parseUnits } from 'viem';
+import { useAccount, useReadContracts, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -40,9 +40,21 @@ export const WithdrawModal = () => {
   const { data: walletClient } = useWalletClient();
   const { address, isConnected } = useAccount();
 
-  const { data: selectedTokenBalanceData } = useBalance({
-    address,
-    token: selectedCurrency?.contractAddress,
+  const { data: selectedTokenBalanceData } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: selectedCurrency?.contractAddress,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: selectedCurrency?.contractAddress,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
     query: { enabled: address && selectedCurrency && isConnected },
   });
 
@@ -73,7 +85,7 @@ export const WithdrawModal = () => {
           abi: ERC20_ABI,
           address: selectedCurrency.contractAddress,
           functionName: 'transfer',
-          args: [addressValue, parseUnits(amountValue, selectedTokenBalanceData.decimals)],
+          args: [addressValue, parseUnits(amountValue, selectedTokenBalanceData[1])],
         }).then();
       } else {
         // Transfer GAS token without contractAddress
@@ -102,22 +114,25 @@ export const WithdrawModal = () => {
               currency={selectedCurrency?.name}
               min={0}
               max={
-                selectedTokenBalanceData && selectedTokenBalanceData.value > 0
-                  ? Number(selectedTokenBalanceData.formatted)
+                selectedTokenBalanceData && selectedTokenBalanceData[0] > 0
+                  ? +formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1])
                   : undefined
               }
             />
-            {selectedTokenBalanceData?.formatted && selectedTokenBalanceData.value > 0 ? (
+            {selectedTokenBalanceData && selectedTokenBalanceData[0] > 0 ? (
               <Typography className={styles.helperText} variant="bodyTiny">
                 {t('common.max')}{' '}
                 <Link
                   onClick={() => {
-                    if (selectedTokenBalanceData?.value > 0) {
-                      setAmountValue(selectedTokenBalanceData.formatted);
+                    if (selectedTokenBalanceData[0] > 0) {
+                      setAmountValue(formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1]));
                     }
                   }}
                 >
-                  {formatToCurrency(Number(selectedTokenBalanceData.formatted), selectedCurrency?.name)}
+                  {formatToCurrency(
+                    +formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1]),
+                    selectedCurrency?.name
+                  )}
                 </Link>
               </Typography>
             ) : null}
