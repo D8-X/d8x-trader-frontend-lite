@@ -376,8 +376,8 @@
         "modal-text3": "幸运加速 - 每一笔交易都给你一个获得幸运加速的机会——一个奖励，可以从0倍一直飙升到令人难以置信的100倍！"
       },
       "last-pump": {
-        "title": "Last PUMP",
-        "modal-text": "The amount PUMPED Volume increased from your last trade. LFG!"
+        "title": "最后一次加速",
+        "modal-text": "上次交易后加速的交易量。行动起来!"
       }
     },
     "refer": {
