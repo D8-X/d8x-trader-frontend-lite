@@ -26,9 +26,7 @@ export const PumpOMeter = memo(({ totalBoost }: PumpOMeterPropsI) => {
     if (totalBoost <= 10) {
       return totalBoost.toFixed(1);
     }
-    if (totalBoost < 100) {
-      return totalBoost.toFixed(0);
-    }
+
     return totalBoost.toFixed(0);
   }, [totalBoost]);
 
