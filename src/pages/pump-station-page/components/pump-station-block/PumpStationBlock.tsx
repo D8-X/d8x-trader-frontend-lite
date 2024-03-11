@@ -60,11 +60,11 @@ export const PumpStationBlock = () => {
 
   return (
     <div className={styles.root}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        <D8XLogoWithText width={86} height={20} />
+      </Typography>
       <div className={styles.firstComponent}>
         <div className={styles.subComponent}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            <D8XLogoWithText width={86} height={20} />
-          </Typography>
           <div className={styles.labelHolder}>
             <InfoLabelBlock
               title={t('pages.pump-station.pumped-volume.title')}
@@ -75,7 +75,7 @@ export const PumpStationBlock = () => {
             $ {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'}
           </Typography>
         </div>
-        <div className={styles.secondSubComponent}>
+        <div className={styles.subComponent}>
           <div className={styles.labelHolder}>
             <InfoLabelBlock
               title={t('pages.pump-station.last-pump.title')}

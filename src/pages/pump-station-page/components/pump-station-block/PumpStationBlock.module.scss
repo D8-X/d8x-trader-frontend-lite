@@ -27,16 +27,6 @@
   max-width: 305px;
 }
 
-.secondSubComponent {
-  margin-top: 32px;
-  flex: 1;
-  max-width: 305px;
-
-  @include media-tablet {
-    margin-top: 0;
-  }
-}
-
 .labelHolder {
   display: flex;
   justify-content: flex-start;
