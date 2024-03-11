@@ -54,7 +54,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
   const isInitializingRef = useRef(false);
   const isInstanceCreatedRef = useRef(false);
-  // const isConnectedRef = useRef(false);
+  const isConnectedRef = useRef(false);
   const signInRef = useRef(false);
   const verifyRef = useRef(false);
 
@@ -184,7 +184,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       web3AuthIdToken,
     });
 
-    if (!chain || !web3AuthConfig.web3AuthClientId || !web3AuthIdToken || !web3Auth) {
+    if (isConnectedRef.current || !chain || !web3AuthConfig.web3AuthClientId || !web3AuthIdToken || !web3Auth) {
       return;
     }
 
@@ -253,6 +253,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       handleWeb3AuthSuccessConnect(info, privateKey as string);
 
       setWeb3AuthSigning(false);
+      isConnectedRef.current = true;
     };
 
     connectWeb3Auth().then();
@@ -288,30 +289,15 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   }, [setWeb3AuthIdToken, web3Auth]);
 
   const handleDisconnect = useCallback(async () => {
-    console.log('handleDisconnect', {
-      web3AuthStatus: web3Auth?.status,
-      web3AuthConnected: web3Auth?.connected,
-    });
-
     if (web3Auth && web3Auth.connected) {
-      await web3Auth.logout();
-      console.log('web3Auth.logout', {
-        web3AuthStatus: web3Auth.status,
-        web3AuthConnected: web3Auth.connected,
-      });
-
+      await disconnectAsync();
       setUserInfo(null);
       setSocialPK(undefined);
       setAccountModalOpen(false);
       setWeb3AuthIdToken('');
-
-      await disconnectAsync();
-      console.log('disconnect', {
-        web3AuthStatus: web3Auth.status,
-        web3AuthConnected: web3Auth.connected,
-      });
+      isConnectedRef.current = false;
     }
-  }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, disconnectAsync, web3Auth]);
+  }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, web3Auth, disconnectAsync]);
 
   return (
     <Web3AuthContext.Provider

@@ -1,17 +1,16 @@
+// import { ADAPTER_STATUS } from '@web3auth/base';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
+import { type Client } from 'viem';
+// import { hexToNumber, numberToHex } from 'viem';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 
-import { useAtomValue, useSetAtom } from 'jotai';
-
+import { config } from 'config';
 import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { config } from 'config';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
-import { Client } from 'viem';
-// import { hexToNumber, numberToHex } from 'viem';
-// import { ADAPTER_STATUS } from '@web3auth/base';
 
 export const SDKLoader = memo(() => {
   const { isConnected } = useAccount();
@@ -32,9 +31,14 @@ export const SDKLoader = memo(() => {
   const loadingAPIRef = useRef(false);
 
   useEffect(() => {
-    console.log('web3auth', web3Auth?.status, web3Auth?.connected);
-    console.log('walletClient', walletClient?.chain.id, isSuccess);
-    console.log({ publicClient, walletClient, web3Auth, isSuccess });
+    console.log('web3auth', { status: web3Auth?.status, connected: web3Auth?.connected });
+    console.log('walletClient', {
+      chainId: walletClient?.chain.id,
+      isSuccess,
+      isConnected,
+      walletClient,
+    });
+    console.log({ publicClient, walletClient, web3Auth, isSuccess, isConnected });
 
     // if (web3auth?.status === ADAPTER_STATUS.READY) {
     //   console.log(
@@ -50,7 +54,7 @@ export const SDKLoader = memo(() => {
     // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
     //   web3auth.init();
     // }
-  }, [web3Auth, publicClient, walletClient, isSuccess]);
+  }, [web3Auth, publicClient, walletClient, isSuccess, isConnected]);
 
   // useEffect(() => {
   //   if (web3auth && chainId) {
