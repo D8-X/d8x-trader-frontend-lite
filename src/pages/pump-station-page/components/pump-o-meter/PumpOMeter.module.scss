@@ -28,7 +28,7 @@
 }
 
 .value {
-  background-color: var(--d8x-color-action);
+  background-color: var(--d8x-color-background-pumpstation-overview);
   border-top-right-radius: $d8x-button-border-radius;
   border-bottom-right-radius: $d8x-button-border-radius;
   display: flex;
@@ -37,7 +37,8 @@
   align-items: center;
   min-width: 80px;
   height: 48px;
-  padding-top: 2px;
+  padding-top: 6px;
+  color: var(--d8x-color-text-pumpstation-overview);
 
   @include media-phone {
     font-size: 20px;
