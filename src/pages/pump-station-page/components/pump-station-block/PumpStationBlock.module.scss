@@ -11,14 +11,34 @@
   }
 }
 
+.firstComponent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  @include media-tablet {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.subComponent {
+  flex: 1;
+  max-width: 305px;
+}
+
 .labelHolder {
   display: flex;
   justify-content: flex-start;
-  margin: 4 * $d8x-spacing 0;
+  margin: 8 * $d8x-spacing 0 4 * $d8x-spacing;
 }
 
 .volumeValue {
   margin-bottom: 10 * $d8x-spacing;
+
+  @include media-tablet {
+    margin-bottom: 3 * $d8x-spacing;
+  }
 }
 
 .meterHolder {

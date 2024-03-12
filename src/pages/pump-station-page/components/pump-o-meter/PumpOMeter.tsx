@@ -24,18 +24,16 @@ export const PumpOMeter = memo(({ totalBoost }: PumpOMeterPropsI) => {
 
   const totalBoostFixed = useMemo(() => {
     if (totalBoost <= 10) {
-      return totalBoost.toFixed(2);
-    }
-    if (totalBoost < 100) {
       return totalBoost.toFixed(1);
     }
+
     return totalBoost.toFixed(0);
   }, [totalBoost]);
 
   return (
     <div className={styles.root}>
       <div className={styles.divisionsHolder}>{divisions}</div>
-      <div className={styles.value}>{totalBoostFixed}</div>
+      <div className={styles.value}>{totalBoostFixed} x</div>
     </div>
   );
 });

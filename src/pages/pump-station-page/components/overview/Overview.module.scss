@@ -1,21 +1,28 @@
 @import '~styles/theme/theme.scss';
 
 .root {
+  background-image: url('/images/pumpstation/rocket.png');
+  background-size: contain;
+  background-position: center bottom;
+  background-repeat: no-repeat;
   background-color: var(--d8x-color-background-items-second);
   padding: 10 * $d8x-spacing;
   border-radius: $d8x-border-radius 0 0 $d8x-border-radius;
   box-sizing: content-box;
-  min-width: 195px;
-  max-width: 270px;
+  min-width: 200px;
+  max-width: 350px;
+  min-height: 325px;
 
   @include media-tablet {
+    background-image: none;
     border-radius: $d8x-border-radius $d8x-border-radius 0 0;
     max-width: inherit;
+    min-height: 150px;
   }
 }
 
 .title {
   font-size: 32px;
   line-height: 44px;
-  color: var(--d8x-color-text-main);
+  color: var(--d8x-color-text);
 }
