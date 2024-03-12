@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
+import { type Address, erc20Abi } from 'viem';
 import { formatUnits, parseUnits } from 'viem/utils';
 import {
   useAccount,
@@ -21,7 +22,6 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { OLD_USDC_ADDRESS, USDC_DECIMALS, ZK_NATIVE_CONVERTER_ABI, ZK_NATIVE_CONVERTER_ADDRESS } from './constants';
 
 import styles from './UsdcSwapWidget.module.scss';
-import { Address, erc20Abi } from 'viem';
 
 export function UsdcSwapWidget() {
   const { t } = useTranslation();

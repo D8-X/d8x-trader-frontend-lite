@@ -3,6 +3,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -29,7 +30,6 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
 import { orderSubmitted } from 'network/broker';
-import { Address } from 'viem';
 
 interface CloseModalPropsI {
   isOpen: boolean;

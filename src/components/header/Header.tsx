@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 import { useAccount, useBalance, useChainId, useReadContracts } from 'wagmi';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { Close, Menu } from '@mui/icons-material';
 import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
@@ -43,7 +44,6 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { Address, erc20Abi, formatUnits } from 'viem';
 
 interface HeaderPropsI {
   /**

@@ -3,7 +3,7 @@ import { writeContract } from '@wagmi/core';
 import { useAtom } from 'jotai';
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address, erc20Abi, formatUnits, parseUnits } from 'viem';
+import { type Address, erc20Abi, formatUnits, parseUnits } from 'viem';
 import { useAccount, useReadContracts, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';

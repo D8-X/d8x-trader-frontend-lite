@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 
@@ -45,8 +46,6 @@ import { TableDataFetcher } from './components/table-data-refetcher/TableDataFet
 import { SDKLoader } from './components/sdk-loader/SDKLoader';
 
 import styles from './TraderPage.module.scss';
-import { Address } from 'viem/accounts';
-import { erc20Abi, formatUnits } from 'viem';
 
 const MIN_REQUIRED_USDC = 20;
 

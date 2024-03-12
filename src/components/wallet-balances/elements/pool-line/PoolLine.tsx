@@ -1,12 +1,11 @@
 import { memo, useEffect } from 'react';
 import { useAccount, useConnect, useReadContracts } from 'wagmi';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
 
 import { REFETCH_BALANCES_INTERVAL } from '../../constants';
-import { Address } from 'viem/accounts';
-import { erc20Abi, formatUnits } from 'viem';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;

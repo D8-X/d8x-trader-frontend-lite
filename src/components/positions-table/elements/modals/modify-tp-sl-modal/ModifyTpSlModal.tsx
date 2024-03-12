@@ -4,6 +4,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address, erc20Abi } from 'viem';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -28,7 +29,6 @@ import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
 import styles from '../Modal.module.scss';
-import { Address, erc20Abi } from 'viem';
 
 interface ModifyModalPropsI {
   isOpen: boolean;

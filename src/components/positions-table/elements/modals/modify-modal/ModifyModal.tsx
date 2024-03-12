@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { Address } from 'viem';
 
 import {
   Box,
@@ -48,7 +49,6 @@ import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/Modi
 import styles from '../Modal.module.scss';
 import { tradingClientAtom } from 'store/app.store';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { Address } from 'viem';
 
 interface ModifyModalPropsI {
   isOpen: boolean;

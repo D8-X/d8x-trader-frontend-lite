@@ -1,13 +1,11 @@
-// import { ADAPTER_STATUS } from '@web3auth/base';
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
-import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { type Client } from 'viem';
-// import { hexToNumber, numberToHex } from 'viem';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
 
+import { useAtomValue, useSetAtom } from 'jotai';
+
 import { config } from 'config';
-import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
@@ -21,8 +19,6 @@ export const SDKLoader = memo(() => {
 
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
 
-  const { web3Auth } = useWeb3Auth();
-
   const setTraderAPI = useSetAtom(traderAPIAtom);
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
@@ -31,45 +27,11 @@ export const SDKLoader = memo(() => {
   const loadingAPIRef = useRef(false);
 
   useEffect(() => {
-    console.log('web3auth', { status: web3Auth?.status, connected: web3Auth?.connected });
-    console.log('walletClient', {
-      chainId: walletClient?.chain.id,
-      isSuccess,
-      isConnected,
-      walletClient,
-    });
-    console.log({ publicClient, walletClient, web3Auth, isSuccess, isConnected });
-
-    // if (web3auth?.status === ADAPTER_STATUS.READY) {
-    //   console.log(
-    //     'web3auth.switchChain, from-to:',
-    //     hexToNumber((web3auth.provider?.chainId as `0x${string}`) ?? '0x0'),
-    //     publicClient.chain.id,
-    //     web3auth.status,
-    //     web3auth.connected
-    //   );
-    //   refetch();
-    //   web3auth.switchChain({ chainId: numberToHex(publicClient.chain.id) });
-    // }
-    // if (!!web3auth && web3auth.status === ADAPTER_STATUS.NOT_READY) {
-    //   web3auth.init();
-    // }
-  }, [web3Auth, publicClient, walletClient, isSuccess, isConnected]);
-
-  // useEffect(() => {
-  //   if (web3auth && chainId) {
-  //     console.log({ web3auth });
-  //     web3auth.switchChain({ chainId: `${chainId}` }).then();
-  //   }
-  // }, [web3auth, chainId]);
-
-  useEffect(() => {
-    console.log('SDKLoader::setTradingClient', walletClient?.account, walletClient?.chain.id, isSuccess);
     if (walletClient && isSuccess && !activatedOneClickTrading) {
       setTradingClient(walletClient);
       return;
     }
-  }, [isSuccess, web3Auth, walletClient, activatedOneClickTrading, setTradingClient]);
+  }, [isSuccess, walletClient, activatedOneClickTrading, setTradingClient]);
 
   const loadSDK = useCallback(
     async (_publicClient: Client, _chainId: number) => {

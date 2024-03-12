@@ -2,6 +2,7 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { type Address, erc20Abi } from 'viem';
 
 import { Box } from '@mui/material';
 
@@ -24,8 +25,6 @@ import { TraderTab } from './components/trader-tab/TraderTab';
 import { QueryParamE, ReferTabIdE } from './constants';
 
 import styles from './ReferPage.module.scss';
-import { Address } from 'viem/accounts';
-import { erc20Abi } from 'viem';
 
 const tabComponents = [
   {
