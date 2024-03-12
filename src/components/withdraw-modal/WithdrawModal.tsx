@@ -9,6 +9,7 @@ import { useAccount, useReadContracts, useWalletClient } from 'wagmi';
 import { Button, DialogActions, DialogContent, DialogTitle, Link, OutlinedInput, Typography } from '@mui/material';
 
 import { transferFunds } from 'blockchain-api/transferFunds';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
 import { CurrencyItemI } from 'components/currency-selector/types';
 import { Dialog } from 'components/dialog/Dialog';
@@ -20,7 +21,6 @@ import { isValidAddress } from 'utils/isValidAddress';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './WithdrawModal.module.scss';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();

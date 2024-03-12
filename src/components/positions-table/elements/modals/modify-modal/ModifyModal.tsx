@@ -25,6 +25,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { useDebounce } from 'helpers/useDebounce';
 import {
@@ -33,6 +34,7 @@ import {
   getRemoveCollateral,
   positionRiskOnCollateralAction,
 } from 'network/network';
+import { tradingClientAtom } from 'store/app.store';
 import {
   poolTokenDecimalsAtom,
   proxyAddrAtom,
@@ -47,8 +49,6 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
 import styles from '../Modal.module.scss';
-import { tradingClientAtom } from 'store/app.store';
-import { getTxnLink } from 'helpers/getTxnLink';
 
 interface ModifyModalPropsI {
   isOpen: boolean;

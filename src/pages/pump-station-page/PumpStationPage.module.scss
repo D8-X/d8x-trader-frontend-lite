@@ -5,6 +5,10 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
+
+  @include media-tablet {
+    padding: 0 $d8x-spacing * 3;
+  }
 }
 
 .container {

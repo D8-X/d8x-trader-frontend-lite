@@ -2,13 +2,14 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { HeaderPortal } from 'components/header/HeaderPortal';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
+import { SDKLoader } from 'components/sdk-loader/SDKLoader';
 import { getOpenWithdrawals } from 'network/history';
 import { GlobalStats } from 'pages/vault-page/components/global-stats/GlobalStats';
 import { LiquidityBlock } from 'pages/vault-page/components/liquidity-block/LiquidityBlock';
@@ -53,22 +54,24 @@ export const VaultPage = () => {
   return (
     <>
       <Helmet title={`${selectedPool?.poolSymbol} Vault | D8X App`} />
-      <Box className={styles.root}>
+      <div className={styles.root}>
         <MaintenanceWrapper>
           <HeaderPortal>
             <CollateralsSelect />
           </HeaderPortal>
           {isSmallScreen && (
-            <Box className={styles.mobileSelectBoxes}>
+            <div className={styles.mobileSelectBoxes}>
               <CollateralsSelect />
-            </Box>
+            </div>
           )}
           <Container className={styles.container}>
             <GlobalStats />
             <LiquidityBlock />
           </Container>
+
+          <SDKLoader />
         </MaintenanceWrapper>
-      </Box>
+      </div>
     </>
   );
 };

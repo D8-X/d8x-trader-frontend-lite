@@ -3,8 +3,8 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address, erc20Abi } from 'viem';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 

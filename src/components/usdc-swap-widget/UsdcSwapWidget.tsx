@@ -1,6 +1,5 @@
-import { useTranslation } from 'react-i18next';
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi } from 'viem';
 import { formatUnits, parseUnits } from 'viem/utils';
@@ -19,6 +18,7 @@ import { South } from '@mui/icons-material';
 
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
+
 import { OLD_USDC_ADDRESS, USDC_DECIMALS, ZK_NATIVE_CONVERTER_ABI, ZK_NATIVE_CONVERTER_ADDRESS } from './constants';
 
 import styles from './UsdcSwapWidget.module.scss';

@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useFeeData } from 'wagmi';
@@ -18,15 +18,16 @@ import styles from './InfoBlock.module.scss';
 
 export const InfoBlock = memo(() => {
   const { t } = useTranslation();
-  const [orderInfo] = useAtom(orderInfoAtom);
-  const [orderSize] = useAtom(orderSizeAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [gasTokenSymbol] = useAtom(gasTokenSymbolAtom);
-  const [leverage] = useAtom(leverageAtom);
-  const [slippage] = useAtom(slippageSliderAtom);
-  const [orderType] = useAtom(orderTypeAtom);
+
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const orderSize = useAtomValue(orderSizeAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
+  const leverage = useAtomValue(leverageAtom);
+  const slippage = useAtomValue(slippageSliderAtom);
+  const orderType = useAtomValue(orderTypeAtom);
 
   const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
 

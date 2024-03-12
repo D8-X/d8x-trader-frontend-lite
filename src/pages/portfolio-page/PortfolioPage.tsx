@@ -7,6 +7,7 @@ import { CircularProgress } from '@mui/material';
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
+import { SDKLoader } from 'components/sdk-loader/SDKLoader';
 import { useFetchOpenRewards } from 'pages/refer-page/components/trader-tab/useFetchOpenRewards';
 import { traderAPIAtom } from 'store/pools.store';
 
@@ -51,6 +52,8 @@ export const PortfolioPage = () => {
               <AssetsBlock />
             </div>
           </Container>
+
+          <SDKLoader />
         </MaintenanceWrapper>
       </div>
     </>

@@ -1,9 +1,8 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { type Client } from 'viem';
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
-
-import { useAtomValue, useSetAtom } from 'jotai';
 
 import { config } from 'config';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';

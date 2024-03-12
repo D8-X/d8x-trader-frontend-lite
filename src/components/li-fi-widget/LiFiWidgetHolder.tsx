@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient } from '@wagmi/core';
 
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
 import { poolsAtom, selectedPoolAtom } from 'store/pools.store';
 import { LanguageE } from 'types/enums';
 import { switchChain } from 'utils/switchChain';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 const WIDGET_CN_KEY = 'zh';
 

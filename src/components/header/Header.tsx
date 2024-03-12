@@ -208,10 +208,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   });
 
   useEffect(() => {
-    if (address) {
+    if (address && chain) {
       refetch().then().catch(console.error);
     }
-  }, [address, refetch, triggerUserStatsUpdate]);
+  }, [address, chain, refetch, triggerUserStatsUpdate]);
 
   useEffect(() => {
     if (poolTokenBalance && selectedPool && chain && !isError) {

@@ -4,11 +4,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi } from 'viem';
 
-import { Box } from '@mui/material';
-
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
+import { SDKLoader } from 'components/sdk-loader/SDKLoader';
 import { useQuery } from 'hooks/useQuery';
 import { getMyReferrals, getReferCut, getTokenInfo } from 'network/referral';
 import {
@@ -169,14 +168,16 @@ export const ReferPage = () => {
   return (
     <>
       <Helmet title="Refer | D8X App" />
-      <Box className={styles.root}>
+      <div className={styles.root}>
         <MaintenanceWrapper>
           <Container className={styles.container}>
             <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
             {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
           </Container>
+
+          <SDKLoader />
         </MaintenanceWrapper>
-      </Box>
+      </div>
     </>
   );
 };
