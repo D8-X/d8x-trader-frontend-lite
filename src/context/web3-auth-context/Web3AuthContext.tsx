@@ -1,5 +1,5 @@
 import { getPublicKey } from '@noble/secp256k1';
-import { CHAIN_NAMESPACES, OPENLOGIN_NETWORK, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter, OpenloginUserInfo } from '@web3auth/openlogin-adapter';
@@ -38,6 +38,7 @@ const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefin
 
 const clientId = web3AuthConfig.web3AuthClientId;
 const verifierName = web3AuthConfig.web3AuthVerifier;
+const networkName = web3AuthConfig.web3AuthNetwork;
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
@@ -107,7 +108,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         const web3AuthOptions: Web3AuthNoModalOptions = {
           clientId,
           chainConfig,
-          web3AuthNetwork: OPENLOGIN_NETWORK.SAPPHIRE_DEVNET,
+          web3AuthNetwork: networkName,
           privateKeyProvider,
         };
         const web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);

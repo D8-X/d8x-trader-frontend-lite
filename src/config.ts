@@ -2,6 +2,7 @@ const {
   VITE_PROJECT_ID: projectId = '',
   VITE_WEB3AUTH_CLIENT_ID: web3AuthClientId = '',
   VITE_WEB3AUTH_VERIFIER: web3AuthVerifier = '',
+  VITE_WEB3AUTH_ENVIRONMENT: web3AuthNetwork = '',
   VITE_GEONAMES_USERNAME: geonamesUsername = '',
   VITE_IP_GEOLOCATION_API_KEY: ipGeolocationApiKey = '',
   VITE_API_URL: apiUrls = '',
@@ -77,6 +78,7 @@ export const pagesConfig = {
 export const web3AuthConfig = {
   web3AuthClientId,
   web3AuthVerifier,
+  web3AuthNetwork,
 };
 
 export const firebaseConfig = {

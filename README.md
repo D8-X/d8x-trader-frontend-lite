@@ -95,12 +95,19 @@ This package is configured entirely via environment variables. You must specify:
     `VITE_WELCOME_MODAL=true`
 
 - **VITE_BROKER_URL**: This is an optional variable that explicitly specifies the broker backend.
+
   - This entry should take the form:
     `VITE_BROKER_URL=1442::https://broker.mybackend.com;195::https://broker-x1.mybackend.com`
 
-- **VITE_WEB3AUTH_CLIENT_ID**: Setup as described [here](https://web3auth.io/docs/dashboard-setup/projects-and-analytics).
-- **VITE_FIREBASE**-prefixed variables: Setup as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter#set-up-twitter-via-firebase).
-
+- **VITE_WEB3AUTH_CLIENT_ID** and **VITE_WEB3AUTH_ENVIRONMENT**: These variables are optional and only required in order to enable login via social networks.
+  - Setup your credentials as described [here](https://web3auth.io/docs/dashboard-setup/projects-and-analytics).
+  - In short, the instructions linked show you how to setup a project by choosing: a project name (any name you like), an environment (Sapphire Mainnet for production, or Sapphire Devnet for testing), a product type (Core Kit MPC), a platform (Web Application), and a chain (EVM Based Chain).
+  - Set VITE_WEB3AUTH_CLIENT_ID to the generated Client Id, and VITE_WEB3AUTH_ENVIRONMENT to either "sapphire_mainnet" or "sapphire_devnet" depending on your choice.
+- **VITE_FIREBASE**-prefixed variables (see sample .env file for full list): These are required when login via social networks is enabled.
+  - Create an account at the [X Developer Platform](https://developer.twitter.com/)
+  - Setup Firebase as described [here](https://firebase.google.com/docs/auth/web/twitter-login), which also includes instructions to link to your X developer account
+  - Configure your Web3Auth Project with your Firebase configuration as described [here](https://web3auth.io/docs/auth-provider-setup/social-providers/twitter#set-up-twitter-via-firebase).
+  - Take note of your Firebase configuration (Firebase Console > Your Project > Your App > SDK setup and configuration)
 
 ---
 
