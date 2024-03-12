@@ -77,10 +77,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     if (!chain || !web3AuthConfig.web3AuthClientId || isInitializingRef.current || isInstanceCreatedRef.current) {
       return;
     }
-    // TODO: Should be removed
-    console.log('--------------');
-    console.log('Init Web3Auth');
-    console.log('--------------');
 
     isInitializingRef.current = true;
 
@@ -125,8 +121,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
         web3AuthInstance.configureAdapter(openloginAdapter);
 
-        // TODO: remove this
-        console.log('init', web3AuthInstance.status, web3AuthInstance.connected);
         await web3AuthInstance.init();
 
         // so we can switch chains
