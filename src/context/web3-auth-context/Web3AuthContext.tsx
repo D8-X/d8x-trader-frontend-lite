@@ -18,7 +18,7 @@ import {
   useMemo,
 } from 'react';
 import { bytesToHex, numberToHex } from 'viem';
-import { useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
@@ -43,6 +43,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
   const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
+  const { isConnected } = useAccount();
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
   const setSocialPK = useSetAtom(socialPKAtom);
@@ -74,7 +75,13 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   }, [chainId]);
 
   useEffect(() => {
-    if (!chain || !web3AuthConfig.web3AuthClientId || isInitializingRef.current || isInstanceCreatedRef.current) {
+    if (
+      !chain ||
+      !web3AuthConfig.web3AuthClientId ||
+      isInitializingRef.current ||
+      isInstanceCreatedRef.current ||
+      isConnected
+    ) {
       return;
     }
 
@@ -145,7 +152,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       isInstanceCreatedRef.current = true;
       isInitializingRef.current = false;
     });
-  }, [chain]);
+  }, [chain, isConnected]);
 
   const handleWeb3AuthSuccessConnect = useCallback(
     (userInfo: Partial<OpenloginUserInfo>, privateKey: string) => {
@@ -176,9 +183,18 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       web3AuthStatus: web3Auth?.status,
       web3AuthConnected: web3Auth?.connected,
       web3AuthIdToken,
+      isConnected,
+      web3Auth,
     });
 
-    if (isConnectedRef.current || !chain || !web3AuthConfig.web3AuthClientId || !web3AuthIdToken || !web3Auth) {
+    if (
+      isConnectedRef.current ||
+      !chain ||
+      !web3AuthConfig.web3AuthClientId ||
+      !web3AuthIdToken ||
+      !web3Auth ||
+      isConnected
+    ) {
       return;
     }
 
@@ -251,7 +267,16 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     };
 
     connectWeb3Auth().then();
-  }, [chain, web3Auth, web3AuthIdToken, connectAsync, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]);
+  }, [
+    chain,
+    web3Auth,
+    web3AuthIdToken,
+    connectAsync,
+    handleWeb3AuthSuccessConnect,
+    setSocialPK,
+    setUserInfo,
+    isConnected,
+  ]);
 
   const signInWithTwitter = useCallback(async () => {
     if (!auth || signInRef.current) {
