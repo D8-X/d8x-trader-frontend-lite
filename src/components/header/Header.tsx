@@ -54,7 +54,6 @@ interface HeaderPropsI {
 }
 
 const DRAWER_WIDTH_FOR_TABLETS = 340;
-const isSocialLoginEnabled = web3AuthConfig.web3AuthClientId !== '';
 
 export const Header = memo(({ window }: HeaderPropsI) => {
   const theme = useTheme();
@@ -318,12 +317,12 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               )}
               {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
-                  {isSocialLoginEnabled && !isConnected && (
+                  {web3AuthConfig.isEnabled && !isConnected && (
                     <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
                       <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
                     </Button>
                   )}
-                  {(!isSocialLoginEnabled || isConnected) && (
+                  {(!web3AuthConfig.isEnabled || isConnected) && (
                     <>
                       <WalletConnectButton />
                       <WalletConnectedButtons />
@@ -331,7 +330,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   )}
                 </Typography>
               )}
-              {isSocialLoginEnabled && (
+              {web3AuthConfig.isEnabled && (
                 <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
               )}
               {!isTabletScreen && <SettingsButton />}

@@ -79,6 +79,7 @@ export const web3AuthConfig = {
   web3AuthClientId,
   web3AuthVerifier,
   web3AuthNetwork,
+  isEnabled: web3AuthClientId !== '',
 };
 
 export const firebaseConfig = {

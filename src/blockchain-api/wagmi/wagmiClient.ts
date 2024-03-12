@@ -16,9 +16,9 @@ import polygonTestIcon from 'assets/networks/polygonTest.chain.svg';
 import zkMainIcon from 'assets/networks/zkEvmMain.chain.svg';
 import zkTestIcon from 'assets/networks/zkEvmTest.chain.svg';
 import arbitrumSepoliaIcon from 'assets/networks/arbitrumSepolia.chain.svg';
-import { config } from 'config';
 import x1Icon from 'assets/networks/x1.png';
-import berachainIcon from 'assets/networks/berachain.svg';
+import berachainIcon from 'assets/networks/berachain.png';
+import { config } from 'config';
 import { x1, cardona, artio } from 'utils/chains';
 
 const chains = [

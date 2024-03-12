@@ -19,8 +19,6 @@ import { OneClickTradingButton } from './OneClickTradingButton';
 
 import styles from './WalletConnectButton.module.scss';
 
-const isSocialLoginEnabled = web3AuthConfig.web3AuthClientId !== '';
-
 export const WalletConnectedButtons = memo(() => {
   const { t } = useTranslation();
 
@@ -30,7 +28,7 @@ export const WalletConnectedButtons = memo(() => {
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const isSignedInSocially = isSocialLoginEnabled && web3authIdToken != '';
+  const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
   return (
     <ConnectButton.Custom>

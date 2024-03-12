@@ -37,8 +37,8 @@ interface Web3AuthContextPropsI {
 const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefined);
 
 const clientId = web3AuthConfig.web3AuthClientId;
-const verifierName = web3AuthConfig.web3AuthVerifier;
-const networkName = web3AuthConfig.web3AuthNetwork;
+const verifier = web3AuthConfig.web3AuthVerifier;
+const web3AuthNetwork = web3AuthConfig.web3AuthNetwork;
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
@@ -108,7 +108,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         const web3AuthOptions: Web3AuthNoModalOptions = {
           clientId,
           chainConfig,
-          web3AuthNetwork: networkName,
+          web3AuthNetwork,
           privateKeyProvider,
         };
         const web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);
@@ -119,7 +119,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
             uxMode: 'popup',
             loginConfig: {
               jwt: {
-                verifier: verifierName,
+                verifier,
                 typeOfLogin: 'jwt',
                 clientId,
               },
@@ -247,7 +247,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
               uxMode: 'popup',
               loginConfig: {
                 jwt: {
-                  verifier: verifierName,
+                  verifier,
                   typeOfLogin: 'jwt',
                   clientId,
                 },
