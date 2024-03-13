@@ -43,7 +43,6 @@ import { PerpetualInfoFetcher } from './components/PerpetualInfoFetcher';
 import { PoolSubscription } from './components/PoolSubscription';
 import { CandlesWebSocketListener } from './components/candles-webSocket-listener/CandlesWebSocketListener';
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
-import { SDKLoader } from '../../components/sdk-loader/SDKLoader';
 
 import styles from './TraderPage.module.scss';
 
@@ -360,7 +359,6 @@ export const TraderPage = () => {
         </MaintenanceWrapper>
       </div>
 
-      <SDKLoader />
       <UsdcSwapModal isOpen={dialogOpen} onClose={closeDialog} />
       <TableDataFetcher />
       <PerpetualInfoFetcher />

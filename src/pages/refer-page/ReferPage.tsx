@@ -7,7 +7,6 @@ import { type Address, erc20Abi } from 'viem';
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { SDKLoader } from 'components/sdk-loader/SDKLoader';
 import { useQuery } from 'hooks/useQuery';
 import { getMyReferrals, getReferCut, getTokenInfo } from 'network/referral';
 import {
@@ -174,8 +173,6 @@ export const ReferPage = () => {
             <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
             {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
           </Container>
-
-          <SDKLoader />
         </MaintenanceWrapper>
       </div>
     </>

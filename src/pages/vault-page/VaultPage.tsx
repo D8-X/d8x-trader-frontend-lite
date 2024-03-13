@@ -9,7 +9,6 @@ import { HeaderPortal } from 'components/header/HeaderPortal';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { SDKLoader } from 'components/sdk-loader/SDKLoader';
 import { getOpenWithdrawals } from 'network/history';
 import { GlobalStats } from 'pages/vault-page/components/global-stats/GlobalStats';
 import { LiquidityBlock } from 'pages/vault-page/components/liquidity-block/LiquidityBlock';
@@ -68,8 +67,6 @@ export const VaultPage = () => {
             <GlobalStats />
             <LiquidityBlock />
           </Container>
-
-          <SDKLoader />
         </MaintenanceWrapper>
       </div>
     </>
