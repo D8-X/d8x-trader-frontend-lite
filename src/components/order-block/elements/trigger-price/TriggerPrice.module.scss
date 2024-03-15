@@ -6,6 +6,12 @@
   justify-content: space-between;
   margin-bottom: 2 * $d8x-spacing;
   margin-top: 2 * $d8x-spacing;
+
+  @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+    screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
+    margin-bottom: $d8x-spacing;
+    margin-top: $d8x-spacing;
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {

@@ -21,6 +21,6 @@
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .root {
-    padding: $d8x-spacing * 0.5 0;
+    padding: $d8x-spacing 0;
   }
 }

@@ -1,0 +1,17 @@
+@import '~styles/theme/_theme.scss';
+
+.root {
+  margin: 0 9px;
+
+  @include media-desktop {
+    margin-bottom: 4px;
+  }
+
+  @include media-phone {
+    margin-bottom: 0;
+
+    :global(.MuiSlider-root) {
+      margin-bottom: 10px;
+    }
+  }
+}

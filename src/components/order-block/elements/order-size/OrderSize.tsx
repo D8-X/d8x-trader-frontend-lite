@@ -19,7 +19,6 @@ import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency'
 
 import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
-import styles from './OrderSize.module.scss';
 import {
   currencyMultiplierAtom,
   inputValueAtom,
@@ -29,6 +28,8 @@ import {
   setInputFromOrderSizeAtom,
   setOrderSizeAtom,
 } from './store';
+
+import styles from './OrderSize.module.scss';
 
 const roundMaxOrderSize = (value: number) => {
   const numberDigits = valueToFractionDigits(value);

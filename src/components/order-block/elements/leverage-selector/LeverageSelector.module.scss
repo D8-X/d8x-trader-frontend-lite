@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 6 * $d8x-spacing;
+  margin-top: 2 * $d8x-spacing;
 }
 
 .rowOne {
@@ -60,11 +60,7 @@
 
 @media screen and ($d8x-breakpoint-height-max-md) {
 
-  .sliderHolder {
-    margin-bottom: 4px;
-  }
-
   .root {
-    margin-top: 4 * $d8x-spacing;
+    margin-top: $d8x-spacing;
   }
 }

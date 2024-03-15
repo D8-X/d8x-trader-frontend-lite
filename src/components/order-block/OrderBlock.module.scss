@@ -13,7 +13,7 @@
 .selectors {
   display: flex;
   flex-direction: column;
-  gap: $d8x-spacing * 6;
+  gap: $d8x-spacing * 3;
   padding-bottom: $d8x-spacing * 6;
 }
 
@@ -37,11 +37,15 @@
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .bottomCard {
-    padding-top: $d8x-spacing;
+    padding-top: $d8x-spacing / 2;
   }
 
   .card {
-    padding-top: $d8x-spacing;
-    padding-bottom: $d8x-spacing;
+    padding-top: $d8x-spacing / 2;
+    padding-bottom: $d8x-spacing / 2;
+  }
+
+  .selectors {
+    padding-bottom: $d8x-spacing * 2 !important;
   }
 }
