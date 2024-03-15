@@ -5,14 +5,14 @@
   justify-content: center;
   gap: $d8x-spacing * 8;
   margin-top: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 2;
+  margin-bottom: $d8x-spacing * 4;
 
   button {
     font-size: 14px;
     line-height: 20px;
     font-weight: 500;
-    padding-top: $d8x-spacing;
     padding-bottom: $d8x-spacing;
+    padding-top: 2 * $d8x-spacing;
   }
 }
 

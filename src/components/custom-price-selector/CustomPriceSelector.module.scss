@@ -38,8 +38,8 @@
   :global(.MuiButtonBase-root) {
     flex: 1;
     border-radius: 8px;
-    padding-top: $d8x-spacing;
-    padding-bottom: $d8x-spacing;
+    padding-top: 0.9 * $d8x-spacing;
+    padding-bottom: 0.4 * $d8x-spacing;
 
     &.selected {
       border: 1px solid transparent;

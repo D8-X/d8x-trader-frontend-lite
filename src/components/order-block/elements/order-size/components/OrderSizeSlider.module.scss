@@ -1,7 +1,7 @@
 @import '~styles/theme/_theme.scss';
 
 .root {
-  margin: 0 9px;
+  margin: 2px 9px;
 
   @include media-desktop {
     margin-bottom: 4px;

@@ -154,7 +154,7 @@ export const MarketSelect = memo(() => {
       </div>
       <Button onClick={() => setModalOpen(true)} className={styles.marketSelectButton} variant="outlined">
         <div className={styles.selectedMarketBlock}>
-          <Typography variant="bodyTiny" className={styles.selectedMarketLabel}>
+          <Typography variant="bodySmall" className={styles.selectedMarketLabel}>
             {t('common.select.market.label')}
           </Typography>
           <div className={styles.selectedMarketValue}>

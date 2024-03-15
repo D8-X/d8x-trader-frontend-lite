@@ -61,6 +61,6 @@
 @media screen and ($d8x-breakpoint-height-max-md) {
 
   .root {
-    margin-top: $d8x-spacing;
+    margin-top: 2 * $d8x-spacing;
   }
 }

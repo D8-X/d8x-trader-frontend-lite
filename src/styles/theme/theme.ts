@@ -399,7 +399,7 @@ export const theme = createTheme({
           },
         },
         input: {
-          padding: '4px 10px 2px',
+          padding: '5px 10px 3px',
           width: 'auto',
           flex: 1,
           lineHeight: '1.5',
@@ -698,7 +698,7 @@ theme.typography.bodySmallSB = {
 };
 
 theme.typography.bodyTiny = {
-  fontSize: 10,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '16px',
 };
@@ -710,7 +710,7 @@ theme.typography.adornment = {
 };
 
 theme.typography.cellSmall = {
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 400,
   lineHeight: '16px',
   [theme.breakpoints.down('sm')]: {
