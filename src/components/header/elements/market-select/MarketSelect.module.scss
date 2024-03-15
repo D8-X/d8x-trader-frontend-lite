@@ -6,9 +6,9 @@
   align-items: center;
   gap: 0.5 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
-  border-radius: $d8x-border-radius;
+  border-radius: 8px;
   height: 72px;
-  min-width: 300px;
+  min-width: 350px;
 }
 
 .iconWrapper {
@@ -22,8 +22,8 @@
   margin-left: $d8x-spacing * 3;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
 }
 

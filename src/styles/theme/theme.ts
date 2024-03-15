@@ -399,7 +399,7 @@ export const theme = createTheme({
           },
         },
         input: {
-          padding: '5px 10px 3px',
+          padding: '10px 10px 6px',
           width: 'auto',
           flex: 1,
           lineHeight: '1.5',
@@ -632,11 +632,11 @@ theme.typography.h5 = {
 };
 
 theme.typography.bodyBig = {
-  fontSize: 64,
+  fontSize: 24,
   fontWeight: 400,
   lineHeight: '77px',
   [theme.breakpoints.down('sm')]: {
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: '31px',
   },
 };

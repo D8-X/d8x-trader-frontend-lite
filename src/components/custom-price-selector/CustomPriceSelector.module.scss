@@ -18,7 +18,7 @@
 .customPriceInput {
 
   :global(.MuiOutlinedInput-input) {
-    padding: $d8x-spacing 10px;
+    padding: 2 * $d8x-spacing 10px;
   }
 }
 

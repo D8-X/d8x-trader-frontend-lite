@@ -8,7 +8,7 @@
   }
 
   @include media-phone {
-    margin-bottom: 0;
+    margin-bottom: 8px;
 
     :global(.MuiSlider-root) {
       margin-bottom: 10px;

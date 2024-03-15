@@ -6,7 +6,7 @@
   border-radius: 8px;
   background-color: var(--d8x-color-background-items);
   line-height: 1.2;
-  height: 64px;
+  height: 72px;
 
   @include media-desktop {
     padding: $d8x-spacing * 2 $d8x-spacing * 3;
@@ -92,4 +92,12 @@
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.5rem;
+}
+
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+
+  .statContainer {
+    height: 64px;
+  }
 }

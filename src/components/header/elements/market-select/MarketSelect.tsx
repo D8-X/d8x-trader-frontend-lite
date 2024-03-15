@@ -159,7 +159,7 @@ export const MarketSelect = memo(() => {
             {t('common.select.market.label')}
           </Typography>
           <div className={styles.selectedMarketValue}>
-            <Typography variant="bodyLarge" className={styles.selectedMarketPerpetual}>
+            <Typography variant="bodyBig" className={styles.selectedMarketPerpetual}>
               {cutBaseCurrency(selectedPerpetual?.baseCurrency)}/{selectedPerpetual?.quoteCurrency}
             </Typography>
             <Typography variant="bodyTiny">{selectedPool?.poolSymbol}</Typography>
