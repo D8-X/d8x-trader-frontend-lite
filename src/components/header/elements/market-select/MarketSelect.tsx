@@ -13,6 +13,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { clearInputsDataAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { marketsDataAtom } from 'store/tv-chart.store';
+import { cutBaseCurrency } from 'utils/cutBaseCurrency';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
@@ -23,7 +24,6 @@ import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
-import { cutBaseCurrency } from '../../../../utils/cutBaseCurrency';
 
 const OptionsHeader = () => {
   const { t } = useTranslation();
