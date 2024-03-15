@@ -11,6 +11,8 @@
     font-size: 14px;
     line-height: 20px;
     font-weight: 500;
+    padding-bottom: $d8x-spacing;
+    padding-top: 2 * $d8x-spacing;
   }
 }
 
@@ -21,7 +23,7 @@
 
 @media screen and ($d8x-breakpoint-height-max-md) {
   .root {
-    margin-bottom: 3 * $d8x-spacing;
+    margin-bottom: $d8x-spacing;
   }
 }
 

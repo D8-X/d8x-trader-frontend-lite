@@ -87,8 +87,8 @@ const MuiButtonSharedStyle = {
   minWidth: '140px',
   transition: 'ease-in-out 250ms',
   borderRadius: '8px',
-  padding: '10px 20px 8px',
-  fontSize: '18px',
+  padding: '8px 20px',
+  fontSize: '12px',
   fontWeight: 700,
 };
 
@@ -184,7 +184,7 @@ export const theme = createTheme({
           textTransform: 'none',
           color: 'var(--d8x-color-action)',
           lineHeight: '1.5',
-          padding: '9px 8px 7px',
+          padding: '7px 8px',
           whiteSpace: 'nowrap',
           borderColor: 'var(--d8x-color-action)',
           '&:hover': {
@@ -317,7 +317,8 @@ export const theme = createTheme({
           style: {
             borderRadius: '8px',
             borderWidth: '1px',
-            padding: '9px 8px 7px',
+            padding: '7px 8px',
+            fontSize: '12px',
             color: 'var(--d8x-color-text-main)',
             borderColor: 'var(--d8x-color-border)',
             '&:hover': {
@@ -336,7 +337,7 @@ export const theme = createTheme({
           style: {
             ...MuiButtonSharedStyle,
             padding: '9px 40px 7px',
-            fontSize: '16px',
+            fontSize: '12px',
             fontWeight: 'normal',
             minWidth: '50px',
           },
@@ -346,7 +347,7 @@ export const theme = createTheme({
           style: {
             ...MuiButtonSharedStyle,
             padding: '2px 8px 0',
-            fontSize: '12px',
+            fontSize: '10px',
             fontWeight: 'normal',
             minWidth: '50px',
             maxHeight: '20px',
@@ -403,7 +404,7 @@ export const theme = createTheme({
           flex: 1,
           lineHeight: '1.5',
           border: 'none',
-          fontSize: '16px',
+          fontSize: '12px',
           fontWeight: '500',
           color: 'var(--d8x-color-text-main)',
           '::placeholder': {
@@ -478,6 +479,9 @@ export const theme = createTheme({
     },
     MuiSlider: {
       styleOverrides: {
+        root: {
+          padding: '14px 0 !important',
+        },
         thumb: {
           color: 'var(--d8x-color-action-icon)',
         },
@@ -491,6 +495,7 @@ export const theme = createTheme({
           fontSize: '12px',
           lineHeight: '16px',
           color: 'var(--d8x-color-text-main)',
+          top: '36px !important',
         },
       },
     },
@@ -627,11 +632,11 @@ theme.typography.h5 = {
 };
 
 theme.typography.bodyBig = {
-  fontSize: 64,
+  fontSize: 24,
   fontWeight: 400,
   lineHeight: '77px',
   [theme.breakpoints.down('sm')]: {
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: '31px',
   },
 };
@@ -667,13 +672,13 @@ theme.typography.bodyMedium = {
 };
 
 theme.typography.bodySmall = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '20px',
 };
 
 theme.typography.bodySmallPopup = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '20px',
   [theme.breakpoints.down('sm')]: {
@@ -683,7 +688,7 @@ theme.typography.bodySmallPopup = {
 };
 
 theme.typography.bodySmallSB = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 600,
   lineHeight: '20px',
   [theme.breakpoints.down('sm')]: {
@@ -705,7 +710,7 @@ theme.typography.adornment = {
 };
 
 theme.typography.cellSmall = {
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 400,
   lineHeight: '16px',
   [theme.breakpoints.down('sm')]: {

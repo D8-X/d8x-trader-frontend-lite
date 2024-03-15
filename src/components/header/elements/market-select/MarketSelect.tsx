@@ -13,6 +13,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { clearInputsDataAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { marketsDataAtom } from 'store/tv-chart.store';
+import { cutBaseCurrency } from 'utils/cutBaseCurrency';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
@@ -154,12 +155,12 @@ export const MarketSelect = memo(() => {
       </div>
       <Button onClick={() => setModalOpen(true)} className={styles.marketSelectButton} variant="outlined">
         <div className={styles.selectedMarketBlock}>
-          <Typography variant="bodyTiny" className={styles.selectedMarketLabel}>
+          <Typography variant="bodySmall" className={styles.selectedMarketLabel}>
             {t('common.select.market.label')}
           </Typography>
           <div className={styles.selectedMarketValue}>
-            <Typography variant="bodyLarge" className={styles.selectedMarketPerpetual}>
-              {selectedPerpetual?.baseCurrency}/{selectedPerpetual?.quoteCurrency}
+            <Typography variant="bodyBig" className={styles.selectedMarketPerpetual}>
+              {cutBaseCurrency(selectedPerpetual?.baseCurrency)}/{selectedPerpetual?.quoteCurrency}
             </Typography>
             <Typography variant="bodyTiny">{selectedPool?.poolSymbol}</Typography>
           </div>

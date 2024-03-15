@@ -8,9 +8,14 @@
 
 .statContainer {
   flex: 1;
-  padding: $d8x-spacing * 5 $d8x-spacing * 6;
+  padding: $d8x-spacing * 3 $d8x-spacing * 6;
   border-radius: $d8x-border-radius;
   background-color: var(--d8x-color-background-items);
+  height: 72px;
+
+  @include media-desktop {
+    height: 64px;
+  }
 }
 
 .statLabel {
@@ -121,5 +126,12 @@
     .statValue {
       white-space: normal;
     }
+  }
+}
+
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  .statContainer {
+    height: 64px;
   }
 }

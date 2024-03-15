@@ -152,7 +152,7 @@ export const OrderSettings = memo(() => {
               defaultChecked={reduceOnly}
               onChange={(_event, checked) => setReduceOnly(checked)}
               control={<Checkbox checked={reduceOnly} />}
-              label={t('pages.trade.order-block.reduce-only')}
+              label={<Typography variant="bodyTiny">{t('pages.trade.order-block.reduce-only')}</Typography>}
               labelPlacement="end"
             />
             <Box className={styles.settings} onClick={() => setShowExpiryModal(true)}>

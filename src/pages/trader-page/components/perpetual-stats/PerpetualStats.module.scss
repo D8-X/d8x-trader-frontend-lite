@@ -2,11 +2,17 @@
 
 .statContainer {
   flex: 1;
-  padding: $d8x-spacing * 2 $d8x-spacing * 3;
+  padding: $d8x-spacing * 3;
   border-radius: 8px;
   background-color: var(--d8x-color-background-items);
   line-height: 1.2;
-  margin-top: $d8x-spacing * 2;
+  height: 72px;
+
+  @include media-desktop {
+    padding: $d8x-spacing * 2 $d8x-spacing * 3;
+    height: inherit;
+    margin-top: $d8x-spacing * 2;
+  }
 }
 
 .mainMobileLine {
@@ -66,8 +72,12 @@
   white-space: nowrap;
   margin-top: $d8x-spacing * 2;
   color: var(--d8x-color-text-label-one);
-  font-size: 0.5rem;
+  font-size: 0.65rem;
   min-width: 50px;
+
+  @include media-phone {
+    font-size: 0.5rem;
+  }
 }
 
 .statValue {
@@ -82,4 +92,11 @@
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.5rem;
+}
+
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  .statContainer {
+    height: 64px;
+  }
 }

@@ -303,18 +303,20 @@ export const TraderPage = () => {
       />
       <div className={styles.root}>
         <MaintenanceWrapper>
-          <Container
-            className={classnames(styles.headerContainer, {
-              [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
-            })}
-          >
-            <div className={styles.leftBlock}>
-              <PerpetualStats />
-            </div>
-            <div className={styles.rightBlock}>
-              <MarketSelect />
-            </div>
-          </Container>
+          {isSmallScreen && (
+            <Container
+              className={classnames(styles.headerContainer, {
+                [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
+              })}
+            >
+              <div className={styles.leftBlock}>
+                <PerpetualStats />
+              </div>
+              <div className={styles.rightBlock}>
+                <MarketSelect />
+              </div>
+            </Container>
+          )}
           {!isSmallScreen && (
             <Container
               className={classnames(styles.sidesContainer, {
@@ -322,6 +324,10 @@ export const TraderPage = () => {
               })}
             >
               <div className={styles.leftBlock}>
+                <div className={styles.marketAndStats}>
+                  <MarketSelect />
+                  <PerpetualStats />
+                </div>
                 <ChartHolder />
                 <TableSelector
                   selectorItems={selectorForAllItems}

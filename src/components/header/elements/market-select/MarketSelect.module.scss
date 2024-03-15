@@ -7,7 +7,8 @@
   gap: 0.5 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
   border-radius: 8px;
-  height: 84px;
+  height: 72px;
+  min-width: 350px;
 }
 
 .iconWrapper {
@@ -21,8 +22,8 @@
   margin-left: $d8x-spacing * 3;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -170,5 +171,12 @@
       font-size: 14px;
       line-height: 8px;
     }
+  }
+}
+
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  .holderRoot {
+    height: 64px;
   }
 }

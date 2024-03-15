@@ -13,8 +13,8 @@
 .selectors {
   display: flex;
   flex-direction: column;
-  gap: $d8x-spacing * 6;
-  padding-bottom: $d8x-spacing * 6;
+  gap: $d8x-spacing * 3;
+  padding-bottom: $d8x-spacing * 4 !important;
 }
 
 .separator {
@@ -35,11 +35,11 @@
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
   .bottomCard {
-    padding-top: $d8x-spacing;
+    padding-top: calc($d8x-spacing / 2);
   }
 
   .card {
-    padding-top: $d8x-spacing;
-    padding-bottom: $d8x-spacing;
+    padding-top: calc($d8x-spacing / 2);
+    padding-bottom: calc($d8x-spacing / 2);
   }
 }
