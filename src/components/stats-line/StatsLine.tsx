@@ -18,7 +18,10 @@ export const StatsLine = memo(({ items }: StatsLinePropsI) => (
           {item.label}
         </Typography>
         <Typography variant="bodyLarge" className={styles.statValue}>
-          {item.value}
+          {item.numberOnly}
+        </Typography>
+        <Typography variant="bodyTiny" className={styles.statCurrency}>
+          {item.currencyOnly}
         </Typography>
       </Box>
     ))}

@@ -31,7 +31,7 @@ export const ChartBlock = memo(({ width, candles, seriesRef, numberDigits }: Can
 
   const chartHeight = useMemo(() => {
     if (dimensions.width && dimensions.width >= theme.breakpoints.values.lg) {
-      return dimensions.height ? Math.max(Math.round(dimensions.height / 2), MIN_CHART_HEIGHT) : MIN_CHART_HEIGHT;
+      return dimensions.height ? Math.max(Math.round(dimensions.height / 3), MIN_CHART_HEIGHT) : MIN_CHART_HEIGHT;
     }
     return Math.round(Math.min(Math.max((width || MIN_CHART_HEIGHT) * 0.5, 300), MIN_CHART_HEIGHT));
   }, [dimensions, width, theme.breakpoints]);

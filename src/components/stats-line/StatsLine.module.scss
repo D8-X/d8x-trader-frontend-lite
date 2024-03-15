@@ -12,6 +12,10 @@
   border-radius: $d8x-border-radius;
   background-color: var(--d8x-color-background-items);
   height: 72px;
+
+  @include media-desktop {
+    height: 64px;
+  }
 }
 
 .statLabel {

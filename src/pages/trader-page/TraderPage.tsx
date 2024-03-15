@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { type Address, useAccount, useBalance, useChainId } from 'wagmi';
 
-import { Box, useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { FundingTable } from 'components/funding-table/FundingTable';
@@ -278,37 +278,43 @@ export const TraderPage = () => {
             : ''
         } | D8X App`}
       />
-      <Box className={styles.root}>
+      <div className={styles.root}>
         <MaintenanceWrapper>
-          <Container
-            className={classnames(styles.headerContainer, {
-              [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
-            })}
-          >
-            <Box className={styles.leftBlock}>
-              <PerpetualStats />
-            </Box>
-            <Box className={styles.rightBlock}>
-              <MarketSelect />
-            </Box>
-          </Container>
+          {isSmallScreen && (
+            <Container
+              className={classnames(styles.headerContainer, {
+                [styles.swapSides]: !isSmallScreen && orderBlockPosition === OrderBlockPositionE.Left,
+              })}
+            >
+              <div className={styles.leftBlock}>
+                <PerpetualStats />
+              </div>
+              <div className={styles.rightBlock}>
+                <MarketSelect />
+              </div>
+            </Container>
+          )}
           {!isSmallScreen && (
             <Container
               className={classnames(styles.sidesContainer, {
                 [styles.swapSides]: orderBlockPosition === OrderBlockPositionE.Left,
               })}
             >
-              <Box className={styles.leftBlock}>
+              <div className={styles.leftBlock}>
+                <div className={styles.marketAndStats}>
+                  <MarketSelect />
+                  <PerpetualStats />
+                </div>
                 <ChartHolder />
                 <TableSelector
                   selectorItems={selectorForAllItems}
                   activeIndex={activeAllIndex}
                   setActiveIndex={handleActiveAllIndex}
                 />
-              </Box>
-              <Box className={styles.rightBlock}>
+              </div>
+              <div className={styles.rightBlock}>
                 <OrderBlock />
-              </Box>
+              </div>
             </Container>
           )}
           {isSmallScreen && (
@@ -334,7 +340,7 @@ export const TraderPage = () => {
             </Container>
           )}
         </MaintenanceWrapper>
-      </Box>
+      </div>
 
       <UsdcSwapModal isOpen={dialogOpen} onClose={closeDialog} />
       <TableDataFetcher />

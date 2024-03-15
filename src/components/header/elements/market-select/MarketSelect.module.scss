@@ -6,8 +6,9 @@
   align-items: center;
   gap: 0.5 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
-  border-radius: 8px;
+  border-radius: $d8x-border-radius;
   height: 72px;
+  min-width: 300px;
 }
 
 .iconWrapper {

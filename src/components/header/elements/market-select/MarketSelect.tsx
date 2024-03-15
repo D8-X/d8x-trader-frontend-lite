@@ -23,6 +23,7 @@ import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
 
 import styles from './MarketSelect.module.scss';
+import { cutBaseCurrency } from '../../../../utils/cutBaseCurrency';
 
 const OptionsHeader = () => {
   const { t } = useTranslation();
@@ -159,7 +160,7 @@ export const MarketSelect = memo(() => {
           </Typography>
           <div className={styles.selectedMarketValue}>
             <Typography variant="bodyLarge" className={styles.selectedMarketPerpetual}>
-              {selectedPerpetual?.baseCurrency}/{selectedPerpetual?.quoteCurrency}
+              {cutBaseCurrency(selectedPerpetual?.baseCurrency)}/{selectedPerpetual?.quoteCurrency}
             </Typography>
             <Typography variant="bodyTiny">{selectedPool?.poolSymbol}</Typography>
           </div>

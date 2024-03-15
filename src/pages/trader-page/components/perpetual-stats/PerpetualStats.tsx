@@ -9,6 +9,7 @@ import { ReactComponent as ViewChartIcon } from 'assets/icons/viewChart.svg';
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { perpetualStatisticsAtom, showChartForMobileAtom } from 'store/pools.store';
+import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './PerpetualStats.module.scss';
@@ -17,6 +18,9 @@ export const PerpetualStats = () => {
   const { t } = useTranslation();
 
   const theme = useTheme();
+  const isDesktopScreen = useMediaQuery(theme.breakpoints.down('xl'));
+  const isTabletScreen = useMediaQuery(theme.breakpoints.down('lg'));
+  const isMiddleScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
@@ -32,7 +36,7 @@ export const PerpetualStats = () => {
       numberOnly: perpetualStatistics
         ? formatToCurrency(perpetualStatistics.midPrice, '', true, undefined, true)
         : '--',
-      currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
+      // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
     }),
     [t, perpetualStatistics]
   );
@@ -48,6 +52,7 @@ export const PerpetualStats = () => {
         numberOnly: perpetualStatistics
           ? formatToCurrency(perpetualStatistics.markPrice, '', true, undefined, true)
           : '--',
+        // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
         id: 'indexPrice',
@@ -58,6 +63,7 @@ export const PerpetualStats = () => {
         numberOnly: perpetualStatistics
           ? formatToCurrency(perpetualStatistics.indexPrice, '', true, undefined, true)
           : '--',
+        // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
         id: 'fundingRate',
@@ -70,9 +76,9 @@ export const PerpetualStats = () => {
         id: 'openInterestBC',
         label: t('pages.trade.stats.open-interest'),
         value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.openInterestBC, perpetualStatistics.baseCurrency, true)
+          ? abbreviateNumber(perpetualStatistics.openInterestBC) + perpetualStatistics.baseCurrency
           : '--',
-        numberOnly: perpetualStatistics ? formatToCurrency(perpetualStatistics.openInterestBC, '', true) : '--',
+        numberOnly: perpetualStatistics ? abbreviateNumber(perpetualStatistics.openInterestBC) : '--',
         currencyOnly: perpetualStatistics ? perpetualStatistics.baseCurrency : '',
       },
     ],
@@ -111,6 +117,22 @@ export const PerpetualStats = () => {
 
     // TODO: VOV: Make StatsLineMobile common
     // return <StatsLineMobile items={items} />;
+  }
+
+  if ((isDesktopScreen && !isTabletScreen) || (isMiddleScreen && !isMobileScreen)) {
+    return (
+      <div className={styles.statContainer}>
+        <div className={styles.statsBlock}>
+          {[midPrice, ...items].map((item) => (
+            <div key={item.id}>
+              <div className={styles.statLabel}>{item.label}</div>
+              <span className={styles.statValue}>{item.numberOnly}</span>{' '}
+              <span className={styles.statCurrency}>{item.currencyOnly}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return <StatsLine items={[midPrice, ...items]} />;
