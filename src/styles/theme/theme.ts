@@ -480,7 +480,7 @@ export const theme = createTheme({
     MuiSlider: {
       styleOverrides: {
         root: {
-          padding: '8px 0 !important',
+          padding: '14px 0 !important',
         },
         thumb: {
           color: 'var(--d8x-color-action-icon)',
@@ -495,7 +495,7 @@ export const theme = createTheme({
           fontSize: '12px',
           lineHeight: '16px',
           color: 'var(--d8x-color-text-main)',
-          top: '28px !important',
+          top: '36px !important',
         },
       },
     },

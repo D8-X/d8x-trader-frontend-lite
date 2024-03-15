@@ -37,11 +37,11 @@
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
 
   .bottomCard {
-    padding-top: $d8x-spacing / 2;
+    padding-top: calc($d8x-spacing / 2);
   }
 
   .card {
-    padding-top: $d8x-spacing / 2;
-    padding-bottom: $d8x-spacing / 2;
+    padding-top: calc($d8x-spacing / 2);
+    padding-bottom: calc($d8x-spacing / 2);
   }
 }
