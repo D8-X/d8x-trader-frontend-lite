@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -6,8 +6,8 @@ import { Typography } from '@mui/material';
 
 import D8XLogoWithText from 'assets/logos/d8xLogoWithText.svg?react';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
-import { getPumpStationData } from 'network/network';
-import { BoostI } from 'types/types';
+import { getPumpStationData, getPumpStationParameters } from 'network/network';
+import { BoostI, PumpStationParamResponseI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 
 import { PumpOMeter } from '../pump-o-meter/PumpOMeter';
@@ -16,26 +16,36 @@ import styles from './PumpStationBlock.module.scss';
 
 const INTERVAL_FOR_DATA_POLLING = 10000; // Each 10 sec
 
-export const PumpStationBlock = () => {
+export const PumpStationBlock = memo(() => {
   const { t } = useTranslation();
 
   const [volumeValue, setVolumeValue] = useState<number>();
   const [pumpValue, setPumpValue] = useState<number>();
   const [boosts, setBoosts] = useState<BoostI[]>([]);
+  const [pumpStationParams, setPumpStationParams] = useState<PumpStationParamResponseI>();
+
+  const isDataRequestSent = useRef(false);
+  const isParamsRequestSent = useRef(false);
 
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
 
   const fetchData = useCallback(() => {
-    if (!isConnected || !address) {
+    if (!isConnected || !address || isDataRequestSent.current) {
       return;
     }
 
-    getPumpStationData(address).then((response) => {
-      setVolumeValue(response.crossChainScore);
-      setPumpValue(response.lastBoostedVol);
-      setBoosts(response.boosts);
-    });
+    isDataRequestSent.current = true;
+
+    getPumpStationData(address)
+      .then((response) => {
+        setVolumeValue(response.crossChainScore);
+        setPumpValue(response.lastBoostedVol);
+        setBoosts(response.boosts);
+      })
+      .finally(() => {
+        isDataRequestSent.current = false;
+      });
   }, [isConnected, address]);
 
   useEffect(() => {
@@ -55,8 +65,22 @@ export const PumpStationBlock = () => {
     };
   }, [fetchData]);
 
+  useEffect(() => {
+    if (!isParamsRequestSent.current) {
+      isParamsRequestSent.current = true;
+
+      getPumpStationParameters()
+        .then(setPumpStationParams)
+        .finally(() => {
+          isParamsRequestSent.current = false;
+        });
+    }
+  }, []);
+
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
   const totalBoost = boostByChainId ? boostByChainId.nxtBoost + boostByChainId.nxtRndBoost : 0;
+
+  console.log(pumpStationParams?.rndBoostMax);
 
   return (
     <div className={styles.root}>
@@ -92,10 +116,16 @@ export const PumpStationBlock = () => {
           title={t('pages.pump-station.pump-o-meter.title')}
           content={
             <Typography>
-              {t('pages.pump-station.pump-o-meter.modal-text')}
+              {t('pages.pump-station.pump-o-meter.modal-text', {
+                totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
+              })}
               <ol>
-                <li>{t('pages.pump-station.pump-o-meter.modal-text2')}</li>
-                <li>{t('pages.pump-station.pump-o-meter.modal-text3')}</li>
+                <li>
+                  {t('pages.pump-station.pump-o-meter.modal-text2', { volBoostMax: pumpStationParams?.volBoostMax })}
+                </li>
+                <li>
+                  {t('pages.pump-station.pump-o-meter.modal-text3', { rndBoostMax: pumpStationParams?.rndBoostMax })}
+                </li>
               </ol>
             </Typography>
           }
@@ -106,4 +136,4 @@ export const PumpStationBlock = () => {
       </div>
     </div>
   );
-};
+});

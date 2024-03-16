@@ -3,7 +3,7 @@
 .root {
   background-image: url('/images/pumpstation/rocket.png');
   background-size: contain;
-  background-position: center bottom;
+  background-position: bottom;
   background-repeat: no-repeat;
   background-color: var(--d8x-color-background-items-second);
   padding: 10 * $d8x-spacing;
@@ -11,7 +11,7 @@
   box-sizing: content-box;
   min-width: 200px;
   max-width: 350px;
-  min-height: 325px;
+  min-height: 395px;
 
   @include media-tablet {
     background-image: none;

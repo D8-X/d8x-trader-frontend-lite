@@ -76,6 +76,7 @@ declare module '@mui/material/Button' {
     buy: true;
     sell: true;
   }
+
   interface ButtonPropsSizeOverrides {
     small: true;
     tableSmall: true;
@@ -87,8 +88,8 @@ const MuiButtonSharedStyle = {
   minWidth: '140px',
   transition: 'ease-in-out 250ms',
   borderRadius: '8px',
-  padding: '8px 20px',
-  fontSize: '12px',
+  padding: '10px 20px 8px',
+  fontSize: '18px',
   fontWeight: 700,
 };
 
@@ -242,7 +243,7 @@ export const theme = createTheme({
             ...MuiButtonSharedStyle,
             backgroundColor: 'var(--d8x-color-warning-main)',
             border: '1px solid var(--d8x-color-warning-secondary)',
-            color: 'var(--d8x-color-text-main)',
+            color: 'var(--d8x-color-text-warning)',
             ':hover': {
               backgroundColor: 'var(--d8x-color-warning-secondary)',
             },
@@ -337,7 +338,7 @@ export const theme = createTheme({
           style: {
             ...MuiButtonSharedStyle,
             padding: '9px 40px 7px',
-            fontSize: '12px',
+            fontSize: '16px',
             fontWeight: 'normal',
             minWidth: '50px',
           },
@@ -347,7 +348,7 @@ export const theme = createTheme({
           style: {
             ...MuiButtonSharedStyle,
             padding: '2px 8px 0',
-            fontSize: '10px',
+            fontSize: '12px',
             fontWeight: 'normal',
             minWidth: '50px',
             maxHeight: '20px',
@@ -399,7 +400,7 @@ export const theme = createTheme({
           },
         },
         input: {
-          padding: '10px 10px 6px',
+          padding: '9px 10px 7px',
           width: 'auto',
           flex: 1,
           lineHeight: '1.5',

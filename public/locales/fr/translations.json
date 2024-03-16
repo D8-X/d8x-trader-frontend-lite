@@ -364,16 +364,16 @@
       }
     },
     "pump-station": {
-      "title": "Tradez pour POMPER votre Airdrop de $D8X",
+      "title": "Tradez et ajoutez de la liquidité pour POMPER votre Airdrop de $D8X",
       "pumped-volume": {
         "title": "Volume POMPÉ",
-        "modal-text": "L'Airdrop $D8X est calculé en fonction du volume POMPÉ. Pour chaque transaction, nous calculons le volume des échanges x le boost. Le volume pompé est la somme de celui-ci."
+        "modal-text": "L'Airdrop $D8X est calculé en fonction du volume POMPÉ. Pour chaque transaction et chaque ajout de liquidité, nous calculons volume x boost. Le volume pompé est la somme de celui-ci."
       },
       "pump-o-meter": {
         "title": "POMP-O-METRE",
-        "modal-text": "Le POMP-O-METRE montre le boost appliqué à votre PROCHAINE transaction. Le boost va de 1x à 105x et comprend deux parties:",
-        "modal-text2": "Volume Boost - Vos transactions au cours des 7 derniers jours pourraient vous rapporter un boost du volume allant de 1x à 5x. Plus vous échangez, plus votre boost potentiel est élevé!",
-        "modal-text3": "Fortune Boost - Chaque transaction vous donne une chance de bénéficier du Fortune Boost - un bonus qui peut monter en flèche de 0x jusqu'à un incroyable 100x!"
+        "modal-text": "Le POMP-O-METRE montre le boost appliqué à votre PROCHAINE transaction. Le boost va de 1x à {{totalBoostMax}}x et comprend deux parties:",
+        "modal-text2": "Volume Boost - Vos transactions au cours des 7 derniers jours pourraient vous rapporter un boost du volume allant de 1x à {{volBoostMax}}x. Plus vous échangez, plus votre boost potentiel est élevé!",
+        "modal-text3": "Fortune Boost - Chaque transaction vous donne une chance de bénéficier du Fortune Boost - un bonus qui peut monter en flèche de 0x jusqu'à un incroyable {{rndBoostMax}}x!"
       },
       "last-pump": {
         "title": "Dernière POMPE",
