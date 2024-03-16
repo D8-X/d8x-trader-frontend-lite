@@ -17,15 +17,18 @@ import {
   useState,
   useMemo,
 } from 'react';
+import { toast } from 'react-toastify';
 import { bytesToHex, numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
 import { postSocialVerify } from 'network/referral';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { socialPKAtom, socialUserInfoAtom, web3AuthIdTokenAtom } from 'store/web3-auth.store';
+import { TemporaryAnyT } from 'types/types';
 
 interface Web3AuthContextPropsI {
   web3Auth: Web3AuthNoModal | null;
@@ -201,6 +204,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
     const connectWeb3Auth = async () => {
       setWeb3AuthSigning(true);
+      let connectError = false;
 
       await web3Auth
         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
@@ -210,61 +214,75 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
             verifierIdField: 'sub',
           },
         })
-        .catch((error) => {
+        .catch((error: TemporaryAnyT) => {
           console.error(error);
+          connectError = true;
+          toast.error(
+            <ToastContent
+              title="Error222"
+              bodyLines={[
+                {
+                  label: 'Error222',
+                  value: error.message,
+                },
+              ]}
+            />
+          );
+          setWeb3AuthSigning(false);
         });
 
       console.log('info & pk', {
         web3AuthStatus: web3Auth?.status,
         web3AuthConnected: web3Auth?.connected,
       });
-      const info = await web3Auth.getUserInfo();
-      setUserInfo(info);
+      if (!connectError) {
+        const info = await web3Auth.getUserInfo();
+        setUserInfo(info);
 
-      const privateKey = await web3Auth.provider?.request({
-        method: 'eth_private_key',
-      });
-      setSocialPK(privateKey as string);
+        const privateKey = await web3Auth.provider?.request({
+          method: 'eth_private_key',
+        });
+        setSocialPK(privateKey as string);
 
-      console.log('connectAsync', {
-        web3AuthStatus: web3Auth?.status,
-        web3AuthConnected: web3Auth?.connected,
-      });
-      await connectAsync({
-        chainId: chain.id,
-        connector: Web3AuthConnector({
-          web3AuthInstance: web3Auth,
-          loginParams: {
-            loginProvider: 'jwt',
-            extraLoginOptions: {
-              id_token: web3AuthIdToken,
-              verifierIdField: 'sub',
-              // domain: '...', // example included this, but works without it?
+        console.log('connectAsync', {
+          web3AuthStatus: web3Auth?.status,
+          web3AuthConnected: web3Auth?.connected,
+        });
+        await connectAsync({
+          chainId: chain.id,
+          connector: Web3AuthConnector({
+            web3AuthInstance: web3Auth,
+            loginParams: {
+              loginProvider: 'jwt',
+              extraLoginOptions: {
+                id_token: web3AuthIdToken,
+                verifierIdField: 'sub',
+                // domain: '...', // example included this, but works without it?
+              },
             },
-          },
-          modalConfig: {
-            openloginAdapter: {
-              uxMode: 'popup',
-              loginConfig: {
-                jwt: {
-                  verifier,
-                  typeOfLogin: 'jwt',
-                  clientId,
+            modalConfig: {
+              openloginAdapter: {
+                uxMode: 'popup',
+                loginConfig: {
+                  jwt: {
+                    verifier,
+                    typeOfLogin: 'jwt',
+                    clientId,
+                  },
                 },
               },
             },
-          },
-        }),
-      });
+          }),
+        });
 
-      console.log('successCallback', {
-        web3AuthStatus: web3Auth?.status,
-        web3AuthConnected: web3Auth?.connected,
-      });
-      handleWeb3AuthSuccessConnect(info, privateKey as string);
-
-      setWeb3AuthSigning(false);
-      isConnectedRef.current = true;
+        console.log('successCallback', {
+          web3AuthStatus: web3Auth?.status,
+          web3AuthConnected: web3Auth?.connected,
+        });
+        handleWeb3AuthSuccessConnect(info, privateKey as string);
+        isConnectedRef.current = true;
+        setWeb3AuthSigning(false);
+      }
     };
 
     connectWeb3Auth().then();
@@ -303,6 +321,18 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       setWeb3AuthIdToken(idToken);
     } catch (error) {
       console.error(error);
+      toast.error(
+        <ToastContent
+          title="Error111"
+          bodyLines={[
+            {
+              label: 'Error111',
+              value: (error as TemporaryAnyT).message,
+            },
+          ]}
+        />
+      );
+      setWeb3AuthSigning(false);
     } finally {
       signInRef.current = false;
     }
