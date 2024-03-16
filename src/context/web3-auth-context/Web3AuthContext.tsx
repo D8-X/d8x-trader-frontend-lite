@@ -80,7 +80,7 @@ web3AuthInstance.configureAdapter(openloginAdapter);
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
-  const { connectAsync } = useConnect();
+  const { connect } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { isConnected } = useAccount();
 
@@ -153,11 +153,11 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     if (!loggedIn || web3AuthIdToken === '') {
       return;
     }
-    console.log('connectAsync', {
+    console.log('connect', {
       web3AuthStatus: web3AuthInstance?.status,
       web3AuthConnected: web3AuthInstance?.connected,
     });
-    connectAsync({
+    connect({
       chainId,
       connector: Web3AuthConnector({
         web3AuthInstance: web3AuthInstance,
@@ -181,8 +181,8 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           },
         },
       }),
-    }).then();
-  }, [chainId, loggedIn, web3AuthIdToken, connectAsync]);
+    });
+  }, [chainId, loggedIn, web3AuthIdToken, connect]);
 
   const connectWeb3Auth = useCallback(
     async (idToken: string) => {
