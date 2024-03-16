@@ -269,6 +269,11 @@ export interface PumpStationResponseI {
   boosts: BoostI[];
 }
 
+export interface PumpStationParamResponseI {
+  rndBoostMax: number;
+  volBoostMax: number;
+}
+
 export interface TableHeaderI<T> {
   label: ReactElement | string;
   align: AlignE;
