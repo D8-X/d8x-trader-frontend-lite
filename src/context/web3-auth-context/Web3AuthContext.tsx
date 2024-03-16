@@ -149,118 +149,8 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     [chainId]
   );
 
-  // // Connect Web3Auth to OPENLOGIN if we have token ID saved
-  // useEffect(() => {
-  //   console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN)', {
-  //     web3AuthStatus: web3AuthInstance?.status,
-  //     web3AuthConnected: web3AuthInstance?.connected,
-  //     loggedIn: loggedIn,
-  //     web3AuthIdToken,
-  //     isConnected,
-  //     web3AuthInstance,
-  //   });
-
-  //   if (
-  //     isConnectedRef.current ||
-  //     isInitializingRef.current ||
-  //     !web3AuthConfig.web3AuthClientId ||
-  //     !web3AuthIdToken ||
-  //     !web3AuthInstance ||
-  //     isConnected
-  //   ) {
-  //     return;
-  //   }
-
-  //   const connectWeb3Auth = async () => {
-  //     setWeb3AuthSigning(true);
-
-  //     if (!web3AuthInstance?.connected) {
-  //       await web3AuthInstance
-  //         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
-  //           loginProvider: 'jwt',
-  //           extraLoginOptions: {
-  //             id_token: web3AuthIdToken,
-  //             verifierIdField: 'sub',
-  //           },
-  //         })
-  //         .then((provider) => {
-  //           setProvider(provider);
-  //           setLoggedIn(true);
-  //         })
-  //         .catch((error) => {
-  //           console.error(error);
-  //           return null;
-  //         });
-  //     }
-
-  //     console.log('info & pk', {
-  //       web3AuthStatus: web3AuthInstance?.status,
-  //       web3AuthConnected: web3AuthInstance?.connected,
-  //     });
-  //     const info = await web3AuthInstance.getUserInfo();
-  //     setUserInfo(info);
-
-  //     const privateKey = await web3AuthInstance.provider?.request({
-  //       method: 'eth_private_key',
-  //     });
-  //     setSocialPK(privateKey as string);
-
-  //     console.log('connectAsync', {
-  //       web3AuthStatus: web3AuthInstance?.status,
-  //       web3AuthConnected: web3AuthInstance?.connected,
-  //     });
-  //     await connectAsync({
-  //       chainId,
-  //       connector: Web3AuthConnector({
-  //         web3AuthInstance: web3AuthInstance,
-  //         loginParams: {
-  //           loginProvider: 'jwt',
-  //           extraLoginOptions: {
-  //             id_token: web3AuthIdToken,
-  //             verifierIdField: 'sub',
-  //           },
-  //         },
-  //         modalConfig: {
-  //           openloginAdapter: {
-  //             uxMode: 'redirect',
-  //             loginConfig: {
-  //               jwt: {
-  //                 verifier,
-  //                 typeOfLogin: 'jwt',
-  //                 clientId,
-  //               },
-  //             },
-  //           },
-  //         },
-  //       }),
-  //     });
-
-  //     console.log('successCallback', {
-  //       web3AuthStatus: web3AuthInstance?.status,
-  //       web3AuthConnected: web3AuthInstance?.connected,
-  //     });
-  //     handleWeb3AuthSuccessConnect(info, privateKey as string);
-
-  //     setWeb3AuthSigning(false);
-  //     isConnectedRef.current = true;
-  //   };
-
-  //   connectWeb3Auth().then();
-  // }, [
-  //   chainId,
-  //   loggedIn,
-  //   web3AuthIdToken,
-  //   connectAsync,
-  //   handleWeb3AuthSuccessConnect,
-  //   setSocialPK,
-  //   setUserInfo,
-  //   isConnected,
-  // ]);
-
   useEffect(() => {
     if (!loggedIn || web3AuthIdToken === '') {
-      console.log('loggedIn', loggedIn);
-      console.log('web3AuthIdToken', web3AuthIdToken);
       return;
     }
     console.log('connectAsync', {
@@ -359,7 +249,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       const twitterProvider = new TwitterAuthProvider();
       console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
       const loginRes = await signInWithPopup(auth, twitterProvider);
-
       console.log('login details', loginRes);
       console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
       const idToken = await loginRes.user.getIdToken(true);
