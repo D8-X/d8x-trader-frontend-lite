@@ -101,13 +101,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const verifyRef = useRef(false);
 
   useEffect(() => {
-    if (
-      // !chain ||
-      // !web3AuthConfig.web3AuthClientId ||
-      isInitializingRef.current
-      // isInstanceCreatedRef.current
-      // isConnected
-    ) {
+    if (isInitializingRef.current || clientId === '') {
       return;
     }
 
@@ -128,7 +122,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     init()
       .then()
       .finally(() => {
-        // isInstanceCreatedRef.current = true;
         isInitializingRef.current = false;
       });
   }, []);
@@ -156,36 +149,162 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     [chainId]
   );
 
-  // Connect Web3Auth to OPENLOGIN if we have token ID saved
-  useEffect(() => {
-    console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN)', {
-      web3AuthStatus: web3AuthInstance?.status,
-      web3AuthConnected: web3AuthInstance?.connected,
-      web3AuthIdToken,
-      isConnected,
-      web3AuthInstance,
-    });
+  // // Connect Web3Auth to OPENLOGIN if we have token ID saved
+  // useEffect(() => {
+  //   console.log('connectTo(WALLET_ADAPTERS.OPENLOGIN)', {
+  //     web3AuthStatus: web3AuthInstance?.status,
+  //     web3AuthConnected: web3AuthInstance?.connected,
+  //     loggedIn: loggedIn,
+  //     web3AuthIdToken,
+  //     isConnected,
+  //     web3AuthInstance,
+  //   });
 
-    if (
-      isConnectedRef.current ||
-      // !chain ||
-      !web3AuthConfig.web3AuthClientId ||
-      !web3AuthIdToken ||
-      !web3AuthInstance ||
-      isConnected
-    ) {
+  //   if (
+  //     isConnectedRef.current ||
+  //     isInitializingRef.current ||
+  //     !web3AuthConfig.web3AuthClientId ||
+  //     !web3AuthIdToken ||
+  //     !web3AuthInstance ||
+  //     isConnected
+  //   ) {
+  //     return;
+  //   }
+
+  //   const connectWeb3Auth = async () => {
+  //     setWeb3AuthSigning(true);
+
+  //     if (!web3AuthInstance?.connected) {
+  //       await web3AuthInstance
+  //         .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+  //           loginProvider: 'jwt',
+  //           extraLoginOptions: {
+  //             id_token: web3AuthIdToken,
+  //             verifierIdField: 'sub',
+  //           },
+  //         })
+  //         .then((provider) => {
+  //           setProvider(provider);
+  //           setLoggedIn(true);
+  //         })
+  //         .catch((error) => {
+  //           console.error(error);
+  //           return null;
+  //         });
+  //     }
+
+  //     console.log('info & pk', {
+  //       web3AuthStatus: web3AuthInstance?.status,
+  //       web3AuthConnected: web3AuthInstance?.connected,
+  //     });
+  //     const info = await web3AuthInstance.getUserInfo();
+  //     setUserInfo(info);
+
+  //     const privateKey = await web3AuthInstance.provider?.request({
+  //       method: 'eth_private_key',
+  //     });
+  //     setSocialPK(privateKey as string);
+
+  //     console.log('connectAsync', {
+  //       web3AuthStatus: web3AuthInstance?.status,
+  //       web3AuthConnected: web3AuthInstance?.connected,
+  //     });
+  //     await connectAsync({
+  //       chainId,
+  //       connector: Web3AuthConnector({
+  //         web3AuthInstance: web3AuthInstance,
+  //         loginParams: {
+  //           loginProvider: 'jwt',
+  //           extraLoginOptions: {
+  //             id_token: web3AuthIdToken,
+  //             verifierIdField: 'sub',
+  //           },
+  //         },
+  //         modalConfig: {
+  //           openloginAdapter: {
+  //             uxMode: 'redirect',
+  //             loginConfig: {
+  //               jwt: {
+  //                 verifier,
+  //                 typeOfLogin: 'jwt',
+  //                 clientId,
+  //               },
+  //             },
+  //           },
+  //         },
+  //       }),
+  //     });
+
+  //     console.log('successCallback', {
+  //       web3AuthStatus: web3AuthInstance?.status,
+  //       web3AuthConnected: web3AuthInstance?.connected,
+  //     });
+  //     handleWeb3AuthSuccessConnect(info, privateKey as string);
+
+  //     setWeb3AuthSigning(false);
+  //     isConnectedRef.current = true;
+  //   };
+
+  //   connectWeb3Auth().then();
+  // }, [
+  //   chainId,
+  //   loggedIn,
+  //   web3AuthIdToken,
+  //   connectAsync,
+  //   handleWeb3AuthSuccessConnect,
+  //   setSocialPK,
+  //   setUserInfo,
+  //   isConnected,
+  // ]);
+
+  useEffect(() => {
+    if (!loggedIn || web3AuthIdToken === '') {
+      console.log('loggedIn', loggedIn);
+      console.log('web3AuthIdToken', web3AuthIdToken);
       return;
     }
+    console.log('connectAsync', {
+      web3AuthStatus: web3AuthInstance?.status,
+      web3AuthConnected: web3AuthInstance?.connected,
+    });
+    connectAsync({
+      chainId,
+      connector: Web3AuthConnector({
+        web3AuthInstance: web3AuthInstance,
+        loginParams: {
+          loginProvider: 'jwt',
+          extraLoginOptions: {
+            id_token: web3AuthIdToken,
+            verifierIdField: 'sub',
+          },
+        },
+        modalConfig: {
+          openloginAdapter: {
+            uxMode: 'redirect',
+            loginConfig: {
+              jwt: {
+                verifier,
+                typeOfLogin: 'jwt',
+                clientId,
+              },
+            },
+          },
+        },
+      }),
+    }).then();
+  }, [chainId, loggedIn, web3AuthIdToken, connectAsync]);
 
-    const connectWeb3Auth = async () => {
+  const connectWeb3Auth = useCallback(
+    async (idToken: string) => {
       setWeb3AuthSigning(true);
 
-      if (!loggedIn) {
+      if (!web3AuthInstance.connected) {
+        console.log({ web3authConnected: web3AuthInstance.connected, loggedIn: loggedIn });
         await web3AuthInstance
           .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
             loginProvider: 'jwt',
             extraLoginOptions: {
-              id_token: web3AuthIdToken,
+              id_token: idToken,
               verifierIdField: 'sub',
             },
           })
@@ -199,10 +318,10 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           });
       }
 
-      console.log('info & pk', {
-        web3AuthStatus: web3AuthInstance?.status,
-        web3AuthConnected: web3AuthInstance?.connected,
-      });
+      // console.log('info & pk', {
+      //   web3AuthStatus: web3AuthInstance?.status,
+      //   web3AuthConnected: web3AuthInstance?.connected,
+      // });
       const info = await web3AuthInstance.getUserInfo();
       setUserInfo(info);
 
@@ -210,58 +329,17 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         method: 'eth_private_key',
       });
       setSocialPK(privateKey as string);
-
-      console.log('connectAsync', {
-        web3AuthStatus: web3AuthInstance?.status,
-        web3AuthConnected: web3AuthInstance?.connected,
-      });
-      await connectAsync({
-        chainId,
-        connector: Web3AuthConnector({
-          web3AuthInstance: web3AuthInstance,
-          loginParams: {
-            loginProvider: 'jwt',
-            extraLoginOptions: {
-              id_token: web3AuthIdToken,
-              verifierIdField: 'sub',
-            },
-          },
-          modalConfig: {
-            openloginAdapter: {
-              uxMode: 'redirect',
-              loginConfig: {
-                jwt: {
-                  verifier,
-                  typeOfLogin: 'jwt',
-                  clientId,
-                },
-              },
-            },
-          },
-        }),
-      });
-
-      console.log('successCallback', {
-        web3AuthStatus: web3AuthInstance?.status,
-        web3AuthConnected: web3AuthInstance?.connected,
-      });
+      // console.log('successCallback', {
+      //   web3AuthStatus: web3AuthInstance?.status,
+      //   web3AuthConnected: web3AuthInstance?.connected,
+      // });
       handleWeb3AuthSuccessConnect(info, privateKey as string);
 
       setWeb3AuthSigning(false);
       isConnectedRef.current = true;
-    };
-
-    connectWeb3Auth().then();
-  }, [
-    chainId,
-    loggedIn,
-    web3AuthIdToken,
-    connectAsync,
-    handleWeb3AuthSuccessConnect,
-    setSocialPK,
-    setUserInfo,
-    isConnected,
-  ]);
+    },
+    [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
+  );
 
   const signInWithTwitter = useCallback(async () => {
     if (!auth || signInRef.current) {
@@ -286,21 +364,23 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
       const idToken = await loginRes.user.getIdToken(true);
       setWeb3AuthIdToken(idToken);
+      await connectWeb3Auth(idToken);
     } catch (error) {
       console.error(error);
     } finally {
       signInRef.current = false;
+      setWeb3AuthSigning(false);
     }
-  }, [setWeb3AuthIdToken, disconnectAsync]);
+  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
-      await disconnectAsync();
       setUserInfo(null);
       setSocialPK(undefined);
       setAccountModalOpen(false);
       setWeb3AuthIdToken('');
       isConnectedRef.current = false;
+      await disconnectAsync();
     }
   }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, isConnected, disconnectAsync]);
 
