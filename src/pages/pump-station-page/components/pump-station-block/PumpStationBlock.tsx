@@ -80,8 +80,6 @@ export const PumpStationBlock = memo(() => {
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
   const totalBoost = boostByChainId ? boostByChainId.nxtBoost + boostByChainId.nxtRndBoost : 0;
 
-  console.log(pumpStationParams?.rndBoostMax);
-
   return (
     <div className={styles.root}>
       <Typography variant="h6" sx={{ mb: 2 }}>

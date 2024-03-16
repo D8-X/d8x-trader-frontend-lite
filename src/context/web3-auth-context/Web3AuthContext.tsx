@@ -1,5 +1,5 @@
 import { getPublicKey } from '@noble/secp256k1';
-import { CHAIN_NAMESPACES, IProvider, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
+import { CHAIN_NAMESPACES, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter, OpenloginUserInfo } from '@web3auth/openlogin-adapter';
@@ -89,14 +89,10 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
   const [web3AuthIdToken, setWeb3AuthIdToken] = useAtom(web3AuthIdTokenAtom);
 
-  // const [web3Auth, setWeb3Auth] = useState<Web3AuthNoModal | null>(null);
   const [web3AuthSigning, setWeb3AuthSigning] = useState(false);
-
-  const [, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
   const isInitializingRef = useRef(false);
-  const isConnectedRef = useRef(false);
   const signInRef = useRef(false);
   const verifyRef = useRef(false);
 
@@ -110,7 +106,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     const init = async () => {
       try {
         await web3AuthInstance.init();
-        setProvider(web3AuthInstance.provider);
         if (web3AuthInstance.connected) {
           setLoggedIn(true);
         }
@@ -150,7 +145,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   );
 
   useEffect(() => {
-    if (!loggedIn || web3AuthIdToken === '') {
+    if (!loggedIn || web3AuthIdToken === '' || isConnected) {
       return;
     }
     console.log('connect', {
@@ -160,7 +155,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     connect({
       chainId,
       connector: Web3AuthConnector({
-        web3AuthInstance: web3AuthInstance,
+        web3AuthInstance,
         loginParams: {
           loginProvider: 'jwt',
           extraLoginOptions: {
@@ -182,12 +177,10 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         },
       }),
     });
-  }, [chainId, loggedIn, web3AuthIdToken, connect]);
+  }, [chainId, loggedIn, web3AuthIdToken, connect, isConnected]);
 
   const connectWeb3Auth = useCallback(
     async (idToken: string) => {
-      setWeb3AuthSigning(true);
-
       if (!web3AuthInstance.connected) {
         console.log({ web3authConnected: web3AuthInstance.connected, loggedIn: loggedIn });
         await web3AuthInstance
@@ -198,20 +191,16 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
               verifierIdField: 'sub',
             },
           })
-          .then((provider) => {
-            setProvider(provider);
+          .then(() => {
             setLoggedIn(true);
           })
           .catch((error) => {
             console.error(error);
+            setWeb3AuthSigning(false);
             return null;
           });
       }
 
-      // console.log('info & pk', {
-      //   web3AuthStatus: web3AuthInstance?.status,
-      //   web3AuthConnected: web3AuthInstance?.connected,
-      // });
       const info = await web3AuthInstance.getUserInfo();
       setUserInfo(info);
 
@@ -219,14 +208,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         method: 'eth_private_key',
       });
       setSocialPK(privateKey as string);
-      // console.log('successCallback', {
-      //   web3AuthStatus: web3AuthInstance?.status,
-      //   web3AuthConnected: web3AuthInstance?.connected,
-      // });
       handleWeb3AuthSuccessConnect(info, privateKey as string);
-
-      setWeb3AuthSigning(false);
-      isConnectedRef.current = true;
     },
     [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
   );
@@ -234,11 +216,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const signInWithTwitter = useCallback(async () => {
     if (!auth || signInRef.current) {
       console.log('auth not defined');
-      return;
-    }
-
-    if (!web3AuthInstance) {
-      console.log('web3Auth not initialized yet');
       return;
     }
 
@@ -258,7 +235,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       console.error(error);
     } finally {
       signInRef.current = false;
-      setWeb3AuthSigning(false);
     }
   }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
@@ -268,7 +244,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       setSocialPK(undefined);
       setAccountModalOpen(false);
       setWeb3AuthIdToken('');
-      isConnectedRef.current = false;
+      setLoggedIn(false);
       await disconnectAsync();
     }
   }, [setUserInfo, setSocialPK, setWeb3AuthIdToken, setAccountModalOpen, isConnected, disconnectAsync]);
