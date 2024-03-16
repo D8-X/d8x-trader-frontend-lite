@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -16,7 +16,7 @@ import styles from './PumpStationBlock.module.scss';
 
 const INTERVAL_FOR_DATA_POLLING = 10000; // Each 10 sec
 
-export const PumpStationBlock = () => {
+export const PumpStationBlock = memo(() => {
   const { t } = useTranslation();
 
   const [volumeValue, setVolumeValue] = useState<number>();
@@ -24,19 +24,28 @@ export const PumpStationBlock = () => {
   const [boosts, setBoosts] = useState<BoostI[]>([]);
   const [pumpStationParams, setPumpStationParams] = useState<PumpStationParamResponseI>();
 
+  const isDataRequestSent = useRef(false);
+  const isParamsRequestSent = useRef(false);
+
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
 
   const fetchData = useCallback(() => {
-    if (!isConnected || !address) {
+    if (!isConnected || !address || isDataRequestSent.current) {
       return;
     }
 
-    getPumpStationData(address).then((response) => {
-      setVolumeValue(response.crossChainScore);
-      setPumpValue(response.lastBoostedVol);
-      setBoosts(response.boosts);
-    });
+    isDataRequestSent.current = true;
+
+    getPumpStationData(address)
+      .then((response) => {
+        setVolumeValue(response.crossChainScore);
+        setPumpValue(response.lastBoostedVol);
+        setBoosts(response.boosts);
+      })
+      .finally(() => {
+        isDataRequestSent.current = false;
+      });
   }, [isConnected, address]);
 
   useEffect(() => {
@@ -57,7 +66,15 @@ export const PumpStationBlock = () => {
   }, [fetchData]);
 
   useEffect(() => {
-    getPumpStationParameters().then(setPumpStationParams);
+    if (!isParamsRequestSent.current) {
+      isParamsRequestSent.current = true;
+
+      getPumpStationParameters()
+        .then(setPumpStationParams)
+        .finally(() => {
+          isParamsRequestSent.current = false;
+        });
+    }
   }, []);
 
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);
@@ -119,4 +136,4 @@ export const PumpStationBlock = () => {
       </div>
     </div>
   );
-};
+});
