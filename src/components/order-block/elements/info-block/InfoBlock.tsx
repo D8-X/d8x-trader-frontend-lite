@@ -7,9 +7,10 @@ import { Box, Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 
 import { getSymbolPrice } from 'network/network';
-import { orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import { gasTokenSymbolAtom, poolTokenBalanceAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { OrderBlockE } from 'types/enums';
 
 import { orderSizeAtom } from '../order-size/store';
 import { leverageAtom } from '../leverage-selector/store';
@@ -26,8 +27,9 @@ export const InfoBlock = memo(() => {
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const leverage = useAtomValue(leverageAtom);
-  const slippage = useAtomValue(slippageSliderAtom);
   const orderType = useAtomValue(orderTypeAtom);
+  const slippage = useAtomValue(slippageSliderAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
 
   const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
 
@@ -84,10 +86,19 @@ export const InfoBlock = memo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
       return undefined;
     }
+
     const slippagePct = orderType === 'Market' ? slippage / 100 : 0;
-    const buffer = (1.001 + leverage * (0.009 + orderInfo?.tradingFee / 10000 + slippagePct)) * 1.01;
-    return (orderSize * buffer * selectedPerpetual.indexPrice) / (selectedPerpetual.collToQuoteIndexPrice * leverage);
-  }, [leverage, orderInfo, slippage, orderType, orderSize, selectedPerpetual]);
+    const orderFeeBps = orderInfo?.tradingFee || 0;
+    const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
+    const limitPrice = selectedPerpetual.indexPrice * (1 + (direction * slippagePct) / 100);
+
+    const buffer =
+      selectedPerpetual.indexPrice * (orderFeeBps / 10_000) +
+      selectedPerpetual.markPrice / leverage +
+      Math.max(direction * (limitPrice - selectedPerpetual.markPrice), 0);
+
+    return (orderSize * buffer) / selectedPerpetual.collToQuoteIndexPrice;
+  }, [leverage, orderInfo, slippage, orderBlock, orderType, orderSize, selectedPerpetual]);
 
   useEffect(() => {
     if (gasTokenSymbol && gasPriceETH?.formatted?.gasPrice) {
