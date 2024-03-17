@@ -32,6 +32,7 @@ import {
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  triggerBalancesUpdateAtom,
   triggerPositionsUpdateAtom,
 } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
@@ -75,6 +76,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const setPoolTokenBalance = useSetAtom(poolTokenBalanceAtom);
   const setGasTokenSymbol = useSetAtom(gasTokenSymbolAtom);
   const setPoolTokenDecimals = useSetAtom(poolTokenDecimalsAtom);
+  const triggerBalancesUpdate = useAtomValue(triggerBalancesUpdateAtom);
   const triggerPositionsUpdate = useAtomValue(triggerPositionsUpdateAtom);
   const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
@@ -210,12 +212,15 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     if (address && chain) {
       refetch().then().catch(console.error);
     }
-  }, [address, chain, refetch, triggerUserStatsUpdate]);
+  }, [address, chain, refetch, triggerUserStatsUpdate, triggerBalancesUpdate]);
 
   useEffect(() => {
     if (poolTokenBalance && selectedPool && chain && !isError) {
       setPoolTokenBalance(+formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
       setPoolTokenDecimals(poolTokenBalance[1]);
+    } else {
+      setPoolTokenBalance(undefined);
+      setPoolTokenDecimals(undefined);
     }
   }, [selectedPool, chain, poolTokenBalance, isError, setPoolTokenBalance, setPoolTokenDecimals]);
 

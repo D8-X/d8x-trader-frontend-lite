@@ -19,6 +19,7 @@ import {
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  triggerBalancesUpdateAtom,
   triggerPositionsUpdateAtom,
   webSocketReadyAtom,
 } from 'store/pools.store';
@@ -96,6 +97,7 @@ export function useWsMessageHandler() {
   const failOpenOrder = useSetAtom(failOrderAtom);
   const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
   const setTriggerPositionsUpdate = useSetAtom(triggerPositionsUpdateAtom);
+  const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
   const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
@@ -202,6 +204,7 @@ export function useWsMessageHandler() {
             if (data?.length > 0) {
               data.map(setOpenOrders);
             }
+            setTriggerBalancesUpdate((prevValue) => !prevValue);
           })
           .catch(console.error);
       } else if (isPerpetualLimitOrderCancelledMessage(parsedMessage)) {
@@ -256,6 +259,7 @@ export function useWsMessageHandler() {
       updatePerpetualStats,
       setWebSocketReady,
       setTriggerPositionsUpdate,
+      setTriggerBalancesUpdate,
       setOpenOrders,
       removeOpenOrder,
       failOpenOrder,

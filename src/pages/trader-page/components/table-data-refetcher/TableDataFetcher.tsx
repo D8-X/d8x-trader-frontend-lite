@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -11,6 +11,7 @@ import {
   openOrdersAtom,
   positionsAtom,
   traderAPIAtom,
+  triggerBalancesUpdateAtom,
 } from 'store/pools.store';
 import { PerpetualOpenOrdersI } from 'types/types';
 import { OrderStatus } from '@d8x/perpetuals-sdk';
@@ -19,7 +20,7 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { useTranslation } from 'react-i18next';
 
 const MAX_FETCH_COUNT = 20;
-const MAX_FETCH_TIME = 40 * 1000;
+const MAX_FETCH_TIME = 40_000; // 40 sec
 const INTERVAL_FOR_TICKER_FAST = 2000;
 const INTERVAL_FOR_TICKER_SLOW = 120000;
 
@@ -28,18 +29,17 @@ export const TableDataFetcher = memo(() => {
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const [latestOrderSentTimestamp] = useAtom(latestOrderSentTimestampAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const latestOrderSentTimestamp = useAtomValue(latestOrderSentTimestampAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
   const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
-
+  const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const setPositions = useSetAtom(positionsAtom);
 
   const [fastTicker, setFastTicker] = useState(0);
   const [slowTicker, setSlowTicker] = useState(0);
-
   const [lastFetch, setLastFetch] = useState(0);
 
   useEffect(() => {
@@ -121,6 +121,7 @@ export const TableDataFetcher = memo(() => {
     }
     if ((fastTicker > 0 || slowTicker > 0) && chainId && address) {
       setLastFetch(Date.now());
+      setTriggerBalancesUpdate((prevValue) => !prevValue);
       getOpenOrders(chainId, traderAPI, address)
         .then(({ data: d }) => {
           handleRemovedOrders(d).then();
@@ -146,6 +147,7 @@ export const TableDataFetcher = memo(() => {
     address,
     lastFetch,
     handleRemovedOrders,
+    setTriggerBalancesUpdate,
     setPositions,
     setOpenOrders,
     clearOpenOrders,

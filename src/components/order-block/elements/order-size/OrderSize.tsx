@@ -1,5 +1,5 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
@@ -12,7 +12,13 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { getMaxOrderSizeForTrader } from 'network/network';
 import { defaultCurrencyAtom } from 'store/app.store';
 import { orderBlockAtom } from 'store/order-block.store';
-import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
+import {
+  perpetualStaticInfoAtom,
+  selectedPerpetualAtom,
+  selectedPoolAtom,
+  traderAPIAtom,
+  triggerBalancesUpdateAtom,
+} from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
@@ -42,18 +48,19 @@ export const OrderSize = memo(() => {
 
   const [orderSize, setOrderSizeDirect] = useAtom(orderSizeAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
-  const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [orderBlock] = useAtom(orderBlockAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
-  const [defaultCurrency] = useAtom(defaultCurrencyAtom);
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
+  const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
+  const defaultCurrency = useAtomValue(defaultCurrencyAtom);
+  const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
+  const triggerBalancesUpdate = useAtomValue(triggerBalancesUpdateAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
-  const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
 
   const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
 
@@ -157,7 +164,16 @@ export const OrderSize = memo(() => {
         setMaxOrderSize(result !== undefined ? result * 0.995 : 0);
       });
     }
-  }, [isSDKConnected, chainId, address, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]);
+  }, [
+    isSDKConnected,
+    chainId,
+    address,
+    perpetualStaticInfo,
+    orderBlock,
+    fetchMaxOrderSize,
+    setMaxOrderSize,
+    triggerBalancesUpdate,
+  ]);
 
   const handleCurrencyChangeToggle = () => {
     setOpenCurrencySelector((prevOpen) => !prevOpen);

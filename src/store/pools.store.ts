@@ -38,6 +38,7 @@ export const poolTokenDecimalsAtom = atom<number | undefined>(undefined);
 export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);
 export const triggerPositionsUpdateAtom = atom(true);
+export const triggerBalancesUpdateAtom = atom(true);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
 const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});

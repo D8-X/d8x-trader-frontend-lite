@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
 import { Slider } from '@mui/material';
@@ -14,7 +14,7 @@ const valueLabelFormat = (value: number) => `${Math.round(value)}%`;
 
 export const OrderSizeSlider = () => {
   const [sliderPercent, setSizeFromSlider] = useAtom(orderSizeSliderAtom);
-  const [maxOrderSize] = useAtom(maxOrderSizeAtom);
+  const maxOrderSize = useAtomValue(maxOrderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
 
