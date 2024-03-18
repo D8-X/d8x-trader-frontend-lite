@@ -8,9 +8,15 @@ import Tooltip from '@mui/material/Tooltip';
 
 import { getSymbolPrice } from 'network/network';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
-import { gasTokenSymbolAtom, poolTokenBalanceAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
+import {
+  gasTokenSymbolAtom,
+  poolTokenBalanceAtom,
+  positionsAtom,
+  selectedPerpetualAtom,
+  selectedPoolAtom,
+} from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { OrderBlockE } from 'types/enums';
+import { OrderBlockE, OrderSideE } from 'types/enums';
 
 import { orderSizeAtom } from '../order-size/store';
 import { leverageAtom } from '../leverage-selector/store';
@@ -30,6 +36,7 @@ export const InfoBlock = memo(() => {
   const orderType = useAtomValue(orderTypeAtom);
   const slippage = useAtomValue(slippageSliderAtom);
   const orderBlock = useAtomValue(orderBlockAtom);
+  const positions = useAtomValue(positionsAtom);
 
   const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
 
@@ -87,6 +94,23 @@ export const InfoBlock = memo(() => {
       return undefined;
     }
 
+    if (!poolTokenBalance || !selectedPool || !selectedPerpetual) {
+      return;
+    }
+
+    let collateralCC = 0;
+    const selectedPerpetualSymbol = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+    const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
+    const orderBlockSide = orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell;
+    if (openPosition && openPosition.side !== orderBlockSide) {
+      collateralCC = openPosition.collateralCC + openPosition.unrealizedPnlQuoteCCY;
+    }
+
+    let orderSizeNet = orderSize;
+    if (openPosition && openPosition.side !== orderBlockSide) {
+      orderSizeNet = orderSize - openPosition.positionNotionalBaseCCY;
+    }
+
     const slippagePct = orderType === 'Market' ? slippage / 100 : 0;
     const orderFeeBps = orderInfo?.tradingFee || 0;
     const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
@@ -97,8 +121,19 @@ export const InfoBlock = memo(() => {
       selectedPerpetual.markPrice / leverage +
       Math.max(direction * (limitPrice - selectedPerpetual.markPrice), 0);
 
-    return (orderSize * buffer) / selectedPerpetual.collToQuoteIndexPrice;
-  }, [leverage, orderInfo, slippage, orderBlock, orderType, orderSize, selectedPerpetual]);
+    return Math.max((orderSizeNet * buffer) / selectedPerpetual.collToQuoteIndexPrice - collateralCC, 0);
+  }, [
+    leverage,
+    orderInfo,
+    slippage,
+    orderBlock,
+    orderType,
+    orderSize,
+    poolTokenBalance,
+    positions,
+    selectedPerpetual,
+    selectedPool,
+  ]);
 
   useEffect(() => {
     if (gasTokenSymbol && gasPriceETH?.formatted?.gasPrice) {
