@@ -375,6 +375,10 @@
         "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren, der von 1x bis {{volBoostMax}}x reicht. Je mehr du handelst, desto höher dein Boost.",
         "modal-text3": "Fortune Boost - Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0x auf einen unglaublichen {{rndBoostMax}}x ansteigen kann!"
       },
+      "boost": {
+        "volume": "Volume boost:",
+        "random": "Random boost:"
+      },
       "last-pump": {
         "title": "Letzer PUMP",
         "modal-text": "Dein letzer Trade/deine letzte Liquiditätsbereitstellung hat GEPUMPES Volume um diesen Betrag erhöht. LFG!"

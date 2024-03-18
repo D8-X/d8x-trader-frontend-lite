@@ -375,6 +375,10 @@
         "modal-text2": "Volume Boost - Vos transactions au cours des 7 derniers jours pourraient vous rapporter un boost du volume allant de 1x à {{volBoostMax}}x. Plus vous échangez, plus votre boost potentiel est élevé!",
         "modal-text3": "Fortune Boost - Chaque transaction vous donne une chance de bénéficier du Fortune Boost - un bonus qui peut monter en flèche de 0x jusqu'à un incroyable {{rndBoostMax}}x!"
       },
+      "boost": {
+        "volume": "Volume boost:",
+        "random": "Random boost:"
+      },
       "last-pump": {
         "title": "Dernière POMPE",
         "modal-text": "Le montant que le volume POMPÉ a augmenté àpres votre dernière transaction. LFG!"

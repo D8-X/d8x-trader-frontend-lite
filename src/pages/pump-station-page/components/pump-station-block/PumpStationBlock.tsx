@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
+import { Bolt, Casino } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 
 import D8XLogoWithText from 'assets/logos/d8xLogoWithText.svg?react';
@@ -131,6 +132,21 @@ export const PumpStationBlock = memo(() => {
       </div>
       <div className={styles.meterHolder}>
         <PumpOMeter totalBoost={totalBoost} />
+      </div>
+      <div className={styles.boostsData}>
+        <div className={styles.boostLine}>
+          <Bolt fontSize="small" />
+          <span>
+            {t('pages.pump-station.boost.volume')} {boostByChainId?.nxtBoost ? `${boostByChainId.nxtBoost}x` : '0'}
+          </span>
+        </div>
+        <div className={styles.boostLine}>
+          <Casino fontSize="small" />
+          <span>
+            {t('pages.pump-station.boost.random')}{' '}
+            {boostByChainId?.nxtRndBoost ? `${boostByChainId.nxtRndBoost}x` : '0'}
+          </span>
+        </div>
       </div>
     </div>
   );

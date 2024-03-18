@@ -46,3 +46,13 @@
   max-width: 300px;
   width: 100%;
 }
+
+.boostsData {
+  margin-top: $d8x-spacing * 4;
+
+  .boostLine {
+    display: flex;
+    gap: $d8x-spacing * 2;
+    align-items: center;
+  }
+}

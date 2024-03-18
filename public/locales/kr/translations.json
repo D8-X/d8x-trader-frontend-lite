@@ -358,14 +358,24 @@
       }
     },
     "pump-station": {
-      "title": "Trade to PUMP your $D8X Airdrop Bag",
+      "title": "Trade and provide liquidity to PUMP your $D8X Airdrop Bag",
       "pumped-volume": {
         "title": "PUMPED Volume",
-        "modal-text": "PUMPED Volume Description"
+        "modal-text": "The $D8X Airdrop is calculated based on PUMPED Volume. For every trade or liquidity provision we compute volume x boost. PUMPED Volume is the sum of it over all your trades and liquidity provisions."
       },
       "pump-o-meter": {
         "title": "PUMP-O-METER",
-        "modal-text": "PUMP-O-METER Description"
+        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
+        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
+        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
+      },
+      "boost": {
+        "volume": "Volume boost:",
+        "random": "Random boost:"
+      },
+      "last-pump": {
+        "title": "Last PUMP",
+        "modal-text": "The amount PUMPED Volume increased from your last trade / your last liquidity provision. LFG!"
       }
     },
     "refer": {
