@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
+import { CopyInput } from 'components/copy-input/CopyInput';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { extractPKModalOpenAtom } from 'store/global-modals.store';
 import { socialPKAtom } from 'store/web3-auth.store';
 
 import styles from './ExtractPKModal.module.scss';
-import { CopyInput } from '../copy-input/CopyInput';
 
 export const ExtractPKModal = () => {
   const { t } = useTranslation();

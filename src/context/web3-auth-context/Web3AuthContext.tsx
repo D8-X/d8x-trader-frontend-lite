@@ -1,8 +1,7 @@
-import { getPublicKey } from '@noble/secp256k1';
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
-import { OpenloginAdapter, OpenloginUserInfo } from '@web3auth/openlogin-adapter';
+import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 import { signInWithPopup, TwitterAuthProvider } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
@@ -16,13 +15,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import { bytesToHex, numberToHex } from 'viem';
+import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
-import { postSocialVerify } from 'network/referral';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { socialPKAtom, socialUserInfoAtom, web3AuthIdTokenAtom } from 'store/web3-auth.store';
 
@@ -31,6 +29,7 @@ interface Web3AuthContextPropsI {
   disconnect: () => void;
   signInWithTwitter: () => void;
   isConnecting: boolean;
+  isConnected: boolean;
 }
 
 const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefined);
@@ -94,7 +93,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
   const isInitializingRef = useRef(false);
   const signInRef = useRef(false);
-  const verifyRef = useRef(false);
+  // const verifyRef = useRef(false);
 
   useEffect(() => {
     if (isInitializingRef.current || clientId === '') {
@@ -121,6 +120,8 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       });
   }, []);
 
+  // TODO: VOV: Need to find a better way to send info about SocialVerify
+  /*
   const handleWeb3AuthSuccessConnect = useCallback(
     (userInfo: Partial<OpenloginUserInfo>, privateKey: string) => {
       const verify = async () => {
@@ -143,6 +144,27 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     },
     [chainId]
   );
+   */
+
+  const applyUserInfo = useCallback(async () => {
+    if (web3AuthInstance.connected) {
+      const info = await web3AuthInstance.getUserInfo();
+      setUserInfo(info);
+    } else {
+      setUserInfo(null);
+    }
+  }, [setUserInfo]);
+
+  const applySocialPK = useCallback(async () => {
+    if (web3AuthInstance.connected) {
+      const privateKey = (await web3AuthInstance.provider?.request({
+        method: 'eth_private_key',
+      })) as string;
+      setSocialPK(privateKey);
+    } else {
+      setSocialPK(null);
+    }
+  }, [setSocialPK]);
 
   useEffect(() => {
     if (!loggedIn || web3AuthIdToken === '' || isConnected) {
@@ -177,12 +199,14 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         },
       }),
     });
-  }, [chainId, loggedIn, web3AuthIdToken, connect, isConnected]);
+
+    applyUserInfo().then();
+    applySocialPK().then();
+  }, [chainId, loggedIn, web3AuthIdToken, connect, isConnected, applyUserInfo, applySocialPK]);
 
   const connectWeb3Auth = useCallback(
     async (idToken: string) => {
       if (!web3AuthInstance.connected) {
-        console.log({ web3authConnected: web3AuthInstance.connected, loggedIn: loggedIn });
         await web3AuthInstance
           .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
             loginProvider: 'jwt',
@@ -201,16 +225,10 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
           });
       }
 
-      const info = await web3AuthInstance.getUserInfo();
-      setUserInfo(info);
-
-      const privateKey = await web3AuthInstance.provider?.request({
-        method: 'eth_private_key',
-      });
-      setSocialPK(privateKey as string);
-      handleWeb3AuthSuccessConnect(info, privateKey as string);
+      // handleWeb3AuthSuccessConnect(info, privateKey as string);
     },
-    [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
+    // [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
+    []
   );
 
   const signInWithTwitter = useCallback(async () => {
@@ -241,7 +259,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
       setUserInfo(null);
-      setSocialPK(undefined);
+      setSocialPK(null);
       setAccountModalOpen(false);
       setWeb3AuthIdToken('');
       setLoggedIn(false);
@@ -256,6 +274,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         signInWithTwitter,
         disconnect: handleDisconnect,
         isConnecting: web3AuthSigning,
+        isConnected: web3AuthInstance.connected,
       }}
     >
       {children}
