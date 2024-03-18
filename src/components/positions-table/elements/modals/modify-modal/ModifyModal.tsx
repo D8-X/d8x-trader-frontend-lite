@@ -281,7 +281,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   }, [modifyType, addCollateral, removeCollateral]);
 
   useEffect(() => {
-    if (!address || !selectedPosition || !chainId || isAPIBusyRef.current) {
+    if (!address || !selectedPosition || !chainId || isAPIBusy) {
       return;
     }
 
@@ -294,7 +294,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     } else {
       setMaxCollateral(undefined);
     }
-  }, [modifyType, chainId, address, selectedPosition, setAPIBusy, traderAPI]);
+  }, [modifyType, chainId, address, selectedPosition, setAPIBusy, traderAPI, isAPIBusy]);
 
   const parsedSymbol = useMemo(() => {
     if (selectedPosition) {
