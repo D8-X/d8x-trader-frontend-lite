@@ -206,6 +206,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         traderAPI,
         tradingClient,
         toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
+        nonceShift: 1,
         callback: () => {
           setLatestOrderSentTimestamp(Date.now());
         },
