@@ -249,7 +249,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
       .then((data) => {
         setAPIBusy(false);
         setNewPositionRisk(data.data.newPositionRisk);
-        setMaxCollateral(data.data.availableMargin);
+        setMaxCollateral(data.data.availableMargin < 0 ? 0 : data.data.availableMargin * 0.99);
       })
       .catch((err) => {
         console.error(err);
@@ -288,7 +288,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     if (modifyType === ModifyTypeE.Remove) {
       setAPIBusy(true);
       getAvailableMargin(chainId, traderAPI, selectedPosition.symbol, address).then(({ data }) => {
-        setMaxCollateral(data.amount < 0 ? 0 : data.amount);
+        setMaxCollateral(data.amount < 0 ? 0 : data.amount * 0.99);
         setAPIBusy(false);
       });
     } else {
@@ -526,7 +526,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                   </FormControl>
                 }
               />
-              {!!maxCollateral && (
+              {maxCollateral !== null && maxCollateral !== undefined && (
                 <SidesRow
                   leftSide=" "
                   rightSide={
