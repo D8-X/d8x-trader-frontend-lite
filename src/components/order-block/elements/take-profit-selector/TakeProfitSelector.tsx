@@ -125,7 +125,7 @@ export const TakeProfitSelector = memo(() => {
 
   const translationMap: Record<TakeProfitE, string> = {
     [TakeProfitE.None]: t('pages.trade.order-block.take-profit.none'),
-    [TakeProfitE['25%']]: '35%',
+    [TakeProfitE['1%']]: '1%',
     [TakeProfitE['50%']]: '50%',
     [TakeProfitE['100%']]: '100%',
     [TakeProfitE['500%']]: '500%',
