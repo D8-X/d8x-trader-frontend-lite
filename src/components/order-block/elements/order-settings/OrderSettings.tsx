@@ -47,7 +47,8 @@ function valueLabelFormat(value: number) {
 }
 
 const MIN_SLIPPAGE = 0.5;
-const MAX_SLIPPAGE = 5;
+const MAX_SLIPPAGE = 100;
+const MAX_SLIPPAGE_SLIDER = 5;
 
 export const OrderSettings = memo(() => {
   const { t } = useTranslation();
@@ -171,7 +172,7 @@ export const OrderSettings = memo(() => {
               aria-label="Slippage tolerance values"
               value={updatedSlippage}
               min={MIN_SLIPPAGE}
-              max={MAX_SLIPPAGE}
+              max={MAX_SLIPPAGE_SLIDER}
               step={0.5}
               getAriaValueText={valueLabelFormat}
               valueLabelFormat={valueLabelFormat}
