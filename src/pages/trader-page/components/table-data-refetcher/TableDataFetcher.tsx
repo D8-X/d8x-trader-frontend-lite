@@ -7,7 +7,6 @@ import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import {
   clearOpenOrdersAtom,
   executeOrderAtom,
-  failOrderIdAtom,
   openOrdersAtom,
   positionsAtom,
   traderAPIAtom,
@@ -33,7 +32,6 @@ export const TableDataFetcher = memo(() => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
-  const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const setPositions = useSetAtom(positionsAtom);
@@ -95,24 +93,10 @@ export const TableDataFetcher = memo(() => {
               />
             );
           }
-          if (orderStatus === OrderStatus.CANCELED && !failedOrderIds.has(order.id)) {
-            setOrderIdFailed(order.id);
-            toast.error(
-              <ToastContent
-                title={t('pages.trade.positions-table.toasts.order-failed.title')}
-                bodyLines={[
-                  {
-                    label: t('pages.trade.positions-table.toasts.order-failed.body1'),
-                    value: order.symbol,
-                  },
-                ]}
-              />
-            );
-          }
         }
       }
     },
-    [executedOrders, failedOrderIds, t, openOrders, traderAPI, setOrderExecuted, setOrderIdFailed]
+    [executedOrders, t, openOrders, traderAPI, setOrderExecuted]
   );
 
   useEffect(() => {
