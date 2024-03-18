@@ -376,8 +376,8 @@
         "modal-text3": "Fortune Boost - Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0x auf einen unglaublichen {{rndBoostMax}}x ansteigen kann!"
       },
       "boost": {
-        "volume": "Volume boost:",
-        "random": "Random boost:"
+        "volume": "Volumen Boost:",
+        "random": "Fortune Boost:"
       },
       "last-pump": {
         "title": "Letzer PUMP",

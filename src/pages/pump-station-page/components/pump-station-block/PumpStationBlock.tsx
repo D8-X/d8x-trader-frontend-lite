@@ -135,13 +135,13 @@ export const PumpStationBlock = memo(() => {
       </div>
       <div className={styles.boostsData}>
         <div className={styles.boostLine}>
-          <Bolt fontSize="small" />
+          <Bolt fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
           <span>
             {t('pages.pump-station.boost.volume')} {boostByChainId?.nxtBoost ? `${boostByChainId.nxtBoost}x` : '0'}
           </span>
         </div>
         <div className={styles.boostLine}>
-          <Casino fontSize="small" />
+          <Casino fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
           <span>
             {t('pages.pump-station.boost.random')}{' '}
             {boostByChainId?.nxtRndBoost ? `${boostByChainId.nxtRndBoost}x` : '0'}

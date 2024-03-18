@@ -376,8 +376,8 @@
         "modal-text3": "幸运加速 - 每一笔交易都给你一个获得幸运加速的机会——一个奖励，可以从0倍一直飙升到令人难以置信的100倍！"
       },
       "boost": {
-        "volume": "Volume boost:",
-        "random": "Random boost:"
+        "volume": "交易量加速:",
+        "random": "幸运加速:"
       },
       "last-pump": {
         "title": "最后一次加速",

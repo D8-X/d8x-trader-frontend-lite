@@ -376,8 +376,8 @@
         "modal-text3": "Fortune Boost - Chaque transaction vous donne une chance de bénéficier du Fortune Boost - un bonus qui peut monter en flèche de 0x jusqu'à un incroyable {{rndBoostMax}}x!"
       },
       "boost": {
-        "volume": "Volume boost:",
-        "random": "Random boost:"
+        "volume": "Volume Boost:",
+        "random": "Fortune Boost:"
       },
       "last-pump": {
         "title": "Dernière POMPE",
