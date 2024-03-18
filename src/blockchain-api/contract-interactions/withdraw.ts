@@ -3,6 +3,7 @@ import type { Address, WalletClient } from 'viem';
 
 import type { CollateralChangeResponseI } from 'types/types';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { estimateContractGas } from 'viem/actions';
 
 export async function withdraw(
   walletClient: WalletClient,
@@ -13,17 +14,17 @@ export async function withdraw(
     throw new Error('account not connected');
   }
   const gasPrice = await getGasPrice(walletClient.chain?.id);
-  return walletClient
-    .writeContract({
-      chain: walletClient.chain,
-      address: data.proxyAddr as Address,
-      abi: PROXY_ABI,
-      functionName: 'withdraw',
-      args: [data.perpId, traderAddr, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
-      // gas: BigInt(1_000_000),
-      gasPrice: gasPrice,
-      value: BigInt(data.priceUpdate.updateFee),
-      account: walletClient.account,
-    })
-    .then((tx) => ({ hash: tx }));
+  const params = {
+    chain: walletClient.chain,
+    address: data.proxyAddr as Address,
+    abi: PROXY_ABI,
+    functionName: 'withdraw',
+    args: [data.perpId, traderAddr, +data.amountHex, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
+    gasPrice: gasPrice,
+    value: BigInt(data.priceUpdate.updateFee),
+    account: walletClient.account,
+  };
+  const gasLimit = await estimateContractGas(walletClient, params);
+  console.log('gas limit', gasLimit);
+  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

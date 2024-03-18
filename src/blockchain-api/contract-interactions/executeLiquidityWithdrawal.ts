@@ -1,6 +1,7 @@
 import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import type { Account, Address, Chain, Transport, WalletClient } from 'viem';
+import { estimateContractGas } from 'viem/actions';
 
 export async function executeLiquidityWithdrawal(
   walletClient: WalletClient<Transport, Chain, Account>,
@@ -14,15 +15,15 @@ export async function executeLiquidityWithdrawal(
     throw new Error('undefined call parameters');
   }
   const gasPrice = await getGasPrice(walletClient.chain?.id);
-  return walletClient
-    .writeContract({
-      chain: walletClient.chain,
-      address: traderAPI.getProxyAddress() as Address,
-      abi: PROXY_ABI,
-      functionName: 'executeLiquidityWithdrawal',
-      args: [poolId, walletClient.account?.address],
-      gasPrice: gasPrice,
-      account: account,
-    })
-    .then((tx) => ({ hash: tx }));
+  const params = {
+    chain: walletClient.chain,
+    address: traderAPI.getProxyAddress() as Address,
+    abi: PROXY_ABI,
+    functionName: 'executeLiquidityWithdrawal',
+    args: [poolId, walletClient.account?.address],
+    gasPrice: gasPrice,
+    account: account,
+  };
+  const gasLimit = await estimateContractGas(walletClient, params);
+  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

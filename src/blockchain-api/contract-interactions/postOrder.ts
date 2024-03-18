@@ -2,6 +2,7 @@ import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { Address, WalletClient } from 'viem';
 import { type OrderDigestI } from 'types/types';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { estimateContractGas } from 'viem/actions';
 
 export async function postOrder(
   walletClient: WalletClient,
@@ -23,15 +24,15 @@ export async function postOrder(
     throw new Error('account not connected');
   }
   const gasPrice = await getGasPrice(walletClient.chain?.id);
-  return walletClient
-    .writeContract({
-      chain: walletClient.chain,
-      address: data.OrderBookAddr as Address,
-      abi: LOB_ABI,
-      functionName: 'postOrders',
-      args: [orders, signatures],
-      account: walletClient.account,
-      gasPrice: gasPrice,
-    })
-    .then((tx) => ({ hash: tx }));
+  const params = {
+    chain: walletClient.chain,
+    address: data.OrderBookAddr as Address,
+    abi: LOB_ABI,
+    functionName: 'postOrders',
+    args: [orders, signatures],
+    account: walletClient.account,
+    gasPrice: gasPrice,
+  };
+  const gasLimit = await estimateContractGas(walletClient, params);
+  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }
