@@ -14,6 +14,7 @@ import { setDelegate } from 'blockchain-api/contract-interactions/setDelegate';
 import { generateDelegate } from 'blockchain-api/generateDelegate';
 import { getStorageKey } from 'blockchain-api/getStorageKey';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getDelegateKey } from 'helpers/getDelegateKey';
@@ -288,57 +289,59 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
         </Box>
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
-            {!isLoading && isDelegated === false && (
-              <Button
-                variant="primary"
-                className={styles.actionButton}
-                onClick={handleCreate}
-                disabled={isActionLoading}
-              >
-                {t(`common.settings.one-click-modal.create-delegate.create`)}
-              </Button>
-            )}
-            {!isLoading && isDelegated === true && (
-              <>
-                {activatedOneClickTrading ? (
-                  <Button
-                    variant="primary"
-                    className={styles.actionButton}
-                    onClick={() => setActivatedOneClickTrading(false)}
-                    disabled={isActionLoading}
-                  >
-                    {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    className={styles.actionButton}
-                    onClick={handleActivate}
-                    disabled={isActionLoading}
-                  >
-                    {t(`common.settings.one-click-modal.manage-delegate.activate`)}
-                  </Button>
-                )}
+            <GasDepositChecker>
+              {!isLoading && isDelegated === false && (
                 <Button
                   variant="primary"
                   className={styles.actionButton}
-                  onClick={handleRemove}
+                  onClick={handleCreate}
                   disabled={isActionLoading}
                 >
-                  {t(`common.settings.one-click-modal.manage-delegate.remove`)}
+                  {t(`common.settings.one-click-modal.create-delegate.create`)}
                 </Button>
-                {activatedOneClickTrading && (
+              )}
+              {!isLoading && isDelegated === true && (
+                <>
+                  {activatedOneClickTrading ? (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={() => setActivatedOneClickTrading(false)}
+                      disabled={isActionLoading}
+                    >
+                      {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={handleActivate}
+                      disabled={isActionLoading}
+                    >
+                      {t(`common.settings.one-click-modal.manage-delegate.activate`)}
+                    </Button>
+                  )}
                   <Button
                     variant="primary"
                     className={styles.actionButton}
-                    onClick={handleFund}
+                    onClick={handleRemove}
                     disabled={isActionLoading}
                   >
-                    {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                    {t(`common.settings.one-click-modal.manage-delegate.remove`)}
                   </Button>
-                )}
-              </>
-            )}
+                  {activatedOneClickTrading && (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={handleFund}
+                      disabled={isActionLoading}
+                    >
+                      {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                    </Button>
+                  )}
+                </>
+              )}
+            </GasDepositChecker>
           </Box>
         </Box>
         <Separator />

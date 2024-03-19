@@ -7,10 +7,11 @@ import { type Address } from 'viem';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
-import { HashZero } from 'app-constants';
+import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -287,9 +288,11 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={requestSent}>
-          {t('pages.trade.positions-table.modify-modal.confirm')}
-        </Button>
+        <GasDepositChecker>
+          <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={requestSent}>
+            {t('pages.trade.positions-table.modify-modal.confirm')}
+          </Button>
+        </GasDepositChecker>
       </DialogActions>
     </Dialog>
   );

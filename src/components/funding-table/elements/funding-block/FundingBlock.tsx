@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
-import { DATETIME_FORMAT } from 'app-constants';
+import { DATETIME_FORMAT } from 'appConstants';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import type { FundingWithSymbolDataI, TableHeaderI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';

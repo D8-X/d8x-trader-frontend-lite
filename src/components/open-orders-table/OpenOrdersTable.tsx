@@ -21,9 +21,10 @@ import {
   TableRow,
 } from '@mui/material';
 
-import { HashZero } from 'app-constants';
+import { HashZero } from 'appConstants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
 import { FilterModal } from 'components/table/filter-modal/FilterModal';
 import { useFilter } from 'components/table/filter-modal/useFilter';
@@ -38,7 +39,7 @@ import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom }
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
-import { type OrderWithIdI, type TableHeaderI } from 'types/types';
+import { type OrderWithIdI, type TableHeaderI, TemporaryAnyT } from 'types/types';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
@@ -149,52 +150,51 @@ export const OpenOrdersTable = memo(() => {
     if (!receipt || !isSuccess) {
       return;
     }
-    {
-      const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
-      if (cancelEventIdx >= 0) {
-        toast.success(
-          <ToastContent
-            title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
-                value: '',
-              },
-              {
-                label: '',
-                value: (
-                  <a
-                    href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={styles.shareLink}
-                  >
-                    {txHash}
-                  </a>
-                ),
-              },
-            ]}
-          />
-        );
-      } else {
-        const execFailedIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_FAIL);
-        const { args } = decodeEventLog({
-          abi: LOB_ABI as readonly string[],
-          data: receipt.logs[execFailedIdx].data,
-          topics: receipt.logs[execFailedIdx].topics,
-        });
-        toast.error(
-          <ToastContent
-            title={t('pages.trade.orders-table.toasts.tx-failed.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.orders-table.toasts.tx-failed.body'),
-                value: (args as unknown as { reason: string }).reason,
-              },
-            ]}
-          />
-        );
-      }
+
+    const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
+    if (cancelEventIdx >= 0) {
+      toast.success(
+        <ToastContent
+          title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
+          bodyLines={[
+            {
+              label: t('pages.trade.orders-table.toasts.order-cancelled.body'),
+              value: '',
+            },
+            {
+              label: '',
+              value: (
+                <a
+                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.shareLink}
+                >
+                  {txHash}
+                </a>
+              ),
+            },
+          ]}
+        />
+      );
+    } else {
+      const execFailedIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_FAIL);
+      const { args } = decodeEventLog({
+        abi: LOB_ABI as readonly string[],
+        data: receipt.logs[execFailedIdx].data,
+        topics: receipt.logs[execFailedIdx].topics,
+      });
+      toast.error(
+        <ToastContent
+          title={t('pages.trade.orders-table.toasts.tx-failed.title')}
+          bodyLines={[
+            {
+              label: t('pages.trade.orders-table.toasts.tx-failed.body'),
+              value: (args as unknown as { reason: string }).reason,
+            },
+          ]}
+        />
+      );
     }
   }, [receipt, isSuccess, t, chain, txHash]);
 
@@ -305,9 +305,8 @@ export const OpenOrdersTable = memo(() => {
 
   const visibleRows = useMemo(
     () =>
-      // FIXME: VOV: Get rid from `<any>` later
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      stableSort(filteredRows, getComparator<any>(order, orderBy)).slice(
+      // FIXME: VOV: Get rid from `<TemporaryAnyT>` later
+      stableSort(filteredRows, getComparator<TemporaryAnyT>(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
       ),
@@ -391,9 +390,7 @@ export const OpenOrdersTable = memo(() => {
           />
         </div>
       )}
-      <div
-        className={classnames(styles.footer, { [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE })}
-      ></div>
+      <div className={classnames(styles.footer, { [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE })} />
 
       <FilterModal headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
       <Dialog open={isCancelModalOpen} className={styles.dialog}>
@@ -405,9 +402,11 @@ export const OpenOrdersTable = memo(() => {
           <Button onClick={closeCancelModal} variant="secondary" size="small">
             {t('pages.trade.orders-table.cancel-modal.back')}
           </Button>
-          <Button onClick={handleCancelOrderConfirm} variant="primary" size="small" disabled={requestSent}>
-            {t('pages.trade.orders-table.cancel-modal.confirm')}
-          </Button>
+          <GasDepositChecker>
+            <Button onClick={handleCancelOrderConfirm} variant="primary" size="small" disabled={requestSent}>
+              {t('pages.trade.orders-table.cancel-modal.confirm')}
+            </Button>
+          </GasDepositChecker>
         </DialogActions>
       </Dialog>
     </div>

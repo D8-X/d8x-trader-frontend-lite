@@ -523,6 +523,7 @@
           "validity-no-address": "Connectez le portefeuille",
           "validity-empty": "-",
           "validity-no-funds": "Pas de fonds à retirer",
+          "validity-no-gas": "No gas to proceed",
           "validity-amount-too-big": "Montant trop large",
           "validity-amount-below-min": "Montant inférieur au minimum",
           "validity-no-amount": "Entrer un montant"
@@ -602,6 +603,7 @@
     "currency-label": "Devise",
     "amount-label": "Montant",
     "address-label": "Adresse",
+    "deposit-gas": "Deposit gas",
     "max": "Max:",
     "copied": "Copié",
     "copy-error": "Une erreur est apparue lors de la copie dans le presse-papiers",

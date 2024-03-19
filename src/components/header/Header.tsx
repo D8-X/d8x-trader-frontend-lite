@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useBalance, useChainId, useReadContracts } from 'wagmi';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { Close, Menu } from '@mui/icons-material';
@@ -17,6 +17,7 @@ import { Separator } from 'components/separator/Separator';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
 import { web3AuthConfig } from 'config';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo, getPositionRisk } from 'network/network';
 import { authPages, pages } from 'routes/pages';
@@ -66,6 +67,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const chainId = useChainId();
   const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+
+  const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
@@ -201,11 +204,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         !isReconnecting &&
         !isConnecting,
     },
-  });
-
-  const { data: gasTokenBalance, isError: isGasTokenFetchError } = useBalance({
-    address,
-    query: { enabled: address && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting },
   });
 
   useEffect(() => {

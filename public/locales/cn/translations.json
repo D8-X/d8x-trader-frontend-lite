@@ -523,6 +523,7 @@
           "validity-no-address": "连接钱包",
           "validity-empty": "-",
           "validity-no-funds": "无资金可提取",
+          "validity-no-gas": "No gas to proceed",
           "validity-amount-too-big": "金额太大",
           "validity-amount-below-min": "金额低于最小",
           "validity-no-amount": "输入金额"
@@ -602,6 +603,7 @@
     "currency-label": "货币",
     "amount-label": "数量",
     "address-label": "地址",
+    "deposit-gas": "Deposit gas",
     "max": "最大：",
     "copied": "抄袭自",
     "copy-error": "复制到剪贴板时出现错误",

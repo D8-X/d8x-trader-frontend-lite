@@ -523,6 +523,7 @@
           "validity-no-address": "Connect wallet",
           "validity-empty": "-",
           "validity-no-funds": "No funds to withdraw",
+          "validity-no-gas": "No gas to proceed",
           "validity-amount-too-big": "Amount too large",
           "validity-amount-below-min": "Amount below min",
           "validity-no-amount": "Enter amount"
@@ -602,6 +603,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "deposit-gas": "Deposit gas",
     "max": "Max:",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",

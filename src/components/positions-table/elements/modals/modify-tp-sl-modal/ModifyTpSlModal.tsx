@@ -8,10 +8,11 @@ import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt,
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
+import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
@@ -59,6 +60,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
 
   const { address, chain, isConnected } = useAccount();
   const chainId = useChainId();
+  const { data: walletClient } = useWalletClient({
+    chainId,
+  });
 
   const [pools] = useAtom(poolsAtom);
   const [proxyAddr] = useAtom(proxyAddrAtom);
@@ -76,10 +80,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
 
   const validityCheckRef = useRef(false);
   const requestSentRef = useRef(false);
-
-  const { data: walletClient } = useWalletClient({
-    chainId,
-  });
 
   useEffect(() => {
     if (validityCheckRef.current) {
@@ -342,9 +342,16 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleModifyPositionConfirm} variant="primary" size="small" disabled={isDisabledCreateButton}>
-          {t('pages.trade.positions-table.modify-modal.create')}
-        </Button>
+        <GasDepositChecker multiplier={2n}>
+          <Button
+            onClick={handleModifyPositionConfirm}
+            variant="primary"
+            size="small"
+            disabled={isDisabledCreateButton}
+          >
+            {t('pages.trade.positions-table.modify-modal.create')}
+          </Button>
+        </GasDepositChecker>
       </DialogActions>
     </Dialog>
   );

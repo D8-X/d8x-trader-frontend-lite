@@ -2,7 +2,7 @@ import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
 import { Address, Chain, WalletClient } from 'viem';
 
-import { HashZero } from 'app-constants';
+import { HashZero } from 'appConstants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';

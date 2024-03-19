@@ -523,6 +523,7 @@
           "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
           "validity-no-funds": "No hay fondos para retirar",
+          "validity-no-gas": "No gas to proceed",
           "validity-amount-too-big": "Cantidad demasiado grande",
           "validity-amount-below-min": "Cantidad por debajo del mínimo",
           "validity-no-amount": "Ingresar cantidad"
@@ -602,6 +603,7 @@
     "currency-label": "Divisa",
     "amount-label": "Cantidad",
     "address-label": "Direccion",
+    "deposit-gas": "Deposit gas",
     "max": "Max:",
     "copied": "Copiado",
     "copy-error": "Apareció un error al copiar al portapapeles.",

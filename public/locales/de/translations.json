@@ -523,6 +523,7 @@
           "validity-no-address": "Brieftasche verbinden",
           "validity-empty": "-",
           "validity-no-funds": "Keine auszahlbaren Mittel",
+          "validity-no-gas": "No gas to proceed",
           "validity-amount-too-big": "Betrag zu gross",
           "validity-amount-below-min": "Betrag unter Minimum",
           "validity-no-amount": "Betrag eingeben"
@@ -602,6 +603,7 @@
     "currency-label": "Währung",
     "amount-label": "Anzahl",
     "address-label": "Adresse",
+    "deposit-gas": "Deposit gas",
     "max": "Max:",
     "copied": "Kopiert",
     "copy-error": "Beim Kopieren in die Zwischenablage ist ein Fehler aufgetreten",

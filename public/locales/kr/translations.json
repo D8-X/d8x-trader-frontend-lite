@@ -582,6 +582,7 @@
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",
+    "deposit-gas": "Deposit gas",
     "max": "Max:",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",

@@ -7,7 +7,7 @@ import { type Address } from 'viem';
 
 import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
-import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
+import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
@@ -34,7 +34,7 @@ import {
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
-import { OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
+import { MethodE, OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import type { OrderI, OrderInfoI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -44,6 +44,7 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
+import { useUserWallet } from '../../../../context/user-wallet-context/UserWalletContext';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -103,6 +104,7 @@ enum ValidityCheckE {
 enum ValidityCheckButtonE {
   Empty = '-',
   NoAddress = 'not-connected',
+  NoEnoughGas = 'no-enough-gas',
   NoFunds = 'no-funds',
   AmountBelowMinimum = 'amount-below-min',
   GoodToGo = 'good-to-go',
@@ -116,10 +118,11 @@ export const ActionBlock = memo(() => {
 
   const { address, chain } = useAccount();
   const chainId = useChainId();
-
   const { data: walletClient } = useWalletClient({
     chainId,
   });
+
+  const { hasEnoughGas } = useUserWallet();
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const proxyAddr = useAtomValue(proxyAddrAtom);
@@ -221,6 +224,9 @@ export const ActionBlock = memo(() => {
     if (poolTokenBalance === 0) {
       return ValidityCheckButtonE.NoFunds;
     }
+    if (!hasEnoughGas(MethodE.Approve, 4n)) {
+      return ValidityCheckButtonE.NoEnoughGas;
+    }
     if (orderInfo.size === 0) {
       return ValidityCheckButtonE.NoAmount;
     }
@@ -231,13 +237,15 @@ export const ActionBlock = memo(() => {
       return ValidityCheckButtonE.NoTriggerPrice;
     }
     return ValidityCheckButtonE.GoodToGo;
-  }, [orderInfo, address, poolTokenBalance]);
+  }, [orderInfo, address, poolTokenBalance, hasEnoughGas]);
 
   const validityCheckButtonText = useMemo(() => {
     if (validityCheckButtonType === ValidityCheckButtonE.NoAddress) {
       return `${t('pages.trade.action-block.validity.button-no-address')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoFunds) {
       return `${t('pages.trade.action-block.validity.button-no-funds')}`;
+    } else if (validityCheckButtonType === ValidityCheckButtonE.NoEnoughGas) {
+      return `${t('common.deposit-gas')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoAmount) {
       return `${t('pages.trade.action-block.validity.button-no-amount')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoLimitPrice) {
@@ -582,12 +590,12 @@ export const ActionBlock = memo(() => {
 
   return (
     <div className={styles.root}>
-      {validityCheckButtonType === ValidityCheckButtonE.NoFunds && (
+      {[ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
         <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.buyButton}>
           {validityCheckButtonText}
         </Button>
       )}
-      {validityCheckButtonType !== ValidityCheckButtonE.NoFunds && (
+      {![ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
         <Button
           variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
           disabled={!isBuySellButtonActive}

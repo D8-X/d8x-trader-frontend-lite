@@ -22,6 +22,7 @@ import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { deposit } from 'blockchain-api/contract-interactions/deposit';
 import { withdraw } from 'blockchain-api/contract-interactions/withdraw';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -571,9 +572,16 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleModifyPositionConfirm} variant="primary" size="small" disabled={isConfirmButtonDisabled}>
-          {t('pages.trade.positions-table.modify-modal.confirm')}
-        </Button>
+        <GasDepositChecker>
+          <Button
+            onClick={handleModifyPositionConfirm}
+            variant="primary"
+            size="small"
+            disabled={isConfirmButtonDisabled}
+          >
+            {t('pages.trade.positions-table.modify-modal.confirm')}
+          </Button>
+        </GasDepositChecker>
       </DialogActions>
     </Dialog>
   );

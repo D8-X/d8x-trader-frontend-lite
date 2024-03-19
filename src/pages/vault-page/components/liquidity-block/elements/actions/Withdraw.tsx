@@ -6,7 +6,7 @@ import { useAccount, useWaitForTransactionReceipt, useWalletClient, useReadContr
 
 import { Box, Button, Typography } from '@mui/material';
 
-import { PERIOD_OF_2_DAYS } from 'app-constants';
+import { PERIOD_OF_2_DAYS } from 'appConstants';
 import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { Separator } from 'components/separator/Separator';

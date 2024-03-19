@@ -12,6 +12,11 @@ export enum DefaultCurrencyE {
   Quote = 'quote',
 }
 
+export enum MethodE {
+  Approve = 'approve',
+  Transfer = 'transfer',
+}
+
 export enum OrderValueTypeE {
   Multiple = 'multiple',
   Partial = 'partial',

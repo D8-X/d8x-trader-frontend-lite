@@ -1,9 +1,11 @@
+import { MethodE } from 'types/enums';
+
 const ARBITRUM = [421614, 42161]; // arbitrum sepolia & arbitrum one
 
-export function getGasLimit({ chainId, method }: { chainId?: number; method: 'approve' | 'transfer' }) {
+export function getGasLimit({ chainId, method }: { chainId?: number; method: MethodE }) {
   if (ARBITRUM.includes(chainId ?? 0)) {
-    return method === 'approve' ? 1_200_000n : 915_000n; // specific to Arbitrum
+    return method === MethodE.Approve ? 1_200_000n : 915_000n; // specific to Arbitrum
   } else {
-    return method === 'approve' ? 50_000n : 21_000n; // known constants on EVM
+    return method === MethodE.Approve ? 50_000n : 21_000n; // known constants on EVM
   }
 }
