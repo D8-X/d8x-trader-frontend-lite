@@ -173,7 +173,18 @@ export const ActionBlock = memo(() => {
       .then((data) => {
         setNewPositionRisk(data.data.newPositionRisk);
         setCollateralDeposit(data.data.orderCost);
-        setMaxOrderSize({ maxBuy: data.data.maxLongTrade, maxSell: data.data.maxShortTrade });
+        let [maxLong, maxShort] = [data.data.maxLongTrade, data.data.maxShortTrade];
+        if (
+          selectedPerpetualStaticInfo &&
+          data.data.newPositionRisk.leverage > 1 / selectedPerpetualStaticInfo.initialMarginRate
+        ) {
+          if (orderInfo.orderBlock === OrderBlockE.Long) {
+            maxLong = 0;
+          } else {
+            maxShort = 0;
+          }
+        }
+        setMaxOrderSize({ maxBuy: maxLong, maxSell: maxShort });
       })
       .catch(console.error)
       .finally(() => {
