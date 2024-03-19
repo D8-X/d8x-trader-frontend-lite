@@ -50,6 +50,7 @@ const chainConfig = {
   logo: chains[0].iconUrl as string,
   isTestnet: chains[0].testnet,
 };
+console.log(chainConfig);
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
 
@@ -65,6 +66,10 @@ const openloginAdapter = new OpenloginAdapter({
   privateKeyProvider,
   adapterSettings: {
     uxMode: 'redirect',
+    originData: {
+      ['https://dev.d8x-testnet.pages.dev']:
+        'MEQCIFh3Y9quJU21aHiv7RAq8c2olr4O6XjcigXzlo3PYIfnAiAvAtSfzO0hEQO-WdzIoN87iapBxVY9fFWDD65nmSA0ig',
+    },
     loginConfig: {
       jwt: {
         verifier,
