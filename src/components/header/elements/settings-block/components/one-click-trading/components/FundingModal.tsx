@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBalance, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
@@ -7,16 +7,19 @@ import { type Address } from 'viem';
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { SidesRow } from 'components/sides-row/SidesRow';
 
 import styles from './FundingModal.module.scss';
 
 interface FundingModalPropsI {
   isOpen: boolean;
   delegateAddress: Address;
+  mainAddress: Address;
   onClose: () => void;
 }
 
-export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalPropsI) => {
+export const FundingModal = ({ isOpen, onClose, delegateAddress, mainAddress }: FundingModalPropsI) => {
+  console.log(mainAddress);
   const { t } = useTranslation();
 
   const { data: walletClient } = useWalletClient();
@@ -40,6 +43,16 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
     address: delegateAddress,
   });
 
+  const { data: gasTokenBalance } = useBalance({
+    address: mainAddress,
+  });
+
+  const handleMaxGas = () => {
+    if (gasTokenBalance) {
+      setInputValue(gasTokenBalance.formatted);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <div className={styles.dialogContent}>
@@ -58,6 +71,14 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
           setInputValue={setInputValue}
           currency={delegateBalance?.symbol}
           min={0}
+        />
+        <SidesRow
+          leftSide=" "
+          rightSide={
+            <Typography className={styles.helperText} variant="bodyTiny">
+              {t('common.max')} <Link onClick={handleMaxGas}>{gasTokenBalance?.formatted}</Link>
+            </Typography>
+          }
         />
         <Box className={styles.buttonsBlock}>
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
