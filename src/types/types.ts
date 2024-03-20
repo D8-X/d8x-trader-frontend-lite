@@ -262,11 +262,20 @@ export interface BoostI {
   nxtRndBoost: number;
 }
 
-export interface PumpStationResponseI {
+export interface PoolVolBoostI {
+  token: string;
+  boost: number;
+}
+
+export interface BoostStationResponseI {
   addr: string;
-  crossChainScore: number;
-  lastBoostedVol: number;
+  boostedLpVol: number;
+  boostedTraderVol: number;
   boosts: BoostI[];
+  crossChainScore: number;
+  hourlyLPBVolIncrease: number;
+  lastBoostedVol: number;
+  poolVolBoost: PoolVolBoostI[];
 }
 
 export interface PumpStationParamResponseI {

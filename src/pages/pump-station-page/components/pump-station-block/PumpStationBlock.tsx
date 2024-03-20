@@ -8,20 +8,19 @@ import { Typography } from '@mui/material';
 import D8XLogoWithText from 'assets/logos/d8xLogoWithText.svg?react';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { getPumpStationData, getPumpStationParameters } from 'network/network';
-import { BoostI, PumpStationParamResponseI } from 'types/types';
+import { BoostI, BoostStationResponseI, PumpStationParamResponseI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 
 import { PumpOMeter } from '../pump-o-meter/PumpOMeter';
 
 import styles from './PumpStationBlock.module.scss';
 
-const INTERVAL_FOR_DATA_POLLING = 10000; // Each 10 sec
+const INTERVAL_FOR_DATA_POLLING = 10_000; // Each 10 sec
 
 export const PumpStationBlock = memo(() => {
   const { t } = useTranslation();
 
-  const [volumeValue, setVolumeValue] = useState<number>();
-  const [pumpValue, setPumpValue] = useState<number>();
+  const [boostStation, setBoostStation] = useState<BoostStationResponseI>();
   const [boosts, setBoosts] = useState<BoostI[]>([]);
   const [pumpStationParams, setPumpStationParams] = useState<PumpStationParamResponseI>();
 
@@ -40,8 +39,7 @@ export const PumpStationBlock = memo(() => {
 
     getPumpStationData(address)
       .then((response) => {
-        setVolumeValue(response.crossChainScore);
-        setPumpValue(response.lastBoostedVol);
+        setBoostStation(response);
         setBoosts(response.boosts);
       })
       .finally(() => {
@@ -50,7 +48,7 @@ export const PumpStationBlock = memo(() => {
   }, [isConnected, address]);
 
   useEffect(() => {
-    setVolumeValue(undefined);
+    setBoostStation(undefined);
     setBoosts([]);
 
     fetchData();
@@ -86,66 +84,140 @@ export const PumpStationBlock = memo(() => {
       <Typography variant="h6" sx={{ mb: 2 }}>
         <D8XLogoWithText width={86} height={20} />
       </Typography>
-      <div className={styles.firstComponent}>
-        <div className={styles.subComponent}>
-          <div className={styles.labelHolder}>
-            <InfoLabelBlock
-              title={t('pages.pump-station.pumped-volume.title')}
-              content={<Typography>{t('pages.pump-station.pumped-volume.modal-text')}</Typography>}
-            />
+      <div>
+        <div className={styles.labelHolder}>
+          <InfoLabelBlock
+            title={t('pages.boost-station.boosted-volume.title')}
+            content={<Typography>{t('pages.boost-station.boosted-volume.modal-text')}</Typography>}
+          />
+        </div>
+        <Typography variant="h4" className={styles.valueHolder}>
+          $ {boostStation ? formatNumber(boostStation.crossChainScore, 0) : '--'}
+        </Typography>
+      </div>
+      <div className={styles.boostsHolder}>
+        <div className={styles.boostBlock}>
+          <div className={styles.metricsBlock}>
+            <div className={styles.longMetric}>
+              <div className={styles.labelHolder}>
+                <InfoLabelBlock
+                  title={t('pages.boost-station.trade-volume.title')}
+                  content={<Typography>{t('pages.boost-station.trade-volume.modal-text')}</Typography>}
+                />
+              </div>
+              <Typography variant="h6" className={styles.valueHolder}>
+                $ {boostStation ? formatNumber(boostStation.boostedTraderVol, 0) : '--'}
+              </Typography>
+            </div>
+            <div className={styles.shortMetric}>
+              <div className={styles.labelHolder}>
+                <InfoLabelBlock
+                  title={t('pages.boost-station.trade-last-increase.title')}
+                  content={<Typography>{t('pages.boost-station.trade-last-increase.modal-text')}</Typography>}
+                />
+              </div>
+              <Typography variant="h6" className={styles.valueHolder}>
+                + $ {boostStation ? formatNumber(boostStation.lastBoostedVol, 0) : '--'}
+              </Typography>
+            </div>
           </div>
-          <Typography variant="h4" className={styles.volumeValue}>
-            $ {volumeValue !== undefined ? formatNumber(volumeValue, 0) : '--'}
-          </Typography>
-        </div>
-        <div className={styles.subComponent}>
-          <div className={styles.labelHolder}>
-            <InfoLabelBlock
-              title={t('pages.pump-station.last-pump.title')}
-              content={<Typography>{t('pages.pump-station.last-pump.modal-text')}</Typography>}
-            />
+          <div className={styles.meterHolder}>
+            <div className={styles.labelHolder}>
+              <InfoLabelBlock
+                title={t('pages.boost-station.trade-boost.title')}
+                content={
+                  <Typography>
+                    {t('pages.boost-station.trade-boost.modal-text', {
+                      totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
+                    })}
+                    <ol>
+                      <li>
+                        {t('pages.boost-station.trade-boost.modal-text2', {
+                          volBoostMax: pumpStationParams?.volBoostMax,
+                        })}
+                      </li>
+                      <li>
+                        {t('pages.boost-station.trade-boost.modal-text3', {
+                          rndBoostMax: pumpStationParams?.rndBoostMax,
+                        })}
+                      </li>
+                    </ol>
+                  </Typography>
+                }
+              />
+            </div>
+            <PumpOMeter totalBoost={totalBoost} />
           </div>
-          <Typography variant="h4" className={styles.volumeValue}>
-            + $ {pumpValue !== undefined ? formatNumber(pumpValue, 0) : '--'}
-          </Typography>
+          <div className={styles.boostsData}>
+            <div className={styles.boostLine}>
+              <Bolt fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
+              <span>
+                {t('pages.boost-station.boost.volume')} {boostByChainId?.nxtBoost ? `${boostByChainId.nxtBoost}x` : '0'}
+              </span>
+            </div>
+            <div className={styles.boostLine}>
+              <Casino fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
+              <span>
+                {t('pages.boost-station.boost.random')}{' '}
+                {boostByChainId?.nxtRndBoost ? `${boostByChainId.nxtRndBoost}x` : '0'}
+              </span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className={styles.labelHolder}>
-        <InfoLabelBlock
-          title={t('pages.pump-station.pump-o-meter.title')}
-          content={
-            <Typography>
-              {t('pages.pump-station.pump-o-meter.modal-text', {
-                totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
-              })}
-              <ol>
-                <li>
-                  {t('pages.pump-station.pump-o-meter.modal-text2', { volBoostMax: pumpStationParams?.volBoostMax })}
-                </li>
-                <li>
-                  {t('pages.pump-station.pump-o-meter.modal-text3', { rndBoostMax: pumpStationParams?.rndBoostMax })}
-                </li>
-              </ol>
-            </Typography>
-          }
-        />
-      </div>
-      <div className={styles.meterHolder}>
-        <PumpOMeter totalBoost={totalBoost} />
-      </div>
-      <div className={styles.boostsData}>
-        <div className={styles.boostLine}>
-          <Bolt fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
-          <span>
-            {t('pages.pump-station.boost.volume')} {boostByChainId?.nxtBoost ? `${boostByChainId.nxtBoost}x` : '0'}
-          </span>
-        </div>
-        <div className={styles.boostLine}>
-          <Casino fontSize="small" style={{ color: 'var(--d8x-color-action)' }} />
-          <span>
-            {t('pages.pump-station.boost.random')}{' '}
-            {boostByChainId?.nxtRndBoost ? `${boostByChainId.nxtRndBoost}x` : '0'}
-          </span>
+        <div className={styles.boostBlock}>
+          <div className={styles.metricsBlock}>
+            <div className={styles.longMetric}>
+              <div className={styles.labelHolder}>
+                <InfoLabelBlock
+                  title={t('pages.boost-station.liquidity-volume.title')}
+                  content={<Typography>{t('pages.boost-station.liquidity-volume.modal-text')}</Typography>}
+                />
+              </div>
+              <Typography variant="h6" className={styles.valueHolder}>
+                $ {boostStation ? formatNumber(boostStation.boostedLpVol, 0) : '--'}
+              </Typography>
+            </div>
+            <div className={styles.shortMetric}>
+              <div className={styles.labelHolder}>
+                <InfoLabelBlock
+                  title={t('pages.boost-station.trade-hourly-increase.title')}
+                  content={<Typography>{t('pages.boost-station.trade-hourly-increase.modal-text')}</Typography>}
+                />
+              </div>
+              <Typography variant="h6" className={styles.valueHolder}>
+                + $ {boostStation ? formatNumber(boostStation.hourlyLPBVolIncrease, 0) : '--'}
+              </Typography>
+            </div>
+          </div>
+          <div className={styles.meterHolder}>
+            <div className={styles.labelHolder}>
+              <InfoLabelBlock
+                title={t('pages.boost-station.liquidity-boost.title')}
+                content={
+                  <Typography>
+                    {t('pages.boost-station.liquidity-boost.modal-text', {
+                      totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
+                    })}
+                    <ol>
+                      <li>
+                        {t('pages.boost-station.liquidity-boost.modal-text2', {
+                          volBoostMax: pumpStationParams?.volBoostMax,
+                        })}
+                      </li>
+                      <li>
+                        {t('pages.boost-station.liquidity-boost.modal-text3', {
+                          rndBoostMax: pumpStationParams?.rndBoostMax,
+                        })}
+                      </li>
+                    </ol>
+                  </Typography>
+                }
+              />
+            </div>
+            <div className={styles.meterHolder}>
+              <PumpOMeter totalBoost={boostStation ? boostStation.poolVolBoost[0].boost : 0} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

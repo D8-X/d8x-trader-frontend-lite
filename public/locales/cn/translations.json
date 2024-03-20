@@ -1,7 +1,7 @@
 {
   "navigation": {
     "trade": "交易",
-    "pump-station": "加速站",
+    "boost-station": "加速站",
     "refer": "邀请返佣",
     "vault": "金库",
     "portfolio": "投资组合"
@@ -363,13 +363,21 @@
         "clear": "清除过滤器"
       }
     },
-    "pump-station": {
+    "boost-station": {
       "title": "交易并提供流动性以加速您的 $D8X 空投金额",
-      "pumped-volume": {
+      "boosted-volume": {
         "title": "加速后的交易量",
         "modal-text": "$D8X空投是基于加速后的交易量计算的。对于每 或提供流动性 一笔交易，我们计算交易量乘以加速倍数。加速后的交易量=实际交易量x加速倍数。"
       },
-      "pump-o-meter": {
+      "trade-volume": {
+        "title": "BOOSTED Trade Volume",
+        "modal-text": "BOOSTED Trade Volume modal text"
+      },
+      "trade-last-increase": {
+        "title": "Last increase",
+        "modal-text": "Last increase modal text"
+      },
+      "trade-boost": {
         "title": "加速仪表盘",
         "modal-text": "加速仪表盘显示应用于你下一次交易的加速。提升范围从1倍到105倍，有两个部分：",
         "modal-text2": "交易量加速 - 过去7天的交易可以为你获得1倍到5倍的交易量加速。你交易得越多，潜在的加速就越高！",
@@ -379,9 +387,19 @@
         "volume": "交易量加速:",
         "random": "幸运加速:"
       },
-      "last-pump": {
-        "title": "最后一次加速",
-        "modal-text": "上次交易后加速的交易量。行动起来!"
+      "liquidity-volume": {
+        "title": "BOOSTED Liquidity Volume",
+        "modal-text": "BOOSTED Trade Volume modal text"
+      },
+      "trade-hourly-increase": {
+        "title": "Hourly increase",
+        "modal-text": "Hourly increase modal text"
+      },
+      "liquidity-boost": {
+        "title": "Liquidity Boost",
+        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
+        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
+        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
       }
     },
     "refer": {

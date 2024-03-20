@@ -10,7 +10,7 @@ export const Overview = () => {
   return (
     <div className={styles.root}>
       <Typography variant="h4" className={styles.title}>
-        {t('pages.pump-station.title')}
+        {t('pages.boost-station.title')}
       </Typography>
     </div>
   );

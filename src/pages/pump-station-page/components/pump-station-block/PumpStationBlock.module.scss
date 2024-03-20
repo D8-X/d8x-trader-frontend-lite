@@ -11,29 +11,43 @@
   }
 }
 
-.firstComponent {
+.boostsHolder {
   display: flex;
-  flex-direction: row;
-  align-items: center;
 
-  @include media-tablet {
-    flex-direction: column;
-    align-items: flex-start;
+  .boostBlock {
+    flex: 1;
+    padding-right: 8 * $d8x-spacing;
+
+    + .boostBlock {
+      padding-left: 8 * $d8x-spacing;
+      border-left: 1px solid var(--d8x-color-border);
+    }
+
+    &:last-of-type {
+      padding-right: 0;
+    }
   }
 }
 
-.subComponent {
-  flex: 1;
-  max-width: 305px;
+.metricsBlock {
+  display: flex;
+
+  .longMetric {
+    flex: 2;
+  }
+
+  .shortMetric {
+    flex: 1;
+  }
 }
 
 .labelHolder {
   display: flex;
   justify-content: flex-start;
-  margin: 8 * $d8x-spacing 0 4 * $d8x-spacing;
+  margin: 4 * $d8x-spacing 0;
 }
 
-.volumeValue {
+.valueHolder {
   margin-bottom: 10 * $d8x-spacing;
 
   @include media-tablet {
@@ -43,7 +57,7 @@
 
 .meterHolder {
   display: inline-block;
-  max-width: 300px;
+  max-width: 450px;
   width: 100%;
 }
 
@@ -54,5 +68,27 @@
     display: flex;
     gap: $d8x-spacing * 2;
     align-items: center;
+  }
+}
+
+@include media-desktop {
+  .boostsHolder {
+    flex-direction: column;
+
+    .boostBlock {
+      padding-right: 0;
+      padding-bottom: 8 * $d8x-spacing;
+
+      + .boostBlock {
+        padding-left: 0;
+        padding-top: 8 * $d8x-spacing;
+        border-left: none;
+        border-top: 1px solid var(--d8x-color-border);
+      }
+
+      &:last-of-type {
+        padding-right: 0;
+      }
+    }
   }
 }

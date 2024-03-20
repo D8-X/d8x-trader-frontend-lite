@@ -24,7 +24,7 @@ export const pages: PageI[] = [
     id: 'pump-station',
     IconComponent: D8XLogo,
     path: RoutesE.PumpStation,
-    translationKey: 'navigation.pump-station',
+    translationKey: 'navigation.boost-station',
     enabled: pagesConfig.enabledPumpStationPage,
   },
   {

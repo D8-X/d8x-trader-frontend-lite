@@ -1,7 +1,7 @@
 {
   "navigation": {
     "trade": "Comercio",
-    "pump-station": "Bomba",
+    "boost-station": "Bomba",
     "refer": "Referir",
     "vault": "Bóveda",
     "portfolio": "Cartera"
@@ -363,13 +363,21 @@
         "clear": "Filtro Claro"
       }
     },
-    "pump-station": {
+    "boost-station": {
       "title": "Participa en el comercio y proporcionar liquidez para BOMBEAR tu bolsa de Airdrop de $D8X",
-      "pumped-volume": {
+      "boosted-volume": {
         "title": "Volumen BOMBEADO",
         "modal-text": "El Airdrop de $D8X se calcula en función del volumen BOMBEADO. Para cada operación calculamos el volumen x el aumento. El volumen BOMBEADO es la suma del mismo."
       },
-      "pump-o-meter": {
+      "trade-volume": {
+        "title": "BOOSTED Trade Volume",
+        "modal-text": "BOOSTED Trade Volume modal text"
+      },
+      "trade-last-increase": {
+        "title": "Last increase",
+        "modal-text": "Last increase modal text"
+      },
+      "trade-boost": {
         "title": "BOMBA-METRO",
         "modal-text": "El BOMBA-METRO muestra el estímulo que se aplica a tu PRÓXIMA operación. El estímulo varía de 1x a {{totalBoostMax}}x y tiene dos partes:",
         "modal-text2": "Volumen Boost - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y {{volBoostMax}} veces. ¡Cuanto más opere, mayor será su potencial estímulo!",
@@ -379,9 +387,19 @@
         "volume": "Volumen Boost:",
         "random": "Fortune Boost:"
       },
-      "last-pump": {
-        "title": "Última BOMBA",
-        "modal-text": "La cantidad de Volumen BOMBEADO aumentó desde su última operación. ¡LFG!"
+      "liquidity-volume": {
+        "title": "BOOSTED Liquidity Volume",
+        "modal-text": "BOOSTED Trade Volume modal text"
+      },
+      "trade-hourly-increase": {
+        "title": "Hourly increase",
+        "modal-text": "Hourly increase modal text"
+      },
+      "liquidity-boost": {
+        "title": "Liquidity Boost",
+        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
+        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
+        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
       }
     },
     "refer": {
