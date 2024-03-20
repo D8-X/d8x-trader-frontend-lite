@@ -3,7 +3,7 @@ import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
-import { signInWithPopup, TwitterAuthProvider } from 'firebase/auth';
+import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   createContext,
@@ -28,6 +28,7 @@ interface Web3AuthContextPropsI {
   web3Auth: Web3AuthNoModal | null;
   disconnect: () => void;
   signInWithTwitter: () => void;
+  signInWithGoogle: () => void;
   isConnecting: boolean;
   isConnected: boolean;
 }
@@ -260,6 +261,31 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     }
   }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!auth || signInRef.current) {
+      //console.log('auth not defined');
+      return;
+    }
+
+    setWeb3AuthSigning(true);
+    signInRef.current = true;
+    try {
+      await disconnectAsync();
+      const googleProvider = new GoogleAuthProvider();
+      //console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
+      const loginRes = await signInWithPopup(auth, googleProvider);
+      //console.log('login details', loginRes);
+      //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
+      const idToken = await loginRes.user.getIdToken(true);
+      setWeb3AuthIdToken(idToken);
+      await connectWeb3Auth(idToken);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      signInRef.current = false;
+    }
+  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
+
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
       setUserInfo(null);
@@ -276,6 +302,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       value={{
         web3Auth: web3AuthInstance,
         signInWithTwitter,
+        signInWithGoogle,
         disconnect: handleDisconnect,
         isConnecting: web3AuthSigning,
         isConnected: web3AuthInstance.connected,

@@ -33,7 +33,14 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
           <Separator />
           <div className={styles.dialogContent}>
             <div className={styles.actionButtonsContainer}>
-              <Web3AuthConnectButton buttonClassName={styles.connectButton} />
+              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod="x" />
+              <div className={styles.orSeparator}>
+                <Separator />
+                <div className={styles.orTextHolder}>
+                  <span>{t('common.connect-modal.or-separator')}</span>
+                </div>
+              </div>
+              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod="google" />
               <div className={styles.orSeparator}>
                 <Separator />
                 <div className={styles.orTextHolder}>
