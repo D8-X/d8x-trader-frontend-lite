@@ -346,7 +346,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
         </Box>
         <Separator />
         <Box className={styles.dialogContent}>
-          <Box className={styles.closeButtonsContainer}>
+          <Box className={styles.closeButtonContainer}>
             <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
               {t('common.info-modal.close')}
             </Button>
@@ -359,6 +359,7 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
           isOpen={isFundingModalOpen}
           onClose={() => setFundingModalOpen(false)}
           delegateAddress={delegateAddress as Address}
+          mainAddress={address as Address}
         />
       )}
     </>

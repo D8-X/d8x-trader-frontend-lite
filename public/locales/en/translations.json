@@ -760,6 +760,7 @@
       "title": "Sign in",
       "description": "Sign in with X or web3 wallet",
       "sign-in-with-x-button": "Sign in with X",
+      "sign-in-with-google-button": "Sign in with Google",
       "sign-in-with-wallet-button": "Sign in with wallet",
       "or-separator": "or",
       "disconnect": "Disconnect",

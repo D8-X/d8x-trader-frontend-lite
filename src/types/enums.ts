@@ -140,3 +140,8 @@ export enum FieldTypeE {
   Date,
   Boolean,
 }
+
+export enum Web3SignInMethodE {
+  X = 'x',
+  Google = 'google',
+}

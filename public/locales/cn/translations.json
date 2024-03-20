@@ -760,6 +760,7 @@
       "title": "登录",
       "description": "使用X或web3钱包登录t",
       "sign-in-with-x-button": "使用X登录",
+      "sign-in-with-google-button": "使用Google登录",
       "sign-in-with-wallet-button": "使用钱包登录",
       "or-separator": "或",
       "disconnect": "断开连接",

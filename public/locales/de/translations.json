@@ -760,6 +760,7 @@
       "title": "Anmelden",
       "description": "Melden Sie sich mit X oder einer Web3-Wallet an",
       "sign-in-with-x-button": "Mit X anmelden",
+      "sign-in-with-google-button": "Mit Google anmelden",
       "sign-in-with-wallet-button": "Mit einer Wallet anmelden",
       "or-separator": "ooder",
       "disconnect": "Abmelden",
