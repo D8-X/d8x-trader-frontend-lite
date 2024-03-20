@@ -360,44 +360,44 @@
         "type": "Tipo:",
         "value": "Valor:",
         "value-placeholder": "valor a filtrar",
-        "clear": "Filtro Claro"
+        "clear": "Filtro Removido"
       }
     },
     "boost-station": {
-      "title": "Participa en el comercio y proporcionar liquidez para BOMBEAR tu bolsa de Airdrop de $D8X",
+      "title": "Participa en el comercio y añade liquidez para IMPULSAR tu bolsa de Airdrop de $D8X",
       "boosted-volume": {
-        "title": "Volumen BOMBEADO",
-        "modal-text": "El Airdrop de $D8X se calcula en función del volumen BOMBEADO. Para cada operación calculamos el volumen x el aumento. El volumen BOMBEADO es la suma del mismo."
+        "title": "Volumen IMPULSADO",
+        "modal-text": "El Airdrop de $D8X se calcula en función del volumen IMPULSADO. Para cada operación calculamos el volumen x el impulso. El volumen IMPULSADO es la suma de todos estos volumenes."
       },
       "trade-volume": {
-        "title": "BOOSTED Trade Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "title": "Volumen IMPULSADO por Comercio",
+        "modal-text": "Cada vez que participes en el comercio calculamos el valor de Volumen x Trade Boost. El Volumen IMPULSADO por Comercio consiste de la suma de estos valores sobre todas tus acciones, comercio y liquidez."
       },
       "trade-last-increase": {
-        "title": "Last increase",
-        "modal-text": "Last increase modal text"
+        "title": "Ultimo incremento",
+        "modal-text": "El incremento de tu volumen IMPULSADO desde tu ultima accion en el comercio. LFG!"
       },
       "trade-boost": {
-        "title": "BOMBA-METRO",
-        "modal-text": "El BOMBA-METRO muestra el estímulo que se aplica a tu PRÓXIMA operación. El estímulo varía de 1x a {{totalBoostMax}}x y tiene dos partes:",
-        "modal-text2": "Volumen Boost - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y {{volBoostMax}} veces. ¡Cuanto más opere, mayor será su potencial estímulo!",
-        "modal-text3": "Fortune Boost: - cada operación te brinda la oportunidad de obtener Fortune Boost, ¡un bono que puede dispararse desde 0x hasta un increíble {{rndBoostMax}}x!"
+        "title": "Impulso por Comercio",
+        "modal-text": "El Impulso por Comercio es el estímulo que se aplica a tu PRÓXIMA operación en el comercio. El estímulo varía de 1x a {{totalBoostMax}}x y tiene dos partes:",
+        "modal-text2": "Impulso por Volumen - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y {{volBoostMax}} veces. ¡Cuanto más opere, mayor será su estímulo potencial!",
+        "modal-text3": "Impulso por Fortuna - cada operación te brinda la oportunidad de obtener Fortune Boost, ¡un bono que puede dispararse desde 0x hasta un increíble {{rndBoostMax}}x!"
       },
       "boost": {
-        "volume": "Volumen Boost:",
-        "random": "Fortune Boost:"
+        "volume": "Impulso por Volumen:",
+        "random": "Impulso por Fortuna:"
       },
       "liquidity-volume": {
-        "title": "BOOSTED Liquidity Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "title": "Volumen por Liquidez IMPULSADO",
+        "modal-text": "Tu volumen por liquidez IMPULSADA crece mientras mantengas tu liquidez en la boveda. Cada 24 horas tu volumen por Liquidez IMPULSADA puede crecer hasta Liquidez x Impulso por Liquidez"
       },
       "trade-hourly-increase": {
-        "title": "Hourly increase",
-        "modal-text": "Hourly increase modal text"
+        "title": "Incremento",
+        "modal-text": "Incremento por hora de la liquidez IMPULSADA"
       },
       "liquidity-boost": {
-        "title": "Liquidity Boost",
-        "modal-text": "The Liquidity Boost shows the boost that is applied to your liquidity provision. The boost can change over time."
+        "title": "Impulso por Liquidez",
+        "modal-text": "El Impulso por Liquidez muestra el estimulo aplicado a tu deposito de liquidez cada hora. Este valor puede cambiar."
       }
     },
     "refer": {
@@ -521,7 +521,7 @@
           "info1": "Especifica la cantidad de {{poolSymbol}} que quieres añadir a las reservas."
         },
         "receive": "d{{poolSymbol}} que recibes",
-        "button": "Anadir",
+        "button": "Añadir",
         "validity-empty": "Conectar cartera",
         "validity-amount-too-big": "Fondos insuficientes",
         "validity-amount-below-min": "Cantidad por debajo del mínimo",
