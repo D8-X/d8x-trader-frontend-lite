@@ -312,7 +312,7 @@ export const PositionsTable = () => {
           } else if (stopLossOrders[0].reduceOnly) {
             // if 1 SL order exists for an order size that is > position.size, but the order is reduceOnly, show stopPrice
             stopLossValueType = OrderValueTypeE.Full;
-            stopLossFullValue = takeProfitOrders[0].stopPrice;
+            stopLossFullValue = stopLossOrders[0].stopPrice;
           } else {
             // if 1 TP order exists for an order size that is > position.size, show stopPrice of that order for SL
             stopLossValueType = OrderValueTypeE.Exceeded;
