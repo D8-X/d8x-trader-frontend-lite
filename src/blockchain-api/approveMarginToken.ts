@@ -1,11 +1,19 @@
 import { readContract, waitForTransactionReceipt } from '@wagmi/core';
-import { type Account, type Address, type Chain, erc20Abi, parseUnits, type Transport, type WalletClient } from 'viem';
+import {
+  type Account,
+  type Address,
+  type Chain,
+  erc20Abi,
+  parseUnits,
+  type Transport,
+  type WalletClient,
+  type WriteContractParameters,
+} from 'viem';
+import { estimateContractGas } from 'viem/actions';
 
 import { MaxUint256 } from 'appConstants';
-import { MethodE } from 'types/enums';
 
 import { getGasPrice } from './getGasPrice';
-import { getGasLimit } from './getGasLimit';
 import { wagmiConfig } from './wagmi/wagmiClient';
 
 export async function approveMarginToken(
@@ -31,23 +39,21 @@ export async function approveMarginToken(
       throw new Error('account not connected');
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
-    const gasLimit = getGasLimit({ chainId: walletClient.chain?.id, method: MethodE.Approve });
-    return walletClient
-      .writeContract({
-        chain: walletClient.chain,
-        address: marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'approve',
-        args: [proxyAddr as Address, BigInt(MaxUint256)],
-        gas: gasLimit,
-        gasPrice: gasPrice,
-        account: account,
-      })
-      .then((tx) => {
-        waitForTransactionReceipt(wagmiConfig, {
-          hash: tx,
-          timeout: 30_000,
-        }).then(() => ({ hash: tx }));
-      });
+    const params: WriteContractParameters = {
+      chain: walletClient.chain,
+      address: marginTokenAddr as Address,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [proxyAddr as Address, BigInt(MaxUint256)],
+      gasPrice: gasPrice,
+      account: account,
+    };
+    const gasLimit = await estimateContractGas(walletClient, params);
+    return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
+      waitForTransactionReceipt(wagmiConfig, {
+        hash: tx,
+        timeout: 30_000,
+      }).then(() => ({ hash: tx }));
+    });
   }
 }
