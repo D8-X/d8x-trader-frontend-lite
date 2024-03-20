@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBalance, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useBalance, useEstimateGas, useGasPrice, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address, formatUnits } from 'viem';
 
 import { Button, Link, Typography } from '@mui/material';
@@ -13,7 +13,6 @@ import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './FundingModal.module.scss';
-import { MethodE } from '../../../../../../../types/enums';
 
 interface FundingModalPropsI {
   isOpen: boolean;
@@ -26,7 +25,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
 
   const { data: walletClient } = useWalletClient();
 
-  const { gasTokenBalance, calculateGasForFee } = useUserWallet();
+  const { gasTokenBalance } = useUserWallet();
 
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [inputValue, setInputValue] = useState('');
@@ -47,19 +46,24 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
     }
   }, [isFetched, onClose]);
 
-  const estimatedGasFee = useMemo(() => {
-    return calculateGasForFee(MethodE.Transfer, 1n);
-  }, [calculateGasForFee]);
+  const { data: estimatedGas } = useEstimateGas({
+    account: walletClient?.account,
+    chainId: walletClient?.chain.id,
+    to: delegateAddress,
+    value: 1n,
+  });
+
+  const { data: gasPrice } = useGasPrice({ chainId: walletClient?.chain.id });
 
   const roundedGasTokenBalance = useMemo(() => {
-    if (gasTokenBalance) {
+    if (gasTokenBalance && estimatedGas && gasPrice) {
       const parsedGasTokenBalance = parseFloat(formatUnits(gasTokenBalance.value, gasTokenBalance.decimals));
-      const parsedGasFee = parseFloat(formatUnits(estimatedGasFee, gasTokenBalance.decimals));
+      const parsedGasFee = parseFloat(formatUnits((estimatedGas * gasPrice * 110n) / 100n, gasTokenBalance.decimals));
       const fractionDigitsGasTokenBalance = valueToFractionDigits(parsedGasTokenBalance);
-      return (parsedGasTokenBalance - parsedGasFee * 1.1).toFixed(fractionDigitsGasTokenBalance);
+      return (parsedGasTokenBalance - parsedGasFee).toFixed(fractionDigitsGasTokenBalance);
     }
     return '';
-  }, [gasTokenBalance, estimatedGasFee]);
+  }, [gasTokenBalance, estimatedGas, gasPrice]);
 
   const handleMaxGas = () => {
     if (gasTokenBalance) {
@@ -109,7 +113,13 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
                 if (!walletClient) {
                   return;
                 }
-                const transferTxHash = await transferFunds(walletClient, delegateAddress, Number(inputValue));
+                const transferTxHash = await transferFunds(
+                  walletClient,
+                  delegateAddress,
+                  Number(inputValue),
+                  estimatedGas,
+                  gasPrice
+                );
                 setTxHash(transferTxHash.hash);
               }}
               disabled={!!txHash || !inputValue || +inputValue === 0}
