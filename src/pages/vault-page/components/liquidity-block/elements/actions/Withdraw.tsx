@@ -8,6 +8,7 @@ import { Box, Button, Typography } from '@mui/material';
 
 import { PERIOD_OF_2_DAYS } from 'appConstants';
 import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -280,14 +281,16 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
           </Box>
         </Box>
         <Box>
-          <Button
-            variant="primary"
-            onClick={handleWithdrawLiquidity}
-            className={styles.actionButton}
-            disabled={isButtonDisabled}
-          >
-            {validityCheckWithdrawText}
-          </Button>
+          <GasDepositChecker>
+            <Button
+              variant="primary"
+              onClick={handleWithdrawLiquidity}
+              className={styles.actionButton}
+              disabled={isButtonDisabled}
+            >
+              {validityCheckWithdrawText}
+            </Button>
+          </GasDepositChecker>
         </Box>
       </Box>
     </div>

@@ -122,7 +122,7 @@ export const ActionBlock = memo(() => {
     chainId,
   });
 
-  const { hasEnoughGas } = useUserWallet();
+  const { hasEnoughGasForFee } = useUserWallet();
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const proxyAddr = useAtomValue(proxyAddrAtom);
@@ -224,7 +224,7 @@ export const ActionBlock = memo(() => {
     if (poolTokenBalance === 0) {
       return ValidityCheckButtonE.NoFunds;
     }
-    if (!hasEnoughGas(MethodE.Approve, 4n)) {
+    if (!hasEnoughGasForFee(MethodE.Approve, 4n)) {
       return ValidityCheckButtonE.NoEnoughGas;
     }
     if (orderInfo.size === 0) {
@@ -237,7 +237,7 @@ export const ActionBlock = memo(() => {
       return ValidityCheckButtonE.NoTriggerPrice;
     }
     return ValidityCheckButtonE.GoodToGo;
-  }, [orderInfo, address, poolTokenBalance, hasEnoughGas]);
+  }, [orderInfo, address, poolTokenBalance, hasEnoughGasForFee]);
 
   const validityCheckButtonText = useMemo(() => {
     if (validityCheckButtonType === ValidityCheckButtonE.NoAddress) {

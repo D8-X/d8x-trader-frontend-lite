@@ -15,11 +15,11 @@ interface GasDepositCheckerPropsI extends PropsWithChildren {
 export const GasDepositChecker = ({ children, multiplier = 1n }: GasDepositCheckerPropsI) => {
   const { t } = useTranslation();
 
-  const { hasEnoughGas } = useUserWallet();
+  const { hasEnoughGasForFee } = useUserWallet();
 
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
-  const hasGas = hasEnoughGas(MethodE.Approve, multiplier);
+  const hasGas = hasEnoughGasForFee(MethodE.Approve, multiplier);
 
   if (hasGas) {
     return children;

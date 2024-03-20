@@ -5,6 +5,22 @@
   justify-content: center;
 }
 
+.inputClassName {
+  width: 100%;
+}
+
+.helperText {
+  display: block;
+  text-align: right;
+  margin-top: 2 * $d8x-spacing;
+  color: var(--d8x-color-text-main);
+
+  a {
+    cursor: pointer;
+    color: var(--d8x-color-action);
+  }
+}
+
 .dialogContent {
   display: flex;
   flex-direction: column;

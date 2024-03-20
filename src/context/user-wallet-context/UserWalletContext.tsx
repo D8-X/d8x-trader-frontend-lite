@@ -13,7 +13,8 @@ import { MethodE } from 'types/enums';
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
   isGasTokenFetchError: boolean;
-  hasEnoughGas: (method: MethodE, multiplier: bigint) => boolean;
+  hasEnoughGasForFee: (method: MethodE, multiplier: bigint) => boolean;
+  calculateGasForFee: (method: MethodE, multiplier: bigint) => bigint;
   refetchWallet: () => void;
 }
 
@@ -64,15 +65,26 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     }
   }, [address, chain?.id, isConnected]);
 
-  const hasEnoughGas = useCallback(
+  const calculateGasForFee = useCallback(
     (method: MethodE, multiplier: bigint) => {
-      if (chain?.id && gasPrice > 0n && gasTokenBalance && gasTokenBalance.value > 0n) {
+      if (chain?.id && gasPrice > 0n) {
         const gasLimit = getGasLimit({ chainId: chain.id, method });
-        return gasPrice * gasLimit * multiplier < gasTokenBalance.value;
+        return gasPrice * gasLimit * multiplier;
+      }
+      return 0n;
+    },
+    [gasPrice, chain?.id]
+  );
+
+  const hasEnoughGasForFee = useCallback(
+    (method: MethodE, multiplier: bigint) => {
+      const gasForFee = calculateGasForFee(method, multiplier);
+      if (gasForFee > 0n && gasTokenBalance && gasTokenBalance.value > 0n) {
+        return gasForFee < gasTokenBalance.value;
       }
       return false;
     },
-    [gasPrice, chain?.id, gasTokenBalance]
+    [calculateGasForFee, gasTokenBalance]
   );
 
   const handleWalletRefetch = useCallback(() => {
@@ -84,7 +96,8 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
       value={{
         gasTokenBalance,
         isGasTokenFetchError,
-        hasEnoughGas,
+        hasEnoughGasForFee,
+        calculateGasForFee,
         refetchWallet: handleWalletRefetch,
       }}
     >

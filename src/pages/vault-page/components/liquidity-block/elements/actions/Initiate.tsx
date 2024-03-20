@@ -7,6 +7,7 @@ import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi
 import { Box, Button, Typography } from '@mui/material';
 
 import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -270,14 +271,16 @@ export const Initiate = memo(() => {
         min={0}
       />
       <Box className={styles.buttonHolder}>
-        <Button
-          variant="primary"
-          disabled={isButtonDisabled}
-          onClick={handleInitiateLiquidity}
-          className={styles.actionButton}
-        >
-          {validityCheckInitiateText}
-        </Button>
+        <GasDepositChecker>
+          <Button
+            variant="primary"
+            disabled={isButtonDisabled}
+            onClick={handleInitiateLiquidity}
+            className={styles.actionButton}
+          >
+            {validityCheckInitiateText}
+          </Button>
+        </GasDepositChecker>
       </Box>
     </>
   );

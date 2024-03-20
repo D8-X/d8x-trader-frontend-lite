@@ -9,6 +9,7 @@ import { Box, Button, InputAdornment, Link, OutlinedInput, Typography } from '@m
 import SwitchIcon from 'assets/icons/switchSeparator.svg?react';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { addLiquidity } from 'blockchain-api/contract-interactions/addLiquidity';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -291,14 +292,16 @@ export const Add = memo(() => {
           </Box>
         </Box>
         <Box className={styles.buttonHolder}>
-          <Button
-            variant="primary"
-            disabled={isButtonDisabled}
-            onClick={handleAddLiquidity}
-            className={styles.actionButton}
-          >
-            {validityCheckAddText}
-          </Button>
+          <GasDepositChecker>
+            <Button
+              variant="primary"
+              disabled={isButtonDisabled}
+              onClick={handleAddLiquidity}
+              className={styles.actionButton}
+            >
+              {validityCheckAddText}
+            </Button>
+          </GasDepositChecker>
         </Box>
       </Box>
     </div>

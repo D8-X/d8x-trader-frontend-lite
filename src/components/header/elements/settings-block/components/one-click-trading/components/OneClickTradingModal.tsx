@@ -359,7 +359,6 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
           isOpen={isFundingModalOpen}
           onClose={() => setFundingModalOpen(false)}
           delegateAddress={delegateAddress as Address}
-          mainAddress={address as Address}
         />
       )}
     </>
