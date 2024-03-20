@@ -7,12 +7,13 @@ import { X, Google } from '@mui/icons-material';
 import { Button } from '@mui/material';
 
 import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
+import { Web3SignInMethodE } from 'types/enums';
 
 import styles from './Web3AuthConnectButton.module.scss';
 
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
-  signInMethod: 'x' | 'google'; // should be enum
+  signInMethod: Web3SignInMethodE;
 }
 
 export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: Web3AuthConnectButtonPropsI) => {
@@ -31,10 +32,10 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
       className={classnames(styles.connectWalletButton, buttonClassName)}
       key={'login'}
       disabled={!web3Auth || isConnecting}
-      onClick={() => (signInMethod === 'x' ? signInWithTwitter() : signInWithGoogle())}
+      onClick={() => (signInMethod === Web3SignInMethodE.X ? signInWithTwitter() : signInWithGoogle())}
       variant="primary"
     >
-      {signInMethod === 'x' ? <X /> : <Google />}
+      {signInMethod === Web3SignInMethodE.X ? <X /> : <Google />}
       {t(`common.connect-modal.sign-in-with-${signInMethod.toLowerCase()}-button`)}
     </Button>
   );

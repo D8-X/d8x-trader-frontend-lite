@@ -9,6 +9,7 @@ import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3Au
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
+import { Web3SignInMethodE } from 'types/enums';
 
 import styles from './ConnectModal.module.scss';
 
@@ -33,14 +34,14 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
           <Separator />
           <div className={styles.dialogContent}>
             <div className={styles.actionButtonsContainer}>
-              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod="x" />
+              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
               <div className={styles.orSeparator}>
                 <Separator />
                 <div className={styles.orTextHolder}>
                   <span>{t('common.connect-modal.or-separator')}</span>
                 </div>
               </div>
-              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod="google" />
+              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
               <div className={styles.orSeparator}>
                 <Separator />
                 <div className={styles.orTextHolder}>
