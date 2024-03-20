@@ -367,19 +367,19 @@
       "title": "Trade and provide liquidity to BOOST your $D8X Airdrop",
       "boosted-volume": {
         "title": "BOOSTED Volume",
-        "modal-text": "The $D8X Airdrop is calculated based on BOOSTED Volume. For every trade or liquidity provision we compute volume x boost. BOOSTED Volume is the sum of it over all your trades and liquidity provisions."
+        "modal-text": "The $D8X Airdrop is calculated based on BOOSTED Volume. BOOSTED Volume is the sum of BOOSTED Trade Volume and BOOSTED Liquidity Volume."
       },
       "trade-volume": {
         "title": "BOOSTED Trade Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "modal-text": "For every trade we compute Volume x Trade Boost. BOOSTED Trade Volume is the sum of it over all your trades and liquidity provisions."
       },
       "trade-last-increase": {
         "title": "Last increase",
-        "modal-text": "Last increase modal text"
+        "modal-text": "The amount BOOSTED Volume increased from your last trade. LFG!"
       },
       "trade-boost": {
         "title": "Trade Boost",
-        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
+        "modal-text": "The Trade Boost is applied to your NEXT trade. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
         "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
         "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
       },
@@ -388,18 +388,16 @@
         "random": "Random boost:"
       },
       "liquidity-volume": {
-        "title": "BOOSTED Liquidity Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "title": "BOOSTED Liquidity",
+        "modal-text": "The longer you keep your liquidity in the pools, the higher your BOOSTED Liquidity volume. Over 24 hours your BOOSTED Liquidity volume can increase up to Liquidity x Liquidity Boost."
       },
       "trade-hourly-increase": {
         "title": "Hourly increase",
-        "modal-text": "Hourly increase modal text"
+        "modal-text": "Hourly increase of BOOSTED Liquidity"
       },
       "liquidity-boost": {
         "title": "Liquidity Boost",
-        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
-        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
-        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
+        "modal-text": "The Liquidity Boost shows the boost that is applied to your liquidity provision. The boost can change over time."
       }
     },
     "refer": {

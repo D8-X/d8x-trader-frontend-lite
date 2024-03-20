@@ -198,18 +198,6 @@ export const PumpStationBlock = memo(() => {
                     {t('pages.boost-station.liquidity-boost.modal-text', {
                       totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
                     })}
-                    <ol>
-                      <li>
-                        {t('pages.boost-station.liquidity-boost.modal-text2', {
-                          volBoostMax: pumpStationParams?.volBoostMax,
-                        })}
-                      </li>
-                      <li>
-                        {t('pages.boost-station.liquidity-boost.modal-text3', {
-                          rndBoostMax: pumpStationParams?.rndBoostMax,
-                        })}
-                      </li>
-                    </ol>
                   </Typography>
                 }
               />

@@ -397,9 +397,7 @@
       },
       "liquidity-boost": {
         "title": "Liquidity Boost",
-        "modal-text": "The PUMP-O-METER shows the boost that is applied to your NEXT trade / liquidity provision. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
-        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
-        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
+        "modal-text": "Liquidity Boost modal text"
       }
     },
     "refer": {
