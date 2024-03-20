@@ -49,7 +49,9 @@
 .closeButtonContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 6 * $d8x-spacing;
+  width: 100%;
 }
 
 .infoText {
@@ -70,13 +72,6 @@
 
 .closeButton {
   width: 150px;
-}
-
-.closeButtonsContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
 }
 
 .actionButton {

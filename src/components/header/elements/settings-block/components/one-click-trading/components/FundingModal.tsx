@@ -1,5 +1,5 @@
 import { Box, Button, Link, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBalance, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { formatUnits, type Address } from 'viem';
@@ -48,15 +48,22 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress, mainAddress }: 
 
   const handleMaxGas = () => {
     if (gasTokenBalance) {
-      const value = parseFloat(formatUnits(gasTokenBalance!.value, gasTokenBalance!.decimals));
+      const value = parseFloat(formatUnits(gasTokenBalance.value, gasTokenBalance.decimals));
       const bufferValue = (value * 0.9).toString();
       setInputValue(bufferValue);
+    } else {
+      setInputValue('');
     }
   };
 
-  const formattedGasTokenBalance = formatUnits(gasTokenBalance!.value, gasTokenBalance!.decimals);
-  const fractionDigitsGasTokenBalance = valueToFractionDigits(parseFloat(formattedGasTokenBalance));
-  const roundedGasTokenBalance = (0.9 * parseFloat(formattedGasTokenBalance)).toFixed(fractionDigitsGasTokenBalance);
+  const roundedGasTokenBalance = useMemo(() => {
+    if (gasTokenBalance) {
+      const formattedGasTokenBalance = formatUnits(gasTokenBalance.value, gasTokenBalance.decimals);
+      const fractionDigitsGasTokenBalance = valueToFractionDigits(parseFloat(formattedGasTokenBalance));
+      return (0.9 * parseFloat(formattedGasTokenBalance)).toFixed(fractionDigitsGasTokenBalance);
+    }
+    return '';
+  }, [gasTokenBalance]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
