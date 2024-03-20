@@ -2,12 +2,12 @@ import { Box, Button, Link, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBalance, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
-import { type Address } from 'viem';
-
+import { formatUnits, type Address } from 'viem';
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { SidesRow } from 'components/sides-row/SidesRow';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './FundingModal.module.scss';
 
@@ -19,7 +19,6 @@ interface FundingModalPropsI {
 }
 
 export const FundingModal = ({ isOpen, onClose, delegateAddress, mainAddress }: FundingModalPropsI) => {
-  console.log(mainAddress);
   const { t } = useTranslation();
 
   const { data: walletClient } = useWalletClient();
@@ -49,9 +48,15 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress, mainAddress }: 
 
   const handleMaxGas = () => {
     if (gasTokenBalance) {
-      setInputValue(gasTokenBalance.formatted);
+      const value = parseFloat(formatUnits(gasTokenBalance!.value, gasTokenBalance!.decimals));
+      const bufferValue = (value * 0.9).toString();
+      setInputValue(bufferValue);
     }
   };
+
+  const formattedGasTokenBalance = formatUnits(gasTokenBalance!.value, gasTokenBalance!.decimals);
+  const fractionDigitsGasTokenBalance = valueToFractionDigits(parseFloat(formattedGasTokenBalance));
+  const roundedGasTokenBalance = (0.9 * parseFloat(formattedGasTokenBalance)).toFixed(fractionDigitsGasTokenBalance);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
@@ -71,12 +76,13 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress, mainAddress }: 
           setInputValue={setInputValue}
           currency={delegateBalance?.symbol}
           min={0}
+          max={+roundedGasTokenBalance}
         />
         <SidesRow
           leftSide=" "
           rightSide={
             <Typography className={styles.helperText} variant="bodyTiny">
-              {t('common.max')} <Link onClick={handleMaxGas}>{gasTokenBalance?.formatted}</Link>
+              {t('common.max')} <Link onClick={handleMaxGas}>{roundedGasTokenBalance}</Link>
             </Typography>
           }
         />

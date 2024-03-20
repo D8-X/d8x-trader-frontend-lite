@@ -72,6 +72,13 @@
   width: 150px;
 }
 
+.closeButtonsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .actionButton {
   width: 220px;
 }
