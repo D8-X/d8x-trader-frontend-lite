@@ -1,7 +1,7 @@
 @import '~styles/theme/theme.scss';
 
 .root {
-  background-image: url('/images/pumpstation/rocket.png');
+  background-image: url('/images/boost-station/rocket.png');
   background-size: contain;
   background-position: bottom;
   background-repeat: no-repeat;
@@ -25,4 +25,16 @@
   font-size: 32px;
   line-height: 44px;
   color: var(--d8x-color-text);
+}
+
+.inviteLink {
+  margin-top: 6 * $d8x-spacing;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2 * $d8x-spacing;
+    cursor: pointer;
+  }
 }

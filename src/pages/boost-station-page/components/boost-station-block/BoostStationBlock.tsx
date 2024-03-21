@@ -7,22 +7,22 @@ import { Typography } from '@mui/material';
 
 import D8XLogoWithText from 'assets/logos/d8xLogoWithText.svg?react';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
-import { getPumpStationData, getPumpStationParameters } from 'network/network';
-import { BoostI, BoostStationResponseI, PumpStationParamResponseI } from 'types/types';
+import { getBoostStationData, getBoostStationParameters } from 'network/network';
+import { BoostI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 
-import { PumpOMeter } from '../pump-o-meter/PumpOMeter';
+import { BoostMeter } from '../boost-meter/BoostMeter';
 
-import styles from './PumpStationBlock.module.scss';
+import styles from './BoostStationBlock.module.scss';
 
 const INTERVAL_FOR_DATA_POLLING = 10_000; // Each 10 sec
 
-export const PumpStationBlock = memo(() => {
+export const BoostStationBlock = memo(() => {
   const { t } = useTranslation();
 
   const [boostStation, setBoostStation] = useState<BoostStationResponseI>();
   const [boosts, setBoosts] = useState<BoostI[]>([]);
-  const [pumpStationParams, setPumpStationParams] = useState<PumpStationParamResponseI>();
+  const [boostStationParams, setBoostStationParams] = useState<BoostStationParamResponseI>();
 
   const isDataRequestSent = useRef(false);
   const isParamsRequestSent = useRef(false);
@@ -37,7 +37,7 @@ export const PumpStationBlock = memo(() => {
 
     isDataRequestSent.current = true;
 
-    getPumpStationData(address)
+    getBoostStationData(address)
       .then((response) => {
         setBoostStation(response);
         setBoosts(response.boosts);
@@ -68,8 +68,8 @@ export const PumpStationBlock = memo(() => {
     if (!isParamsRequestSent.current) {
       isParamsRequestSent.current = true;
 
-      getPumpStationParameters()
-        .then(setPumpStationParams)
+      getBoostStationParameters()
+        .then(setBoostStationParams)
         .finally(() => {
           isParamsRequestSent.current = false;
         });
@@ -128,17 +128,17 @@ export const PumpStationBlock = memo(() => {
                 content={
                   <Typography>
                     {t('pages.boost-station.trade-boost.modal-text', {
-                      totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
+                      totalBoostMax: (boostStationParams?.volBoostMax ?? 0) + (boostStationParams?.rndBoostMax ?? 0),
                     })}
                     <ol>
                       <li>
                         {t('pages.boost-station.trade-boost.modal-text2', {
-                          volBoostMax: pumpStationParams?.volBoostMax,
+                          volBoostMax: boostStationParams?.volBoostMax,
                         })}
                       </li>
                       <li>
                         {t('pages.boost-station.trade-boost.modal-text3', {
-                          rndBoostMax: pumpStationParams?.rndBoostMax,
+                          rndBoostMax: boostStationParams?.rndBoostMax,
                         })}
                       </li>
                     </ol>
@@ -146,7 +146,7 @@ export const PumpStationBlock = memo(() => {
                 }
               />
             </div>
-            <PumpOMeter totalBoost={totalBoost} />
+            <BoostMeter totalBoost={totalBoost} />
           </div>
           <div className={styles.boostsData}>
             <div className={styles.boostLine}>
@@ -196,14 +196,14 @@ export const PumpStationBlock = memo(() => {
                 content={
                   <Typography>
                     {t('pages.boost-station.liquidity-boost.modal-text', {
-                      totalBoostMax: (pumpStationParams?.volBoostMax ?? 0) + (pumpStationParams?.rndBoostMax ?? 0),
+                      totalBoostMax: (boostStationParams?.volBoostMax ?? 0) + (boostStationParams?.rndBoostMax ?? 0),
                     })}
                   </Typography>
                 }
               />
             </div>
             <div className={styles.meterHolder}>
-              <PumpOMeter totalBoost={boostStation ? boostStation.poolVolBoost[0].boost : 0} />
+              <BoostMeter totalBoost={boostStation ? boostStation.poolVolBoost[0].boost : 0} />
             </div>
           </div>
         </div>

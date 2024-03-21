@@ -1,6 +1,6 @@
 export enum RoutesE {
   Trade = '/',
-  PumpStation = '/pump-station',
+  BoostStation = '/boost-station',
   Refer = '/refer',
   Vault = '/vault',
   Portfolio = '/portfolio',

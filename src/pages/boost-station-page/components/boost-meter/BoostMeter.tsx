@@ -1,15 +1,15 @@
 import classnames from 'classnames';
 import { memo, type ReactNode, useMemo } from 'react';
 
-import styles from './PumpOMeter.module.scss';
+import styles from './BoostMeter.module.scss';
 
-interface PumpOMeterPropsI {
+interface BoostMeterPropsI {
   totalBoost: number;
 }
 
 const DIVISIONS_COUNT = 20;
 
-export const PumpOMeter = memo(({ totalBoost }: PumpOMeterPropsI) => {
+export const BoostMeter = memo(({ totalBoost }: BoostMeterPropsI) => {
   const divisions: ReactNode[] = [];
   const sqrtBoost = totalBoost ? totalBoost ** 0.5 : 0;
 

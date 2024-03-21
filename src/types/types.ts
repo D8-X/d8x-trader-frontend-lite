@@ -278,7 +278,7 @@ export interface BoostStationResponseI {
   poolVolBoost: PoolVolBoostI[];
 }
 
-export interface PumpStationParamResponseI {
+export interface BoostStationParamResponseI {
   rndBoostMax: number;
   volBoostMax: number;
 }

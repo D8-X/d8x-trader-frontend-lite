@@ -2,18 +2,18 @@ import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 
-import { PumpStats } from './components/pump-stats/PumpStats';
+import { BoostStats } from './components/boost-stats/BoostStats';
 
-import styles from './PumpStationPage.module.scss';
+import styles from './BoostStationPage.module.scss';
 
-export const PumpStationPage = () => {
+export const BoostStationPage = () => {
   return (
     <>
-      <Helmet title="Pump Station | D8X App" />
+      <Helmet title="Boost Station | D8X App" />
       <div className={styles.root}>
         <MaintenanceWrapper>
           <Container className={styles.container}>
-            <PumpStats />
+            <BoostStats />
           </Container>
         </MaintenanceWrapper>
       </div>

@@ -365,6 +365,7 @@
     },
     "boost-station": {
       "title": "Tradez et ajoutez de la liquidité pour BOOSTER votre Airdrop de $D8X",
+      "invite-friends": "Parrainage",
       "boosted-volume": {
         "title": "Volume BOOSTÉ",
         "modal-text": "L'Airdrop $D8X est calculé en fonction du volume BOOSTÉ. Le volume BOOSTÉ est la somme du volume de transactions BOOSTÉ et du volume de liquidité BOOSTÉ."

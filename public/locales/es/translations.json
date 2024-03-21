@@ -365,6 +365,7 @@
     },
     "boost-station": {
       "title": "Participa en el comercio y añade liquidez para IMPULSAR tu bolsa de Airdrop de $D8X",
+      "invite-friends": "Referir",
       "boosted-volume": {
         "title": "Volumen IMPULSADO",
         "modal-text": "El Airdrop de $D8X se calcula en función del volumen IMPULSADO. Para cada operación calculamos el volumen x el impulso. El volumen IMPULSADO es la suma de todos estos volumenes."

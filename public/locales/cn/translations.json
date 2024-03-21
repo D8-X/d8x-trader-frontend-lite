@@ -365,6 +365,7 @@
     },
     "boost-station": {
       "title": "交易并提供流动性以加速您的 $D8X 空投",
+      "invite-friends": "邀请返佣",
       "boosted-volume": {
         "title": "加速后的总量",
         "modal-text": "$D8X 空投的计算基于加速后的总量。加速后的总量=加速后的交易量+加速后的流动性提供量"

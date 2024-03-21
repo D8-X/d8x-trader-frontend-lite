@@ -365,6 +365,7 @@
     },
     "boost-station": {
       "title": "Handle und füge Liquidität hinzu um deinen $D8X Airdrop Bag zu BOOSTEN",
+      "invite-friends": "Empfehlen",
       "boosted-volume": {
         "title": "GEBOOSTETES Volumen",
         "modal-text": "Der $D8X Airdrop wird basierend auf dem GEBOOSTETEN Volumen berechnet. Geboostetes Volumen ist die Summe des geboosteten Handelsvolumen und des geboosteten Liquiditätsvolumen."

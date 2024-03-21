@@ -15,7 +15,7 @@ import type {
   PriceFeedResponseI,
   ValidatedResponseI,
 } from 'types/types';
-import { MaintenanceStatusI, BoostStationResponseI, PumpStationParamResponseI } from 'types/types';
+import { MaintenanceStatusI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
 
 function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[chainId] || config.apiUrl.default;
@@ -419,7 +419,7 @@ export async function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI
   return data.json();
 }
 
-export async function getPumpStationData(traderAddr: string): Promise<BoostStationResponseI> {
+export async function getBoostStationData(traderAddr: string): Promise<BoostStationResponseI> {
   const data = await fetch(`https://drip.d8x.xyz/score?addr=${traderAddr}`, getRequestOptions());
   if (!data.ok) {
     console.error({ data });
@@ -428,7 +428,7 @@ export async function getPumpStationData(traderAddr: string): Promise<BoostStati
   return data.json();
 }
 
-export async function getPumpStationParameters(): Promise<PumpStationParamResponseI> {
+export async function getBoostStationParameters(): Promise<BoostStationParamResponseI> {
   const data = await fetch(`https://drip.d8x.xyz/score-params`, getRequestOptions());
   if (!data.ok) {
     console.error({ data });
