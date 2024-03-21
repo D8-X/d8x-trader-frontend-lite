@@ -379,7 +379,9 @@
       },
       "trade-boost": {
         "title": "Boost des trades",
-        "modal-text": "Le Trade Boost est appliqué à votre PROCHAINE transaction. Le boost va de 1x à {{totalBoostMax}}x et comprend deux parties:"
+        "modal-text": "Le Trade Boost est appliqué à votre PROCHAINE transaction. Le boost va de 1x à {{totalBoostMax}}x et comprend deux parties:",
+        "modal-text2": "Volume Boost - Vos transactions au cours des 7 derniers jours pourraient vous rapporter un boost du volume allant de 1x à {{volBoostMax}}x. Plus vous échangez, plus votre boost potentiel est élevé!",
+        "modal-text3": "Fortune Boost - Chaque transaction vous donne une chance de bénéficier du Fortune Boost - un bonus qui peut monter en flèche de 0x jusqu'à un incroyable {{rndBoostMax}}x!"
       },
       "boost": {
         "volume": "Volume Boost:",
@@ -395,7 +397,7 @@
       },
       "liquidity-boost": {
         "title": "Boost de la liquidité",
-        "modal-text": "Le Liquidity Boost montre l'augmentation appliquée à votre apport de liquidité. Le boost peut changer avec le temps."
+        "modal-text": "Le Boost de la liquidité montre l'augmentation appliquée à votre apport de liquidité. Le boost peut changer avec le temps."
       }
     },
     "refer": {

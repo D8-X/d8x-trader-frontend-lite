@@ -374,7 +374,7 @@
         "modal-text": "For every trade we compute Volume x Trade Boost. BOOSTED Trade Volume is the sum of it over all your trades."
       },
       "trade-last-increase": {
-        "title": "Last increase",
+        "title": "Last change",
         "modal-text": "The amount BOOSTED Trade Volume increased from your last trade. LFG!"
       },
       "trade-boost": {
@@ -384,15 +384,15 @@
         "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
       },
       "boost": {
-        "volume": "Volume based boost:",
-        "random": "Random boost:"
+        "volume": "Volume boost:",
+        "random": "Fortune boost:"
       },
       "liquidity-volume": {
-        "title": "BOOSTED Liquidity",
+        "title": "BOOSTED Liquidity Volume",
         "modal-text": "The longer you keep your liquidity in the pools, the higher your BOOSTED Liquidity volume. Over 24 hours your BOOSTED Liquidity volume can increase up to Liquidity x Liquidity Boost."
       },
       "trade-hourly-increase": {
-        "title": "Hourly increase",
+        "title": "Hourly change",
         "modal-text": "Hourly increase of BOOSTED Liquidity"
       },
       "liquidity-boost": {

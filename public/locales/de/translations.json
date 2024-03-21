@@ -367,7 +367,7 @@
       "title": "Handle und füge Liquidität hinzu um deinen $D8X Airdrop Bag zu BOOSTEN",
       "boosted-volume": {
         "title": "GEBOOSTETES Volumen",
-        "modal-text": "Der $D8X Airdrop wird basierend auf dem GEBOOSTETEN Volumen berechnet. GEBOOSTETES Volumen ist die Summe des GEBOOSTETEN Handelsvolumen und des GEBOOSTETEN Liquiditäts Volumen."
+        "modal-text": "Der $D8X Airdrop wird basierend auf dem GEBOOSTETEN Volumen berechnet. Geboostetes Volumen ist die Summe des geboosteten Handelsvolumen und des geboosteten Liquiditätsvolumen."
       },
       "trade-volume": {
         "title": "GEBOOSTES Handelsvolumen",
@@ -379,7 +379,7 @@
       },
       "trade-boost": {
         "title": "Handels Boost",
-        "modal-text": "Der Handels Boost ist derr Boost der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis {{totalBoostMax}}x und besteht aus zwei Teilen:",
+        "modal-text": "Der Handels Boost ist der Boost der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis {{totalBoostMax}}x und besteht aus zwei Teilen:",
         "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren, der von 1x bis {{volBoostMax}}x reicht. Je mehr du handelst, desto höher dein Boost.",
         "modal-text3": "Fortune Boost - Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0x auf einen unglaublichen {{rndBoostMax}}x ansteigen kann!"
       },
@@ -388,7 +388,7 @@
         "random": "Fortune Boost:"
       },
       "liquidity-volume": {
-        "title": "GEBOOSTEE Liquidität",
+        "title": "GEBOOSTETES Liquiditätsvolumen",
         "modal-text": "Je länger deine Liquidität in den Pools ist, desto höher ist dein GEBOOSTES Liquiditätsvolumen. Innerhalb von 24 Stunden kann sich dein GEBOOSTES Liquiditätsvolumen auf bis zu Liquidität x Liquiditätsschub erhöhen."
       },
       "trade-hourly-increase": {
@@ -397,7 +397,7 @@
       },
       "liquidity-boost": {
         "title": "Liquiditäts Boost",
-        "modal-text": "Der Liquidity Boost zeigt den Boost, der auf deine Liquiditätsbereitstellung angewendet wird. Der Boost kann sich verändern."
+        "modal-text": "Der Liquiditäts Boost zeigt den Boost, der auf deine Liquidität angewendet wird. Der Boost kann sich verändern."
       }
     },
     "refer": {

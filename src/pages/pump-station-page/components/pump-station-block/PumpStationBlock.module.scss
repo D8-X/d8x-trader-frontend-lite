@@ -63,11 +63,13 @@
 
 .boostsData {
   margin-top: $d8x-spacing * 4;
+  display: flex;
+  gap: $d8x-spacing * 6;
+
 
   .boostLine {
     display: flex;
-    gap: $d8x-spacing * 2;
-    align-items: center;
+    gap: $d8x-spacing * 1;
   }
 }
 
