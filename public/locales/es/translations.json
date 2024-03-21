@@ -774,7 +774,7 @@
     },
     "connect-modal": {
       "title": "Acceso",
-      "description": "Inicie sesión con X o billetera web3",
+      "description": "Inicie sesión con X, Google o billetera web3",
       "sign-in-with-x-button": "Inicie sesión con X",
       "sign-in-with-google-button": "Inicie sesión con Google",
       "sign-in-with-wallet-button": "Inicie sesión con billetera",

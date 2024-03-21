@@ -371,11 +371,11 @@
       },
       "trade-volume": {
         "title": "BOOSTED Trade Volume",
-        "modal-text": "For every trade we compute Volume x Trade Boost. BOOSTED Trade Volume is the sum of it over all your trades and liquidity provisions."
+        "modal-text": "For every trade we compute Volume x Trade Boost. BOOSTED Trade Volume is the sum of it over all your trades."
       },
       "trade-last-increase": {
         "title": "Last increase",
-        "modal-text": "The amount BOOSTED Volume increased from your last trade. LFG!"
+        "modal-text": "The amount BOOSTED Trade Volume increased from your last trade. LFG!"
       },
       "trade-boost": {
         "title": "Trade Boost",
@@ -774,7 +774,7 @@
     },
     "connect-modal": {
       "title": "Sign in",
-      "description": "Sign in with X or web3 wallet",
+      "description": "Sign in with X, Google or web3 wallet",
       "sign-in-with-x-button": "Sign in with X",
       "sign-in-with-google-button": "Sign in with Google",
       "sign-in-with-wallet-button": "Sign in with wallet",

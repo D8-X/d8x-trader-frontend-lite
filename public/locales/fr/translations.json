@@ -772,7 +772,7 @@
     },
     "connect-modal": {
       "title": "Connecter",
-      "description": "Connectez-vous avec X ou le portefeuille web3",
+      "description": "Connectez-vous avec X, Google ou le portefeuille web3",
       "sign-in-with-x-button": "Connectez-vous avec X",
       "sign-in-with-google-button": "Connectez-vous avec Google",
       "sign-in-with-wallet-button": "Connectez-vous avec un wallet",

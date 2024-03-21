@@ -243,7 +243,7 @@
         "leverage": {
           "title": "杠杆",
           "body1": "设置订单杠杆。",
-          "body2": "如果您的订单减少仓位（“部分平仓”），设置的杠杆不受影响。"
+          "body2": "如果您的订单减少仓位（"部分平仓"），设置的杠杆不受影响。"
         },
         "slippage": {
           "title": "滑点设置",
@@ -364,40 +364,40 @@
       }
     },
     "boost-station": {
-      "title": "交易并提供流动性以加速您的 $D8X 空投金额",
+      "title": "交易并提供流动性以加速您的 $D8X 空投",
       "boosted-volume": {
         "title": "加速后的交易量",
-        "modal-text": "$D8X空投是基于加速后的交易量计算的。对于每 或提供流动性 一笔交易，我们计算交易量乘以加速倍数。加速后的交易量=实际交易量x加速倍数。"
+        "modal-text": "$D8X 空投的计算基于加速后的交易量。加速后的交易量是加速后的纯交易量和加速后的提供流动性的总和。"
       },
       "trade-volume": {
-        "title": "BOOSTED Trade Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "title": "加速后的交易量",
+        "modal-text": "对于每笔交易，我们计算实际交易量 x 交易加速倍数。加速后的交易量是您所有纯交易量和提供流动性的总和。"
       },
       "trade-last-increase": {
-        "title": "Last increase",
-        "modal-text": "Last increase modal text"
+        "title": "最后增量",
+        "modal-text": "自您上次交易以来加速量的增加量。让我们开始吧！"
       },
       "trade-boost": {
-        "title": "加速仪表盘",
-        "modal-text": "加速仪表盘显示应用于你下一次交易的加速。提升范围从1倍到105倍，有两个部分：",
-        "modal-text2": "交易量加速 - 过去7天的交易可以为你获得1倍到5倍的交易量加速。你交易得越多，潜在的加速就越高！",
-        "modal-text3": "幸运加速 - 每一笔交易都给你一个获得幸运加速的机会——一个奖励，可以从0倍一直飙升到令人难以置信的100倍！"
+        "title": "交易加速",
+        "modal-text": "交易加速适用于您的下一笔交易。加速范围从1倍到{{totalBoostMax}}倍，分为两部分：",
+        "modal-text2": "交易量加速 - 您过去7天的交易量可能为您获得从1倍到{{volBoostMax}}倍的交易量加速。交易越多，潜在的加速越高！",
+        "modal-text3": "幸运加速 - 每笔交易都有机会获得幸运加速——一个可以从0倍飙升至{{rndBoostMax}}倍的奖励！"
       },
       "boost": {
-        "volume": "交易量加速:",
-        "random": "幸运加速:"
+        "volume": "基于真实交易量的加速：",
+        "random": "随机加速："
       },
       "liquidity-volume": {
-        "title": "BOOSTED Liquidity Volume",
-        "modal-text": "BOOSTED Trade Volume modal text"
+        "title": "加速后的流动性提供",
+        "modal-text": "您在池子中保持流动性的时间越长，您的加速后流动性提供就越高。超过24小时，您的加速后流动性交易量可以增加至流动性提供 x 加速倍数。"
       },
       "trade-hourly-increase": {
-        "title": "Hourly increase",
-        "modal-text": "Hourly increase modal text"
+        "title": "每小时增量",
+        "modal-text": "加速后流动性的每小时增加量"
       },
       "liquidity-boost": {
-        "title": "Liquidity Boost",
-        "modal-text": "Liquidity Boost modal text"
+        "title": "流动性加速",
+        "modal-text": "流动性加速显示了应用于您提供的流动性的加速。这个加速随时间可能会变化。"
       }
     },
     "refer": {
@@ -774,7 +774,7 @@
     },
     "connect-modal": {
       "title": "登录",
-      "description": "使用X或web3钱包登录t",
+      "description": "使用 X、Google 或 Web3 钱包登录",
       "sign-in-with-x-button": "使用X登录",
       "sign-in-with-google-button": "使用Google登录",
       "sign-in-with-wallet-button": "使用钱包登录",
