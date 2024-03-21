@@ -9,6 +9,7 @@ import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { traderAPIAtom } from 'store/pools.store';
 import { MethodE } from 'types/enums';
+import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
@@ -24,16 +25,22 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const traderAPI = useAtomValue(traderAPIAtom);
+  const oneClickTradingActivated = useAtomValue(activatedOneClickTradingAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
 
   const [gasPrice, setGasPrice] = useState(0n);
+
+  const tradingAddress = oneClickTradingActivated ? tradingClient?.account?.address : address;
 
   const {
     data: gasTokenBalance,
     refetch: gasTokenBalanceRefetch,
     isError: isGasTokenFetchError,
   } = useBalance({
-    address,
-    query: { enabled: address && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting },
+    address: tradingAddress,
+    query: {
+      enabled: tradingAddress && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting,
+    },
   });
 
   useEffect(() => {

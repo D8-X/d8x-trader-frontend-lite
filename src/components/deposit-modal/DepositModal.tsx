@@ -18,6 +18,7 @@ import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 
 import styles from './DepositModal.module.scss';
+import { tradingClientAtom } from 'store/app.store';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
@@ -26,8 +27,11 @@ export const DepositModal = () => {
 
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
 
-  const { address, chain } = useAccount();
+  const tradingAddress = tradingClient?.account?.address;
+
+  const { chain } = useAccount();
 
   const handleOnClose = () => setDepositModalOpen(false);
 
@@ -63,7 +67,7 @@ export const DepositModal = () => {
           </Typography>
         </div>
         <div className={styles.section}>
-          <CopyInput id="address" textToCopy={address || ''} />
+          <CopyInput id="address" textToCopy={tradingAddress || ''} />
         </div>
         <Separator />
         <div className={styles.section}>
