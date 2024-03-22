@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBalance, useEstimateGas, useGasPrice, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import {
+  useAccount,
+  useBalance,
+  useEstimateGas,
+  useGasPrice,
+  useWaitForTransactionReceipt,
+  useWalletClient,
+} from 'wagmi';
 import { type Address, formatUnits } from 'viem';
 
 import { Button, Link, Typography } from '@mui/material';
@@ -9,7 +16,6 @@ import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './FundingModal.module.scss';
@@ -24,8 +30,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   const { t } = useTranslation();
 
   const { data: walletClient } = useWalletClient();
-
-  const { gasTokenBalance } = useUserWallet();
+  const { address, isConnected } = useAccount();
 
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [inputValue, setInputValue] = useState('');
@@ -33,6 +38,13 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   const { isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
     query: { enabled: !!txHash },
+  });
+
+  const { data: gasTokenBalance } = useBalance({
+    address,
+    query: {
+      enabled: address && isConnected,
+    },
   });
 
   const { data: delegateBalance } = useBalance({

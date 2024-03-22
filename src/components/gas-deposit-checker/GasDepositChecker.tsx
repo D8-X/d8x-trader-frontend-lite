@@ -1,3 +1,4 @@
+import { useSetAtom } from 'jotai';
 import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +7,6 @@ import { Button } from '@mui/material';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { MethodE } from 'types/enums';
-import { useSetAtom } from 'jotai/index';
 
 interface GasDepositCheckerPropsI extends PropsWithChildren {
   multiplier?: bigint;

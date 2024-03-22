@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -13,25 +13,31 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
+import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 
 import styles from './DepositModal.module.scss';
-import { tradingClientAtom } from 'store/app.store';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
+
+  const { address, chain } = useAccount();
 
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyItemI>();
 
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
+  const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
 
-  const tradingAddress = tradingClient?.account?.address;
-
-  const { chain } = useAccount();
+  const tradingAddress = useMemo(() => {
+    if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
+      return address;
+    }
+    return tradingClient?.account?.address;
+  }, [tradingClient?.account?.address, address, activatedOneClickTrading, selectedCurrency]);
 
   const handleOnClose = () => setDepositModalOpen(false);
 

@@ -4,6 +4,7 @@ import { useResizeDetector } from 'react-resize-detector';
 
 import { Box, CircularProgress } from '@mui/material';
 
+import { AtomsGlobalUpdates } from 'components/atoms-global-updates/AtomsGlobalUpdates';
 import { Footer } from 'components/footer/Footer';
 import { Header } from 'components/header/Header';
 import { ReferralConfirmModal } from 'components/referral-confirm-modal/ReferralConfirmModal';
@@ -48,6 +49,7 @@ export const App = memo(() => {
         <Footer />
 
         <SDKLoader />
+        <AtomsGlobalUpdates />
         <WelcomeModal />
         <ReferralConfirmModal />
         <ToastContainerWrapper />

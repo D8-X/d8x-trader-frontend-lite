@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -35,30 +35,23 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
 
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
 
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [delegateAddress, setDelegateAddress] = useAtom(delegateAddressAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
   const [storageKey, setStorageKey] = useAtom(storageKeyAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
   const setTradingClient = useSetAtom(tradingClientAtom);
 
   const [isLoading, setLoading] = useState(false);
   const [isActionLoading, setActionLoading] = useState(false);
   const [isDelegated, setDelegated] = useState<boolean | null>(null);
+  const [isFundingModalOpen, setFundingModalOpen] = useState(false);
 
   const handleRemoveRef = useRef(false);
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
-
-  const { address, isDisconnected } = useAccount();
-
-  useEffect(() => {
-    if (isDisconnected) {
-      setActivatedOneClickTrading(false);
-      setStorageKey(null);
-    }
-  }, [isDisconnected, setActivatedOneClickTrading, setStorageKey]);
 
   useEffect(() => {
     if (!address || !traderAPI || traderAPI?.chainId !== publicClient?.chain.id) {
@@ -151,8 +144,6 @@ export const OneClickTradingModal = ({ isOpen, onClose }: OneClickTradingModalPr
     handleActivateRef.current = false;
     setActionLoading(false);
   };
-
-  const [isFundingModalOpen, setFundingModalOpen] = useState(false);
 
   const handleFund = async () => {
     setFundingModalOpen(true);
