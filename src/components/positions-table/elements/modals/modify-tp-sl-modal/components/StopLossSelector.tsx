@@ -70,8 +70,14 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
   const validateStopLossPrice = useCallback(() => {
-    if (stopLossInputPrice == null) {
+    if (stopLossInputPrice === null) {
       setStopLossPrice(stopLossInputPrice);
+      return;
+    }
+
+    if (stopLossInputPrice === undefined) {
+      setStopLossPrice(position.stopLoss.fullValue);
+      setStopLossInputPrice(position.stopLoss.fullValue);
       return;
     }
 
@@ -89,7 +95,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     }
 
     setStopLossPrice(stopLossInputPrice);
-  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLossPrice]);
+  }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLossPrice, position.stopLoss.fullValue]);
 
   useEffect(() => {
     if (stopLoss && stopLoss !== StopLossE.None) {
@@ -111,7 +117,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
     if (position.stopLoss.valueType === OrderValueTypeE.Full && position.stopLoss.fullValue) {
       setStopLossInputPrice(position.stopLoss.fullValue);
     }
-  }, [position]);
+  }, [position.stopLoss.valueType, position.stopLoss.fullValue]);
 
   const translationMap: Record<StopLossE, string> = {
     [StopLossE.None]: t('pages.trade.order-block.stop-loss.none'),
@@ -141,7 +147,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
       handlePriceChange={handleStopLossChange}
       handleInputPriceChange={handleStopLossPriceChange}
       validateInputPrice={validateStopLossPrice}
-      selectedInputPrice={stopLossInputPrice}
+      selectedInputPrice={stopLoss !== StopLossE.None ? stopLossInputPrice : null}
       selectedPrice={stopLoss}
       currency={parsedSymbol?.quoteCurrency}
       stepSize={stepSize}

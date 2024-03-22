@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -64,11 +64,11 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     chainId,
   });
 
-  const [pools] = useAtom(poolsAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [poolFee] = useAtom(poolFeeAtom);
+  const pools = useAtomValue(poolsAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
