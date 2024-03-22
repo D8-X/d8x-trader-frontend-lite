@@ -14,7 +14,6 @@ import { Button, Link, Typography } from '@mui/material';
 
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
-import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
@@ -117,28 +116,26 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
-          <GasDepositChecker>
-            <Button
-              variant="primary"
-              className={styles.actionButton}
-              onClick={async () => {
-                if (!walletClient) {
-                  return;
-                }
-                const transferTxHash = await transferFunds(
-                  walletClient,
-                  delegateAddress,
-                  Number(inputValue),
-                  estimatedGas,
-                  gasPrice
-                );
-                setTxHash(transferTxHash.hash);
-              }}
-              disabled={!!txHash || !inputValue || +inputValue === 0}
-            >
-              {t(`common.settings.one-click-modal.funding-modal.fund`)}
-            </Button>
-          </GasDepositChecker>
+          <Button
+            variant="primary"
+            className={styles.actionButton}
+            onClick={async () => {
+              if (!walletClient) {
+                return;
+              }
+              const transferTxHash = await transferFunds(
+                walletClient,
+                delegateAddress,
+                Number(inputValue),
+                estimatedGas,
+                gasPrice
+              );
+              setTxHash(transferTxHash.hash);
+            }}
+            disabled={!!txHash || !inputValue || +inputValue === 0}
+          >
+            {t(`common.settings.one-click-modal.funding-modal.fund`)}
+          </Button>
         </div>
       </div>
     </Dialog>

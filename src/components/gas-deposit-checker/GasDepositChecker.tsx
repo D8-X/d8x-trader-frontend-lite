@@ -1,6 +1,8 @@
 import { useSetAtom } from 'jotai';
 import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Address } from 'viem';
+import { useBalance } from 'wagmi';
 
 import { Button } from '@mui/material';
 
@@ -10,16 +12,20 @@ import { MethodE } from 'types/enums';
 
 interface GasDepositCheckerPropsI extends PropsWithChildren {
   multiplier?: bigint;
+  address?: Address;
 }
 
-export const GasDepositChecker = ({ children, multiplier = 1n }: GasDepositCheckerPropsI) => {
+export const GasDepositChecker = ({ children, multiplier = 1n, address }: GasDepositCheckerPropsI) => {
   const { t } = useTranslation();
 
-  const { hasEnoughGasForFee } = useUserWallet();
+  const { hasEnoughGasForFee, calculateGasForFee } = useUserWallet();
+  const { data: gasTokenBalance } = useBalance({ address });
 
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
-  const hasGas = hasEnoughGasForFee(MethodE.Approve, multiplier);
+  const hasGas = gasTokenBalance
+    ? gasTokenBalance.value > calculateGasForFee(MethodE.Approve, multiplier)
+    : hasEnoughGasForFee(MethodE.Approve, multiplier);
 
   if (hasGas) {
     return children;
