@@ -1,5 +1,5 @@
-import { useAtom } from 'jotai';
-import { type ChangeEvent, memo, useMemo, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { type ChangeEvent, memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -20,8 +20,9 @@ import SettingsIcon from 'assets/icons/settingsIcon.svg?react';
 import { Dialog } from 'components/dialog/Dialog';
 import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 import { Separator } from 'components/separator/Separator';
+import { createSymbol } from 'helpers/createSymbol';
 import { orderBlockAtom, orderTypeAtom, reduceOnlyAtom, slippageSliderAtom } from 'store/order-block.store';
-import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import { perpetualStatisticsAtom, positionsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, OrderTypeE } from 'types/enums';
 import { type MarkI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -52,12 +53,13 @@ const MAX_SLIPPAGE_SLIDER = 5;
 
 export const OrderSettings = memo(() => {
   const { t } = useTranslation();
-  // const [positions] = useAtom(positionsAtom);
-  const [orderBlock] = useAtom(orderBlockAtom);
-  const [orderType] = useAtom(orderTypeAtom);
+
+  const positions = useAtomValue(positionsAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
+  const orderType = useAtomValue(orderTypeAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const [slippage, setSlippage] = useAtom(slippageSliderAtom);
-  const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
   // const [keepPositionLeverage, setKeepPositionLeverage] = useAtom(keepPositionLeverageAtom);
   const [reduceOnly, setReduceOnly] = useAtom(reduceOnlyAtom);
 
@@ -110,6 +112,25 @@ export const OrderSettings = memo(() => {
     return 0;
   }, [orderBlock, updatedSlippage, perpetualStatistics]);
 
+  const isReduceOnlyEnabled = useMemo(() => {
+    if (perpetualStatistics) {
+      const symbol = createSymbol({
+        baseCurrency: perpetualStatistics.baseCurrency,
+        quoteCurrency: perpetualStatistics.quoteCurrency,
+        poolSymbol: perpetualStatistics.poolName,
+      });
+
+      return !!positions.find((position) => position.symbol === symbol);
+    }
+    return false;
+  }, [perpetualStatistics, positions]);
+
+  useEffect(() => {
+    if (!isReduceOnlyEnabled) {
+      setReduceOnly(false);
+    }
+  }, [isReduceOnlyEnabled, setReduceOnly]);
+
   // const isKeepPosLeverageDisabled = useMemo(() => {
   //   if (perpetualStatistics) {
   //     const symbol = createSymbol({
@@ -147,15 +168,17 @@ export const OrderSettings = memo(() => {
         )}
         {orderType !== OrderTypeE.Market && (
           <Box className={styles.settings}>
-            <FormControlLabel
-              id="reduce-only"
-              value="true"
-              defaultChecked={reduceOnly}
-              onChange={(_event, checked) => setReduceOnly(checked)}
-              control={<Checkbox checked={reduceOnly} />}
-              label={<Typography variant="bodyTiny">{t('pages.trade.order-block.reduce-only')}</Typography>}
-              labelPlacement="end"
-            />
+            {isReduceOnlyEnabled && (
+              <FormControlLabel
+                id="reduce-only"
+                value="true"
+                defaultChecked={reduceOnly}
+                onChange={(_event, checked) => setReduceOnly(checked)}
+                control={<Checkbox checked={reduceOnly} />}
+                label={<Typography variant="bodyTiny">{t('pages.trade.order-block.reduce-only')}</Typography>}
+                labelPlacement="end"
+              />
+            )}
             <Box className={styles.settings} onClick={() => setShowExpiryModal(true)}>
               <SettingsIcon className={styles.settingsIcon} />
               <Typography variant="bodyTiny">{t('pages.trade.order-block.expiry.title')}</Typography>

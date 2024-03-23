@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 const MAX_FETCH_COUNT = 20;
 const MAX_FETCH_TIME = 40_000; // 40 sec
-const INTERVAL_FOR_TICKER_FAST = 2000;
+const INTERVAL_FOR_TICKER_FAST = 4000;
 const INTERVAL_FOR_TICKER_SLOW = 120000;
 
 export const TableDataFetcher = memo(() => {
