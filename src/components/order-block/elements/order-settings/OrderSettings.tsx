@@ -21,9 +21,15 @@ import { Dialog } from 'components/dialog/Dialog';
 import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 import { Separator } from 'components/separator/Separator';
 import { createSymbol } from 'helpers/createSymbol';
-import { orderBlockAtom, orderTypeAtom, reduceOnlyAtom, slippageSliderAtom } from 'store/order-block.store';
+import {
+  orderBlockAtom,
+  orderTypeAtom,
+  orderInfoAtom,
+  reduceOnlyAtom,
+  slippageSliderAtom,
+} from 'store/order-block.store';
 import { perpetualStatisticsAtom, positionsAtom, selectedPerpetualAtom } from 'store/pools.store';
-import { OrderBlockE, OrderTypeE } from 'types/enums';
+import { OrderBlockE, OrderSideE, OrderTypeE } from 'types/enums';
 import { type MarkI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapSlippageToNumber } from 'utils/mapSlippageToNumber';
@@ -62,6 +68,7 @@ export const OrderSettings = memo(() => {
   const [slippage, setSlippage] = useAtom(slippageSliderAtom);
   // const [keepPositionLeverage, setKeepPositionLeverage] = useAtom(keepPositionLeverageAtom);
   const [reduceOnly, setReduceOnly] = useAtom(reduceOnlyAtom);
+  const orderInfo = useAtomValue(orderInfoAtom);
 
   const [updatedSlippage, setUpdatedSlippage] = useState(2);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -113,17 +120,19 @@ export const OrderSettings = memo(() => {
   }, [orderBlock, updatedSlippage, perpetualStatistics]);
 
   const isReduceOnlyEnabled = useMemo(() => {
-    if (perpetualStatistics) {
+    if (perpetualStatistics && orderInfo) {
       const symbol = createSymbol({
         baseCurrency: perpetualStatistics.baseCurrency,
         quoteCurrency: perpetualStatistics.quoteCurrency,
         poolSymbol: perpetualStatistics.poolName,
       });
 
-      return !!positions.find((position) => position.symbol === symbol);
+      const side = orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell;
+
+      return !!positions.find((position) => position.symbol === symbol && position.side != side);
     }
     return false;
-  }, [perpetualStatistics, positions]);
+  }, [perpetualStatistics, positions, orderInfo]);
 
   useEffect(() => {
     if (!isReduceOnlyEnabled) {
