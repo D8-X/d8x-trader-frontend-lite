@@ -1,8 +1,9 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { candlesDataReadyAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
+
 import { subscribingCheckAtom } from './subscribingCheckAtom';
 
 interface UseCandleMarketsSubscribePropsI {
@@ -11,8 +12,8 @@ interface UseCandleMarketsSubscribePropsI {
 }
 
 export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarketsSubscribePropsI) => {
-  const [selectedPeriod] = useAtom(selectedPeriodAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
+  const selectedPeriod = useAtomValue(selectedPeriodAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const setNewCandle = useSetAtom(newCandleAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const subscribingCheck = useSetAtom(subscribingCheckAtom);
