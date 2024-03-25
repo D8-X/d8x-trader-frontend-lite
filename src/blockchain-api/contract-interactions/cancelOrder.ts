@@ -25,6 +25,8 @@ export async function cancelOrder(
     account: walletClient.account,
     nonce,
   };
-  const gasLimit = await estimateContractGas(walletClient, params);
-  return walletClient.writeContract({ ...params, gas: (gasLimit * 110n) / 100n }).then((tx) => ({ hash: tx }));
+  const gasLimit = await estimateContractGas(walletClient, params)
+    .then((gas) => (gas * 110n) / 100n)
+    .catch(() => undefined);
+  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }
