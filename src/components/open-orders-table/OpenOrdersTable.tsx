@@ -313,6 +313,12 @@ export const OpenOrdersTable = memo(() => {
     [filteredRows, order, orderBy, page, rowsPerPage]
   );
 
+  useEffect(() => {
+    if (filteredRows.length > 0 && filteredRows.length <= page * rowsPerPage) {
+      setPage((prevPage) => Math.max(0, prevPage - 1));
+    }
+  }, [filteredRows.length, page, rowsPerPage]);
+
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (

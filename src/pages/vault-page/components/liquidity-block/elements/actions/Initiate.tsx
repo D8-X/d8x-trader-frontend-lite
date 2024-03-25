@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 
 import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
@@ -19,7 +19,7 @@ import {
   userAmountAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
-import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
@@ -270,8 +270,22 @@ export const Initiate = memo(() => {
         step="1"
         min={0}
       />
+      {userAmount ? (
+        <Typography className={styles.helperText} variant="bodyTiny">
+          {t('common.max')}{' '}
+          <Link
+            onClick={() => {
+              if (userAmount) {
+                handleInputCapture(`${userAmount}`);
+              }
+            }}
+          >
+            {formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`)}
+          </Link>
+        </Typography>
+      ) : null}
       <Box className={styles.buttonHolder}>
-        <GasDepositChecker>
+        <GasDepositChecker className={styles.actionButton}>
           <Button
             variant="primary"
             disabled={isButtonDisabled}

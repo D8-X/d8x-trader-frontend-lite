@@ -292,7 +292,7 @@ export const Add = memo(() => {
           </Box>
         </Box>
         <Box className={styles.buttonHolder}>
-          <GasDepositChecker>
+          <GasDepositChecker className={styles.actionButton}>
             <Button
               variant="primary"
               disabled={isButtonDisabled}

@@ -13,6 +13,7 @@ import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store
 
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
+  isConnected: boolean;
   isGasTokenFetchError: boolean;
   hasEnoughGasForFee: (method: MethodE, multiplier: bigint) => boolean;
   calculateGasForFee: (method: MethodE, multiplier: bigint) => bigint;
@@ -102,6 +103,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     <UserWalletContext.Provider
       value={{
         gasTokenBalance,
+        isConnected,
         isGasTokenFetchError,
         hasEnoughGasForFee,
         calculateGasForFee,

@@ -281,7 +281,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
           </Box>
         </Box>
         <Box>
-          <GasDepositChecker>
+          <GasDepositChecker className={styles.actionButton}>
             <Button
               variant="primary"
               onClick={handleWithdrawLiquidity}

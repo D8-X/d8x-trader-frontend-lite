@@ -280,7 +280,7 @@ export const OneClickTradingModal = () => {
         </Box>
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
-            <GasDepositChecker address={walletClient?.account.address}>
+            <GasDepositChecker address={walletClient?.account.address} className={styles.actionButton}>
               {!isLoading && isDelegated === false && (
                 <Button
                   variant="primary"

@@ -13,12 +13,13 @@ import { MethodE } from 'types/enums';
 interface GasDepositCheckerPropsI extends PropsWithChildren {
   multiplier?: bigint;
   address?: Address;
+  className?: string;
 }
 
-export const GasDepositChecker = ({ children, multiplier = 1n, address }: GasDepositCheckerPropsI) => {
+export const GasDepositChecker = ({ children, multiplier = 1n, address, className }: GasDepositCheckerPropsI) => {
   const { t } = useTranslation();
 
-  const { hasEnoughGasForFee, calculateGasForFee } = useUserWallet();
+  const { hasEnoughGasForFee, calculateGasForFee, isConnected } = useUserWallet();
   const { data: gasTokenBalance } = useBalance({ address });
 
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
@@ -27,12 +28,12 @@ export const GasDepositChecker = ({ children, multiplier = 1n, address }: GasDep
     ? gasTokenBalance.value > calculateGasForFee(MethodE.Approve, multiplier)
     : hasEnoughGasForFee(MethodE.Approve, multiplier);
 
-  if (hasGas) {
+  if (!isConnected || hasGas) {
     return children;
   }
 
   return (
-    <Button variant="buy" onClick={() => setDepositModalOpen(true)}>
+    <Button variant="buy" onClick={() => setDepositModalOpen(true)} className={className}>
       {t('common.deposit-gas')}
     </Button>
   );
