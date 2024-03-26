@@ -17,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Mid Price",
+        "mid-price-tooltip": "Mid Price",
         "mark-price": "Mark Price",
+        "mark-price-tooltip": "Mark Price",
         "index-price": "지수 가격",
+        "index-price-tooltip": "지수 가격",
         "funding-rate": "펀딩 비율",
+        "funding-rate-tooltip": "펀딩 비율",
         "open-interest": "미결제약정",
+        "open-interest-tooltip": "미결제약정",
         "view-graph": "View Graph",
         "hide-graph": "Hide Graph"
       },

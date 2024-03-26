@@ -17,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "中间价",
+        "mid-price-tooltip": "中间价",
         "mark-price": "标记价格",
+        "mark-price-tooltip": "标记价格",
         "index-price": "指数价格",
+        "index-price-tooltip": "指数价格",
         "funding-rate": "资金费率",
+        "funding-rate-tooltip": "资金费率",
         "open-interest": "持仓量",
+        "open-interest-tooltip": "持仓量",
         "view-graph": "查看图表",
         "hide-graph": "隐藏图表"
       },

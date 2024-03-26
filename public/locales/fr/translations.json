@@ -17,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Prix moyen",
+        "mid-price-tooltip": "Prix moyen",
         "mark-price": "Prix de repère",
+        "mark-price-tooltip": "Prix de repère",
         "index-price": "Prix d'indice",
+        "index-price-tooltip": "Prix d'indice",
         "funding-rate": "Taux de financement",
+        "funding-rate-tooltip": "Taux de financement",
         "open-interest": "Intérêt ouvert",
+        "open-interest-tooltip": "Intérêt ouvert",
         "view-graph": "Voir le graphique",
         "hide-graph": "Masquer le graphique"
       },

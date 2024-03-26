@@ -1,6 +1,7 @@
+import classNames from 'classnames';
 import { memo } from 'react';
 
-import { Box, Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 
 import type { StatDataI } from './types';
 
@@ -11,19 +12,27 @@ interface StatsLinePropsI {
 }
 
 export const StatsLine = memo(({ items }: StatsLinePropsI) => (
-  <Box className={styles.root}>
+  <div className={styles.root}>
     {items.map((item) => (
-      <Box key={item.id} className={styles.statContainer}>
-        <Typography variant="bodyTiny" className={styles.statLabel}>
-          {item.label}
-        </Typography>
+      <div key={item.id} className={styles.statContainer}>
+        {item.tooltip ? (
+          <Tooltip title={item.tooltip}>
+            <Typography variant="bodyTiny" className={classNames(styles.statLabel, styles.tooltip)}>
+              {item.label}
+            </Typography>
+          </Tooltip>
+        ) : (
+          <Typography variant="bodyTiny" className={styles.statLabel}>
+            {item.label}
+          </Typography>
+        )}
         <Typography variant="bodyLarge" className={styles.statValue}>
           {item.numberOnly}
         </Typography>
         <Typography variant="bodyTiny" className={styles.statCurrency}>
           {item.currencyOnly}
         </Typography>
-      </Box>
+      </div>
     ))}
-  </Box>
+  </div>
 ));

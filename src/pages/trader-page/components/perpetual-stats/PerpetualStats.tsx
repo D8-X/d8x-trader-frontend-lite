@@ -1,8 +1,9 @@
+import classNames from 'classnames';
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import ViewChartIcon from 'assets/icons/viewChart.svg?react';
 
@@ -30,6 +31,7 @@ export const PerpetualStats = () => {
     () => ({
       id: 'midPrice',
       label: t('pages.trade.stats.mid-price'),
+      tooltip: t('pages.trade.stats.mid-price-tooltip'),
       value: perpetualStatistics
         ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true)
         : '--',
@@ -46,6 +48,7 @@ export const PerpetualStats = () => {
       {
         id: 'markPrice',
         label: t('pages.trade.stats.mark-price'),
+        tooltip: t('pages.trade.stats.mark-price-tooltip'),
         value: perpetualStatistics
           ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true)
           : '--',
@@ -57,6 +60,7 @@ export const PerpetualStats = () => {
       {
         id: 'indexPrice',
         label: t('pages.trade.stats.index-price'),
+        tooltip: t('pages.trade.stats.index-price-tooltip'),
         value: perpetualStatistics
           ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true)
           : '--',
@@ -68,6 +72,7 @@ export const PerpetualStats = () => {
       {
         id: 'fundingRate',
         label: t('pages.trade.stats.funding-rate'),
+        tooltip: t('pages.trade.stats.funding-rate-tooltip'),
         value: perpetualStatistics ? `${(perpetualStatistics.currentFundingRateBps / 100).toFixed(2)} %` : '--',
         numberOnly: perpetualStatistics ? (perpetualStatistics.currentFundingRateBps / 100).toFixed(2) : '--',
         currencyOnly: perpetualStatistics ? '%' : '',
@@ -75,6 +80,7 @@ export const PerpetualStats = () => {
       {
         id: 'openInterestBC',
         label: t('pages.trade.stats.open-interest'),
+        tooltip: t('pages.trade.stats.open-interest-tooltip'),
         value: perpetualStatistics
           ? abbreviateNumber(perpetualStatistics.openInterestBC) + perpetualStatistics.baseCurrency
           : '--',
@@ -90,23 +96,35 @@ export const PerpetualStats = () => {
       <div className={styles.statContainer}>
         <div className={styles.mainMobileLine}>
           <div>
-            <div className={styles.statMainLabel}>{midPrice.label}</div>
+            {midPrice.tooltip ? (
+              <Tooltip title={midPrice.tooltip}>
+                <div className={classNames(styles.statMainLabel, styles.tooltip)}>{midPrice.label}</div>
+              </Tooltip>
+            ) : (
+              <div className={styles.statMainLabel}>{midPrice.label}</div>
+            )}
             <span className={styles.statMainValue}>{midPrice.numberOnly}</span>{' '}
             <span className={styles.statValue}>{midPrice.currencyOnly}</span>
           </div>
           <div>
-            <Box className={styles.viewChart} onClick={() => setShowChartForMobile(!showChartForMobile)}>
+            <div className={styles.viewChart} onClick={() => setShowChartForMobile(!showChartForMobile)}>
               <ViewChartIcon className={styles.viewChartIcon} />
               <Typography variant="bodyTiny">
                 {t(showChartForMobile ? 'pages.trade.stats.hide-graph' : 'pages.trade.stats.view-graph')}
               </Typography>
-            </Box>
+            </div>
           </div>
         </div>
         <div className={styles.statsBlock}>
           {items.map((item) => (
             <div key={item.id}>
-              <div className={styles.statLabel}>{item.label}</div>
+              {item.tooltip ? (
+                <Tooltip title={item.tooltip}>
+                  <div className={classNames(styles.statLabel, styles.tooltip)}>{item.label}</div>
+                </Tooltip>
+              ) : (
+                <div className={styles.statLabel}>{item.label}</div>
+              )}
               <span className={styles.statValue}>{item.numberOnly}</span>{' '}
               <span className={styles.statCurrency}>{item.currencyOnly}</span>
             </div>
@@ -125,7 +143,13 @@ export const PerpetualStats = () => {
         <div className={styles.statsBlock}>
           {[midPrice, ...items].map((item) => (
             <div key={item.id}>
-              <div className={styles.statLabel}>{item.label}</div>
+              {item.tooltip ? (
+                <Tooltip title={item.tooltip}>
+                  <div className={classNames(styles.statLabel, styles.tooltip)}>{item.label}</div>
+                </Tooltip>
+              ) : (
+                <div className={styles.statLabel}>{item.label}</div>
+              )}
               <span className={styles.statValue}>{item.numberOnly}</span>{' '}
               <span className={styles.statCurrency}>{item.currencyOnly}</span>
             </div>

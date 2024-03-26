@@ -87,6 +87,12 @@
   font-size: 0.75rem;
 }
 
+.tooltip {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
 .statCurrency {
   color: var(--d8x-color-text-highlight);
   white-space: nowrap;
