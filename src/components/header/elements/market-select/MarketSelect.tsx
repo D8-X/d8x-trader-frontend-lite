@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -49,10 +49,10 @@ export const MarketSelect = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [pools] = useAtom(poolsAtom);
+  const pools = useAtomValue(poolsAtom);
+  const marketsData = useAtomValue(marketsDataAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  const [marketsData] = useAtom(marketsDataAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 

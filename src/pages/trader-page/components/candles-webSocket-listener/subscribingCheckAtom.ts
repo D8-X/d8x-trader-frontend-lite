@@ -12,3 +12,5 @@ export const subscribingCheckAtom = atom(null, async (get, _set, resubscribeCall
     }
   }, 5000);
 });
+
+export const unsubscribeLostCandleAtom = atom('');

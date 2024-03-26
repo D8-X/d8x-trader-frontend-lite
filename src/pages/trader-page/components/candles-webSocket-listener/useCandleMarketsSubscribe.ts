@@ -1,10 +1,11 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 
 import { selectedPerpetualAtom } from 'store/pools.store';
 import { candlesDataReadyAtom, newCandleAtom, selectedPeriodAtom } from 'store/tv-chart.store';
 
-import { subscribingCheckAtom } from './subscribingCheckAtom';
+import { createPairWithPeriod } from './helpers/createPairWithPeriod';
+import { subscribingCheckAtom, unsubscribeLostCandleAtom } from './subscribingCheckAtom';
 
 interface UseCandleMarketsSubscribePropsI {
   isConnected: boolean;
@@ -17,6 +18,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
   const setNewCandle = useSetAtom(newCandleAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const subscribingCheck = useSetAtom(subscribingCheckAtom);
+  const [unsubscribeLostCandle, setUnsubscribeLostCandle] = useAtom(unsubscribeLostCandleAtom);
 
   const wsConnectedStateRef = useRef(false);
   const topicRef = useRef('');
@@ -29,11 +31,12 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
 
       wsConnectedStateRef.current = true;
 
-      const topicInfo = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}:${selectedPeriod}`;
+      const topicInfo = createPairWithPeriod(selectedPerpetual, selectedPeriod);
       if (topicInfo !== topicRef.current) {
         if (topicRef.current) {
           send(JSON.stringify({ type: 'unsubscribe', topic: topicRef.current }));
         }
+
         topicRef.current = topicInfo;
         send(
           JSON.stringify({
@@ -41,6 +44,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
             topic: topicRef.current,
           })
         );
+
         subscribingCheck(() => {
           send(
             JSON.stringify({
@@ -49,6 +53,7 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
             })
           );
         }).then();
+
         setNewCandle(null);
         setCandlesDataReady(false);
       }
@@ -57,4 +62,11 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
       topicRef.current = '';
     }
   }, [selectedPerpetual, selectedPeriod, setNewCandle, setCandlesDataReady, isConnected, send, subscribingCheck]);
+
+  useEffect(() => {
+    if (unsubscribeLostCandle !== '') {
+      send(JSON.stringify({ type: 'unsubscribe', topic: unsubscribeLostCandle }));
+      setUnsubscribeLostCandle('');
+    }
+  }, [unsubscribeLostCandle, setUnsubscribeLostCandle, send]);
 };

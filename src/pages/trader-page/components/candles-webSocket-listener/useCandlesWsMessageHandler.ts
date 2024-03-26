@@ -9,10 +9,11 @@ import {
   newCandleAtom,
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
-import { TvChartPeriodE } from 'types/enums';
-import { PerpetualI, TvChartCandleI } from 'types/types';
+import { type TvChartCandleI } from 'types/types';
 import { debounceLeading } from 'utils/debounceLeading';
 
+import { createPairWithPeriod } from './helpers/createPairWithPeriod';
+import { unsubscribeLostCandleAtom } from './subscribingCheckAtom';
 import {
   CommonWsMessageI,
   ConnectWsMessageI,
@@ -72,10 +73,6 @@ function isMarketsMessage(message: MarketsWsMessageI): message is MarketsWsMessa
   return message.type === MessageTypeE.Update && message.topic === MessageTopicE.Markets;
 }
 
-function createPairWithPeriod(perpetual: PerpetualI, period: TvChartPeriodE) {
-  return `${perpetual.baseCurrency}-${perpetual.quoteCurrency}:${period}`.toLowerCase();
-}
-
 const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
   callback();
 }, 1000);
@@ -88,6 +85,7 @@ export function useCandlesWsMessageHandler() {
   const setMarketsData = useSetAtom(marketsDataAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);
   const setCandlesWsLatestMessageTime = useSetAtom(candlesLatestMessageTimeAtom);
+  const setUnsubscribeLostCandle = useSetAtom(unsubscribeLostCandleAtom);
 
   const latestCandleRef = useRef<TvChartCandleI | null>(null);
 
@@ -108,8 +106,13 @@ export function useCandlesWsMessageHandler() {
         (isSubscribeMessage(parsedMessage) || isAlreadySubscribedErrorMessage(parsedMessage))
       ) {
         const symbol = createPairWithPeriod(selectedPerpetual, selectedPeriod);
+        if (parsedMessage.topic !== symbol) {
+          setUnsubscribeLostCandle(parsedMessage.topic);
+          return;
+        }
+
         const newData = parsedMessage.data;
-        if (parsedMessage.topic !== symbol || !newData || !Array.isArray(newData)) {
+        if (!newData || !Array.isArray(newData)) {
           return;
         }
 
@@ -153,7 +156,12 @@ export function useCandlesWsMessageHandler() {
         setMarketsData(parsedMessage.data);
       } else if (isUpdateMessage(parsedMessage) && selectedPerpetual) {
         const symbol = createPairWithPeriod(selectedPerpetual, selectedPeriod);
-        if (parsedMessage.topic !== symbol || !parsedMessage.data) {
+        if (parsedMessage.topic !== symbol) {
+          setUnsubscribeLostCandle(parsedMessage.topic);
+          return;
+        }
+
+        if (!parsedMessage.data) {
           return;
         }
 
@@ -186,6 +194,7 @@ export function useCandlesWsMessageHandler() {
       setMarketsData,
       setCandlesDataReady,
       setCandlesWsLatestMessageTime,
+      setUnsubscribeLostCandle,
       selectedPerpetual,
       selectedPeriod,
     ]
