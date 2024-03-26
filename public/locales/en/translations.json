@@ -17,15 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Mid Price",
-        "mid-price-tooltip": "Mid Price",
+        "mid-price-tooltip": "The mid price is the price you pay (plus slippage).",
         "mark-price": "Mark Price",
-        "mark-price-tooltip": "Mark Price",
+        "mark-price-tooltip": "The mark price determines margin account calculations and liquidations. The mark price is an exponentially weighted moving average of the mid price.",
         "index-price": "Index Price",
-        "index-price-tooltip": "Index Price",
+        "index-price-tooltip": "The index price is the spot price of the underlying.",
         "funding-rate": "Funding Rate",
-        "funding-rate-tooltip": "Funding Rate",
+        "funding-rate-tooltip": "The funding rate is quoted as an 8h rate, accrued continuously on the position size, and paid to/from the margin account in collateral currency at spot. Funding payments are realized when a trader trades.",
         "open-interest": "Open Interest",
-        "open-interest-tooltip": "Open Interest",
+        "open-interest-tooltip": "Total size of active positions in this perpetual contract.",
         "view-graph": "View Graph",
         "hide-graph": "Hide Graph"
       },

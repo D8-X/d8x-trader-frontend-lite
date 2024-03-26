@@ -460,7 +460,7 @@
       "trader-tab": {
         "title1": "您的折扣",
         "earned-rebates": "总返佣",
-        "open-rewards": "打开奖励",
+        "open-rewards": "未结算奖励",
         "title2": "交易 & 赚取",
         "disclaimer-text-block1": "输入邀请码以获取手续费折扣。",
         "disclaimer-text-block2": "折扣每周结算，自动到账。",
@@ -598,7 +598,7 @@
           },
           "perps": {
             "title": "永续合约详情",
-            "leverage": "杠杠",
+            "leverage": "杠杆",
             "margin-total": "本金",
             "unrealized": "未实现盈亏",
             "realized": "已实现盈亏",
@@ -657,7 +657,7 @@
           "title": "一键交易"
         },
         "order-block": {
-          "title": "订单号",
+          "title": "订单区",
           "left": "左",
           "right": "右"
         },
@@ -708,7 +708,7 @@
       }
     },
     "select": {
-      "option-all": "凡是",
+      "option-all": "全部",
       "collateral": {
         "label": "抵押品：",
         "label2": "流动性池：",
