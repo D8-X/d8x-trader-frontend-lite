@@ -17,11 +17,11 @@
     "trade": {
       "stats": {
         "mid-price": "Mid Price",
-        "mid-price-tooltip": "The mid price is the price you pay (plus slippage).",
+        "mid-price-tooltip": "You pay the mid price plus/minus the price impact of your order.",
         "mark-price": "Mark Price",
-        "mark-price-tooltip": "The mark price determines margin account calculations and liquidations. The mark price is an exponentially weighted moving average of the mid price.",
+        "mark-price-tooltip": "The mark price is the price at which the perpetual contract will be valued. Mark Price = Index price + EMA of (Mid Price - Index Price)",
         "index-price": "Index Price",
-        "index-price-tooltip": "The index price is the spot price of the underlying.",
+        "index-price-tooltip": "The index price is the market consensus spot price of the underlying.",
         "funding-rate": "Funding Rate",
         "funding-rate-tooltip": "The funding rate is quoted as an 8h rate, accrued continuously on the position size, and paid to/from the margin account in collateral currency at spot. Funding payments are realized when a trader trades.",
         "open-interest": "Open Interest",
@@ -40,7 +40,7 @@
           "margin": "Margin",
           "pnl": "Unr. PnL",
           "tp-sl": "TP/SL",
-          "tp-sl-tooltip": "TP/SL"
+          "tp-sl-tooltip": "SL for BUY positions and TP for SELL positions (i.e., Stop-market orders) are executed if the mark price reaches the price shown in this column. TP for BUY positions and SL orders for SELL positions (i.e., Limit orders) are executed if the mid price plus/minus the price impact of your order reaches the price shown in this column."
         },
         "table-content": {
           "buy": "BUY",

@@ -17,15 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "中间价",
-        "mid-price-tooltip": "中间价",
+        "mid-price-tooltip": "您最终成交价是中间价加上或减去影响您订单的价格(滑点)。",
         "mark-price": "标记价格",
-        "mark-price-tooltip": "标记价格",
+        "mark-price-tooltip": "标记价格是永续合约的估值价格。标记价格 = 指数价格 + (中间价 - 指数价格)的指数移动平均（EMA）。",
         "index-price": "指数价格",
-        "index-price-tooltip": "指数价格",
+        "index-price-tooltip": "指数价格是市场对标的资产的共识现货价格。",
         "funding-rate": "资金费率",
-        "funding-rate-tooltip": "资金费率",
+        "funding-rate-tooltip": "资金费率以8小时计算，持续累积于仓位大小，并且会通过抵押货币在保证金账户中实时结算。这笔费用在交易者进行交易时体现。",
         "open-interest": "持仓量",
-        "open-interest-tooltip": "持仓量",
+        "open-interest-tooltip": "显示该永续合约当前未平仓合约的总量。",
         "view-graph": "查看图表",
         "hide-graph": "隐藏图表"
       },
@@ -40,7 +40,7 @@
           "margin": "本金",
           "pnl": "未实现盈亏",
           "tp-sl": "止盈/止损",
-          "tp-sl-tooltip": "止盈/止损"
+          "tp-sl-tooltip": "如果标记价格达到此栏显示的价格，市场单（买入仓位的止损单；卖出仓位的止盈单）将会执行。如果中间价加上或减去影响您订单的价格(滑点)达到此栏显示的价格，限价单（买入仓位的止盈单，卖出仓位的止损单）将会执行。"
         },
         "table-content": {
           "buy": "买入",
@@ -628,7 +628,7 @@
     "address-label": "地址",
     "deposit-gas": "Deposit gas",
     "max": "最大：",
-    "copied": "抄袭自",
+    "copied": "已复制",
     "copy-error": "复制到剪贴板时出现错误",
     "one-click": {
       "disable": "禁用一键交易",
@@ -723,7 +723,7 @@
         "header": "选择市场",
         "crypto": "加密货币",
         "fx": "外汇",
-        "commodity": "商品",
+        "commodity": "大宗商品",
         "closed": "休市"
       },
       "search": " 搜索...",

@@ -17,15 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Prix moyen",
-        "mid-price-tooltip": "Prix moyen",
+        "mid-price-tooltip": "Vous payez le prix moyen plus/moins l'impact prix de votre commande.",
         "mark-price": "Prix de repère",
-        "mark-price-tooltip": "Prix de repère",
+        "mark-price-tooltip": "Le prix de repère est le prix auquel le contrat perpétuel sera évalué. Prix de repère = prix  d'indice + EMA de (prix moyen - prix d'indice)",
         "index-price": "Prix d'indice",
-        "index-price-tooltip": "Prix d'indice",
+        "index-price-tooltip": "Le prix d'indice est le prix au comptant du sous-jacent.",
         "funding-rate": "Taux de financement",
-        "funding-rate-tooltip": "Taux de financement",
+        "funding-rate-tooltip": "Le taux de financement est indiqué sous la forme d'un taux de 8 heures, calculé en continu en fonction de la taille de la position et payé vers/depuis le compte de marge dans la devise de garantie au comptant. Les paiements de financement sont réalisés lorsqu'un trader effectue un trade.",
         "open-interest": "Intérêt ouvert",
-        "open-interest-tooltip": "Intérêt ouvert",
+        "open-interest-tooltip": "Taille totale des positions actives dans ce contrat perpétuel.",
         "view-graph": "Voir le graphique",
         "hide-graph": "Masquer le graphique"
       },
@@ -40,7 +40,7 @@
           "margin": "Marge",
           "pnl": "G et P",
           "tp-sl": "TP/SL",
-          "tp-sl-tooltip": "TP/SL"
+          "tp-sl-tooltip": "SL pour les positions d'ACHAT et TP pour les positions de VENTE (c'est-à-dire les ordres Stop-market) sont exécutés si le prix de repère atteint le prix indiqué dans cette colonne. Les ordres TP pour les positions d'ACHAT et les ordres SL pour les positions de VENTE (c'est-à-dire les ordres limités) sont exécutés si le prix moyen plus/moins l'impact sur le prix de votre ordre atteint le prix indiqué dans cette colonne."
         },
         "table-content": {
           "buy": "ACHETER",
