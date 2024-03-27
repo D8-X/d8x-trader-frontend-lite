@@ -73,6 +73,7 @@ export const PositionBlock = memo(
         <Box className={styles.dataWrapper}>
           <SidesRow
             leftSide={headers[2].label}
+            leftSideTooltip={headers[2].tooltip}
             rightSide={
               position.side === 'BUY'
                 ? t('pages.trade.positions-table.table-content.buy')
@@ -83,18 +84,21 @@ export const PositionBlock = memo(
           />
           <SidesRow
             leftSide={headers[1].label}
+            leftSideTooltip={headers[1].tooltip}
             rightSide={formatToCurrency(position.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
             leftSideStyles={styles.dataLabel}
             rightSideStyles={styles.dataValue}
           />
           <SidesRow
             leftSide={headers[3].label}
+            leftSideTooltip={headers[3].tooltip}
             rightSide={formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency, true)}
             leftSideStyles={styles.dataLabel}
             rightSideStyles={styles.dataValue}
           />
           <SidesRow
             leftSide={headers[4].label}
+            leftSideTooltip={headers[4].tooltip}
             rightSide={
               position.liqPrice < 0
                 ? `- ${parsedSymbol?.quoteCurrency}`
@@ -105,6 +109,7 @@ export const PositionBlock = memo(
           />
           <SidesRow
             leftSide={headers[5].label}
+            leftSideTooltip={headers[5].tooltip}
             rightSide={`${formatToCurrency(position.collateralCC, parsedSymbol?.poolSymbol, true)}${' '}(${
               Math.round(position.leverage * 100) / 100
             }x)`}
@@ -113,12 +118,14 @@ export const PositionBlock = memo(
           />
           <SidesRow
             leftSide={headers[6].label}
+            leftSideTooltip={headers[6].tooltip}
             rightSide={formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
             leftSideStyles={styles.dataLabel}
             rightSideStyles={pnlColor}
           />
           <SidesRow
             leftSide={headers[7].label}
+            leftSideTooltip={headers[7].tooltip}
             rightSide={<TpSlValue position={position} handleTpSlModify={handleTpSlModify} />}
           />
         </Box>

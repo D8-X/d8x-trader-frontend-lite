@@ -7,3 +7,9 @@
   align-items: center;
   margin-top: calc($d8x-spacing / 2);
 }
+
+.tooltip {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}

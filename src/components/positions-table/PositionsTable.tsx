@@ -202,6 +202,7 @@ export const PositionsTable = () => {
       {
         numeric: true,
         label: t('pages.trade.positions-table.table-header.tp-sl'),
+        tooltip: t('pages.trade.positions-table.table-header.tp-sl-tooltip'),
         align: AlignE.Right,
       },
       {

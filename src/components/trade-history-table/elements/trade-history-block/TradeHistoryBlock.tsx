@@ -37,12 +37,14 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[0].label}
+          leftSideTooltip={headers[0].tooltip}
           rightSide={time}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[2].label}
+          leftSideTooltip={headers[2].tooltip}
           rightSide={
             tradeHistory.side === 'BUY'
               ? t('pages.trade.positions-table.table-content.buy')
@@ -53,24 +55,28 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
         />
         <SidesRow
           leftSide={headers[3].label}
+          leftSideTooltip={headers[3].tooltip}
           rightSide={perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[4].label}
+          leftSideTooltip={headers[4].tooltip}
           rightSide={perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[5].label}
+          leftSideTooltip={headers[5].tooltip}
           rightSide={perpetual ? formatToCurrency(tradeHistory.fee, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[6].label}
+          leftSideTooltip={headers[6].tooltip}
           rightSide={perpetual ? formatToCurrency(tradeHistory.realizedPnl, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={pnlColor}

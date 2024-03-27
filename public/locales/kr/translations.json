@@ -39,7 +39,8 @@
           "liq-price": "청산 가격",
           "margin": "마진",
           "pnl": "미실현손익",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "TP/SL"
         },
         "table-content": {
           "buy": "매수",

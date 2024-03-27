@@ -14,3 +14,9 @@
     fill: var(--d8x-color-action-icon);
   }
 }
+
+.tooltip {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}

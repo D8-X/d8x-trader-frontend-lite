@@ -285,6 +285,7 @@ export interface BoostStationParamResponseI {
 
 export interface TableHeaderI<T> {
   label: ReactElement | string;
+  tooltip?: string;
   align: AlignE;
   field?: keyof T;
   fieldType?: FieldTypeE;

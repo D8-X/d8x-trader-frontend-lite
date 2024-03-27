@@ -39,7 +39,8 @@
           "liq-price": "Precio de Liq.",
           "margin": "Margen",
           "pnl": "PnL sin Realizar",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "TP/SL"
         },
         "table-content": {
           "buy": "COMPRA",

@@ -39,7 +39,8 @@
           "liq-price": "Liq. Price",
           "margin": "Margin",
           "pnl": "Unr. PnL",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "TP/SL"
         },
         "table-content": {
           "buy": "BUY",

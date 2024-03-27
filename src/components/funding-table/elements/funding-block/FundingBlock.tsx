@@ -36,12 +36,14 @@ export const FundingBlock = ({ headers, funding }: FundingRowPropsI) => {
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[0].label}
+          leftSideTooltip={headers[0].tooltip}
           rightSide={time}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[2].label}
+          leftSideTooltip={headers[2].tooltip}
           rightSide={perpetual ? formatToCurrency(funding.amount, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}

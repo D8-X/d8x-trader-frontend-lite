@@ -39,7 +39,8 @@
           "liq-price": "Prix de liq.",
           "margin": "Marge",
           "pnl": "G et P",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "TP/SL"
         },
         "table-content": {
           "buy": "ACHETER",
