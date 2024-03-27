@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -92,9 +92,7 @@
 }
 
 .inputHolder {
-
   :global(.MuiInputBase-root) {
-
     input {
       -webkit-text-fill-color: var(--d8x-color-text-main);
     }
@@ -102,7 +100,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .root {
     display: block;
   }
@@ -127,7 +124,6 @@
     }
 
     .inputHolder {
-
       :global(.MuiInputBase-root) {
         width: 100%;
         padding-right: $d8x-spacing * 2;
@@ -146,11 +142,8 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .inputLine {
-
     .inputHolder {
-
       :global(.MuiInputBase-root) {
         padding-right: 0;
 

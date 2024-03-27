@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .dialogRoot {
   width: 100%;
@@ -84,7 +84,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .kickbackRateInputContainer {
     gap: 5 * $d8x-spacing;
   }

@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 
 import { TableCell, TableRow, Typography } from '@mui/material';
 
-import { DATETIME_FORMAT } from 'app-constants';
+import { DATETIME_FORMAT } from 'appConstants';
 import type { FundingWithSymbolDataI, TableHeaderI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 

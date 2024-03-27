@@ -202,6 +202,7 @@ export const PositionsTable = () => {
       {
         numeric: true,
         label: t('pages.trade.positions-table.table-header.tp-sl'),
+        tooltip: t('pages.trade.positions-table.table-header.tp-sl-tooltip'),
         align: AlignE.Right,
       },
       {
@@ -312,7 +313,7 @@ export const PositionsTable = () => {
           } else if (stopLossOrders[0].reduceOnly) {
             // if 1 SL order exists for an order size that is > position.size, but the order is reduceOnly, show stopPrice
             stopLossValueType = OrderValueTypeE.Full;
-            stopLossFullValue = takeProfitOrders[0].stopPrice;
+            stopLossFullValue = stopLossOrders[0].stopPrice;
           } else {
             // if 1 TP order exists for an order size that is > position.size, show stopPrice of that order for SL
             stopLossValueType = OrderValueTypeE.Exceeded;
@@ -374,6 +375,12 @@ export const PositionsTable = () => {
       isSelectedPositionSetRef.current = false;
     }
   }, [filteredRows, selectedPosition]);
+
+  useEffect(() => {
+    if (filteredRows.length > 0 && filteredRows.length <= page * rowsPerPage) {
+      setPage((prevPage) => Math.max(0, prevPage - 1));
+    }
+  }, [filteredRows.length, page, rowsPerPage]);
 
   return (
     <div className={styles.root} ref={ref}>

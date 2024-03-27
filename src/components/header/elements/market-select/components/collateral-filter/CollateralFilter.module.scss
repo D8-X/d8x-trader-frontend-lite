@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -12,7 +12,6 @@
 }
 
 .menuHolder {
-
   :global(.MuiPaper-root) {
     color: var(--d8x-color-text-main);
     background-color: var(--d8x-color-background);

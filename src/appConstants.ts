@@ -8,3 +8,5 @@ export const SECONDARY_DEADLINE_MULTIPLIER = 24 * 1825;
 
 export const HashZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const MaxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+export const REFETCH_BALANCES_INTERVAL = 2000;

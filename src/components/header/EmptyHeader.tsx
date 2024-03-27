@@ -1,6 +1,6 @@
 import { Box, Toolbar, Typography } from '@mui/material';
 
-import { ReactComponent as LogoWithText } from 'assets/logoWithText.svg';
+import LogoWithText from 'assets/logoWithText.svg?react';
 
 import { Container } from '../container/Container';
 import { LanguageSwitcher } from '../language-switcher/LanguageSwitcher';

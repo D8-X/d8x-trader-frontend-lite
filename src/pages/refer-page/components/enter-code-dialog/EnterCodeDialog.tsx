@@ -26,21 +26,24 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
+  const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
 
   const inputDisabled = codeState !== CodeStateE.CODE_TAKEN;
 
-  const handleUseCode = async () => {
+  const handleUseCode = () => {
     if (!address || !walletClient) {
       return;
     }
-    try {
-      await postUseReferralCode(chainId, address, codeInputValue, walletClient, onClose);
-      toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
-      onCodeApplySuccess();
-    } catch (err) {
-      console.error(err);
-    }
+    postUseReferralCode(chainId, address, codeInputValue, walletClient, onClose)
+      .then(() => {
+        toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
+        onCodeApplySuccess();
+        setCodeInputValue('');
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.error || error.message} bodyLines={[]} />);
+      });
   };
 
   return (

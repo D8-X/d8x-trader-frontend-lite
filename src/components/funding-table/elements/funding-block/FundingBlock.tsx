@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
-import { DATETIME_FORMAT } from 'app-constants';
+import { DATETIME_FORMAT } from 'appConstants';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import type { FundingWithSymbolDataI, TableHeaderI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -36,12 +36,14 @@ export const FundingBlock = ({ headers, funding }: FundingRowPropsI) => {
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[0].label}
+          leftSideTooltip={headers[0].tooltip}
           rightSide={time}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[2].label}
+          leftSideTooltip={headers[2].tooltip}
           rightSide={perpetual ? formatToCurrency(funding.amount, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}

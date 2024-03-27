@@ -3,8 +3,8 @@ import { type ChangeEvent, memo, type ReactNode } from 'react';
 
 import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
-import { ReactComponent as DecreaseIcon } from 'assets/icons/decreaseIcon.svg';
-import { ReactComponent as IncreaseIcon } from 'assets/icons/increaseIcon.svg';
+import DecreaseIcon from 'assets/icons/decreaseIcon.svg?react';
+import IncreaseIcon from 'assets/icons/increaseIcon.svg?react';
 
 import styles from './ResponsiveInput.module.scss';
 

@@ -1,10 +1,9 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
-  justify-items: flex-end;
-  align-items: center;
   text-align: right;
+  place-items: center flex-end;
 }
 
 .tpValue {

@@ -1,11 +1,11 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   flex-direction: column;
   align-items: flex-start;
   gap: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 3;
-  margin-top: $d8x-spacing * 6;
+  margin-bottom: $d8x-spacing * 2;
+  margin-top: $d8x-spacing * 2;
 }
 
 .labelHolder {
@@ -16,9 +16,8 @@
 }
 
 .customPriceInput {
-
   :global(.MuiOutlinedInput-input) {
-    padding: 8px 10px 6px;
+    padding: 2 * $d8x-spacing 10px;
   }
 }
 
@@ -38,6 +37,8 @@
   :global(.MuiButtonBase-root) {
     flex: 1;
     border-radius: 8px;
+    padding-top: 0.9 * $d8x-spacing;
+    padding-bottom: 0.4 * $d8x-spacing;
 
     &.selected {
       border: 1px solid transparent;
@@ -48,7 +49,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .priceOptions {
     width: 100%;
     display: flex;
@@ -65,18 +65,16 @@
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-
   .root {
-    margin-bottom: $d8x-spacing * 2;
-    margin-top: $d8x-spacing * 2;
+    margin-bottom: $d8x-spacing;
+    margin-top: $d8x-spacing;
   }
 
   .labelHolder {
-    margin-bottom: $d8x-spacing * 2.5;
+    margin-bottom: $d8x-spacing * 2;
   }
 
   .priceOptions {
-
     :global(.MuiButtonBase-root) {
       max-height: 30px;
     }

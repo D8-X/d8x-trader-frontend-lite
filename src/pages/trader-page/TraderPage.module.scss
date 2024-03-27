@@ -1,10 +1,14 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
+
+  @include media-tablet {
+    padding: 0 $d8x-spacing * 3;
+  }
 }
 
 .headerContainer {
@@ -39,8 +43,8 @@
 
 .rightBlock {
   flex: 1;
-  max-width: 450px;
-  min-width: 450px;
+  max-width: 400px;
+  min-width: 400px;
   margin-left: $d8x-spacing * 2.5;
   display: flex;
   gap: 10px;
@@ -57,8 +61,12 @@
   }
 }
 
-@media screen and ($d8x-breakpoint-max-lg) {
+.marketAndStats {
+  display: flex;
+  gap: $d8x-spacing * 3;
+}
 
+@media screen and ($d8x-breakpoint-max-lg) {
   .rightBlock {
     max-width: 400px;
     min-width: 400px;
@@ -66,7 +74,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .headerContainer {
     flex-direction: column-reverse;
     justify-content: space-between;
@@ -84,13 +91,7 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
-  .root {
-    padding: 0 12px;
-  }
-
   .headerContainer {
-
     .rightBlock {
       width: 100%;
       max-width: inherit;

@@ -1,9 +1,13 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
-  opacity: 0;
-  pointer-events: none;
-  user-select: none;
+  width: 100%;
+
+  &.connected {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+  }
 }
 
 .buttonsHolder {
@@ -37,15 +41,6 @@
   gap: 2 * $d8x-spacing;
 }
 
-.starsHolder {
-  white-space: normal;
-  margin-top: -10px;
-  width: 24px;
-  height: 24px;
-  line-height: 1;
-  color: var(--d8x-color-text-secondary);
-}
-
 .cutAddressName {
   color: var(--d8x-color-text-secondary);
 }
@@ -55,7 +50,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .buttonsHolder {
     gap: $d8x-spacing * 2;
   }
@@ -68,7 +62,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .buttonsHolder {
     justify-content: space-between;
 
@@ -79,7 +72,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .addressButton {
     padding: 0;
     min-width: 48px;

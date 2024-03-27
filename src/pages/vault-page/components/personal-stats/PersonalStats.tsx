@@ -25,16 +25,17 @@ interface PersonalStatsPropsI {
 
 export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   const { t } = useTranslation();
+
   const chainId = useChainId();
   const { address } = useAccount();
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [withdrawals] = useAtom(withdrawalsAtom);
-  const [userAmount, setUserAmount] = useAtom(userAmountAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [triggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const withdrawals = useAtomValue(withdrawalsAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const hasOpenRequestOnChain = useAtomValue(withdrawalOnChainAtom);
+  const [userAmount, setUserAmount] = useAtom(userAmountAtom);
 
   const [estimatedEarnings, setEstimatedEarnings] = useState<number>();
 

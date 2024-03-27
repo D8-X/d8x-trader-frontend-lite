@@ -1,10 +1,14 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
+
+  @include media-tablet {
+    padding: 0 $d8x-spacing * 3;
+  }
 }
 
 .container {
@@ -19,22 +23,13 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .container {
     gap: $d8x-spacing * 4;
   }
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .container {
     margin-top: 12px;
-  }
-}
-
-@media screen and ($d8x-breakpoint-max-xs) {
-
-  .root {
-    padding: 0 12px;
   }
 }

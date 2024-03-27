@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Handeln",
+    "boost-station": "BoostStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
     "portfolio": "Portfolio"
@@ -16,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Mid-Preis",
+        "mid-price-tooltip": "Sie zahlen den Mid-Preis, zuzüglich/abzüglich der Preisauswirkungen Ihrer Order.",
         "mark-price": "Mark-Preis",
+        "mark-price-tooltip": "Der Mark-Preis ist der Preis, zu dem der Perpetual Future bewertet wird. Markpreis = Indexpreis + EMA von (Mittelpreis – Indexpreis)",
         "index-price": "Index-Preis",
+        "index-price-tooltip": "Der Indexpreis ist der Marktkonsens-Spotpreis des Basiswerts.",
         "funding-rate": "Funding-Rate",
+        "funding-rate-tooltip": "Die Funding-Rate wird als 8-Stunden-Satz angegeben, fällt kontinuierlich auf die Positionsgröße an und wird in der Sicherheitenwährung auf das/vom Margin-Konto gezahlt. Fundingzahlungen werden realisiert, wenn ein Händler handelt.",
         "open-interest": "Open Interest",
+        "open-interest-tooltip": "Gesamtgröße der aktiven Positionen in diesem Perpetual Future.",
         "view-graph": "Chart anzeigen",
         "hide-graph": "Chart A"
       },
@@ -33,7 +39,8 @@
           "liq-price": "Liq. Preis",
           "margin": "Margin",
           "pnl": "Unr. GuV",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "SL für KAUFEN-Positionen und TP für VERKAUFEN-Positionen (d.h. Stop-Market-Orders) werden ausgeführt, wenn der Mark-Preis den in dieser Spalte angezeigten Preis erreicht. TP für KAUFEN-Positionen und SL-Orders für VERKAUFEN-Positionen (d.h. Limit-Orders) werden ausgeführt, wenn der Mid-Preis, plus/minus der Preisauswirkung Ihrer Order, den in dieser Spalte angezeigten Preis erreicht."
         },
         "table-content": {
           "buy": "KAUFEN",
@@ -319,7 +326,7 @@
           "pass": "Bestanden",
           "fail": "Nicht bestanden",
           "button-no-address": "Brieftasche verbinden",
-          "button-no-funds": "Keine Margenwährung in Brieftasche",
+          "button-no-funds": "Ablagerung",
           "button-no-amount": "Order Grösse zu klein",
           "button-no-limit": "Limit Preis setzen",
           "button-no-trigger": "Trigger Preis setzen"
@@ -360,6 +367,44 @@
         "value": "Wert:",
         "value-placeholder": "Wert, der gefiltert werden soll",
         "clear": "Filter Löschen"
+      }
+    },
+    "boost-station": {
+      "title": "Handle und füge Liquidität hinzu um deinen $D8X Airdrop Bag zu BOOSTEN",
+      "invite-friends": "Empfehlen",
+      "boosted-volume": {
+        "title": "GEBOOSTETES Volumen",
+        "modal-text": "Der $D8X Airdrop wird basierend auf dem GEBOOSTETEN Volumen berechnet. Geboostetes Volumen ist die Summe des geboosteten Handelsvolumen und des geboosteten Liquiditätsvolumen."
+      },
+      "trade-volume": {
+        "title": "GEBOOSTES Handelsvolumen",
+        "modal-text": "Für jeden Trade berechnen wir Handlesvolumen x Boost. Das geboostete Handelsvolumen ist die Summe davon."
+      },
+      "trade-last-increase": {
+        "title": "Letzer Anstieg",
+        "modal-text": "Der letze Anstieg des geboosteten Handelsvolumen. LFG!"
+      },
+      "trade-boost": {
+        "title": "Handels Boost",
+        "modal-text": "Der Handels Boost ist der Boost der auf deinen NÄCHSTEN Trade angewendet wird. Der Boost reicht von 1x bis {{totalBoostMax}}x und besteht aus zwei Teilen:",
+        "modal-text2": "Volumen Boost - Deine Trades der letzen 7 Tage können dir einen Volumen Boost bescheren, der von 1x bis {{volBoostMax}}x reicht. Je mehr du handelst, desto höher dein Boost.",
+        "modal-text3": "Fortune Boost - Bei jedem Trade hast du die Chance, den Fortune Boost zu erhalten – einen Bonus, der vom 0x auf einen unglaublichen {{rndBoostMax}}x ansteigen kann!"
+      },
+      "boost": {
+        "volume": "Volumen Boost:",
+        "random": "Fortune Boost:"
+      },
+      "liquidity-volume": {
+        "title": "GEBOOSTETES Liquiditätsvolumen",
+        "modal-text": "Je länger deine Liquidität in den Pools ist, desto höher ist dein GEBOOSTES Liquiditätsvolumen. Innerhalb von 24 Stunden kann sich dein GEBOOSTES Liquiditätsvolumen auf bis zu Liquidität x Liquiditätsschub erhöhen."
+      },
+      "trade-hourly-increase": {
+        "title": "Stündliche Erhöhung",
+        "modal-text": "Stündliche Erhöhung des GEBOOSTEN Liquiditätsvolumen"
+      },
+      "liquidity-boost": {
+        "title": "Liquiditäts Boost",
+        "modal-text": "Der Liquiditäts Boost zeigt den Boost, der auf deine Liquidität angewendet wird. Der Boost kann sich verändern."
       }
     },
     "refer": {
@@ -483,10 +528,9 @@
           "info1": "Geben Sie die Menge an {{poolSymbol}} an, die Sie dem Pool hinzufügen möchten."
         },
         "receive": "Sie erhalten d{{poolSymbol}}",
-        "max": "Max:",
         "button": "Hinzufügen",
         "validity-empty": "Brieftasche verbinden",
-        "validity-amount-too-big": "Zu wenig Mittel" ,
+        "validity-amount-too-big": "Zu wenig Mittel",
         "validity-amount-below-min": "Betrag unter Minimum",
         "validity-no-amount": "Betrag eingeben"
       },
@@ -502,7 +546,8 @@
           "validity-no-address": "Brieftasche verbinden",
           "validity-empty": "-",
           "validity-no-funds": "Keine auszahlbaren Mittel",
-          "validity-amount-too-big": "Betrag zu gross" ,
+          "validity-no-gas": "No gas to proceed",
+          "validity-amount-too-big": "Betrag zu gross",
           "validity-amount-below-min": "Betrag unter Minimum",
           "validity-no-amount": "Betrag eingeben"
         },
@@ -577,9 +622,25 @@
   "common": {
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
+    "account-button": "Konto",
+    "currency-label": "Währung",
+    "amount-label": "Anzahl",
+    "address-label": "Adresse",
+    "deposit-gas": "Deposit gas",
+    "max": "Max:",
+    "copied": "Kopiert",
+    "copy-error": "Beim Kopieren in die Zwischenablage ist ein Fehler aufgetreten",
     "one-click": {
       "disable": "Deaktivieren Sie den One-Click-Handel",
       "enable": "Aktivieren Sie den One-Click-Handel"
+    },
+    "maintenance-mode": {
+      "header": "Wartungsmodus",
+      "description": "Der Handlesplatz auf <bold>{{chainName}}</bold> ist im Wartungsmodus.",
+      "visit-text": {
+        "1": "Klick",
+        "2": "für mehr Informationen."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
@@ -687,6 +748,47 @@
     },
     "info-modal": {
       "close": "Schliessen"
+    },
+    "account-modal": {
+      "title": "Konto",
+      "deposit-button": "Einzahlen",
+      "withdraw-button": "Abheben",
+      "extract-pk-button": "PK extrahieren",
+      "notice-block": "Wichtiger Hinweis: Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens ein Währung als Sicherheit haben."
+    },
+    "deposit-modal": {
+      "title": "Einzahlen",
+      "important-notice": {
+        "full": "Wichtiger Hinweis: Senden Sie nur <bold>{{currencyName}}</bold> (Token-Adresse: <bold>{{currencyContractAddress}}</bold) an diese Adresse. Senden Sie nur über <bold>{{chainName}}</bold>.",
+        "1": "Wichtiger Hinweis: Senden Sie nur <bold>{{currencyName}}</bold>",
+        "2": "(Token-Adresse: ",
+        "3": ")",
+        "4": "an diese Adresse. ",
+        "5": "Senden Sie nur über <bold>{{chainName}}</bold>."
+      },
+      "deposit-note": "Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens eine Sicherheit hinterlegen.",
+      "done-button": "Gemacht"
+    },
+    "extract-pk-modal": {
+      "title": "Privaten Schlüssel extrahieren",
+      "important-notice": "Wichtiger Hinweis: Geben Sie Ihren privaten Schlüssel niemals an Dritte weiter. Geben Sie den Schlüssel nur preis, wenn Sie wissen, was Sie tun.",
+      "reveal-key-button": "Aufdecken"
+    },
+    "withdraw-modal": {
+      "title": "Abheben",
+      "withdraw-button": "Abheben",
+      "withdraw-address-error": "Bitte geben Sie eine gültige Adresse ein"
+    },
+    "connect-modal": {
+      "title": "Anmelden",
+      "description": "Melden Sie sich mit X, Google oder einer Web3-Wallet an",
+      "sign-in-with-x-button": "Mit X anmelden",
+      "sign-in-with-google-button": "Mit Google anmelden",
+      "sign-in-with-wallet-button": "Mit einer Wallet anmelden",
+      "or-separator": "ooder",
+      "disconnect": "Abmelden",
+      "connected-title": "Willkommen!",
+      "connected-description": "Sie haben sich erfolgreich angemeldet."
     },
     "public-beta": {
       "info-text": "Dies ist eine öffentliche Betaphase – Mach deine eigene Recherche",

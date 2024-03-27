@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "거래",
+    "boost-station": "BoostStation",
     "refer": "추천",
     "vault": "Vault",
     "portfolio": "포트폴리오"
@@ -16,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Mid Price",
+        "mid-price-tooltip": "Mid Price",
         "mark-price": "Mark Price",
+        "mark-price-tooltip": "Mark Price",
         "index-price": "지수 가격",
+        "index-price-tooltip": "지수 가격",
         "funding-rate": "펀딩 비율",
+        "funding-rate-tooltip": "펀딩 비율",
         "open-interest": "미결제약정",
+        "open-interest-tooltip": "미결제약정",
         "view-graph": "View Graph",
         "hide-graph": "Hide Graph"
       },
@@ -33,7 +39,8 @@
           "liq-price": "청산 가격",
           "margin": "마진",
           "pnl": "미실현손익",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "TP/SL"
         },
         "table-content": {
           "buy": "매수",
@@ -313,7 +320,7 @@
           "pass": "Passed",
           "fail": "Failed",
           "button-no-address": "Connect wallet",
-          "button-no-funds": "No collateral in wallet",
+          "button-no-funds": "Deposit",
           "button-no-amount": "Order size too small",
           "button-no-limit": "Set limit price",
           "button-no-trigger": "Set trigger price"
@@ -354,6 +361,44 @@
         "value": "값:",
         "value-placeholder": "필터링할 값",
         "clear": "필터 지우기"
+      }
+    },
+    "boost-station": {
+      "title": "Trade and provide liquidity to BOOST your $D8X Airdrop",
+      "invite-friends": "Refer",
+      "boosted-volume": {
+        "title": "BOOSTED Volume",
+        "modal-text": "The $D8X Airdrop is calculated based on BOOSTED Volume. BOOSTED Volume is the sum of BOOSTED Trade Volume and BOOSTED Liquidity Volume."
+      },
+      "trade-volume": {
+        "title": "BOOSTED Trade Volume",
+        "modal-text": "For every trade we compute Volume x Trade Boost. BOOSTED Trade Volume is the sum of it over all your trades."
+      },
+      "trade-last-increase": {
+        "title": "Last change",
+        "modal-text": "The amount BOOSTED Trade Volume increased from your last trade. LFG!"
+      },
+      "trade-boost": {
+        "title": "Trade Boost",
+        "modal-text": "The Trade Boost is applied to your NEXT trade. The boost ranges from 1x to {{totalBoostMax}}x and has two parts:",
+        "modal-text2": "Volume Boost - Your trades over the past 7 days could score you a Volume Boost ranging from 1x to {{volBoostMax}}x. The more you trade, the higher your potential boost!",
+        "modal-text3": "Fortune Boost - Each trade gives you a chance to hit the Fortune Boost – a bonus that can skyrocket from 0x all the way up to an incredible {{rndBoostMax}}x!"
+      },
+      "boost": {
+        "volume": "Volume boost:",
+        "random": "Fortune boost:"
+      },
+      "liquidity-volume": {
+        "title": "BOOSTED Liquidity Volume",
+        "modal-text": "The longer you keep your liquidity in the pools, the higher your BOOSTED Liquidity volume. Over 24 hours your BOOSTED Liquidity volume can increase up to Liquidity x Liquidity Boost."
+      },
+      "trade-hourly-increase": {
+        "title": "Hourly change",
+        "modal-text": "Hourly increase of BOOSTED Liquidity"
+      },
+      "liquidity-boost": {
+        "title": "Liquidity Boost",
+        "modal-text": "The Liquidity Boost shows the boost that is applied to your liquidity provision. The boost can change over time."
       }
     },
     "refer": {
@@ -476,7 +521,6 @@
           "info1": "Specify the amount of {{poolSymbol}} you want to add to the pool."
         },
         "receive": "You receive d{{poolSymbol}}",
-        "max": "Max:",
         "button": "Add"
       },
       "withdraw": {
@@ -557,9 +601,25 @@
   "common": {
     "change-language": "Change Language",
     "wallet-connect": "Connect",
+    "account-button": "Account",
+    "currency-label": "Currency",
+    "amount-label": "Amount",
+    "address-label": "Address",
+    "deposit-gas": "Deposit gas",
+    "max": "Max:",
+    "copied": "Copied",
+    "copy-error": "An error appeared with copy to clipboard",
     "one-click": {
       "disable": "Disable one-click trading",
       "enable": "Enable one-click trading"
+    },
+    "maintenance-mode": {
+      "header": "Maintenance mode",
+      "description": "The exchange on <bold>{{chainName}}</bold> is in maintenance mode.",
+      "visit-text": {
+        "1": "Visit",
+        "2": "for more information."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
@@ -656,6 +716,47 @@
     },
     "info-modal": {
       "close": "Close"
+    },
+    "account-modal": {
+      "title": "Account",
+      "deposit-button": "Deposit",
+      "withdraw-button": "Withdraw",
+      "extract-pk-button": "Extract PK",
+      "notice-block": "Important notice: Make sure to have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral."
+    },
+    "deposit-modal": {
+      "title": "Deposit",
+      "important-notice": {
+        "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
+        "1": "Important notice: send only <bold>{{currencyName}}</bold>",
+        "2": "(token address: ",
+        "3": ")",
+        "4": "to this address.",
+        "5": "Send over <bold>{{chainName}}</bold>."
+      },
+      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
+      "done-button": "Done"
+    },
+    "extract-pk-modal": {
+      "title": "Extract Private Key",
+      "important-notice": "Important notice: never share your private key with anyone. Only reveal key if you know what you are doing.",
+      "reveal-key-button": "Reveal key"
+    },
+    "withdraw-modal": {
+      "title": "Withdraw",
+      "withdraw-button": "Withdraw",
+      "withdraw-address-error": "Please enter a valid address"
+    },
+    "connect-modal": {
+      "title": "Sign in",
+      "description": "Sign in with X or web3 wallet",
+      "sign-in-with-x-button": "Sign in with X",
+      "sign-in-with-google-button": "Sign in with Google",
+      "sign-in-with-wallet-button": "Sign in with wallet",
+      "or-separator": "or",
+      "disconnect": "Disconnect",
+      "connected-title": "Welcome!",
+      "connected-description": "You have successfully signed in."
     },
     "public-beta": {
       "info-text": "This is public beta.",

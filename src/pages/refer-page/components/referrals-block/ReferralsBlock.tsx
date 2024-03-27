@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
@@ -20,9 +20,9 @@ import styles from './ReferralsBlock.module.scss';
 export const ReferralsBlock = () => {
   const { t } = useTranslation();
 
-  const [isAgency] = useAtom(isAgencyAtom);
-  const [commissionRate] = useAtom(commissionRateAtom);
-  const [referralCodes] = useAtom(referralCodesAtom);
+  const isAgency = useAtomValue(isAgencyAtom);
+  const commissionRate = useAtomValue(commissionRateAtom);
+  const referralCodes = useAtomValue(referralCodesAtom);
 
   const { address } = useAccount();
 

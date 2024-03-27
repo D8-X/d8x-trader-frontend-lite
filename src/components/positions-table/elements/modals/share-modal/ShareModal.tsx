@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DownloadOutlined } from '@mui/icons-material';
 import { Button, DialogActions, DialogContent } from '@mui/material';
 
-import { ReactComponent as LogoWithText } from 'assets/logoWithText.svg';
+import LogoWithText from 'assets/logoWithText.svg?react';
 import { Dialog } from 'components/dialog/Dialog';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { MarginAccountWithAdditionalDataI } from 'types/types';

@@ -49,12 +49,14 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
       <Box className={styles.dataWrapper}>
         <SidesRow
           leftSide={headers[1].label}
+          leftSideTooltip={headers[1].tooltip}
           rightSide={!!order.side && t(`pages.trade.orders-table.table-content.${order.side.toLowerCase()}`)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[2].label}
+          leftSideTooltip={headers[2].tooltip}
           rightSide={
             !!typeToLabelMap[order.type] &&
             t(`pages.trade.orders-table.table-content.${typeToLabelMap[order.type].toLowerCase()}`)
@@ -64,12 +66,14 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[3].label}
+          leftSideTooltip={headers[3].tooltip}
           rightSide={formatToCurrency(order.quantity, parsedSymbol?.baseCurrency)}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[4].label}
+          leftSideTooltip={headers[4].tooltip}
           rightSide={
             order.limitPrice && order.limitPrice < Infinity
               ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency, true)
@@ -80,6 +84,7 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[5].label}
+          leftSideTooltip={headers[5].tooltip}
           rightSide={
             order.stopPrice
               ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency, true)
@@ -90,6 +95,7 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[6].label}
+          leftSideTooltip={headers[6].tooltip}
           rightSide={
             order.reduceOnly
               ? t('pages.trade.orders-table.table-content.yes')
@@ -100,12 +106,14 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
         />
         <SidesRow
           leftSide={headers[7].label}
+          leftSideTooltip={headers[7].tooltip}
           rightSide={`${leverage}x`}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
           leftSide={headers[8].label}
+          leftSideTooltip={headers[8].tooltip}
           rightSide={deadlineDate}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}

@@ -1,14 +1,16 @@
 import { atom } from 'jotai';
 
-import { candlesAtom } from 'store/tv-chart.store';
+import { candlesDataReadyAtom } from 'store/tv-chart.store';
 
 export const subscribingCheckAtom = atom(null, async (get, _set, resubscribeCallback: () => void) => {
   const interval = setInterval(() => {
-    const candles = get(candlesAtom);
-    if (!candles.length) {
+    const candlesDataReady = get(candlesDataReadyAtom);
+    if (!candlesDataReady) {
       resubscribeCallback();
     } else {
       clearInterval(interval);
     }
   }, 5000);
 });
+
+export const unsubscribeLostCandleAtom = atom('');

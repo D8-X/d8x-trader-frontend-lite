@@ -6,6 +6,7 @@ import { CircularProgress } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
+import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { useFetchOpenRewards } from 'pages/refer-page/components/trader-tab/useFetchOpenRewards';
 import { traderAPIAtom } from 'store/pools.store';
 
@@ -43,12 +44,14 @@ export const PortfolioPage = () => {
     <>
       <Helmet title="Portfolio | D8X App" />
       <div className={styles.root}>
-        <Container>
-          <div className={styles.container}>
-            <AccountValue />
-            <AssetsBlock />
-          </div>
-        </Container>
+        <MaintenanceWrapper>
+          <Container>
+            <div className={styles.container}>
+              <AccountValue />
+              <AssetsBlock />
+            </div>
+          </Container>
+        </MaintenanceWrapper>
       </div>
     </>
   );

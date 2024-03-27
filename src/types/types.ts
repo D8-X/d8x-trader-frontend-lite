@@ -1,6 +1,9 @@
 import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TemporaryAnyT = any;
+
 import type {
   AlignE,
   FieldTypeE,
@@ -88,6 +91,11 @@ export interface ValidatedResponseI<T> extends ReferralResponseI<T> {
   msg: string;
 }
 
+export interface MaintenanceStatusI {
+  chainId: number;
+  isMaintenance: boolean;
+}
+
 export interface ExchangeInfoI {
   pools: PoolI[];
   oracleFactoryAddr: string;
@@ -161,6 +169,7 @@ export interface OrderInfoI {
   size: number;
   midPrice: number;
   tradingFee: number | null;
+  baseFee: number | null;
   collateral: number;
   maxMinEntryPrice: number | null;
   keepPositionLeverage: boolean;
@@ -247,8 +256,36 @@ export interface PriceFeedResponseI {
   };
 }
 
+export interface BoostI {
+  chainId: number;
+  nxtBoost: number;
+  nxtRndBoost: number;
+}
+
+export interface PoolVolBoostI {
+  token: string;
+  boost: number;
+}
+
+export interface BoostStationResponseI {
+  addr: string;
+  boostedLpVol: number;
+  boostedTraderVol: number;
+  boosts: BoostI[];
+  crossChainScore: number;
+  hourlyLPBVolIncrease: number;
+  lastBoostedVol: number;
+  poolVolBoost: PoolVolBoostI[];
+}
+
+export interface BoostStationParamResponseI {
+  rndBoostMax: number;
+  volBoostMax: number;
+}
+
 export interface TableHeaderI<T> {
   label: ReactElement | string;
+  tooltip?: string;
   align: AlignE;
   field?: keyof T;
   fieldType?: FieldTypeE;

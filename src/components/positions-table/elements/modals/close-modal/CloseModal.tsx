@@ -2,14 +2,16 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
-import { HashZero } from 'app-constants';
+import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -28,6 +30,7 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
+import { orderSubmitted } from 'network/broker';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -46,8 +49,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [traderAPI] = useAtom(traderAPIAtom);
 
   const chainId = useChainId();
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
@@ -57,49 +59,66 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
 
   const requestSentRef = useRef(false);
 
-  useWaitForTransaction({
+  const {
+    isSuccess,
+    isError,
+    isFetched,
+    error: reason,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.positions-table.toasts.submitted.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.positions-table.toasts.submitted.body'),
-              value: symbolForTx,
-            },
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={modalStyles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError(reason) {
-      toast.error(
-        <ToastContent
-          title={t('pages.trade.positions-table.toasts.tx-failed.title')}
-          bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
-        />
-      );
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setSymbolForTx('');
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!txHash,
+    query: { enabled: !!address && !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched || !txHash) {
+      return;
+    }
+    setTxHash(undefined);
+    setSymbolForTx('');
+    setLatestOrderSentTimestamp(Date.now());
+  }, [isFetched, txHash, setLatestOrderSentTimestamp]);
+
+  useEffect(() => {
+    if (!isError || !reason) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('pages.trade.positions-table.toasts.tx-failed.title')}
+        bodyLines={[{ label: t('pages.trade.positions-table.toasts.tx-failed.body'), value: reason.message }]}
+      />
+    );
+  }, [isError, reason, t]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title={t('pages.trade.positions-table.toasts.submitted.title')}
+        bodyLines={[
+          {
+            label: t('pages.trade.positions-table.toasts.submitted.body'),
+            value: symbolForTx,
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={modalStyles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash, chain, symbolForTx, t]);
 
   const handleClosePositionConfirm = async () => {
     if (requestSentRef.current) {
@@ -140,6 +159,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
               .then((tx) => {
                 setTxHash(tx.hash);
                 setSymbolForTx(selectedPosition.symbol);
+                orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                  .then()
+                  .catch((error) => console.log(error));
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />
                 );
@@ -185,6 +207,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         traderAPI,
         tradingClient,
         toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
+        nonceShift: 1,
         callback: () => {
           setLatestOrderSentTimestamp(Date.now());
         },
@@ -265,9 +288,11 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={requestSent}>
-          {t('pages.trade.positions-table.modify-modal.confirm')}
-        </Button>
+        <GasDepositChecker>
+          <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={requestSent}>
+            {t('pages.trade.positions-table.modify-modal.confirm')}
+          </Button>
+        </GasDepositChecker>
       </DialogActions>
     </Dialog>
   );

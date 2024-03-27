@@ -9,7 +9,13 @@ import { mapSlippageToNumber } from 'utils/mapSlippageToNumber';
 import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 
-import { collateralDepositAtom, newPositionRiskAtom, perpetualStatisticsAtom, poolFeeAtom } from './pools.store';
+import {
+  collateralDepositAtom,
+  newPositionRiskAtom,
+  perpetualStatisticsAtom,
+  poolFeeAtom,
+  addr0FeeAtom,
+} from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
 export const slippageSliderAtom = atom(2);
@@ -103,6 +109,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     return null;
   }
   const poolFee = get(poolFeeAtom);
+  const addr0Fee = get(addr0FeeAtom);
 
   const newPositionRisk = get(newPositionRiskAtom);
   const collateralDeposit = get(collateralDepositAtom);
@@ -146,6 +153,16 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
       tradingFee = tradingFee * 3;
     } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
       tradingFee = tradingFee * 2;
+    }
+  }
+
+  let baseFee = null;
+  if (addr0Fee) {
+    baseFee = addr0Fee / 10;
+    if (stopLoss !== StopLossE.None && takeProfit !== TakeProfitE.None) {
+      baseFee = baseFee * 3;
+    } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
+      baseFee = baseFee * 2;
     }
   }
 
@@ -208,6 +225,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     size,
     midPrice: perpetualStatistics.midPrice,
     tradingFee,
+    baseFee,
     collateral,
     maxMinEntryPrice,
     keepPositionLeverage,

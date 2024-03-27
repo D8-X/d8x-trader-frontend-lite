@@ -2,11 +2,12 @@ import { useAtom, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useWaitForTransaction, useWalletClient, useNetwork } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 
 import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -18,10 +19,11 @@ import {
   userAmountAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
-import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
 import { getTxnLink } from 'helpers/getTxnLink';
+import { Address } from 'viem';
 
 enum ValidityCheckInitiateE {
   Empty = '-',
@@ -42,9 +44,9 @@ export const Initiate = memo(() => {
   const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
-  const { address } = useAccount();
 
-  const { chain } = useNetwork();
+  const { address, chain } = useAccount();
+
   const { data: walletClient } = useWalletClient();
 
   const [initiateAmount, setInitiateAmount] = useState(0);
@@ -74,44 +76,61 @@ export const Initiate = memo(() => {
     inputValueChangedRef.current = false;
   }, [initiateAmount]);
 
-  useWaitForTransaction({
+  const {
+    isSuccess,
+    isError,
+    isFetched,
+    error: reason,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      toast.success(
-        <ToastContent
-          title={t('pages.vault.toast.initiated')}
-          bodyLines={[
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError(reason) {
-      toast.error(
-        <ToastContent
-          title={t('pages.vault.toast.error-initiating.title')}
-          bodyLines={[{ label: t('pages.vault.toast.error-initiating.body'), value: reason.message }]}
-        />
-      );
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setTriggerUserStatsUpdate((prevValue) => !prevValue);
-    },
-    enabled: !!txHash,
+    query: { enabled: !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched) {
+      return;
+    }
+    setTxHash(undefined);
+    setTriggerUserStatsUpdate((prevValue) => !prevValue);
+  }, [isFetched, setTriggerUserStatsUpdate]);
+
+  useEffect(() => {
+    if (!isError || !reason) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('pages.vault.toast.error-initiating.title')}
+        bodyLines={[{ label: t('pages.vault.toast.error-initiating.body'), value: reason.message }]}
+      />
+    );
+  }, [isError, reason, t]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title={t('pages.vault.toast.initiated')}
+        bodyLines={[
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash, chain, t]);
 
   const handleInitiateLiquidity = useCallback(() => {
     if (requestSentRef.current) {
@@ -251,15 +270,31 @@ export const Initiate = memo(() => {
         step="1"
         min={0}
       />
+      {userAmount ? (
+        <Typography className={styles.helperText} variant="bodyTiny">
+          {t('common.max')}{' '}
+          <Link
+            onClick={() => {
+              if (userAmount) {
+                handleInputCapture(`${userAmount}`);
+              }
+            }}
+          >
+            {formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`)}
+          </Link>
+        </Typography>
+      ) : null}
       <Box className={styles.buttonHolder}>
-        <Button
-          variant="primary"
-          disabled={isButtonDisabled}
-          onClick={handleInitiateLiquidity}
-          className={styles.actionButton}
-        >
-          {validityCheckInitiateText}
-        </Button>
+        <GasDepositChecker className={styles.actionButton}>
+          <Button
+            variant="primary"
+            disabled={isButtonDisabled}
+            onClick={handleInitiateLiquidity}
+            className={styles.actionButton}
+          >
+            {validityCheckInitiateText}
+          </Button>
+        </GasDepositChecker>
       </Box>
     </>
   );

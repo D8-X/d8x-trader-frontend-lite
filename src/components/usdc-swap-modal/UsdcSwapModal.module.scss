@@ -1,7 +1,6 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
-
   :global(.MuiPaper-root) {
     width: 100%;
     max-width: 400px;

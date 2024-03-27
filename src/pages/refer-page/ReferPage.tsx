@@ -1,12 +1,12 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Address, useAccount, useBalance, useChainId } from 'wagmi';
-
-import { Box } from '@mui/material';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { type Address, erc20Abi } from 'viem';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
+import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { useQuery } from 'hooks/useQuery';
 import { getMyReferrals, getReferCut, getTokenInfo } from 'network/referral';
 import {
@@ -50,7 +50,7 @@ export const ReferPage = () => {
   const setReferralCodesRefetchHandler = useSetAtom(referralCodesRefetchHandlerRefAtom);
 
   const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -60,11 +60,22 @@ export const ReferPage = () => {
   const referralCodesRequestRef = useRef(false);
   const isAgencyRequestRef = useRef(false);
 
-  const { data: tokenBalance } = useBalance({
-    address,
-    token: tokenInfo?.tokenAddr as Address,
-    chainId: chainId,
-    enabled: !!address && !!chainId && !!tokenInfo?.tokenAddr,
+  const { data: tokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: tokenInfo?.tokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: tokenInfo?.tokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: { enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected },
   });
 
   const handleTabChange = useCallback(
@@ -128,7 +139,7 @@ export const ReferPage = () => {
 
     isAgencyRequestRef.current = true;
 
-    getReferCut(chainId, address, tokenBalance.value)
+    getReferCut(chainId, address, tokenBalance[0])
       .then(({ data }) => {
         setIsAgency(data.isAgency);
         setCommissionRate(data.passed_on_percent);
@@ -156,12 +167,14 @@ export const ReferPage = () => {
   return (
     <>
       <Helmet title="Refer | D8X App" />
-      <Box className={styles.root}>
-        <Container className={styles.container}>
-          <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
-          {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
-        </Container>
-      </Box>
+      <div className={styles.root}>
+        <MaintenanceWrapper>
+          <Container className={styles.container}>
+            <TabSelector activeTab={activeTabId} onTabChange={handleTabChange} />
+            {tabComponents.find(({ tabId }) => tabId === activeTabId)?.content}
+          </Container>
+        </MaintenanceWrapper>
+      </div>
     </>
   );
 };

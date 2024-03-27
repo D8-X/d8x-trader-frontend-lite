@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { MenuItem, Typography } from '@mui/material';
 
-import { getDynamicLogo } from 'utils/tokens';
+import { TemporaryAnyT } from 'types/types';
+import { getDynamicLogo } from 'utils/getDynamicLogo';
 
 import type { SelectItemI } from '../../../header-select/types';
 import { PerpetualWithPoolAndMarketI } from '../../types';
@@ -19,7 +20,7 @@ interface MarketOptionPropsI {
 
 export const MarketOption = memo(({ option, isSelected, onClick }: MarketOptionPropsI) => {
   const IconComponent = useMemo(
-    () => getDynamicLogo(option.item.baseCurrency.toLowerCase()),
+    () => getDynamicLogo(option.item.baseCurrency.toLowerCase()) as TemporaryAnyT,
     [option.item.baseCurrency]
   );
   const { t } = useTranslation();

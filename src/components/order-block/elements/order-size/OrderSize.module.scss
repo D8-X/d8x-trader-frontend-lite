@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -12,7 +12,6 @@
 }
 
 .inputHolder {
-
   :global(.MuiInputBase-root) {
     padding-right: 0;
   }
@@ -25,7 +24,6 @@
 }
 
 .menuItems {
-
   :global(.MuiButtonBase-root) {
     border-radius: 0;
     font-size: 0.75rem;
@@ -33,7 +31,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .root {
     flex-direction: column;
     align-items: stretch;
@@ -47,24 +44,14 @@
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) {
-
   .root {
     margin-top: 2 * $d8x-spacing;
   }
 }
 
-.sliderHolder {
-  margin: 0 9px;
-
-  @include media-desktop {
-    margin-bottom: 4px;
-  }
-
-  @include media-phone {
-    margin-bottom: 0;
-
-    :global(.MuiSlider-root) {
-      margin-bottom: 10px;
-    }
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
+  .root {
+    margin-top: $d8x-spacing;
   }
 }

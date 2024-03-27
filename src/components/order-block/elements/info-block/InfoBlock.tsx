@@ -1,15 +1,22 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useFeeData } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
 
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { getSymbolPrice } from 'network/network';
-import { orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
-import { gasTokenSymbolAtom, poolTokenBalanceAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
+import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
+import {
+  gasTokenSymbolAtom,
+  poolTokenBalanceAtom,
+  positionsAtom,
+  selectedPerpetualAtom,
+  selectedPoolAtom,
+} from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { OrderBlockE, OrderSideE } from 'types/enums';
 
 import { orderSizeAtom } from '../order-size/store';
 import { leverageAtom } from '../leverage-selector/store';
@@ -18,15 +25,18 @@ import styles from './InfoBlock.module.scss';
 
 export const InfoBlock = memo(() => {
   const { t } = useTranslation();
-  const [orderInfo] = useAtom(orderInfoAtom);
-  const [orderSize] = useAtom(orderSizeAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [gasTokenSymbol] = useAtom(gasTokenSymbolAtom);
-  const [leverage] = useAtom(leverageAtom);
-  const [slippage] = useAtom(slippageSliderAtom);
-  const [orderType] = useAtom(orderTypeAtom);
+
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const orderSize = useAtomValue(orderSizeAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
+  const leverage = useAtomValue(leverageAtom);
+  const orderType = useAtomValue(orderTypeAtom);
+  const slippage = useAtomValue(slippageSliderAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
+  const positions = useAtomValue(positionsAtom);
 
   const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
 
@@ -50,6 +60,21 @@ export const InfoBlock = memo(() => {
     }
   }, [orderInfo]);
 
+  const feeReduction = useMemo(() => {
+    if (orderInfo?.baseFee && orderInfo?.tradingFee !== undefined && orderInfo?.tradingFee !== null) {
+      return (1 - orderInfo.tradingFee / orderInfo.baseFee) * 100;
+    }
+  }, [orderInfo]);
+
+  const baseFeeInCC = useMemo(() => {
+    if (!orderInfo?.baseFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
+      return undefined;
+    }
+    return (
+      (orderSize * orderInfo.baseFee * selectedPerpetual.indexPrice) / selectedPerpetual.collToQuoteIndexPrice / 1e4
+    );
+  }, [orderSize, orderInfo, selectedPerpetual]);
+
   const gasFee = useMemo(() => {
     if (orderInfo && gasPriceUSD) {
       return (
@@ -68,10 +93,47 @@ export const InfoBlock = memo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
       return undefined;
     }
+
+    if (!poolTokenBalance || !selectedPool || !selectedPerpetual) {
+      return;
+    }
+
+    let collateralCC = 0;
+    const selectedPerpetualSymbol = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+    const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
+    const orderBlockSide = orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell;
+    if (openPosition && openPosition.side !== orderBlockSide) {
+      collateralCC = openPosition.collateralCC + openPosition.unrealizedPnlQuoteCCY;
+    }
+
+    let orderSizeNet = orderSize;
+    if (openPosition && openPosition.side !== orderBlockSide) {
+      orderSizeNet = orderSize - openPosition.positionNotionalBaseCCY;
+    }
+
     const slippagePct = orderType === 'Market' ? slippage / 100 : 0;
-    const buffer = (1.001 + leverage * (0.009 + orderInfo?.tradingFee / 10000 + slippagePct)) * 1.01;
-    return (orderSize * buffer * selectedPerpetual.indexPrice) / (selectedPerpetual.collToQuoteIndexPrice * leverage);
-  }, [leverage, orderInfo, slippage, orderType, orderSize, selectedPerpetual]);
+    const orderFeeBps = orderInfo?.tradingFee || 0;
+    const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
+    const limitPrice = selectedPerpetual.indexPrice * (1 + (direction * slippagePct) / 100);
+
+    const buffer =
+      selectedPerpetual.indexPrice * (orderFeeBps / 10_000) +
+      selectedPerpetual.markPrice / leverage +
+      Math.max(direction * (limitPrice - selectedPerpetual.markPrice), 0);
+
+    return Math.max((orderSizeNet * buffer) / selectedPerpetual.collToQuoteIndexPrice - collateralCC, 0);
+  }, [
+    leverage,
+    orderInfo,
+    slippage,
+    orderBlock,
+    orderType,
+    orderSize,
+    poolTokenBalance,
+    positions,
+    selectedPerpetual,
+    selectedPool,
+  ]);
 
   useEffect(() => {
     if (gasTokenSymbol && gasPriceETH?.formatted?.gasPrice) {
@@ -97,11 +159,11 @@ export const InfoBlock = memo(() => {
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.balance')}
         </Typography>
-        <Tooltip title={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : '...'}>
+        <TooltipMobile tooltip={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : '...'}>
           <Typography variant="bodySmallSB" className={styles.infoTextTooltip}>
             {formatToCurrency(poolTokenBalance, orderInfo?.poolName)}
           </Typography>
-        </Tooltip>
+        </TooltipMobile>
       </Box>
       <Box className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
@@ -116,9 +178,20 @@ export const InfoBlock = memo(() => {
           {t('pages.trade.order-block.info.fees')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
-          {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
-          {formatToCurrency(feePct, '%', false, 3)}
-          {')'}
+          {feeReduction !== undefined && feeReduction > 0 && feeInCC !== undefined ? (
+            <>
+              <span style={{ textDecoration: 'line-through' }}>
+                {formatToCurrency(baseFeeInCC, selectedPool?.poolSymbol)}
+              </span>
+              <span> {formatToCurrency(feeInCC, selectedPool?.poolSymbol)}</span>
+            </>
+          ) : (
+            <>
+              {formatToCurrency(feeInCC, selectedPool?.poolSymbol)} {'('}
+              {formatToCurrency(feePct, '%', false, 3)}
+              {')'}
+            </>
+          )}
         </Typography>
       </Box>
       {chainId !== undefined && chainId === 1101 && (

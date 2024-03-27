@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
@@ -31,7 +31,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .topSection {
     flex-direction: column;
     align-items: flex-start;

@@ -1,7 +1,6 @@
 import type { APIReferPayload, APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
 import { ReferralCodeSigner } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Transport } from 'viem';
-import type { Chain, WalletClient } from 'wagmi';
+import type { Account, Address, Chain, Transport, WalletClient } from 'viem';
 
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
@@ -107,11 +106,14 @@ export async function postUseReferralCode(
   chainId: number,
   address: string,
   code: string,
-  walletClient: WalletClient,
+  walletClient: WalletClient<Transport, Chain, Account>,
   onSignatureSuccess: () => void
 ) {
   const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
+    walletClient.signMessage({
+      message: { raw: x as Address | Uint8Array },
+      account: walletClient.account,
+    }) as Promise<string>;
 
   const payload: APIReferralCodeSelectionPayload = {
     code,

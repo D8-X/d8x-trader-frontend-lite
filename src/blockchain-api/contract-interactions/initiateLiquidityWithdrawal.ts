@@ -1,6 +1,7 @@
 import { PROXY_ABI, type TraderInterface, floatToDec18 } from '@d8x/perpetuals-sdk';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { type Address, type WalletClient } from 'viem';
+import { estimateContractGas } from 'viem/actions';
 
 export async function initiateLiquidityWithdrawal(
   walletClient: WalletClient,
@@ -16,16 +17,17 @@ export async function initiateLiquidityWithdrawal(
   }
   const amountParsed = BigInt(floatToDec18(amount).toString());
   const gasPrice = await getGasPrice(walletClient.chain?.id);
-  return walletClient
-    .writeContract({
-      chain: walletClient.chain,
-      address: traderAPI.getProxyAddress() as Address,
-      abi: PROXY_ABI,
-      functionName: 'withdrawLiquidity',
-      args: [poolId, amountParsed],
-      gas: 400_000n + 200_000n * BigInt(traderAPI.getPerpetualSymbolsInPool(symbol).length),
-      gasPrice: gasPrice,
-      account: account,
-    })
-    .then((tx) => ({ hash: tx }));
+  const params = {
+    chain: walletClient.chain,
+    address: traderAPI.getProxyAddress() as Address,
+    abi: PROXY_ABI,
+    functionName: 'withdrawLiquidity',
+    args: [poolId, amountParsed],
+    gasPrice: gasPrice,
+    account: account,
+  };
+  const gasLimit = await estimateContractGas(walletClient, params)
+    .then((gas) => (gas * 110n) / 100n)
+    .catch(() => undefined);
+  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

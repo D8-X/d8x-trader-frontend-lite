@@ -1,5 +1,5 @@
-@import '~styles/theme/_theme.scss';
-@import '~styles/theme/_utils.scss';
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   width: 100%;
@@ -28,7 +28,6 @@
 }
 
 .autocomplete {
-
   :global(.MuiSelect-select) {
     background-color: transparent !important;
   }
@@ -102,9 +101,7 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) and ($d8x-breakpoint-min-md) {
-
   .autocomplete {
-
     :global(.MuiInputBase-root) {
       min-width: 200px;
     }
@@ -116,14 +113,12 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .root {
     margin-left: 0;
     margin-right: 0;
   }
 
   .autocomplete {
-
     :global(.MuiInputBase-root) {
       min-width: 220px;
     }
@@ -144,13 +139,11 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .root {
     max-width: 100%;
   }
 
   .autocomplete {
-
     :global(.MuiInputBase-root) {
       min-width: initial;
       font-size: 14px;
@@ -172,7 +165,6 @@
 }
 
 @media screen and ($d8x-breakpoint-min-lg) {
-
   .autocomplete {
     border-radius: $d8x-spacing * 2;
 
@@ -183,7 +175,6 @@
 }
 
 .select {
-
   :global(.MuiList-root) {
     display: flex;
     flex-direction: column;

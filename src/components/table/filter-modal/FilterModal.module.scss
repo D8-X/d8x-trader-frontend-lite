@@ -1,7 +1,6 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .dialog {
-
   :global(.MuiPaper-root) {
     max-width: initial;
   }

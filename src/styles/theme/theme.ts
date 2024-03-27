@@ -76,6 +76,7 @@ declare module '@mui/material/Button' {
     buy: true;
     sell: true;
   }
+
   interface ButtonPropsSizeOverrides {
     small: true;
     tableSmall: true;
@@ -184,7 +185,7 @@ export const theme = createTheme({
           textTransform: 'none',
           color: 'var(--d8x-color-action)',
           lineHeight: '1.5',
-          padding: '9px 8px 7px',
+          padding: '7px 8px',
           whiteSpace: 'nowrap',
           borderColor: 'var(--d8x-color-action)',
           '&:hover': {
@@ -242,7 +243,7 @@ export const theme = createTheme({
             ...MuiButtonSharedStyle,
             backgroundColor: 'var(--d8x-color-warning-main)',
             border: '1px solid var(--d8x-color-warning-secondary)',
-            color: 'var(--d8x-color-text-main)',
+            color: 'var(--d8x-color-text-warning)',
             ':hover': {
               backgroundColor: 'var(--d8x-color-warning-secondary)',
             },
@@ -317,7 +318,8 @@ export const theme = createTheme({
           style: {
             borderRadius: '8px',
             borderWidth: '1px',
-            padding: '9px 8px 7px',
+            padding: '7px 8px',
+            fontSize: '12px',
             color: 'var(--d8x-color-text-main)',
             borderColor: 'var(--d8x-color-border)',
             '&:hover': {
@@ -398,12 +400,12 @@ export const theme = createTheme({
           },
         },
         input: {
-          padding: '10px 10px 6px',
+          padding: '9px 10px 7px',
           width: 'auto',
           flex: 1,
           lineHeight: '1.5',
           border: 'none',
-          fontSize: '16px',
+          fontSize: '12px',
           fontWeight: '500',
           color: 'var(--d8x-color-text-main)',
           '::placeholder': {
@@ -478,6 +480,9 @@ export const theme = createTheme({
     },
     MuiSlider: {
       styleOverrides: {
+        root: {
+          padding: '14px 0 !important',
+        },
         thumb: {
           color: 'var(--d8x-color-action-icon)',
         },
@@ -491,6 +496,7 @@ export const theme = createTheme({
           fontSize: '12px',
           lineHeight: '16px',
           color: 'var(--d8x-color-text-main)',
+          top: '36px !important',
         },
       },
     },
@@ -627,11 +633,11 @@ theme.typography.h5 = {
 };
 
 theme.typography.bodyBig = {
-  fontSize: 64,
+  fontSize: 24,
   fontWeight: 400,
   lineHeight: '77px',
   [theme.breakpoints.down('sm')]: {
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: '31px',
   },
 };
@@ -667,13 +673,13 @@ theme.typography.bodyMedium = {
 };
 
 theme.typography.bodySmall = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '20px',
 };
 
 theme.typography.bodySmallPopup = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 400,
   lineHeight: '20px',
   [theme.breakpoints.down('sm')]: {
@@ -683,7 +689,7 @@ theme.typography.bodySmallPopup = {
 };
 
 theme.typography.bodySmallSB = {
-  fontSize: 14,
+  fontSize: 12,
   fontWeight: 600,
   lineHeight: '20px',
   [theme.breakpoints.down('sm')]: {
@@ -705,7 +711,7 @@ theme.typography.adornment = {
 };
 
 theme.typography.cellSmall = {
-  fontSize: 12,
+  fontSize: 10,
   fontWeight: 400,
   lineHeight: '16px',
   [theme.breakpoints.down('sm')]: {

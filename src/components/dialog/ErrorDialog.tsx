@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 
-import { ReactComponent as CancelOutlinedIcon } from 'assets/icons/cancelIcon.svg';
+import CancelOutlinedIcon from 'assets/icons/cancelIcon.svg?react';
 
 import styles from './ErrorDialog.module.scss';
 

@@ -1,12 +1,13 @@
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, DialogActions, DialogContent, DialogTitle, Tooltip } from '@mui/material';
+import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Settings } from '@mui/icons-material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { Separator } from 'components/separator/Separator';
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 
 import { SettingsBlock } from '../settings-block/SettingsBlock';
 
@@ -19,11 +20,11 @@ export const SettingsButton = memo(() => {
 
   return (
     <>
-      <Tooltip title={t('common.settings.title')}>
+      <TooltipMobile tooltip={t('common.settings.title')}>
         <Button onClick={() => setModalOpen(true)} className={styles.iconButton} variant="primary">
           <Settings className={styles.icon} />
         </Button>
-      </Tooltip>
+      </TooltipMobile>
 
       <Dialog open={isModalOpen} className={styles.dialog} onClose={() => setModalOpen(false)}>
         <DialogTitle>{t('common.settings.title')}</DialogTitle>

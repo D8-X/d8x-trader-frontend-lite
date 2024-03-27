@@ -13,5 +13,5 @@ export async function generateDelegate(walletClient: WalletClient, storageKey: s
     .then((sig) => bytesToHex(etc.hashToPrivateKey(stringToBytes(sig))));
   const encrypted = CryptoJS.AES.encrypt(pk, storageKey).toString();
   secureLocalStorage.setItem(`delegateKey-${walletClient.account.address}`, encrypted);
-  return privateKeyToAccount(pk).address;
+  return privateKeyToAccount(pk);
 }

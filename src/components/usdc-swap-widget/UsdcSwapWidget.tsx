@@ -1,18 +1,16 @@
-import { useTranslation } from 'react-i18next';
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { parseUnits } from 'viem/utils';
+import { type Address, erc20Abi } from 'viem';
+import { formatUnits, parseUnits } from 'viem/utils';
 import {
-  Address,
-  erc20ABI,
   useAccount,
-  useBalance,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
+  useReadContract,
+  useReadContracts,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
   useWalletClient,
+  useWriteContract,
 } from 'wagmi';
 
 import { Button, Link, Typography } from '@mui/material';
@@ -20,6 +18,7 @@ import { South } from '@mui/icons-material';
 
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
+
 import { OLD_USDC_ADDRESS, USDC_DECIMALS, ZK_NATIVE_CONVERTER_ABI, ZK_NATIVE_CONVERTER_ADDRESS } from './constants';
 
 import styles from './UsdcSwapWidget.module.scss';
@@ -27,7 +26,7 @@ import styles from './UsdcSwapWidget.module.scss';
 export function UsdcSwapWidget() {
   const { t } = useTranslation();
 
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { data: wallet } = useWalletClient({ chainId: 1101 });
 
   const [depositAmount, setDepositAmount] = useState(0);
@@ -36,11 +35,22 @@ export function UsdcSwapWidget() {
 
   const inputValueChangedRef = useRef(false);
 
-  const { data: poolTokenBalance } = useBalance({
-    address,
-    token: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
-    chainId: 1101,
-    enabled: !!address && wallet?.chain?.id === 1101,
+  const { data: poolTokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035',
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: { enabled: address && chainId === 1101 && isConnected },
   });
 
   const handleInputCapture = useCallback((orderSizeValue: string) => {
@@ -58,95 +68,127 @@ export function UsdcSwapWidget() {
     return !Number.isNaN(+inputValue) ? parseUnits(inputValue, USDC_DECIMALS) : 0n;
   }, [inputValue]);
 
-  const { data: allowance, refetch: refetchAllowance } = useContractRead({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: OLD_USDC_ADDRESS,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: 'allowance',
     chainId: 1101,
-    enabled: wallet?.chain?.id === 1101,
+    query: { enabled: chainId === 1101 },
     args: [wallet?.account.address as `0x${string}`, ZK_NATIVE_CONVERTER_ADDRESS],
   });
 
-  const { config: approveConfig } = usePrepareContractWrite({
+  const { data: approveConfig } = useSimulateContract({
     address: OLD_USDC_ADDRESS,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: 'approve',
     chainId: 1101,
-    enabled: wallet !== undefined && allowance !== undefined && depositAmountUnits > 0,
+    query: { enabled: wallet !== undefined && allowance !== undefined && depositAmountUnits > 0 },
     args: [ZK_NATIVE_CONVERTER_ADDRESS, depositAmountUnits],
   });
 
   const {
     data: swapApproveTxn,
-    writeAsync: approve,
-    isLoading: isApproveLoading,
+    writeContractAsync: approve,
+    isPending: isApproveLoading,
     isSuccess: isApproved,
-  } = useContractWrite(approveConfig);
+  } = useWriteContract();
 
-  const { config: swapConfig } = usePrepareContractWrite({
+  const { data: swapConfig } = useSimulateContract({
     address: ZK_NATIVE_CONVERTER_ADDRESS,
     abi: ZK_NATIVE_CONVERTER_ABI,
     functionName: 'convert',
     chainId: 1101,
-    enabled:
-      address !== undefined && depositAmountUnits > 0n && allowance !== undefined && allowance >= depositAmountUnits,
+    query: {
+      enabled:
+        address !== undefined && depositAmountUnits > 0n && allowance !== undefined && allowance >= depositAmountUnits,
+    },
     args: [address as Address, depositAmountUnits, '0x'],
     gas: 160_000n,
   });
 
-  const { data: swapExecuteTxn, writeAsync: execute, isLoading: isExecuteLoading } = useContractWrite(swapConfig);
+  const { data: swapExecuteTxn, writeContractAsync: execute, isPending: isExecuteLoading } = useWriteContract();
 
-  useWaitForTransaction({
-    hash: swapApproveTxn?.hash,
-    onSuccess: () => {
-      console.log('approve txn', swapApproveTxn?.hash);
-      toast.success(
-        <ToastContent
-          title="Success"
-          bodyLines={[
-            {
-              label: '',
-              value: `You have successfully approved SWAP from ${depositAmount} legacy USDC to ${depositAmount} new bridged USDC`,
-            },
-          ]}
-        />
-      );
-    },
-    onError: (reason) => {
-      toast.error(<ToastContent title="Error" bodyLines={[{ label: 'Reason:', value: reason.message }]} />);
-    },
-    onSettled: () => {
-      refetchAllowance?.().then();
-    },
+  const {
+    isSuccess: isApproveSuccess,
+    isError: isApproveError,
+    isFetched: isApproveFetched,
+    error: approveError,
+  } = useWaitForTransactionReceipt({
+    hash: swapApproveTxn,
   });
 
-  useWaitForTransaction({
-    hash: swapExecuteTxn?.hash,
-    onSuccess: () => {
-      console.log('execute txn', swapExecuteTxn?.hash);
+  useEffect(() => {
+    if (!isApproveFetched) {
+      return;
+    }
+    refetchAllowance?.().then();
+  }, [isApproveFetched, refetchAllowance]);
 
-      toast.success(
-        <ToastContent
-          title="Success"
-          bodyLines={[
-            {
-              label: '',
-              value: `You have successfully swapped from ${depositAmount} legacy USDC to ${depositAmount} new bridged USDC`,
-            },
-          ]}
-        />
-      );
+  useEffect(() => {
+    if (!isApproveError || !approveError) {
+      return;
+    }
+    toast.error(<ToastContent title="Error" bodyLines={[{ label: 'Reason:', value: approveError.message }]} />);
+  }, [isApproveError, approveError]);
 
-      setDepositAmount(0);
-      setInputValue('0');
-    },
-    onError: (reason) => {
-      toast.error(<ToastContent title="Error" bodyLines={[{ label: 'Reason:', value: reason.message }]} />);
-    },
-    onSettled: () => {
-      setInAction(false);
-    },
+  useEffect(() => {
+    if (!isApproveSuccess && depositAmount > 0) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title="Success"
+        bodyLines={[
+          {
+            label: '',
+            value: `You have successfully approved SWAP from ${depositAmount} legacy USDC to ${depositAmount} new bridged USDC`,
+          },
+        ]}
+      />
+    );
+  }, [isApproveSuccess, depositAmount]);
+
+  const {
+    isSuccess: isSwapSuccess,
+    isError: isSwapError,
+    isFetched: isSwapFetched,
+    error: swapError,
+  } = useWaitForTransactionReceipt({
+    hash: swapExecuteTxn,
   });
+
+  useEffect(() => {
+    if (!isSwapFetched) {
+      return;
+    }
+    setInAction(false);
+  }, [isSwapFetched, setInAction]);
+
+  useEffect(() => {
+    if (!isSwapError || !swapError) {
+      return;
+    }
+    toast.error(<ToastContent title="Error" bodyLines={[{ label: 'Reason:', value: swapError.message }]} />);
+  }, [isSwapError, swapError]);
+
+  useEffect(() => {
+    if (!isSwapSuccess && depositAmount > 0) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title="Success"
+        bodyLines={[
+          {
+            label: '',
+            value: `You have successfully swapped from ${depositAmount} legacy USDC to ${depositAmount} new bridged USDC`,
+          },
+        ]}
+      />
+    );
+    setDepositAmount(0);
+    setInputValue('0');
+  }, [isSwapSuccess, depositAmount, setDepositAmount, setInputValue]);
 
   const swap = async () => {
     if (allowance === undefined || depositAmountUnits <= 0n) {
@@ -154,24 +196,28 @@ export function UsdcSwapWidget() {
     }
     setInAction(true);
     if (allowance < depositAmountUnits) {
-      await approve?.();
+      if (approveConfig?.request) {
+        await approve?.(approveConfig?.request);
+      }
     } else {
-      await execute?.();
+      if (swapConfig?.request) {
+        await execute?.(swapConfig?.request);
+      }
     }
   };
 
   useEffect(() => {
-    if (isApproved) {
-      execute?.().then();
+    if (isApproved && !!swapConfig?.request) {
+      execute?.(swapConfig?.request).then();
     }
-  }, [isApproved, execute]);
+  }, [isApproved, swapConfig?.request, execute]);
 
   const handleInputBlur = useCallback(() => {
     if (poolTokenBalance && depositAmount > 0) {
-      const maxAllowed = +poolTokenBalance.formatted;
+      const maxAllowed = +formatUnits(poolTokenBalance[0], poolTokenBalance[1]);
       if (maxAllowed > 0 && depositAmount > maxAllowed) {
         setDepositAmount(+maxAllowed);
-        setInputValue(poolTokenBalance.formatted);
+        setInputValue(formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
       }
     }
   }, [poolTokenBalance, depositAmount]);
@@ -194,14 +240,14 @@ export function UsdcSwapWidget() {
       {poolTokenBalance && (
         <div className={`${styles.row} ${styles.applyMax}`}>
           <Typography className={styles.helperText} variant="bodyTiny">
-            Max:{' '}
+            {t('common.max')}{' '}
             <Link
               className={styles.addMaxLink}
               onClick={() => {
-                handleInputCapture(poolTokenBalance.formatted);
+                handleInputCapture(formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
               }}
             >
-              {(+poolTokenBalance.formatted).toFixed(2)}
+              {(+formatUnits(poolTokenBalance[0], poolTokenBalance[1])).toFixed(2)}
             </Link>
           </Typography>
         </div>
@@ -270,7 +316,7 @@ export function UsdcSwapWidget() {
           disabled={
             !isConnected ||
             depositAmountUnits < 1n ||
-            poolTokenBalance?.formatted === '0' ||
+            poolTokenBalance?.[0] === 0n ||
             isApproveLoading ||
             isExecuteLoading ||
             inAction

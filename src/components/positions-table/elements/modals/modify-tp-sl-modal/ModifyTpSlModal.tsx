@@ -1,16 +1,18 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Address, useAccount, useBalance, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { type Address, erc20Abi } from 'viem';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
-import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
+import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
@@ -56,22 +58,17 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
-  const { chain } = useNetwork();
+  const { address, chain, isConnected } = useAccount();
   const chainId = useChainId();
-
   const { data: walletClient } = useWalletClient({
     chainId,
-    onError(error) {
-      console.log(error);
-    },
   });
 
-  const [pools] = useAtom(poolsAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [poolFee] = useAtom(poolFeeAtom);
+  const pools = useAtomValue(poolsAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
@@ -116,51 +113,73 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     }
   }, [selectedPosition, pools]);
 
-  const { data: poolTokenBalance } = useBalance({
-    address,
-    token: selectedPool?.marginTokenAddr as Address,
-    chainId: chain?.id,
-    enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr,
+  const { data: poolTokenBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: selectedPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: { enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected },
   });
 
-  useWaitForTransaction({
+  const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      setLatestOrderSentTimestamp(Date.now());
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.action-block.toasts.order-submitted.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.action-block.toasts.order-submitted.body'),
-              value: selectedPosition?.symbol,
-            },
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError() {
-      toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!selectedPosition?.symbol && !!txHash,
+    query: { enabled: !!address && !!selectedPosition?.symbol && !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched) {
+      return;
+    }
+    setTxHash(undefined);
+  }, [isFetched, setLatestOrderSentTimestamp]);
+
+  useEffect(() => {
+    if (!isError) {
+      return;
+    }
+    toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
+  }, [isError, t]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    setLatestOrderSentTimestamp(Date.now());
+    toast.success(
+      <ToastContent
+        title={t('pages.trade.action-block.toasts.order-submitted.title')}
+        bodyLines={[
+          {
+            label: t('pages.trade.action-block.toasts.order-submitted.body'),
+            value: selectedPosition?.symbol,
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash, chain, selectedPosition?.symbol, setLatestOrderSentTimestamp, t]);
 
   if (!selectedPosition) {
     return null;
@@ -179,7 +198,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       !walletClient ||
       collateralDeposit === null ||
       !poolTokenBalance ||
-      !poolTokenBalance.decimals
+      !poolTokenBalance[1]
     ) {
       return;
     }
@@ -202,6 +221,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
       traderAPI,
       tradingClient,
       toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
+      nonceShift: 0,
       callback: () => {
         setLatestOrderSentTimestamp(Date.now());
       },
@@ -254,7 +274,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
               selectedPool.marginTokenAddr,
               proxyAddr,
               collateralDeposit,
-              poolTokenBalance.decimals
+              poolTokenBalance[1]
             )
               .then(() => {
                 // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
@@ -322,9 +342,16 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <Button onClick={handleModifyPositionConfirm} variant="primary" size="small" disabled={isDisabledCreateButton}>
-          {t('pages.trade.positions-table.modify-modal.create')}
-        </Button>
+        <GasDepositChecker multiplier={2n}>
+          <Button
+            onClick={handleModifyPositionConfirm}
+            variant="primary"
+            size="small"
+            disabled={isDisabledCreateButton}
+          >
+            {t('pages.trade.positions-table.modify-modal.create')}
+          </Button>
+        </GasDepositChecker>
       </DialogActions>
     </Dialog>
   );

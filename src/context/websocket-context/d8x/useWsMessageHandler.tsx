@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -9,15 +9,18 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { getOpenOrders } from 'network/network';
 import {
   allPerpetualStatisticsAtom,
+  executeOrderAtom,
   failOrderAtom,
+  failOrderIdAtom,
   mainWsLatestMessageTimeAtom,
   openOrdersAtom,
   perpetualStatisticsAtom,
-  positionsAtom,
   removeOpenOrderAtom,
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  triggerBalancesUpdateAtom,
+  triggerPositionsUpdateAtom,
   webSocketReadyAtom,
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
@@ -89,12 +92,15 @@ export function useWsMessageHandler() {
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
   const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
-  const setPositions = useSetAtom(positionsAtom);
   const setOpenOrders = useSetAtom(openOrdersAtom);
   const removeOpenOrder = useSetAtom(removeOpenOrderAtom);
   const failOpenOrder = useSetAtom(failOrderAtom);
   const setAllPerpetualStatistics = useSetAtom(allPerpetualStatisticsAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const setTriggerPositionsUpdate = useSetAtom(triggerPositionsUpdateAtom);
+  const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
+  const [failedOrderIds, setOrderIdFailed] = useAtom(failOrderIdAtom);
 
   const updatePerpetualStats = useCallback(
     (stats: PerpetualStatisticsI) => {
@@ -187,7 +193,7 @@ export function useWsMessageHandler() {
           return;
         }
 
-        setPositions(parsedMessage.data.obj);
+        setTriggerPositionsUpdate((prevValue) => !prevValue);
       } else if (isLimitOrderCreatedMessage(parsedMessage)) {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
@@ -198,6 +204,7 @@ export function useWsMessageHandler() {
             if (data?.length > 0) {
               data.map(setOpenOrders);
             }
+            setTriggerBalancesUpdate((prevValue) => !prevValue);
           })
           .catch(console.error);
       } else if (isPerpetualLimitOrderCancelledMessage(parsedMessage)) {
@@ -206,49 +213,62 @@ export function useWsMessageHandler() {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
         }
-        removeOpenOrder(parsedMessage.data.obj.orderId);
-        toast.success(
-          <ToastContent
-            title={t('pages.trade.positions-table.toasts.trade-executed.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.positions-table.toasts.trade-executed.body'),
-                value: parsedMessage.data.obj.symbol,
-              },
-            ]}
-          />
-        );
+        const orderId = parsedMessage.data.obj.orderId;
+        removeOpenOrder(orderId);
+        if (!executedOrders.has(orderId)) {
+          setOrderExecuted(orderId);
+          toast.success(
+            <ToastContent
+              title={t('pages.trade.positions-table.toasts.trade-executed.title')}
+              bodyLines={[
+                {
+                  label: t('pages.trade.positions-table.toasts.trade-executed.body'),
+                  value: parsedMessage.data.obj.symbol,
+                },
+              ]}
+            />
+          );
+        }
       } else if (isExecutionFailedMessage(parsedMessage)) {
         if (!address || address !== parsedMessage.data.obj.traderAddr) {
           return;
         }
-        failOpenOrder(parsedMessage.data.obj.orderId);
-        toast.error(
-          <ToastContent
-            title={t('pages.trade.positions-table.toasts.order-failed.title')}
-            bodyLines={[
-              {
-                label: t('pages.trade.positions-table.toasts.order-failed.body1'),
-                value: parsedMessage.data.obj.symbol,
-              },
-              {
-                label: t('pages.trade.positions-table.toasts.order-failed.body2'),
-                value: parsedMessage.data.obj.reason,
-              },
-            ]}
-          />
-        );
+        const orderId = parsedMessage.data.obj.orderId;
+        failOpenOrder(orderId);
+        if (!failedOrderIds.has(orderId)) {
+          setOrderIdFailed(orderId);
+          toast.error(
+            <ToastContent
+              title={t('pages.trade.positions-table.toasts.order-failed.title')}
+              bodyLines={[
+                {
+                  label: t('pages.trade.positions-table.toasts.order-failed.body1'),
+                  value: parsedMessage.data.obj.symbol,
+                },
+                {
+                  label: t('pages.trade.positions-table.toasts.order-failed.body2'),
+                  value: parsedMessage.data.obj.reason,
+                },
+              ]}
+            />
+          );
+        }
       }
     },
     [
       updatePerpetualStats,
       setWebSocketReady,
-      setPositions,
+      setTriggerPositionsUpdate,
+      setTriggerBalancesUpdate,
       setOpenOrders,
       removeOpenOrder,
       failOpenOrder,
       setAllPerpetualStatistics,
       setMainWsLatestMessageTime,
+      setOrderExecuted,
+      setOrderIdFailed,
+      executedOrders,
+      failedOrderIds,
       chainId,
       address,
       t,

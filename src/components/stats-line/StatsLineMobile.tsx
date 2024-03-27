@@ -3,8 +3,7 @@ import { memo } from 'react';
 
 import { Box, Button, Typography } from '@mui/material';
 
-import { ReactComponent as ChartLineIcon } from 'assets/icons/chartLineIcon.svg';
-
+import ChartLineIcon from 'assets/icons/chartLineIcon.svg?react';
 import { showChartForMobileAtom } from 'store/pools.store';
 
 import type { StatDataI } from './types';

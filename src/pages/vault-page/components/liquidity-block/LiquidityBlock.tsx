@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
 
-import { PERIOD_OF_2_DAYS, PERIOD_OF_4_DAYS } from 'app-constants';
+import { PERIOD_OF_2_DAYS, PERIOD_OF_4_DAYS } from 'appConstants';
 import { Separator } from 'components/separator/Separator';
 import { liquidityTypeAtom, withdrawalsAtom } from 'store/vault-pools.store';
 import { LiquidityTypeE } from 'types/enums';

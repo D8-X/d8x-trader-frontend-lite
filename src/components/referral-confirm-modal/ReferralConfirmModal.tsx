@@ -51,7 +51,7 @@ export const ReferralConfirmModal = memo(() => {
     setShowModal(false);
   };
 
-  const handleReferralCodeConfirm = async () => {
+  const handleReferralCodeConfirm = () => {
     if (requestSentRef.current || !refId || refIdTraderRebate === null || !address || !walletClient) {
       return;
     }
@@ -59,17 +59,19 @@ export const ReferralConfirmModal = memo(() => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    try {
-      await postUseReferralCode(chainId, address, refId.toUpperCase(), walletClient, () => setShowModal(false));
-      requestSentRef.current = false;
-      setRequestSent(false);
-      toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
-      navigate(`${RoutesE.Refer}?${QueryParamE.Tab}=${ReferTabIdE.Trader}`, { replace: true });
-    } catch (err) {
-      requestSentRef.current = false;
-      setRequestSent(false);
-      console.error(err);
-    }
+    postUseReferralCode(chainId, address, refId.toUpperCase(), walletClient, () => setShowModal(false))
+      .then(() => {
+        toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
+        navigate(`${RoutesE.Refer}?${QueryParamE.Tab}=${ReferTabIdE.Trader}`, { replace: true });
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.error || error.message} bodyLines={[]} />);
+      })
+      .finally(() => {
+        requestSentRef.current = false;
+        setRequestSent(false);
+      });
   };
 
   useEffect(() => {

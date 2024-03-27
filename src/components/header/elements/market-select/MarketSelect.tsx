@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { clearInputsDataAtom } from 'store/order-block.store';
 import { perpetualStatisticsAtom, poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { marketsDataAtom } from 'store/tv-chart.store';
+import { cutBaseCurrency } from 'utils/cutBaseCurrency';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
@@ -48,10 +49,10 @@ export const MarketSelect = memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [pools] = useAtom(poolsAtom);
+  const pools = useAtomValue(poolsAtom);
+  const marketsData = useAtomValue(marketsDataAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
-  const [marketsData] = useAtom(marketsDataAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
 
@@ -154,12 +155,12 @@ export const MarketSelect = memo(() => {
       </div>
       <Button onClick={() => setModalOpen(true)} className={styles.marketSelectButton} variant="outlined">
         <div className={styles.selectedMarketBlock}>
-          <Typography variant="bodyTiny" className={styles.selectedMarketLabel}>
+          <Typography variant="bodySmall" className={styles.selectedMarketLabel}>
             {t('common.select.market.label')}
           </Typography>
           <div className={styles.selectedMarketValue}>
-            <Typography variant="bodyLarge" className={styles.selectedMarketPerpetual}>
-              {selectedPerpetual?.baseCurrency}/{selectedPerpetual?.quoteCurrency}
+            <Typography variant="bodyBig" className={styles.selectedMarketPerpetual}>
+              {cutBaseCurrency(selectedPerpetual?.baseCurrency)}/{selectedPerpetual?.quoteCurrency}
             </Typography>
             <Typography variant="bodyTiny">{selectedPool?.poolSymbol}</Typography>
           </div>

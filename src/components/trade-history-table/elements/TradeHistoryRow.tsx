@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { TableCell, TableRow, Typography } from '@mui/material';
 
-import { DATETIME_FORMAT } from 'app-constants';
+import { DATETIME_FORMAT } from 'appConstants';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 

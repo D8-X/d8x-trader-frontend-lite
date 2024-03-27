@@ -1,0 +1,96 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  padding: 10 * $d8x-spacing 8 * $d8x-spacing;
+  flex: 1;
+  background-color: var(--d8x-color-background-items);
+  border-radius: 0 $d8x-border-radius $d8x-border-radius 0;
+
+  @include media-tablet {
+    border-radius: 0 0 $d8x-border-radius $d8x-border-radius;
+  }
+}
+
+.boostsHolder {
+  display: flex;
+
+  .boostBlock {
+    flex: 1;
+    padding-right: 8 * $d8x-spacing;
+
+    + .boostBlock {
+      padding-left: 8 * $d8x-spacing;
+      border-left: 1px solid var(--d8x-color-border);
+    }
+
+    &:last-of-type {
+      padding-right: 0;
+    }
+  }
+}
+
+.metricsBlock {
+  display: flex;
+
+  .longMetric {
+    flex: 2;
+  }
+
+  .shortMetric {
+    flex: 1;
+  }
+}
+
+.labelHolder {
+  display: flex;
+  justify-content: flex-start;
+  margin: 4 * $d8x-spacing 0;
+}
+
+.valueHolder {
+  margin-bottom: 10 * $d8x-spacing;
+
+  @include media-tablet {
+    margin-bottom: 3 * $d8x-spacing;
+  }
+}
+
+.meterHolder {
+  display: inline-block;
+  max-width: 450px;
+  width: 100%;
+}
+
+.boostsData {
+  margin-top: $d8x-spacing * 4;
+  display: flex;
+  gap: $d8x-spacing * 6;
+
+
+  .boostLine {
+    display: flex;
+    gap: $d8x-spacing * 1;
+  }
+}
+
+@include media-desktop {
+  .boostsHolder {
+    flex-direction: column;
+
+    .boostBlock {
+      padding-right: 0;
+      padding-bottom: 8 * $d8x-spacing;
+
+      + .boostBlock {
+        padding-left: 0;
+        padding-top: 8 * $d8x-spacing;
+        border-left: none;
+        border-top: 1px solid var(--d8x-color-border);
+      }
+
+      &:last-of-type {
+        padding-right: 0;
+      }
+    }
+  }
+}

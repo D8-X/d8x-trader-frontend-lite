@@ -4,7 +4,9 @@ import { useAtom } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
+import { getWalletClient } from '@wagmi/core';
 
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
@@ -25,7 +27,7 @@ export const LiFiWidgetHolder = () => {
   const { i18n, t } = useTranslation();
 
   const chainId = useChainId();
-  const { connectAsync, connectors } = useConnect();
+  const { connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const signer = useEthersSigner();
   const widgetEvents = useWidgetEvents();
@@ -51,8 +53,7 @@ export const LiFiWidgetHolder = () => {
       walletManagement: {
         signer,
         connect: async () => {
-          const result = await connectAsync({ connector: connectors[0] });
-          const walletClient = await result.connector?.getWalletClient();
+          const walletClient = await getWalletClient(wagmiConfig, { connector: connectors[0] });
           if (walletClient) {
             return walletClientToSigner(walletClient);
           } else {
@@ -100,19 +101,7 @@ export const LiFiWidgetHolder = () => {
       },
     };
     return config;
-  }, [
-    triggerSwap,
-    chainId,
-    selectedPool,
-    signer,
-    connectAsync,
-    connectors,
-    disconnect,
-    t,
-    i18n,
-    enabledDarkMode,
-    admissibleTokens,
-  ]);
+  }, [triggerSwap, chainId, selectedPool, signer, connectors, disconnect, t, i18n, enabledDarkMode, admissibleTokens]);
 
   useEffect(() => {
     const onExchangeReversed = () => {

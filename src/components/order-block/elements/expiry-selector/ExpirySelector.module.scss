@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
@@ -33,9 +33,7 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .expiryOptions {
-
     :global(.MuiButtonBase-root) {
       min-width: 64px;
       max-width: 64px;

@@ -1,0 +1,19 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $d8x-spacing * 2;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: $d8x-spacing * 2;
+  flex: 1;
+}
+
+.text {
+  margin-bottom: -$d8x-spacing;
+}

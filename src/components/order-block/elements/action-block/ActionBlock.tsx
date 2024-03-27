@@ -1,12 +1,13 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, useAccount, useChainId, useNetwork, useWaitForTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
 
-import { Box, Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
-import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'app-constants';
+import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
@@ -15,8 +16,10 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
+import { orderSubmitted } from 'network/broker';
 import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
+import { depositModalOpenAtom } from 'store/global-modals.store';
 import { clearInputsDataAtom, latestOrderSentTimestampAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralDepositAtom,
@@ -31,7 +34,7 @@ import {
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
-import { OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
+import { MethodE, OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import type { OrderI, OrderInfoI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -41,6 +44,7 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
+import { useUserWallet } from '../../../../context/user-wallet-context/UserWalletContext';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -100,6 +104,7 @@ enum ValidityCheckE {
 enum ValidityCheckButtonE {
   Empty = '-',
   NoAddress = 'not-connected',
+  NoEnoughGas = 'no-enough-gas',
   NoFunds = 'no-funds',
   AmountBelowMinimum = 'amount-below-min',
   GoodToGo = 'good-to-go',
@@ -111,36 +116,34 @@ enum ValidityCheckButtonE {
 export const ActionBlock = memo(() => {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const chainId = useChainId();
-  const { chain } = useNetwork();
-
   const { data: walletClient } = useWalletClient({
-    chainId: chainId,
-    onError(error) {
-      console.log(error);
-    },
+    chainId,
   });
 
-  const [orderInfo] = useAtom(orderInfoAtom);
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [perpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [selectedCurrency] = useAtom(selectedCurrencyAtom);
-  const [selectedPerpetualStaticInfo] = useAtom(perpetualStaticInfoAtom);
-  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
-  const [positions] = useAtom(positionsAtom);
-  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [poolTokenBalance] = useAtom(poolTokenBalanceAtom);
-  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [hasTpSlOrders] = useAtom(hasTpSlOrdersAtom);
-  const [poolFee] = useAtom(poolFeeAtom);
-  const [currencyMultiplier] = useAtom(currencyMultiplierAtom);
+  const { hasEnoughGasForFee } = useUserWallet();
+
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedCurrency = useAtomValue(selectedCurrencyAtom);
+  const selectedPerpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const positions = useAtomValue(positionsAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const hasTpSlOrders = useAtomValue(hasTpSlOrdersAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
+  const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
+  const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
+  const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
+  const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -173,7 +176,18 @@ export const ActionBlock = memo(() => {
       .then((data) => {
         setNewPositionRisk(data.data.newPositionRisk);
         setCollateralDeposit(data.data.orderCost);
-        setMaxOrderSize({ maxBuy: data.data.maxLongTrade, maxSell: data.data.maxShortTrade });
+        let [maxLong, maxShort] = [data.data.maxLongTrade, data.data.maxShortTrade];
+        if (
+          selectedPerpetualStaticInfo &&
+          data.data.newPositionRisk.leverage > 1 / selectedPerpetualStaticInfo.initialMarginRate
+        ) {
+          if (orderInfo.orderBlock === OrderBlockE.Long) {
+            maxLong = 0;
+          } else {
+            maxShort = 0;
+          }
+        }
+        setMaxOrderSize({ maxBuy: maxLong, maxSell: maxShort });
       })
       .catch(console.error)
       .finally(() => {
@@ -210,6 +224,9 @@ export const ActionBlock = memo(() => {
     if (poolTokenBalance === 0) {
       return ValidityCheckButtonE.NoFunds;
     }
+    if (!hasEnoughGasForFee(MethodE.Approve, 4n)) {
+      return ValidityCheckButtonE.NoEnoughGas;
+    }
     if (orderInfo.size === 0) {
       return ValidityCheckButtonE.NoAmount;
     }
@@ -220,13 +237,15 @@ export const ActionBlock = memo(() => {
       return ValidityCheckButtonE.NoTriggerPrice;
     }
     return ValidityCheckButtonE.GoodToGo;
-  }, [orderInfo, address, poolTokenBalance]);
+  }, [orderInfo, address, poolTokenBalance, hasEnoughGasForFee]);
 
   const validityCheckButtonText = useMemo(() => {
     if (validityCheckButtonType === ValidityCheckButtonE.NoAddress) {
       return `${t('pages.trade.action-block.validity.button-no-address')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoFunds) {
       return `${t('pages.trade.action-block.validity.button-no-funds')}`;
+    } else if (validityCheckButtonType === ValidityCheckButtonE.NoEnoughGas) {
+      return `${t('common.deposit-gas')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoAmount) {
       return `${t('pages.trade.action-block.validity.button-no-amount')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoLimitPrice) {
@@ -293,44 +312,56 @@ export const ActionBlock = memo(() => {
     return orders;
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
-  useWaitForTransaction({
+  const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
     hash: txHash,
-    onSuccess() {
-      setLatestOrderSentTimestamp(Date.now());
-      toast.success(
-        <ToastContent
-          title={t('pages.trade.action-block.toasts.order-submitted.title')}
-          bodyLines={[
-            {
-              label: t('pages.trade.action-block.toasts.order-submitted.body'),
-              value: orderInfo?.symbol,
-            },
-            {
-              label: '',
-              value: (
-                <a
-                  href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={styles.shareLink}
-                >
-                  {txHash}
-                </a>
-              ),
-            },
-          ]}
-        />
-      );
-    },
-    onError() {
-      toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
-    },
-    onSettled() {
-      setTxHash(undefined);
-      setLatestOrderSentTimestamp(Date.now());
-    },
-    enabled: !!address && !!orderInfo && !!txHash,
+    query: { enabled: !!address && !!orderInfo && !!txHash },
   });
+
+  useEffect(() => {
+    if (!isFetched || !txHash) {
+      return;
+    }
+    setTxHash(undefined);
+    setLatestOrderSentTimestamp(Date.now());
+  }, [isFetched, txHash, setLatestOrderSentTimestamp]);
+
+  useEffect(() => {
+    if (!isError) {
+      return;
+    }
+    toast.error(<ToastContent title={t('pages.trade.action-block.toasts.error.title')} bodyLines={[]} />);
+  }, [isError, t]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    setLatestOrderSentTimestamp(Date.now());
+    toast.success(
+      <ToastContent
+        title={t('pages.trade.action-block.toasts.order-submitted.title')}
+        bodyLines={[
+          {
+            label: t('pages.trade.action-block.toasts.order-submitted.body'),
+            value: orderInfo?.symbol,
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+  }, [isSuccess, txHash, chain, orderInfo?.symbol, setLatestOrderSentTimestamp, t]);
 
   const handleOrderConfirm = () => {
     if (
@@ -364,7 +395,10 @@ export const ActionBlock = memo(() => {
               postOrder(tradingClient, signatures, data.data)
                 .then((tx) => {
                   setShowReviewOrderModal(false);
-                  // success submitting order to the node
+                  // success submitting order to the node - inform backend
+                  orderSubmitted(walletClient.chain.id, data.data.orderIds)
+                    .then()
+                    .catch((error) => console.log(error));
                   // order was sent
                   clearInputsData();
                   toast.success(
@@ -555,19 +589,26 @@ export const ActionBlock = memo(() => {
   }, [orderInfo]);
 
   return (
-    <Box className={styles.root}>
-      <Button
-        variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
-        disabled={!isBuySellButtonActive}
-        onClick={openReviewOrderModal}
-        className={styles.buyButton}
-      >
-        {validityCheckButtonText}
-      </Button>
+    <div className={styles.root}>
+      {[ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
+        <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.buyButton}>
+          {validityCheckButtonText}
+        </Button>
+      )}
+      {![ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
+        <Button
+          variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
+          disabled={!isBuySellButtonActive}
+          onClick={openReviewOrderModal}
+          className={styles.buyButton}
+        >
+          {validityCheckButtonText}
+        </Button>
+      )}
       {orderInfo && (
         <Dialog open={showReviewOrderModal} className={styles.dialog}>
           <DialogTitle className={styles.dialogTitle}> {t('pages.trade.action-block.review.title')} </DialogTitle>
-          <Box className={styles.emphasis}>
+          <div className={styles.emphasis}>
             <SidesRow
               leftSide={
                 <Typography variant="bodyLargePopup" className={styles.semibold}>
@@ -581,9 +622,9 @@ export const ActionBlock = memo(() => {
                 </Typography>
               }
             />
-          </Box>
+          </div>
           <DialogContent>
-            <Box className={styles.orderDetails}>
+            <div className={styles.orderDetails}>
               <SidesRow
                 leftSide={
                   <Typography variant="bodySmallPopup" className={styles.left}>
@@ -690,16 +731,16 @@ export const ActionBlock = memo(() => {
                 }
                 rightSideStyles={styles.rightSide}
               />
-            </Box>
+            </div>
           </DialogContent>
           <Separator />
           <DialogContent>
-            <Box className={styles.newPositionHeader}>
+            <div className={styles.newPositionHeader}>
               <Typography variant="bodyMediumPopup" className={styles.bold}>
                 {t('pages.trade.action-block.review.details')}
               </Typography>
-            </Box>
-            <Box className={styles.newPositionDetails}>
+            </div>
+            <div className={styles.newPositionDetails}>
               <SidesRow
                 leftSide={
                   <Typography variant="bodySmallPopup" className={styles.left}>
@@ -759,9 +800,9 @@ export const ActionBlock = memo(() => {
                 }
                 rightSideStyles={styles.rightSide}
               />
-            </Box>
+            </div>
           </DialogContent>
-          <Box className={styles.emphasis}>
+          <div className={styles.emphasis}>
             <SidesRow
               leftSide={
                 <Typography variant="bodyMediumPopup" className={styles.semibold}>
@@ -770,9 +811,9 @@ export const ActionBlock = memo(() => {
               }
               rightSide={
                 !isValidityCheckDone ? (
-                  <Box>
+                  <div>
                     <CircularProgress color="primary" />
-                  </Box>
+                  </div>
                 ) : (
                   <Typography variant="bodyMediumPopup" className={styles.bold} style={{ color: validityColor }}>
                     {validityCheckType !== ValidityCheckE.Empty
@@ -788,14 +829,14 @@ export const ActionBlock = memo(() => {
                 )
               }
             />
-          </Box>
+          </div>
           <DialogContent>
             {isValidityCheckDone ? (
-              <Box className={styles.goMessage}>
+              <div className={styles.goMessage}>
                 <Typography variant="bodySmallPopup" className={styles.centered} style={{ color: validityColor }}>
                   {validityCheckText}
                 </Typography>
-              </Box>
+              </div>
             ) : (
               ''
             )}
@@ -821,6 +862,6 @@ export const ActionBlock = memo(() => {
           </DialogActions>
         </Dialog>
       )}
-    </Box>
+    </div>
   );
 });

@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .dialogRoot {
   min-width: 450px;
@@ -98,7 +98,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .dialogRoot {
     min-width: 300px;
   }

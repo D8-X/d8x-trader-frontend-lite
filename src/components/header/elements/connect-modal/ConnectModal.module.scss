@@ -1,0 +1,88 @@
+@import '~styles/theme/theme.scss';
+
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+.dialogContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4 * $d8x-spacing;
+  padding: 8 * $d8x-spacing;
+}
+
+.centered {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.successIcon {
+  width: 100px;
+  height: 100px;
+  color: var(--d8x-color-action-icon);
+}
+
+.actionButtonsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 6 * $d8x-spacing;
+
+  .connectButton {
+    display: flex;
+    align-items: center;
+    gap: 2 * $d8x-spacing;
+    width: 100%;
+
+    svg {
+      margin-bottom: $d8x-spacing;
+    }
+  }
+
+  .orSeparator {
+    position: relative;
+    width: 100%;
+    padding: 0 9 * $d8x-spacing;
+    text-align: center;
+  }
+
+  .orTextHolder {
+    position: absolute;
+    inset: -($d8x-spacing * 1.5) 0 0;
+    text-align: center;
+
+    span {
+      width: 40px;
+      background-color: var(--d8x-color-background);
+      padding: 0 2 * $d8x-spacing;
+    }
+  }
+}
+
+.closeButtonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 6 * $d8x-spacing;
+}
+
+.closeButton {
+  width: 150px;
+}
+
+@media screen and ($d8x-breakpoint-max-xs) {
+  .actionButtonsContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4 * $d8x-spacing;
+  }
+
+  .closeButton {
+    width: 100%;
+    height: 50px;
+  }
+}

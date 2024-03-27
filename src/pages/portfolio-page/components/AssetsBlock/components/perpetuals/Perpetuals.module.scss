@@ -1,4 +1,4 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .pnlBlock {
   width: 50%;
@@ -26,11 +26,4 @@
   @include media-tablet {
     width: auto;
   }
-}
-
-.assetsLine {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $d8x-spacing * 2;
 }

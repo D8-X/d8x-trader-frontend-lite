@@ -3,7 +3,7 @@ import { memo } from 'react';
 
 import { useMediaQuery, useTheme } from '@mui/material';
 
-import { ReactComponent as MobileBackground } from 'assets/background/mobile-background.svg';
+import MobileBackground from 'assets/background/mobile-background.svg?react';
 
 import styles from './StaticBackground.module.scss';
 

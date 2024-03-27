@@ -1,32 +1,12 @@
 import { useAtom } from 'jotai';
-import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getDynamicLogo } from 'utils/tokens';
 
+import { AssetLine } from 'components/asset-line/AssetLine';
 import { realizedPnLListAtom } from 'pages/portfolio-page/store/fetchRealizedPnL';
 import { unrealizedPnLListAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
+import { formatCurrency } from 'utils/formatCurrency';
 
 import styles from './Perpetuals.module.scss';
-
-const formatCurrency = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
-
-interface AssetLinePropsI {
-  symbol: string;
-  value: string | number;
-}
-
-export const AssetLine = ({ symbol, value }: AssetLinePropsI) => {
-  const IconComponent = getDynamicLogo(symbol.toLowerCase());
-  return (
-    <div className={styles.assetsLine}>
-      <Suspense fallback={null}>
-        <IconComponent width={24} height={24} />
-      </Suspense>
-      <div style={{ flex: '1' }}>{symbol}</div>
-      <div>{value}</div>
-    </div>
-  );
-};
 
 export const Perpetuals = () => {
   const { t } = useTranslation();

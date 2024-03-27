@@ -1,9 +1,8 @@
-@import '~styles/theme/_theme.scss';
+@import '~styles/theme/theme.scss';
 
 .root {
   display: flex;
-  margin-top: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 0;
+  margin-top: $d8x-spacing;
 }
 
 .buyButton {
@@ -11,7 +10,6 @@
 }
 
 .dialog {
-
   :global(.MuiPaper-root) {
     max-width: 500px;
     width: 100%;
@@ -65,7 +63,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
-
   .emphasis {
     padding: $d8x-spacing * 3 $d8x-spacing * 8;
   }

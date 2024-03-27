@@ -22,6 +22,7 @@ export const traderAPIBusyAtom = atom(false);
 export const poolsAtom = atom<PoolWithIdI[]>([]);
 export const perpetualsAtom = atom<PerpetualDataI[]>([]);
 export const poolFeeAtom = atom<number | undefined>(undefined);
+export const addr0FeeAtom = atom<number | undefined>(undefined);
 export const oracleFactoryAddrAtom = atom('');
 export const proxyAddrAtom = atom<string | undefined>(undefined);
 export const perpetualStatisticsAtom = atom<PerpetualStatisticsI | null>(null);
@@ -30,13 +31,14 @@ export const newPositionRiskAtom = atom<MarginAccountI | null>(null);
 export const collateralDepositAtom = atom(0);
 export const webSocketReadyAtom = atom(false);
 export const mainWsLatestMessageTimeAtom = atom(Date.now());
-export const loyaltyScoreAtom = atom(0);
 export const proxyABIAtom = atom<string[] | undefined>(undefined);
 export const poolTokenBalanceAtom = atom<number | undefined>(undefined);
 export const gasTokenSymbolAtom = atom<string | undefined>(undefined);
 export const poolTokenDecimalsAtom = atom<number | undefined>(undefined);
 export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);
+export const triggerPositionsUpdateAtom = atom(true);
+export const triggerBalancesUpdateAtom = atom(true);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
 const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});
@@ -209,3 +211,31 @@ export const failOrderAtom = atom(null, (_get, set, orderIdToUpdate: string) => 
 export const clearOpenOrdersAtom = atom(null, (_get, set) => {
   set(ordersAtom, {});
 });
+
+const executedOrdersAtom = atom<Set<string>>(new Set<string>());
+
+export const executeOrderAtom = atom(
+  (get) => {
+    return get(executedOrdersAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(executedOrdersAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);
+
+const failedOrderIdsAtom = atom<Set<string>>(new Set<string>());
+
+export const failOrderIdAtom = atom(
+  (get) => {
+    return get(failedOrderIdsAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(failedOrderIdsAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);

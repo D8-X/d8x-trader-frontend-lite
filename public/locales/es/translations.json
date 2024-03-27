@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "Comercio",
+    "boost-station": "Bomba",
     "refer": "Referir",
     "vault": "Bóveda",
     "portfolio": "Cartera"
@@ -16,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Precio Medio",
+        "mid-price-tooltip": "El precio que pagas es el precio medio más/menos el impacto en el precio de su pedido.",
         "mark-price": "Precio de Marca",
+        "mark-price-tooltip": "El precio de marca es el precio al que se valorará el contrato perpetuo. Precio de marca = Precio de Índice + EMA de (Precio Medio - Precio de Índice)",
         "index-price": "Precio de Índice",
+        "index-price-tooltip": "El precio de Índice es el precio de consenso del mercado del indice subyacente.",
         "funding-rate": "Tasa de Financiación",
+        "funding-rate-tooltip": "La tasa de financiación se cotiza como una tasa de 8 horas, se acumula continuamente según el tamaño de la posición y se paga hacia/desde la cuenta de margen. Los pagos de financiación se realizan con cada operacion en el mercado.",
         "open-interest": "Interés Abierto",
+        "open-interest-tooltip": "Tamaño total de las posiciones activas en este contrato perpetuo.",
         "view-graph": "Ver grafico",
         "hide-graph": "Esconder grafico"
       },
@@ -33,7 +39,8 @@
           "liq-price": "Precio de Liq.",
           "margin": "Margen",
           "pnl": "PnL sin Realizar",
-          "tp-sl": "TP/SL"
+          "tp-sl": "TP/SL",
+          "tp-sl-tooltip": "SL para posiciones de COMPRA y TP para posiciones de VENTA (es decir, órdenes Stop-market) se ejecutan si el precio de marca alcanza el precio que se muestra en esta columna. TP para posiciones de COMPRA y órdenes SL para posiciones de VENTA (es decir, órdenes limitadas) se ejecutan si el precio medio más/menos el impacto en el precio de su orden alcanza el precio que se muestra en esta columna."
         },
         "table-content": {
           "buy": "COMPRA",
@@ -319,7 +326,7 @@
           "pass": "Pasó",
           "fail": "No Pasó",
           "button-no-address": "Conectar cartera",
-          "button-no-funds": "Cartera sin saldo",
+          "button-no-funds": "Depósito",
           "button-no-amount": "Orden menor que el mínimo",
           "button-no-limit": "Ingrese precio limite",
           "button-no-trigger": "Ingrese precio de parada"
@@ -359,7 +366,45 @@
         "type": "Tipo:",
         "value": "Valor:",
         "value-placeholder": "valor a filtrar",
-        "clear": "Filtro Claro"
+        "clear": "Filtro Removido"
+      }
+    },
+    "boost-station": {
+      "title": "Participa en el comercio y añade liquidez para IMPULSAR tu bolsa de Airdrop de $D8X",
+      "invite-friends": "Referir",
+      "boosted-volume": {
+        "title": "Volumen IMPULSADO",
+        "modal-text": "El Airdrop de $D8X se calcula en función del volumen IMPULSADO. Para cada operación calculamos el volumen x el impulso. El volumen IMPULSADO es la suma de todos estos volumenes."
+      },
+      "trade-volume": {
+        "title": "Volumen IMPULSADO por Comercio",
+        "modal-text": "Cada vez que participes en el comercio calculamos el valor de Volumen x Trade Boost. El Volumen IMPULSADO por Comercio consiste de la suma de estos valores sobre todas tus acciones, comercio y liquidez."
+      },
+      "trade-last-increase": {
+        "title": "Ultimo incremento",
+        "modal-text": "El incremento de tu volumen IMPULSADO desde tu ultima accion en el comercio. LFG!"
+      },
+      "trade-boost": {
+        "title": "Impulso por Comercio",
+        "modal-text": "El Impulso por Comercio es el estímulo que se aplica a tu PRÓXIMA operación en el comercio. El estímulo varía de 1x a {{totalBoostMax}}x y tiene dos partes:",
+        "modal-text2": "Impulso por Volumen - sus operaciones en el comercio durante los últimos 7 días podrían otorgarle un aumento de volumen que oscila entre 1 y {{volBoostMax}} veces. ¡Cuanto más opere, mayor será su estímulo potencial!",
+        "modal-text3": "Impulso por Fortuna - cada operación te brinda la oportunidad de obtener Fortune Boost, ¡un bono que puede dispararse desde 0x hasta un increíble {{rndBoostMax}}x!"
+      },
+      "boost": {
+        "volume": "Impulso por Volumen:",
+        "random": "Impulso por Fortuna:"
+      },
+      "liquidity-volume": {
+        "title": "Volumen por Liquidez IMPULSADO",
+        "modal-text": "Tu volumen por liquidez IMPULSADA crece mientras mantengas tu liquidez en la boveda. Cada 24 horas tu volumen por Liquidez IMPULSADA puede crecer hasta Liquidez x Impulso por Liquidez"
+      },
+      "trade-hourly-increase": {
+        "title": "Incremento",
+        "modal-text": "Incremento por hora de la liquidez IMPULSADA"
+      },
+      "liquidity-boost": {
+        "title": "Impulso por Liquidez",
+        "modal-text": "El Impulso por Liquidez muestra el estimulo aplicado a tu deposito de liquidez cada hora. Este valor puede cambiar."
       }
     },
     "refer": {
@@ -483,10 +528,9 @@
           "info1": "Especifica la cantidad de {{poolSymbol}} que quieres añadir a las reservas."
         },
         "receive": "d{{poolSymbol}} que recibes",
-        "max": "Max:",
-        "button": "Anadir",
+        "button": "Añadir",
         "validity-empty": "Conectar cartera",
-        "validity-amount-too-big": "Fondos insuficientes" ,
+        "validity-amount-too-big": "Fondos insuficientes",
         "validity-amount-below-min": "Cantidad por debajo del mínimo",
         "validity-no-amount": "Ingresar cantidad"
       },
@@ -502,7 +546,8 @@
           "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
           "validity-no-funds": "No hay fondos para retirar",
-          "validity-amount-too-big": "Cantidad demasiado grande" ,
+          "validity-no-gas": "No gas to proceed",
+          "validity-amount-too-big": "Cantidad demasiado grande",
           "validity-amount-below-min": "Cantidad por debajo del mínimo",
           "validity-no-amount": "Ingresar cantidad"
         },
@@ -577,9 +622,25 @@
   "common": {
     "change-language": "Cambiar Idioma",
     "wallet-connect": "Conectar",
+    "account-button": "Cuenta",
+    "currency-label": "Divisa",
+    "amount-label": "Cantidad",
+    "address-label": "Direccion",
+    "deposit-gas": "Deposit gas",
+    "max": "Max:",
+    "copied": "Copiado",
+    "copy-error": "Apareció un error al copiar al portapapeles.",
     "one-click": {
       "disable": "Deshabilitar el comercio con un clic",
       "enable": "Habilite el comercio con un solo clic"
+    },
+    "maintenance-mode": {
+      "header": "Modo de mantenimiento",
+      "description": "La bolsa en <bold>{{chainName}}</bold> está en modo de mantenimiento.",
+      "visit-text": {
+        "1": "Visita",
+        "2": "para más información."
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
@@ -687,6 +748,47 @@
     },
     "info-modal": {
       "close": "Cerrar"
+    },
+    "account-modal": {
+      "title": "Cuenta",
+      "deposit-button": "Depósito",
+      "withdraw-button": "Retirar",
+      "extract-pk-button": "Extraer PK",
+      "notice-block": "Aviso importante: asegúrese de tener suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía."
+    },
+    "deposit-modal": {
+      "title": "Depósito",
+      "important-notice": {
+        "full": "Aviso importante: envíe solo <bold>{{currencyName}}</bold> (dirección del token: <bold>{{currencyContractAddress}}</bold) a esta dirección. Envíe por <bold>{{chainName}}</bold>.",
+        "1": "Aviso importante: envíe solo <bold>{{currencyName}}</bold>",
+        "2": "(dirección del token: ",
+        "3": ")",
+        "4": "a esta dirección.",
+        "5": "Envíe por <bold>{{chainName}}</bold>."
+      },
+      "deposit-note": "Asegúrese de depositar suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía.",
+      "done-button": "Hecho"
+    },
+    "extract-pk-modal": {
+      "title": "Extraer clave privada",
+      "important-notice": "Aviso importante: nunca compartas tu clave privada con nadie. Sólo revela la clave si sabes lo que estás haciendo.",
+      "reveal-key-button": "Revelar clave"
+    },
+    "withdraw-modal": {
+      "title": "Retirar",
+      "withdraw-button": "Retirar",
+      "withdraw-address-error": "Por favor ingresar una dirección valida"
+    },
+    "connect-modal": {
+      "title": "Acceso",
+      "description": "Inicie sesión con X, Google o billetera web3",
+      "sign-in-with-x-button": "Inicie sesión con X",
+      "sign-in-with-google-button": "Inicie sesión con Google",
+      "sign-in-with-wallet-button": "Inicie sesión con billetera",
+      "or-separator": "o",
+      "disconnect": "Desconectar",
+      "connected-title": "Bienvenido!",
+      "connected-description": "Has iniciado sesión correctamente."
     },
     "public-beta": {
       "info-text": "Esta es una versión beta pública: haz tu propia investigación",

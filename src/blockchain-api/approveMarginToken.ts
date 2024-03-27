@@ -1,10 +1,20 @@
-import { readContract, waitForTransaction } from '@wagmi/core';
-import type { Account, Address, Transport, WalletClient } from 'viem';
-import { parseUnits } from 'viem';
-import { erc20ABI, type Chain } from 'wagmi';
+import { readContract, waitForTransactionReceipt } from '@wagmi/core';
+import {
+  type Account,
+  type Address,
+  type Chain,
+  erc20Abi,
+  parseUnits,
+  type Transport,
+  type WalletClient,
+  type WriteContractParameters,
+} from 'viem';
+import { estimateContractGas } from 'viem/actions';
 
-import { MaxUint256 } from 'app-constants';
+import { MaxUint256 } from 'appConstants';
+
 import { getGasPrice } from './getGasPrice';
+import { wagmiConfig } from './wagmi/wagmiClient';
 
 export async function approveMarginToken(
   walletClient: WalletClient<Transport, Chain, Account>,
@@ -14,9 +24,9 @@ export async function approveMarginToken(
   decimals: number
 ) {
   const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
-  const allowance = await readContract({
+  const allowance = await readContract(wagmiConfig, {
     address: marginTokenAddr as Address,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: 'allowance',
     args: [walletClient.account.address, proxyAddr as Address],
   });
@@ -29,22 +39,21 @@ export async function approveMarginToken(
       throw new Error('account not connected');
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
-    return walletClient
-      .writeContract({
-        chain: walletClient.chain,
-        address: marginTokenAddr as Address,
-        abi: erc20ABI,
-        functionName: 'approve',
-        args: [proxyAddr as Address, BigInt(MaxUint256)],
-        gas: BigInt(100_000),
-        gasPrice: gasPrice,
-        account: account,
-      })
-      .then((tx) => {
-        waitForTransaction({
-          hash: tx,
-          timeout: 30_000,
-        }).then(() => ({ hash: tx }));
-      });
+    const params: WriteContractParameters = {
+      chain: walletClient.chain,
+      address: marginTokenAddr as Address,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [proxyAddr as Address, BigInt(MaxUint256)],
+      gasPrice: gasPrice,
+      account: account,
+    };
+    const gasLimit = await estimateContractGas(walletClient, params);
+    return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
+      waitForTransactionReceipt(wagmiConfig, {
+        hash: tx,
+        timeout: 30_000,
+      }).then(() => ({ hash: tx }));
+    });
   }
 }

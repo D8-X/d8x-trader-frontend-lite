@@ -1,5 +1,5 @@
-@import '~styles/theme/_theme.scss';
-@import '~styles/theme/_utils.scss';
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .holderRoot {
   display: flex;
@@ -7,7 +7,8 @@
   gap: 0.5 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
   border-radius: 8px;
-  height: 84px;
+  height: 72px;
+  min-width: 350px;
 }
 
 .iconWrapper {
@@ -21,8 +22,8 @@
   margin-left: $d8x-spacing * 3;
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -71,7 +72,7 @@
 
 .selectedMarketLabel {
   color: var(--d8x-color-text-label-one);
-  line-height: 32px;
+  line-height: 30px;
 }
 
 .selectedMarketValue {
@@ -81,7 +82,7 @@
 
   .selectedMarketPerpetual {
     font-weight: 600;
-    line-height: 12px;
+    line-height: 16px;
   }
 }
 
@@ -90,7 +91,6 @@
 }
 
 .dialog {
-
   :global(.MuiDialog-container) {
     align-items: flex-start;
   }
@@ -132,13 +132,11 @@
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
-
   .selectedMarketLabel {
     line-height: 24px;
   }
 
   .selectedMarketValue {
-
     .selectedMarketPerpetual {
       font-size: 16px;
     }
@@ -146,7 +144,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
-
   .holderRoot {
     height: 72px;
     min-width: 350px;
@@ -163,7 +160,6 @@
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-
   .holderRoot {
     width: 100%;
     min-width: inherit;
@@ -171,10 +167,16 @@
   }
 
   .selectedMarketValue {
-
     .selectedMarketPerpetual {
       font-size: 14px;
       line-height: 8px;
     }
+  }
+}
+
+@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
+  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
+  .holderRoot {
+    height: 64px;
   }
 }

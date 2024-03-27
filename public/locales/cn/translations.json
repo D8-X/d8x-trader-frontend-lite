@@ -1,6 +1,7 @@
 {
   "navigation": {
     "trade": "交易",
+    "boost-station": "加速站",
     "refer": "邀请返佣",
     "vault": "金库",
     "portfolio": "投资组合"
@@ -16,10 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "中间价",
+        "mid-price-tooltip": "您最终成交价是中间价加上或减去影响您订单的价格(滑点)。",
         "mark-price": "标记价格",
+        "mark-price-tooltip": "标记价格是永续合约的估值价格。标记价格 = 指数价格 + (中间价 - 指数价格)的指数移动平均（EMA）。",
         "index-price": "指数价格",
+        "index-price-tooltip": "指数价格是市场对标的资产的共识现货价格。",
         "funding-rate": "资金费率",
+        "funding-rate-tooltip": "资金费率以8小时计算，持续累积于仓位大小，并且会通过抵押货币在保证金账户中实时结算。这笔费用在交易者进行交易时体现。",
         "open-interest": "持仓量",
+        "open-interest-tooltip": "显示该永续合约当前未平仓合约的总量。",
         "view-graph": "查看图表",
         "hide-graph": "隐藏图表"
       },
@@ -33,7 +39,8 @@
           "liq-price": "强平价",
           "margin": "本金",
           "pnl": "未实现盈亏",
-          "tp-sl": "止盈/止损"
+          "tp-sl": "止盈/止损",
+          "tp-sl-tooltip": "如果标记价格达到此栏显示的价格，市场单（买入仓位的止损单；卖出仓位的止盈单）将会执行。如果中间价加上或减去影响您订单的价格(滑点)达到此栏显示的价格，限价单（买入仓位的止盈单，卖出仓位的止损单）将会执行。"
         },
         "table-content": {
           "buy": "买入",
@@ -319,7 +326,7 @@
           "pass": "通过",
           "fail": "失败",
           "button-no-address": "连接钱包",
-          "button-no-funds": "钱包内无抵押品",
+          "button-no-funds": "存款",
           "button-no-amount": "订单规模太小",
           "button-no-limit": "设置限价",
           "button-no-trigger": "设置触发价格"
@@ -360,6 +367,44 @@
         "value": "价值:",
         "value-placeholder": "要过滤的值",
         "clear": "清除过滤器"
+      }
+    },
+    "boost-station": {
+      "title": "交易并提供流动性以加速您的 $D8X 空投",
+      "invite-friends": "邀请返佣",
+      "boosted-volume": {
+        "title": "加速后的总量",
+        "modal-text": "$D8X 空投的计算基于加速后的总量。加速后的总量=加速后的交易量+加速后的流动性提供量"
+      },
+      "trade-volume": {
+        "title": "加速后的交易量",
+        "modal-text": "对于每笔交易，我们计算实际交易量 x 加速倍数。加速后的交易量是您所有笔加速后交易量的总和。"
+      },
+      "trade-last-increase": {
+        "title": "最后一次交易量【加速后】",
+        "modal-text": "您上一次的交易量【加速后】。让我们开始吧！"
+      },
+      "trade-boost": {
+        "title": "交易加速倍数",
+        "modal-text": "交易加速倍数适用于您的下一笔交易。加速范围从1倍到{{totalBoostMax}}倍，分为两部分：",
+        "modal-text2": "基础交易量加速 - 您过去7天的交易量可能为您获得从1倍到{{volBoostMax}}倍的交易量加速。交易越多，潜在的加速越高！",
+        "modal-text3": "额外幸运加速 - 每笔交易都有机会获得幸运加速——一个可以从0倍飙升至{{rndBoostMax}}倍的奖励！"
+      },
+      "boost": {
+        "volume": "基于真实交易量的加速：",
+        "random": "随机加速："
+      },
+      "liquidity-volume": {
+        "title": "加速后的流动性提供量",
+        "modal-text": "您在池子中保持流动性的时间越长，您的分数就越高。超过24小时，您的加速后流动性提供量=实际流动性提供量 x 加速倍数。"
+      },
+      "trade-hourly-increase": {
+        "title": "每小时变化量",
+        "modal-text": "加速后的流动性提供的变化量"
+      },
+      "liquidity-boost": {
+        "title": "流动性提供的加速倍数",
+        "modal-text": "这是应用于您提供的流动性的加速倍数。【这个加速倍数可能会随着时间变化。】"
       }
     },
     "refer": {
@@ -416,7 +461,7 @@
       "trader-tab": {
         "title1": "您的折扣",
         "earned-rebates": "总返佣",
-        "open-rewards": "打开奖励",
+        "open-rewards": "未结算奖励",
         "title2": "交易 & 赚取",
         "disclaimer-text-block1": "输入邀请码以获取手续费折扣。",
         "disclaimer-text-block2": "折扣每周结算，自动到账。",
@@ -483,10 +528,9 @@
           "info1": "设置您要添加到池中的{{poolSymbol}}数量。"
         },
         "receive": "您会收到d{{poolSymbol}}",
-        "max": "最大：",
         "button": "添加",
         "validity-empty": "连接钱包",
-        "validity-amount-too-big": "资金不足" ,
+        "validity-amount-too-big": "资金不足",
         "validity-amount-below-min": "金额低于最小值",
         "validity-no-amount": "输入金额"
       },
@@ -502,7 +546,8 @@
           "validity-no-address": "连接钱包",
           "validity-empty": "-",
           "validity-no-funds": "无资金可提取",
-          "validity-amount-too-big": "金额太大" ,
+          "validity-no-gas": "No gas to proceed",
+          "validity-amount-too-big": "金额太大",
           "validity-amount-below-min": "金额低于最小",
           "validity-no-amount": "输入金额"
         },
@@ -554,7 +599,7 @@
           },
           "perps": {
             "title": "永续合约详情",
-            "leverage": "杠杠",
+            "leverage": "杠杆",
             "margin-total": "本金",
             "unrealized": "未实现盈亏",
             "realized": "已实现盈亏",
@@ -577,9 +622,25 @@
   "common": {
     "change-language": "切换语言",
     "wallet-connect": "连接",
+    "account-button": "账户",
+    "currency-label": "货币",
+    "amount-label": "数量",
+    "address-label": "地址",
+    "deposit-gas": "Deposit gas",
+    "max": "最大：",
+    "copied": "已复制",
+    "copy-error": "复制到剪贴板时出现错误",
     "one-click": {
       "disable": "禁用一键交易",
       "enable": "启用一键交易"
+    },
+    "maintenance-mode": {
+      "header": "维护模式",
+      "description": "<bold>{{chainName}}</bold> 上的期货交易所处于维护模式。",
+      "visit-text": {
+        "1": "点击",
+        "2": "f了解更多信息。"
+      }
     },
     "li-fi-widget": {
       "button-title": "LI.FI widget",
@@ -597,7 +658,7 @@
           "title": "一键交易"
         },
         "order-block": {
-          "title": "订单号",
+          "title": "订单区",
           "left": "左",
           "right": "右"
         },
@@ -648,7 +709,7 @@
       }
     },
     "select": {
-      "option-all": "凡是",
+      "option-all": "全部",
       "collateral": {
         "label": "抵押品：",
         "label2": "流动性池：",
@@ -662,7 +723,7 @@
         "header": "选择市场",
         "crypto": "加密货币",
         "fx": "外汇",
-        "commodity": "商品",
+        "commodity": "大宗商品",
         "closed": "休市"
       },
       "search": " 搜索...",
@@ -684,9 +745,50 @@
       "item5": "您可以在",
       "item6": "Polygon的公告中了解更多",
       "swap": "兑换"
-    },    
+    },
     "info-modal": {
       "close": "关闭"
+    },
+    "account-modal": {
+      "title": "账户",
+      "deposit-button": "存款",
+      "withdraw-button": "提款",
+      "extract-pk-button": "提取私钥",
+      "notice-block": "重要通知：确保有足够的 <bold>{{currencyName}}</bold> 作为燃料费，并至少有一份抵押品。"
+    },
+    "deposit-modal": {
+      "title": "存款",
+      "important-notice": {
+        "full": "重要通知：只发送 <bold>{{currencyName}}</bold> (代币地址: <bold>{{currencyContractAddress}}</bold) 到这个地址。通过 <bold>{{chainName}}</bold>发送。",
+        "1": "重要通知：只发送 <bold>{{currencyName}}</bold>",
+        "2": "(代币地址: ",
+        "3": ")",
+        "4": "到这个地址。",
+        "5": "通过 <bold>{{chainName}}</bold>发送。"
+      },
+      "deposit-note": "确保存入足够的<bold>{{currencyName}}</bold>作为燃料费，并至少有一份抵押品。",
+      "done-button": "完成"
+    },
+    "extract-pk-modal": {
+      "title": "提取私钥",
+      "important-notice": "重要通知：永远不要与任何人分享您的私钥。只有在你知道自己在做什么的情况下才揭示密钥。",
+      "reveal-key-button": "显示密钥"
+    },
+    "withdraw-modal": {
+      "title": "提款",
+      "withdraw-button": "提款",
+      "withdraw-address-error": "请输入有效地址"
+    },
+    "connect-modal": {
+      "title": "登录",
+      "description": "使用 X、Google 或 Web3 钱包登录",
+      "sign-in-with-x-button": "使用X登录",
+      "sign-in-with-google-button": "使用Google登录",
+      "sign-in-with-wallet-button": "使用钱包登录",
+      "or-separator": "或",
+      "disconnect": "断开连接",
+      "connected-title": "欢迎！",
+      "connected-description": "您已成功登录。"
     },
     "public-beta": {
       "info-text": "测试版 - 请自行研究",
