@@ -30,5 +30,5 @@ export const useCodeInput = (chainId: number) => {
     [chainId]
   );
 
-  return { codeInputValue, handleCodeChange, codeState };
+  return { codeInputValue, setCodeInputValue, handleCodeChange, codeState };
 };

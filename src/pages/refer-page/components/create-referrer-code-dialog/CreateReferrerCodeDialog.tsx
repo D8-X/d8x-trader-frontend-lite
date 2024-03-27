@@ -35,7 +35,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
+  const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
   const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
 
   useEffect(() => {
@@ -72,6 +72,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
     postUpsertCode(chainId, address, codeInputValue, Number(userRate), Number(traderRate), walletClient, onClose)
       .then(() => {
         toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
+        setCodeInputValue('');
       })
       .catch((error) => {
         console.error(error);

@@ -26,7 +26,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
   const { address } = useAccount();
   const chainId = useChainId();
 
-  const { codeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
+  const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
 
   const inputDisabled = codeState !== CodeStateE.CODE_TAKEN;
 
@@ -38,6 +38,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
       .then(() => {
         toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
         onCodeApplySuccess();
+        setCodeInputValue('');
       })
       .catch((error) => {
         console.error(error);
