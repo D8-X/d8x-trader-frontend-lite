@@ -17,15 +17,15 @@
     "trade": {
       "stats": {
         "mid-price": "Mid-Preis",
-        "mid-price-tooltip": "Mid-Preis",
+        "mid-price-tooltip": "Sie zahlen den Mid-Preis, zuzüglich/abzüglich der Preisauswirkungen Ihrer Order.",
         "mark-price": "Mark-Preis",
-        "mark-price-tooltip": "Mark-Preis",
+        "mark-price-tooltip": "Der Mark-Preis ist der Preis, zu dem der Perpetual Future bewertet wird. Markpreis = Indexpreis + EMA von (Mittelpreis – Indexpreis)",
         "index-price": "Index-Preis",
-        "index-price-tooltip": "Index-Preis",
+        "index-price-tooltip": "Der Indexpreis ist der Marktkonsens-Spotpreis des Basiswerts.",
         "funding-rate": "Funding-Rate",
-        "funding-rate-tooltip": "Funding-Rate",
+        "funding-rate-tooltip": "Die Funding-Rate wird als 8-Stunden-Satz angegeben, fällt kontinuierlich auf die Positionsgröße an und wird in der Sicherheitenwährung auf das/vom Margin-Konto gezahlt. Fundingzahlungen werden realisiert, wenn ein Händler handelt.",
         "open-interest": "Open Interest",
-        "open-interest-tooltip": "Open Interest",
+        "open-interest-tooltip": "Gesamtgröße der aktiven Positionen in diesem Perpetual Future.",
         "view-graph": "Chart anzeigen",
         "hide-graph": "Chart A"
       },
@@ -40,7 +40,7 @@
           "margin": "Margin",
           "pnl": "Unr. GuV",
           "tp-sl": "TP/SL",
-          "tp-sl-tooltip": "TP/SL"
+          "tp-sl-tooltip": "SL für KAUFEN-Positionen und TP für VERKAUFEN-Positionen (d.h. Stop-Market-Orders) werden ausgeführt, wenn der Mark-Preis den in dieser Spalte angezeigten Preis erreicht. TP für KAUFEN-Positionen und SL-Orders für VERKAUFEN-Positionen (d.h. Limit-Orders) werden ausgeführt, wenn der Mid-Preis, plus/minus der Preisauswirkung Ihrer Order, den in dieser Spalte angezeigten Preis erreicht."
         },
         "table-content": {
           "buy": "KAUFEN",
