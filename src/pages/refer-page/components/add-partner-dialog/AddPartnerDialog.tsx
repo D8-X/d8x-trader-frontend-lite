@@ -76,16 +76,24 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
     return isValidAddress(partnerAddressInputValue);
   }, [partnerAddressInputValue]);
 
-  const handleReferPost = async () => {
+  const handleReferPost = () => {
     if (!address || !walletClient || !isAddressValid) {
       return;
     }
 
     const { userRate, partnerRate } = sidesRowValues;
 
-    await postRefer(chainId, partnerAddressInputValue, Number(userRate), Number(partnerRate), walletClient, onClose);
-    toast.success(<ToastContent title={t('pages.refer.toast.success-add-partner')} bodyLines={[]} />);
-    referralCodesRefetchHandler.handleRefresh();
+    postRefer(chainId, partnerAddressInputValue, Number(userRate), Number(partnerRate), walletClient, onClose)
+      .then(() => {
+        toast.success(<ToastContent title={t('pages.refer.toast.success-add-partner')} bodyLines={[]} />);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.error || error.message} bodyLines={[]} />);
+      })
+      .finally(() => {
+        referralCodesRefetchHandler.handleRefresh();
+      });
   };
 
   return (

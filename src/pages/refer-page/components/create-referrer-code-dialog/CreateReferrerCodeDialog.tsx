@@ -62,16 +62,24 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
     setKickbackRateInputValue(filteredValue);
   };
 
-  const handleUpsertCode = async () => {
+  const handleUpsertCode = () => {
     if (!address || !walletClient) {
       return;
     }
 
     const { userRate, traderRate } = sidesRowValues;
 
-    await postUpsertCode(chainId, address, codeInputValue, Number(userRate), Number(traderRate), walletClient, onClose);
-    toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
-    referralCodesRefetchHandler.handleRefresh();
+    postUpsertCode(chainId, address, codeInputValue, Number(userRate), Number(traderRate), walletClient, onClose)
+      .then(() => {
+        toast.success(<ToastContent title={t('pages.refer.toast.success-create')} bodyLines={[]} />);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.error || error.message} bodyLines={[]} />);
+      })
+      .finally(() => {
+        referralCodesRefetchHandler.handleRefresh();
+      });
   };
 
   return (

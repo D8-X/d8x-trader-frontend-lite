@@ -226,7 +226,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
   const debouncedRemoveCollateral = useDebounce(removeCollateral, 500);
 
-  const handleRefreshPositionRisk = useCallback(async () => {
+  const handleRefreshPositionRisk = useCallback(() => {
     if (!selectedPosition || !address || isAPIBusyRef.current) {
       return;
     }
@@ -240,7 +240,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     }
 
     setAPIBusy(true);
-    await positionRiskOnCollateralAction(
+    positionRiskOnCollateralAction(
       chainId,
       traderAPI,
       address,
@@ -268,7 +268,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   ]);
 
   useEffect(() => {
-    handleRefreshPositionRisk().then();
+    handleRefreshPositionRisk();
   }, [debouncedAddCollateral, debouncedRemoveCollateral, handleRefreshPositionRisk]);
 
   useEffect(() => {
