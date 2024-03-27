@@ -22,6 +22,7 @@
   display: block;
   white-space: nowrap;
   margin-top: $d8x-spacing * 2;
+  margin-bottom: calc($d8x-spacing / 2);
   color: var(--d8x-color-text-label-one);
   min-width: 50px;
   line-height: 12px;

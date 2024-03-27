@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 import { memo } from 'react';
 
-import { Tooltip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 
 import type { StatDataI } from './types';
 
@@ -16,11 +18,11 @@ export const StatsLine = memo(({ items }: StatsLinePropsI) => (
     {items.map((item) => (
       <div key={item.id} className={styles.statContainer}>
         {item.tooltip ? (
-          <Tooltip title={item.tooltip}>
+          <TooltipMobile tooltip={item.tooltip}>
             <Typography variant="bodyTiny" className={classNames(styles.statLabel, styles.tooltip)}>
               {item.label}
             </Typography>
-          </Tooltip>
+          </TooltipMobile>
         ) : (
           <Typography variant="bodyTiny" className={styles.statLabel}>
             {item.label}

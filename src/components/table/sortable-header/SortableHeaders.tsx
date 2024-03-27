@@ -1,8 +1,9 @@
 import type { Dispatch, MouseEvent, SetStateAction } from 'react';
 
-import { Box, TableCell, TableSortLabel, Tooltip, Typography } from '@mui/material';
+import { Box, TableCell, TableSortLabel, Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { genericMemo } from 'helpers/genericMemo';
 import { SortOrderE } from 'types/enums';
 import type { TableHeaderI } from 'types/types';
@@ -30,11 +31,11 @@ function SortableHeadersComponent<T>({ headers, orderBy, order, setOrder, setOrd
 
   return headers.map((header) => {
     const headerLabel = header.tooltip ? (
-      <Tooltip title={header.tooltip}>
+      <TooltipMobile tooltip={header.tooltip}>
         <Typography variant="bodySmall" className={styles.tooltip}>
           {header.label}
         </Typography>
-      </Tooltip>
+      </TooltipMobile>
     ) : (
       <Typography variant="bodySmall">{header.label}</Typography>
     );

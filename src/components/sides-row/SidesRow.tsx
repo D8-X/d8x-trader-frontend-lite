@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 
-import { Tooltip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 
 import styles from './SidesRow.module.scss';
 
@@ -17,9 +19,9 @@ export const SidesRow = ({ leftSide, leftSideTooltip, leftSideStyles, rightSide,
     <div className={styles.root}>
       <Typography variant="bodySmall" className={leftSideStyles}>
         {leftSideTooltip ? (
-          <Tooltip title={leftSideTooltip}>
+          <TooltipMobile tooltip={leftSideTooltip}>
             <span className={styles.tooltip}>{leftSide}</span>
-          </Tooltip>
+          </TooltipMobile>
         ) : (
           leftSide
         )}

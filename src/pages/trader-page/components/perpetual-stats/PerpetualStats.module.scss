@@ -54,6 +54,7 @@
   white-space: nowrap;
   font-size: 0.75rem;
   color: var(--d8x-color-text-label-one);
+  margin-bottom: calc($d8x-spacing / 2);
 }
 
 .statMainValue {
@@ -71,6 +72,7 @@
 .statLabel {
   white-space: nowrap;
   margin-top: $d8x-spacing * 2;
+  margin-bottom: calc($d8x-spacing / 2);
   color: var(--d8x-color-text-label-one);
   font-size: 0.65rem;
   min-width: 50px;

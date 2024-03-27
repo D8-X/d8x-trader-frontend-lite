@@ -3,12 +3,13 @@ import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import ViewChartIcon from 'assets/icons/viewChart.svg?react';
 
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { perpetualStatisticsAtom, showChartForMobileAtom } from 'store/pools.store';
 import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -97,9 +98,9 @@ export const PerpetualStats = () => {
         <div className={styles.mainMobileLine}>
           <div>
             {midPrice.tooltip ? (
-              <Tooltip title={midPrice.tooltip}>
+              <TooltipMobile tooltip={midPrice.tooltip}>
                 <div className={classNames(styles.statMainLabel, styles.tooltip)}>{midPrice.label}</div>
-              </Tooltip>
+              </TooltipMobile>
             ) : (
               <div className={styles.statMainLabel}>{midPrice.label}</div>
             )}
@@ -119,9 +120,9 @@ export const PerpetualStats = () => {
           {items.map((item) => (
             <div key={item.id}>
               {item.tooltip ? (
-                <Tooltip title={item.tooltip}>
+                <TooltipMobile tooltip={item.tooltip}>
                   <div className={classNames(styles.statLabel, styles.tooltip)}>{item.label}</div>
-                </Tooltip>
+                </TooltipMobile>
               ) : (
                 <div className={styles.statLabel}>{item.label}</div>
               )}
@@ -144,9 +145,9 @@ export const PerpetualStats = () => {
           {[midPrice, ...items].map((item) => (
             <div key={item.id}>
               {item.tooltip ? (
-                <Tooltip title={item.tooltip}>
+                <TooltipMobile tooltip={item.tooltip}>
                   <div className={classNames(styles.statLabel, styles.tooltip)}>{item.label}</div>
-                </Tooltip>
+                </TooltipMobile>
               ) : (
                 <div className={styles.statLabel}>{item.label}</div>
               )}

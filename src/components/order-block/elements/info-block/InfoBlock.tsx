@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useChainId, useFeeData } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
 
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { getSymbolPrice } from 'network/network';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import {
@@ -159,11 +159,11 @@ export const InfoBlock = memo(() => {
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.balance')}
         </Typography>
-        <Tooltip title={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : '...'}>
+        <TooltipMobile tooltip={selectedPool?.marginTokenAddr ? selectedPool.marginTokenAddr.toString() : '...'}>
           <Typography variant="bodySmallSB" className={styles.infoTextTooltip}>
             {formatToCurrency(poolTokenBalance, orderInfo?.poolName)}
           </Typography>
-        </Tooltip>
+        </TooltipMobile>
       </Box>
       <Box className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
