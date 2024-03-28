@@ -265,51 +265,54 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     }
 
     if (parsedOrders.length > 0) {
-      orderDigest(chainId, parsedOrders, address)
-        .then((data) => {
-          if (data.data.digests.length > 0) {
-            // hide modal now that metamask popup shows up
-            approveMarginToken(
-              walletClient,
-              selectedPool.marginTokenAddr,
-              proxyAddr,
-              collateralDeposit,
-              poolTokenBalance[1]
-            )
-              .then(() => {
-                // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
-                const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                postOrder(tradingClient, signatures, data.data, false)
-                  .then((tx) => {
-                    // success submitting order to the node
-                    // order was sent
-                    setTakeProfitPrice(null);
-                    setStopLossPrice(null);
-                    toast.success(
-                      <ToastContent
-                        title={t('pages.trade.action-block.toasts.processed.title')}
-                        bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
-                      />
-                    );
-                    setTxHash(tx.hash);
-                    setLatestOrderSentTimestamp(Date.now());
-                  })
-                  .finally(() => {
-                    // ensure we can trade again - but modal is left open if user rejects txn
-                    requestSentRef.current = false;
-                    setRequestSent(false);
-                  });
-              })
-              .catch((error) => {
-                // not a transaction error, but probably metamask or network -> no toast
-                console.error(error);
-              });
-          }
-        })
-        .catch((error) => {
-          // not a transaction error, but probably metamask or network -> no toast
-          console.error(error);
-        });
+      // Execute orderDigest with delay to minimize RPC errors
+      setTimeout(() => {
+        orderDigest(chainId, parsedOrders, address)
+          .then((data) => {
+            if (data.data.digests.length > 0) {
+              // hide modal now that metamask popup shows up
+              approveMarginToken(
+                walletClient,
+                selectedPool.marginTokenAddr,
+                proxyAddr,
+                collateralDeposit,
+                poolTokenBalance[1]
+              )
+                .then(() => {
+                  // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
+                  const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
+                  postOrder(tradingClient, signatures, data.data, false)
+                    .then((tx) => {
+                      // success submitting order to the node
+                      // order was sent
+                      setTakeProfitPrice(null);
+                      setStopLossPrice(null);
+                      toast.success(
+                        <ToastContent
+                          title={t('pages.trade.action-block.toasts.processed.title')}
+                          bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                        />
+                      );
+                      setTxHash(tx.hash);
+                      setLatestOrderSentTimestamp(Date.now());
+                    })
+                    .finally(() => {
+                      // ensure we can trade again - but modal is left open if user rejects txn
+                      requestSentRef.current = false;
+                      setRequestSent(false);
+                    });
+                })
+                .catch((error) => {
+                  // not a transaction error, but probably metamask or network -> no toast
+                  console.error(error);
+                });
+            }
+          })
+          .catch((error) => {
+            // not a transaction error, but probably metamask or network -> no toast
+            console.error(error);
+          });
+      }, 1_000);
     }
 
     requestSentRef.current = false;

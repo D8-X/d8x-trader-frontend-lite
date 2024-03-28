@@ -59,7 +59,7 @@
         "modify-modal": {
           "title": "Modificar Posición",
           "tp-sl-title": "TP/SL",
-          "tp-sl-position": "Set a TP/SL for your existing position of {{positionSize}}",
+          "tp-sl-position": "Establezca un TP/SL para su posición existente de {{positionSize}}",
           "selector": {
             "close": "Cerrar",
             "add": "Añadir",
@@ -71,7 +71,7 @@
           "remove": "Remover Margen",
           "pos-details": {
             "title": "Detalles de su nueva posición",
-            "title-existing": "Existing position details",
+            "title-existing": "Detalles de posición existentes",
             "size": "Tamaño",
             "margin": "Margen:",
             "leverage": "Apalancamiento:",
