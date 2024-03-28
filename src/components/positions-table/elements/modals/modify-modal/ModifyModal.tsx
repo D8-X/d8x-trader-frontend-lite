@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -6,7 +6,6 @@ import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient }
 import { Address } from 'viem';
 
 import {
-  Box,
   Button,
   DialogActions,
   DialogContent,
@@ -37,11 +36,13 @@ import {
 } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import {
+  poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
   traderAPIBusyAtom,
+  triggerBalancesUpdateAtom,
 } from 'store/pools.store';
 import type { MarginAccountI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
@@ -60,12 +61,14 @@ interface ModifyModalPropsI {
 export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
-  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
 
   const chainId = useChainId();
   const { address, chain } = useAccount();
@@ -87,7 +90,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const requestSentRef = useRef(false);
 
   const {
-    isSuccess: isAddSucces,
+    isSuccess: isAddSuccess,
     isError: isAddError,
     isFetched: isAddFetched,
     error: addReason,
@@ -118,7 +121,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   });
 
   useEffect(() => {
-    if (!isAddSucces || !txHashForAdd) {
+    if (!isAddSuccess || !txHashForAdd) {
       return;
     }
     toast.success(
@@ -149,7 +152,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         ]}
       />
     );
-  }, [isAddSucces, txHashForAdd, amountForAdd, chain, symbolForTx, t]);
+    setTriggerBalancesUpdate((prevValue) => !prevValue);
+    // setTimeout(() => {
+    // }, 1000);
+  }, [isAddSuccess, txHashForAdd, amountForAdd, chain, symbolForTx, t, setTriggerBalancesUpdate]);
 
   const {
     isSuccess: isRemoveSuccess,
@@ -214,7 +220,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         ]}
       />
     );
-  }, [isRemoveSuccess, txHashForRemove, amountForRemove, chain, symbolForTx, t]);
+    setTimeout(() => {
+      setTriggerBalancesUpdate((prevValue) => !prevValue);
+    }, 5000);
+  }, [isRemoveSuccess, txHashForRemove, amountForRemove, chain, symbolForTx, t, setTriggerBalancesUpdate]);
 
   const handleMaxCollateral = () => {
     if (maxCollateral) {
@@ -405,6 +414,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                 setTxHashForAdd(tx.hash);
                 setAmountForAdd(addCollateral);
                 setSymbolForTx(selectedPosition.symbol);
+                setTriggerBalancesUpdate((prevValue) => !prevValue);
                 toast.success(
                   <ToastContent
                     title={t('pages.trade.positions-table.toasts.adding-collateral.title')}
@@ -449,6 +459,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
               setTxHashForRemove(tx.hash);
               setAmountForRemove(removeCollateral);
               setSymbolForTx(selectedPosition.symbol);
+              setTriggerBalancesUpdate((prevValue) => !prevValue);
               toast.success(
                 <ToastContent
                   title={t('pages.trade.positions-table.toasts.removing-collateral.title')}
@@ -486,28 +497,41 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
       <DialogTitle>{t('pages.trade.positions-table.modify-modal.title')}</DialogTitle>
       <DialogContent>
         <ModifyTypeSelector modifyType={modifyType} setModifyType={setModifyType} />
-        <Box className={styles.inputBlock}>
+        <div className={styles.inputBlock}>
           {modifyType === ModifyTypeE.Add && (
-            <SidesRow
-              leftSide={t('pages.trade.positions-table.modify-modal.add')}
-              rightSide={
-                <OutlinedInput
-                  id="add-collateral"
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
-                    </InputAdornment>
+            <>
+              <SidesRow
+                leftSide={t('pages.trade.positions-table.modify-modal.add')}
+                rightSide={
+                  <OutlinedInput
+                    id="add-collateral"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
+                      </InputAdornment>
+                    }
+                    type="number"
+                    inputProps={{ step: 0.1, min: 0, max: poolTokenBalance }}
+                    value={addCollateral}
+                    onChange={(event) => setAddCollateral(+event.target.value)}
+                  />
+                }
+              />
+              {poolTokenBalance !== undefined && poolTokenBalance > 0 && (
+                <SidesRow
+                  leftSide=" "
+                  rightSide={
+                    <Typography className={styles.helperText} variant="bodyTiny">
+                      {t('common.max')}{' '}
+                      <Link onClick={() => setAddCollateral(poolTokenBalance)}>{formatNumber(poolTokenBalance)}</Link>
+                    </Typography>
                   }
-                  type="number"
-                  inputProps={{ step: 0.1, min: 0 }}
-                  defaultValue={addCollateral}
-                  onChange={(event) => setAddCollateral(+event.target.value)}
                 />
-              }
-            />
+              )}
+            </>
           )}
           {modifyType === ModifyTypeE.Remove && (
-            <Box>
+            <>
               <SidesRow
                 leftSide={t('pages.trade.positions-table.modify-modal.remove')}
                 rightSide={
@@ -537,18 +561,18 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                   }
                 />
               )}
-            </Box>
+            </>
           )}
-        </Box>
+        </div>
       </DialogContent>
       <Separator />
       <DialogContent>
-        <Box className={styles.newPositionHeader}>
+        <div className={styles.newPositionHeader}>
           <Typography variant="bodyMedium" className={styles.centered}>
             {t('pages.trade.positions-table.modify-modal.pos-details.title')}
           </Typography>
-        </Box>
-        <Box className={styles.newPositionDetails}>
+        </div>
+        <div className={styles.newPositionDetails}>
           <SidesRow
             leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')}
             rightSide={calculatedPositionSize}
@@ -565,7 +589,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
             leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')}
             rightSide={calculatedLiqPrice}
           />
-        </Box>
+        </div>
       </DialogContent>
       <Separator />
       <DialogActions>
