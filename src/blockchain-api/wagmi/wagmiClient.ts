@@ -8,7 +8,7 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia } from 'wagmi/chains';
+import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia, arbitrum } from 'wagmi/chains';
 import { createConfig, http } from 'wagmi';
 import { createClient } from 'viem';
 
@@ -36,6 +36,17 @@ const chains = [
       default: {
         name: 'Arbiscan',
         url: 'https://sepolia.arbiscan.io/',
+      },
+    },
+  },
+  {
+    ...arbitrum,
+    iconUrl: arbitrumSepoliaIcon,
+    iconBackground: 'transparent',
+    blockExplorers: {
+      default: {
+        name: 'Arbiscan',
+        url: 'https://arbiscan.io/',
       },
     },
   },
