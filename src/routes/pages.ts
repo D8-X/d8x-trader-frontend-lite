@@ -11,6 +11,7 @@ export interface PageI {
   IconComponent?: FC<SVGProps<SVGSVGElement> & { className?: string | undefined }>;
   translationKey: string;
   enabled: boolean;
+  enabledByChains?: number[];
 }
 
 export const pages: PageI[] = [
@@ -42,6 +43,13 @@ export const pages: PageI[] = [
 ];
 
 export const authPages: PageI[] = [
+  {
+    id: 'strategies',
+    path: RoutesE.Strategies,
+    translationKey: 'navigation.strategies',
+    enabled: pagesConfig.enabledStrategiesPage,
+    enabledByChains: pagesConfig.enabledStrategiesPageByChains,
+  },
   {
     id: 'portfolio',
     path: RoutesE.Portfolio,

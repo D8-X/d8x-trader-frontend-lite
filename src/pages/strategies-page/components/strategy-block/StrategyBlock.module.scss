@@ -1,0 +1,40 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: flex;
+  width: 100%;
+  height: auto;
+  border-radius: $d8x-border-radius;
+  overflow: hidden;
+
+  @include media-tablet {
+    display: block;
+  }
+}
+
+.overview {
+  background-color: var(--d8x-color-background-items-second);
+  padding: $d8x-spacing * 8;
+  width: 300px;
+}
+
+.actionBlock {
+  display: flex;
+  flex: 1;
+  border-radius: 0 $d8x-border-radius $d8x-border-radius 0;
+  overflow-x: auto;
+  background-color: var(--d8x-color-background-items);
+}
+
+.divider {
+  border-right: 1px solid var(--d8x-color-separator-border);
+  margin: 10 * $d8x-spacing 0;
+
+  @include media-tablet {
+    display: none;
+  }
+}
+
+.emptyBlock {
+  background-color: var(--d8x-color-background-items);
+}

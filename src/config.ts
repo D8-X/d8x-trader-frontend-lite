@@ -19,6 +19,7 @@ const {
   VITE_ENABLED_PUMP_STATION_PAGE: enabledPumpStationPage = 'true',
   VITE_ENABLED_BOOST_STATION_PAGE: enabledBoostStationPage = 'true',
   VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
+  VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
   VITE_FIREBASE_APIKEY: firebaseApiKey = '',
@@ -75,6 +76,8 @@ export const pagesConfig = {
   enabledReferPage: enabledReferPage === 'true',
   enabledVaultPage: enabledVaultPage === 'true',
   enabledPortfolioPage: enabledPortfolioPage === 'true',
+  enabledStrategiesPage: splitNumbers(enabledStrategiesPageByChains).length > 0,
+  enabledStrategiesPageByChains: splitNumbers(enabledStrategiesPageByChains),
 };
 
 export const web3AuthConfig = {

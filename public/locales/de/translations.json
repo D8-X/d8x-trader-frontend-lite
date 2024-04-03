@@ -4,6 +4,7 @@
     "boost-station": "BoostStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
+    "strategies": "Strategies",
     "portfolio": "Portfolio"
   },
   "pages": {
@@ -583,6 +584,37 @@
         "error-initiating": {
           "title": "Fehler beim der Einleitung der Liquiditätsentnahme",
           "body": "Grund"
+        }
+      }
+    },
+    "strategies": {
+      "connect": {
+        "title": "Connect to Strategy Vault",
+        "connect-button": "Connect"
+      },
+      "overview": {
+        "title": "Delta-hedged yield strategy",
+        "synthetic-position": "Synthetic USD position",
+        "your-yield": "Your yield"
+      },
+      "info": {
+        "title": "How it works",
+        "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
+        "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
+      },
+      "enter": {
+        "title": "Enter strategy",
+        "amount-info": "Amount Info",
+        "deposit-button": "Deposit"
+      },
+      "exit": {
+        "title": "Exit strategy",
+        "note": "Take your funds out of the strategy.",
+        "exit-button": "Exit strategy",
+        "confirm-modal": {
+          "title": "Exit strategy",
+          "text": "Are you sure you want to exit?",
+          "confirm-button": "Exit"
         }
       }
     },

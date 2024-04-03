@@ -234,7 +234,9 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const availablePages = [...pages.filter((page) => page.enabled)];
   if (address) {
-    availablePages.push(...authPages.filter((page) => page.enabled));
+    availablePages.push(
+      ...authPages.filter((page) => page.enabled && (!page.enabledByChains || page.enabledByChains.includes(chainId)))
+    );
   }
   const drawer = (
     <>
@@ -315,9 +317,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   </nav>
                 )}
               </Box>
-              {!isSmallScreen && (
-                <Typography id="header-side" variant="h6" component="div" className={styles.selectBoxes} />
-              )}
               {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
                   {web3AuthConfig.isEnabled && !isConnected && (

@@ -22,6 +22,18 @@
   width: 100%;
 }
 
+.statsHolder {
+  display: flex;
+  gap: $d8x-spacing * 3;
+
+  .selectHolder {
+    background-color: var(--d8x-color-background-items);
+    border-radius: $d8x-spacing * 3;
+    padding: $d8x-spacing * 2;
+    max-height: 72px;
+  }
+}
+
 @media screen and ($d8x-breakpoint-max-md) {
   .container {
     gap: $d8x-spacing * 4;

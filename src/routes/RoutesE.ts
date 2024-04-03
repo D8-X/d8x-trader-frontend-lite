@@ -3,5 +3,6 @@ export enum RoutesE {
   BoostStation = '/boost-station',
   Refer = '/refer',
   Vault = '/vault',
+  Strategies = '/strategies',
   Portfolio = '/portfolio',
 }

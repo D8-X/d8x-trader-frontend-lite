@@ -1,0 +1,44 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  background-color: var(--d8x-color-background-items-second);
+  padding: $d8x-spacing * 8;
+  width: 300px;
+
+  @include media-tablet {
+    width: 100%;
+  }
+}
+
+.title {
+  font-size: 32px;
+  line-height: 44px;
+  color: var(--d8x-color-text);
+  margin-bottom: 10 * $d8x-spacing;
+}
+
+.dataBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8 * $d8x-spacing;
+  color: var(--d8x-color-text-highlight);
+
+  .dataTitle {
+    color: var(--d8x-color-text-main);
+    margin-bottom: $d8x-spacing;
+  }
+
+  .dataValue {
+    display: block;
+    font-weight: 600;
+  }
+
+  @include media-tablet {
+    flex-flow: row wrap;
+
+    .dataItem {
+      flex: 1;
+      min-width: 250px;
+    }
+  }
+}

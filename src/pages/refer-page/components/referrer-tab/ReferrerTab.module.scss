@@ -3,6 +3,7 @@
 .root {
   display: flex;
   border-radius: $d8x-border-radius;
+  background-color: var(--d8x-color-background-items);
 }
 
 .divider {

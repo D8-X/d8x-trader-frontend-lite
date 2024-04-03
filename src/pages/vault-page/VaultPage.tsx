@@ -5,7 +5,6 @@ import { useAccount, useChainId } from 'wagmi';
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import { Container } from 'components/container/Container';
-import { HeaderPortal } from 'components/header/HeaderPortal';
 import { CollateralsSelect } from 'components/header/elements/collaterals-select/CollateralsSelect';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
@@ -55,16 +54,20 @@ export const VaultPage = () => {
       <Helmet title={`${selectedPool?.poolSymbol} Vault | D8X App`} />
       <div className={styles.root}>
         <MaintenanceWrapper>
-          <HeaderPortal>
-            <CollateralsSelect />
-          </HeaderPortal>
           {isSmallScreen && (
             <div className={styles.mobileSelectBoxes}>
               <CollateralsSelect />
             </div>
           )}
           <Container className={styles.container}>
-            <GlobalStats />
+            <div className={styles.statsHolder}>
+              {!isSmallScreen && (
+                <div className={styles.selectHolder}>
+                  <CollateralsSelect />
+                </div>
+              )}
+              <GlobalStats />
+            </div>
             <LiquidityBlock />
           </Container>
         </MaintenanceWrapper>

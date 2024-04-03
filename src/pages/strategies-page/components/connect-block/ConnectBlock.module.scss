@@ -1,0 +1,21 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: inline-block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  background-color: var(--d8x-color-background-items);
+  border-radius: $d8x-border-radius;
+  padding: $d8x-spacing * 6;
+}
+
+.title {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: $d8x-spacing * 4;
+}
+
+.connectButton {
+  width: 100%;
+}

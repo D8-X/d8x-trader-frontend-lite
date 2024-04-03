@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
-
 import { useAccount } from 'wagmi';
+
 import { RoutesE } from './RoutesE';
 
 export function PrivateRoutes() {
