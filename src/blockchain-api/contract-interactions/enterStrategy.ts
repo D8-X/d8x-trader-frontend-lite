@@ -1,5 +1,5 @@
-import { TraderInterface, getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
-import { createWalletClient, type Address, type WalletClient, http } from 'viem';
+import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
+import { createWalletClient, type Address, http } from 'viem';
 
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
@@ -7,33 +7,22 @@ import { generateHedger } from 'blockchain-api/generateHedger';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from './postOrder';
 import { HashZero } from 'appConstants';
-import { OrderI } from 'types/types';
+import { HedgeConfigI, OrderI } from 'types/types';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
-export interface HedgeConfigI {
-  chainId: 42161 | 421614;
-  symbol: 'ETH-USD-WEETH';
-  walletClient: WalletClient;
-  traderAPI: TraderInterface;
-  amountCC: number;
-  feeRate: number;
-  indexPrice: number;
-  limitPrice: number;
-}
-
-export async function openHedge({
+export async function enterStrategy({
   chainId,
   walletClient,
   symbol,
   traderAPI,
-  amountCC,
+  amount,
   feeRate,
   indexPrice,
   limitPrice,
 }: HedgeConfigI): Promise<{ hash: Address }> {
-  if (!walletClient.account?.address) {
-    throw new Error('Account not connected');
+  if (!walletClient.account?.address || !amount || !feeRate) {
+    throw new Error('Invalid arguments');
   }
   const hedgeClient = await generateHedger(walletClient).then((account) =>
     createWalletClient({
@@ -56,16 +45,17 @@ export async function openHedge({
       `A hedging position already exists for trader ${walletClient.account?.address} symbol ${symbol} on chain ID ${chainId}`
     );
   }
+
   const orderSize = getMaxSignedPositionSize(
-    amountCC, // margin collateral
+    amount, // margin collateral
     0, // current position
     0, // current locked-in value
     -1, // trade direction
-    limitPrice, // limit price
+    limitPrice ?? position.markPrice, // limit price
     1, // margin rate
     feeRate, // fee rate
     position.markPrice, // mark price
-    indexPrice, // index price
+    indexPrice ?? position.markPrice, // index price
     position.collToQuoteConversion // collateral price
   );
 
@@ -82,7 +72,7 @@ export async function openHedge({
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
 
   if (data.digests.length > 0) {
-    await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amountCC, marginTokenDec);
+    await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
   }
   return postOrder(hedgeClient, [HashZero], data);
 }

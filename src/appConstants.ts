@@ -10,3 +10,6 @@ export const HashZero = '0x00000000000000000000000000000000000000000000000000000
 export const MaxUint256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 export const REFETCH_BALANCES_INTERVAL = 2000;
+
+export const STRATEGY_SYMBOL = 'ETH-USD-WEETH';
+export const STRATEGY_CHAINS = [42161, 421614];

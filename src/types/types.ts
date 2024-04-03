@@ -1,4 +1,4 @@
-import { type SmartContractOrder } from '@d8x/perpetuals-sdk';
+import { TraderInterface, type SmartContractOrder } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,6 +14,7 @@ import type {
   StopLossE,
   TakeProfitE,
 } from './enums';
+import { WalletClient } from 'viem';
 
 export interface LanguageMetaI {
   id: LanguageE;
@@ -448,4 +449,15 @@ export interface IpGeolocationDataI {
     is_known_attacker: boolean;
     is_cloud_provider: boolean;
   };
+}
+
+export interface HedgeConfigI {
+  chainId: number; //42161 | 421614;
+  symbol: string; // 'ETH-USD-WEETH';
+  walletClient: WalletClient;
+  traderAPI: TraderInterface;
+  amount?: number; // only used to open
+  feeRate?: number; // only used to open
+  indexPrice?: number; // only used to open - defaults to mark price
+  limitPrice?: number; // defaults to mark price to open, undefined to close (market w/o slippage protection)
 }

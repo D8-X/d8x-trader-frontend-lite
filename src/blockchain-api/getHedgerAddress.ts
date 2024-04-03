@@ -1,4 +1,4 @@
-import { WalletClient } from 'viem';
+import { Address, WalletClient } from 'viem';
 import secureLocalStorage from 'react-secure-storage';
 import { generateHedger } from './generateHedger';
 
@@ -10,5 +10,5 @@ export async function getHedgerAddress(walletClient: WalletClient) {
   if (!hedgerAddress) {
     hedgerAddress = await generateHedger(walletClient);
   }
-  return hedgerAddress;
+  return hedgerAddress as Address;
 }

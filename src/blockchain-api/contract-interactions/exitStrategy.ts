@@ -1,27 +1,15 @@
-import { TraderInterface } from '@d8x/perpetuals-sdk';
-import { createWalletClient, type Address, type WalletClient, http } from 'viem';
+import { createWalletClient, type Address, http } from 'viem';
 
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import { generateHedger } from 'blockchain-api/generateHedger';
 import { postOrder } from './postOrder';
 import { HashZero } from 'appConstants';
-import { OrderI } from 'types/types';
+import { HedgeConfigI, OrderI } from 'types/types';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
-export interface HedgeConfigI {
-  chainId: 42161 | 421614;
-  symbol: 'ETH-USD-WEETH';
-  walletClient: WalletClient;
-  traderAPI: TraderInterface;
-  amountCC: number;
-  feeRate: number;
-  indexPrice: number;
-  limitPrice: number;
-}
-
-export async function closeHedge({
+export async function exitStrategy({
   chainId,
   walletClient,
   symbol,

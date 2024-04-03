@@ -1,4 +1,4 @@
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,10 +10,22 @@ import { hasPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
+import { useChainId, useWalletClient } from 'wagmi';
+import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
+import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
+import { STRATEGY_CHAINS, STRATEGY_SYMBOL } from 'appConstants';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
 
+  const chainId = useChainId();
+
+  const { data: walletClient } = useWalletClient();
+
+  const weEthBalance = useAtomValue(poolTokenBalanceAtom);
+
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const feeRate = useAtomValue(poolFeeAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
@@ -39,8 +51,17 @@ export const EnterStrategy = () => {
     inputValueChangedRef.current = false;
   }, [addAmount]);
 
-  // TODO: Get data from blockchain
-  const weEthBalance = 2.345;
+  const handleEnter = useCallback(() => {
+    if (!walletClient || !traderAPI || feeRate === undefined || !STRATEGY_CHAINS.includes(chainId) || addAmount === 0) {
+      return;
+    }
+    enterStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, amount: addAmount, feeRate }).then(
+      ({ hash }) => {
+        console.log(`submitting strategy txn ${hash}`);
+        setHasPosition(true);
+      }
+    );
+  }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition]);
 
   return (
     <div className={styles.root}>
@@ -76,7 +97,7 @@ export const EnterStrategy = () => {
           </Link>
         </Typography>
       ) : null}
-      <Button onClick={() => setHasPosition(true)} className={styles.button} variant="primary">
+      <Button onClick={handleEnter} className={styles.button} variant="primary">
         <span className={styles.modalButtonText}>{t('pages.strategies.enter.deposit-button')}</span>
       </Button>
     </div>
