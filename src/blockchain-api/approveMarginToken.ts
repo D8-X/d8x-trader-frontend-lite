@@ -1,14 +1,5 @@
 import { readContract, waitForTransactionReceipt } from '@wagmi/core';
-import {
-  type Account,
-  type Address,
-  type Chain,
-  erc20Abi,
-  parseUnits,
-  type Transport,
-  type WalletClient,
-  type WriteContractParameters,
-} from 'viem';
+import { type Address, erc20Abi, parseUnits, type WalletClient, type WriteContractParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { MaxUint256 } from 'appConstants';
@@ -17,12 +8,15 @@ import { getGasPrice } from './getGasPrice';
 import { wagmiConfig } from './wagmi/wagmiClient';
 
 export async function approveMarginToken(
-  walletClient: WalletClient<Transport, Chain, Account>,
+  walletClient: WalletClient,
   marginTokenAddr: string,
   proxyAddr: string,
   minAmount: number,
   decimals: number
 ) {
+  if (!walletClient.account?.address) {
+    throw new Error('Account not connected');
+  }
   const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
   const allowance = await readContract(wagmiConfig, {
     address: marginTokenAddr as Address,
