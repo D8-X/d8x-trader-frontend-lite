@@ -11,7 +11,7 @@ import { OrderI } from 'types/types';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
-export interface HedgeConfig {
+export interface HedgeConfigI {
   chainId: 42161 | 421614;
   symbol: 'ETH-USD-WEETH';
   walletClient: WalletClient;
@@ -31,7 +31,7 @@ export async function openHedge({
   feeRate,
   indexPrice,
   limitPrice,
-}: HedgeConfig): Promise<{ hash: Address }> {
+}: HedgeConfigI): Promise<{ hash: Address }> {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
