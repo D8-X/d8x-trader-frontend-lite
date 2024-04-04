@@ -10,8 +10,10 @@ import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
 import { writeContract } from 'viem/actions';
+import { setDelegate } from './setDelegate';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
+const DELEGATE_INDEX = 2; // to be emitted
 
 export async function enterStrategy({
   chainId,
@@ -77,6 +79,7 @@ export async function enterStrategy({
   if (!data.digests || data.digests.length === 0) {
     return { hash: '0x' };
   }
+  await setDelegate(hedgeClient, traderAPI.getProxyAddress() as Address, walletClient.account.address, DELEGATE_INDEX);
   console.log('appproving margin token', marginTokenAddr, amount);
   await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
   console.log('funding strategy account');

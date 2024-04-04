@@ -27,6 +27,8 @@ import { FundingModal } from '../funding-modal/FundingModal';
 
 import styles from './OneClickTradingModal.module.scss';
 
+const DELEGATE_INDEX = 1; // to be emitted with setDelegate
+
 export const OneClickTradingModal = () => {
   const { t } = useTranslation();
 
@@ -81,7 +83,7 @@ export const OneClickTradingModal = () => {
     const strgKey = await getStorageKey(walletClient);
     setStorageKey(strgKey);
     const delegateAddr = (await generateDelegate(walletClient, strgKey)).address;
-    await setDelegate(walletClient, proxyAddr as Address, delegateAddr);
+    await setDelegate(walletClient, proxyAddr as Address, delegateAddr, DELEGATE_INDEX);
     setDelegated(true);
     setActivatedOneClickTrading(true);
     setDelegateAddress(delegateAddr);
