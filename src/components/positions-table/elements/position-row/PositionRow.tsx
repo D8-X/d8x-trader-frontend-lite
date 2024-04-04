@@ -73,7 +73,7 @@ export const PositionRow = memo(
         <TableCell align="right">
           <Typography
             variant="cellSmall"
-            className={position.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative}
+            className={position.unrealizedPnlQuoteCCY >= 0 ? styles.pnlPositive : styles.pnlNegative}
           >
             {formatToCurrency(position.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
           </Typography>

@@ -20,7 +20,7 @@ export const FundingBlock = ({ headers, funding }: FundingRowPropsI) => {
 
   const perpetual = funding.perpetual;
   const time = format(new Date(funding.timestamp), DATETIME_FORMAT);
-  const fundingColor = funding.amount > 0 ? styles.green : styles.red;
+  const fundingColor = funding.amount >= 0 ? styles.green : styles.red;
 
   return (
     <Box className={styles.root}>

@@ -35,7 +35,7 @@ export const PositionBlock = memo(
     const { t } = useTranslation();
 
     const parsedSymbol = parseSymbol(position.symbol);
-    const pnlColor = position.unrealizedPnlQuoteCCY > 0 ? styles.green : styles.red;
+    const pnlColor = position.unrealizedPnlQuoteCCY >= 0 ? styles.green : styles.red;
 
     return (
       <Box className={styles.root}>

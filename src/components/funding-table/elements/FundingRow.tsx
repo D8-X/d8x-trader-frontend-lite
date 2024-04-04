@@ -28,7 +28,7 @@ export const FundingRow = ({ headers, funding }: FundingRowPropsI) => {
       <TableCell align={headers[2].align}>
         <Typography
           variant="cellSmall"
-          className={funding.amount > 0 ? styles.fundingPositive : styles.fundingNegative}
+          className={funding.amount >= 0 ? styles.fundingPositive : styles.fundingNegative}
         >
           {perpetual ? formatToCurrency(funding.amount, perpetual.poolName, true) : ''}
         </Typography>
