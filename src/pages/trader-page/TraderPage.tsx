@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -22,15 +22,13 @@ import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTa
 import { UsdcSwapModal } from 'components/usdc-swap-modal/UsdcSwapModal';
 import { NEW_USDC_ADDRESS, OLD_USDC_ADDRESS } from 'components/usdc-swap-widget/constants';
 import { useDialog } from 'hooks/useDialog';
-import { getOpenOrders, getPositionRisk, getTradingFee } from 'network/network';
+import { getOpenOrders, getPositionRisk } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
 import { orderBlockPositionAtom } from 'store/app.store';
 import {
   openOrdersAtom,
   perpetualStatisticsAtom,
-  poolFeeAtom,
-  addr0FeeAtom,
   positionsAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -60,21 +58,17 @@ export const TraderPage = () => {
 
   const fetchPositionsRef = useRef(false);
   const fetchOrdersRef = useRef(false);
-  const fetchFeeRef = useRef(false);
-  const fetchAddr0FeeRef = useRef(false);
   const isPageUrlAppliedRef = useRef(false);
 
   const { dialogOpen, openDialog, closeDialog } = useDialog();
 
-  const [orderBlockPosition] = useAtom(orderBlockPositionAtom);
-  const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
+  const orderBlockPosition = useAtomValue(orderBlockPositionAtom);
+  const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const [positions, setPositions] = useAtom(positionsAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
-  const setPoolFee = useSetAtom(poolFeeAtom);
-  const setAddr0Fee = useSetAtom(addr0FeeAtom);
 
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
@@ -167,42 +161,6 @@ export const TraderPage = () => {
     [traderAPI, isSDKConnected, setOpenOrders]
   );
 
-  const fetchFee = useCallback(
-    async (_chainId: number, _poolSymbol: string, _address: Address) => {
-      if (fetchFeeRef.current) {
-        return;
-      }
-      fetchFeeRef.current = true;
-      try {
-        const { data } = await getTradingFee(_chainId, _poolSymbol, _address);
-        setPoolFee(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        fetchFeeRef.current = false;
-      }
-    },
-    [setPoolFee]
-  );
-
-  const fetchAddr0Fee = useCallback(
-    async (_chainId: number, _poolSymbol: string) => {
-      if (fetchAddr0FeeRef.current) {
-        return;
-      }
-      fetchAddr0FeeRef.current = true;
-      try {
-        const { data } = await getTradingFee(_chainId, _poolSymbol, '0x0000000000000000000000000000000000000000');
-        setAddr0Fee(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        fetchAddr0FeeRef.current = false;
-      }
-    },
-    [setAddr0Fee]
-  );
-
   useEffect(() => {
     if (location.hash || !selectedPool || selectedPool.perpetuals.length < 1 || isPageUrlAppliedRef.current) {
       return;
@@ -213,14 +171,6 @@ export const TraderPage = () => {
       `${location.pathname}${location.search}#${selectedPool.perpetuals[0].baseCurrency}-${selectedPool.perpetuals[0].quoteCurrency}-${selectedPool.poolSymbol}`
     );
   }, [selectedPool, location.hash, location.pathname, location.search, navigate]);
-
-  useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol || !address) {
-      return;
-    }
-    fetchFee(chainId, selectedPool.poolSymbol, address).then();
-    fetchAddr0Fee(chainId, selectedPool.poolSymbol).then();
-  }, [chainId, selectedPool?.poolSymbol, address, fetchFee, fetchAddr0Fee]);
 
   useEffect(() => {
     if (!chainId || !address) {
