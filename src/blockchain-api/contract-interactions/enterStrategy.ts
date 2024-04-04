@@ -58,7 +58,7 @@ export async function enterStrategy({
     -1, // trade direction
     limitPrice ?? position.markPrice, // limit price
     1, // margin rate
-    feeRate, // fee rate
+    feeRate * 1e-5, // fee rate
     position.markPrice, // mark price
     indexPrice ?? position.markPrice, // index price
     position.collToQuoteConversion // collateral price
