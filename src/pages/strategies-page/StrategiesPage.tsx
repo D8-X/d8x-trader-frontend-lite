@@ -18,7 +18,7 @@ export const StrategiesPage = () => {
   const setSelectedPool = useSetAtom(selectedPoolAtom);
 
   useEffect(() => {
-    setSelectedPool(STRATEGY_SYMBOL);
+    setSelectedPool(STRATEGY_SYMBOL.split('-')?.at(-1) ?? '');
   }, [setSelectedPool]);
 
   return (
