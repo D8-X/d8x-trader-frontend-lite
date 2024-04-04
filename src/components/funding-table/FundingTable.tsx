@@ -99,6 +99,7 @@ export const FundingTable = memo(() => {
 
       return {
         ...funding,
+        amount: -funding.amount,
         symbol: perpetual ? `${perpetual.baseCurrency}/${perpetual.quoteCurrency}/${perpetual.poolName}` : '',
         perpetual: perpetual ?? null,
       };

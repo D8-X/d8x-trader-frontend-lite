@@ -20,6 +20,7 @@ export const FundingBlock = ({ headers, funding }: FundingRowPropsI) => {
 
   const perpetual = funding.perpetual;
   const time = format(new Date(funding.timestamp), DATETIME_FORMAT);
+  const fundingColor = funding.amount > 0 ? styles.green : styles.red;
 
   return (
     <Box className={styles.root}>
@@ -46,7 +47,7 @@ export const FundingBlock = ({ headers, funding }: FundingRowPropsI) => {
           leftSideTooltip={headers[2].tooltip}
           rightSide={perpetual ? formatToCurrency(funding.amount, perpetual.poolName, true) : ''}
           leftSideStyles={styles.dataLabel}
-          rightSideStyles={styles.dataValue}
+          rightSideStyles={fundingColor}
         />
       </Box>
     </Box>

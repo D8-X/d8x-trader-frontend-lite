@@ -60,6 +60,14 @@
   padding-bottom: 6 * $d8x-spacing;
 }
 
+.fundingPositive {
+  color: var(--d8x-color-buy-rgba) !important;
+}
+
+.fundingNegative {
+  color: var(--d8x-color-sell-rgba) !important;
+}
+
 @media screen and ($d8x-breakpoint-min-lg) and ($d8x-breakpoint-max-lg) {
   .tableHolder {
     :global(.MuiTableCell-root) {
