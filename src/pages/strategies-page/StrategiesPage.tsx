@@ -1,4 +1,4 @@
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
@@ -9,9 +9,17 @@ import { ConnectBlock } from './components/connect-block/ConnectBlock';
 import { StrategyBlock } from './components/strategy-block/StrategyBlock';
 
 import styles from './StrategiesPage.module.scss';
+import { selectedPoolAtom } from 'store/pools.store';
+import { STRATEGY_SYMBOL } from 'appConstants';
+import { useEffect } from 'react';
 
 export const StrategiesPage = () => {
   const strategyAddress = useAtomValue(strategyAddressAtom);
+  const setSelectedPool = useSetAtom(selectedPoolAtom);
+
+  useEffect(() => {
+    setSelectedPool(STRATEGY_SYMBOL);
+  }, [setSelectedPool]);
 
   return (
     <>

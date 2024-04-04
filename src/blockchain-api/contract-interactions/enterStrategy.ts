@@ -2,7 +2,7 @@ import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
 import { createWalletClient, type Address, http } from 'viem';
 
 import { HashZero } from 'appConstants';
-import { generateHedger } from 'blockchain-api/generateHedger';
+import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
@@ -25,7 +25,7 @@ export async function enterStrategy({
   if (!walletClient.account?.address || !amount || !feeRate) {
     throw new Error('Invalid arguments');
   }
-  const hedgeClient = await generateHedger(walletClient).then((account) =>
+  const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
     createWalletClient({
       account,
       chain: walletClient.chain,
@@ -39,6 +39,7 @@ export async function enterStrategy({
   const marginTokenAddr = traderAPI.getMarginTokenFromSymbol(symbol);
   const marginTokenDec = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
   if (!position || !marginTokenAddr || !marginTokenDec) {
+    console.log(position, marginTokenAddr, marginTokenDec);
     throw new Error(`No hedging strategy available for symbol ${symbol} on chain ID ${chainId}`);
   }
   if (position.positionNotionalBaseCCY !== 0) {
@@ -73,7 +74,9 @@ export async function enterStrategy({
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
 
   if (data.digests.length > 0) {
+    console.log('appproving margin token', marginTokenAddr, amount);
     await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
   }
+  console.log('posting order');
   return postOrder(hedgeClient, [HashZero], data);
 }

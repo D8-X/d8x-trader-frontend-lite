@@ -6,7 +6,7 @@ import { useWalletClient } from 'wagmi';
 import { Button, Typography } from '@mui/material';
 
 import { strategyAddressAtom } from 'store/strategies.store';
-import { getHedgerAddress } from 'blockchain-api/getHedgerAddress';
+import { getStrategyAddress } from 'blockchain-api/getStrategyAddress';
 
 import styles from './ConnectBlock.module.scss';
 
@@ -19,7 +19,7 @@ export const ConnectBlock = () => {
 
   const handleConnect = useCallback(() => {
     if (walletClient) {
-      getHedgerAddress(walletClient).then((addr) => {
+      getStrategyAddress(walletClient).then((addr) => {
         setStrategyAddress(addr);
       });
     }

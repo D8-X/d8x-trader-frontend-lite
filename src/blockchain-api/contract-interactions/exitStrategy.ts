@@ -1,7 +1,7 @@
 import { createWalletClient, type Address, http } from 'viem';
 
 import { HashZero } from 'appConstants';
-import { generateHedger } from 'blockchain-api/generateHedger';
+import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
@@ -20,7 +20,7 @@ export async function exitStrategy({
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
-  const hedgeClient = await generateHedger(walletClient).then((account) =>
+  const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
     createWalletClient({
       account,
       chain: walletClient.chain,

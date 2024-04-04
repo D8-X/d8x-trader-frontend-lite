@@ -1,8 +1,8 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasPositionAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressAtom } from 'store/strategies.store';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -10,20 +10,30 @@ import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
+import { getPositionRisk } from 'network/network';
+import { useChainId } from 'wagmi';
+import { STRATEGY_SYMBOL } from 'appConstants';
 
 export const StrategyBlock = () => {
   const { t } = useTranslation();
 
+  const chainId = useChainId();
+
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
+  const strategyAddress = useAtomValue(strategyAddressAtom);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
-  // FIXME: Should be removed or replaced later
   useEffect(() => {
-    setTimeout(() => {
-      setHasPosition(false);
-    }, 1000);
-  }, [setHasPosition]);
+    getPositionRisk(chainId, null, strategyAddress).then(({ data: positions }) => {
+      setHasPosition(
+        positions &&
+          positions.some(
+            ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
+          )
+      );
+    });
+  }, [chainId, strategyAddress, setHasPosition]);
 
   return (
     <div className={styles.root}>

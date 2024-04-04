@@ -28,7 +28,7 @@ export async function approveMarginToken(
   if (allowance > minAmountBN) {
     return null;
   } else {
-    const account = walletClient.account?.address;
+    const account = walletClient.account;
     if (!account) {
       throw new Error('account not connected');
     }
