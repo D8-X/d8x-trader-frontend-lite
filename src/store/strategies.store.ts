@@ -1,8 +1,10 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
-const STRATEGY_ADDRESS_LS_KEY = 'd8x_strategyAddress';
+import { StrategyAddressI } from '../types/types';
 
-export const strategyAddressAtom = atomWithStorage(STRATEGY_ADDRESS_LS_KEY, '');
+const STRATEGY_ADDRESSES_LS_KEY = 'd8x_strategyAddresses';
+
+export const strategyAddressesAtom = atomWithStorage<StrategyAddressI[]>(STRATEGY_ADDRESSES_LS_KEY, []);
 
 export const hasPositionAtom = atom<boolean | null>(null);

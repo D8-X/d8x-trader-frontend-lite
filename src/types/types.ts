@@ -14,7 +14,7 @@ import type {
   StopLossE,
   TakeProfitE,
 } from './enums';
-import { WalletClient } from 'viem';
+import type { Address, WalletClient } from 'viem';
 
 export interface LanguageMetaI {
   id: LanguageE;
@@ -460,4 +460,9 @@ export interface HedgeConfigI {
   feeRate?: number; // only used to open
   indexPrice?: number; // only used to open - defaults to mark price
   limitPrice?: number; // defaults to mark price to open, undefined to close (market w/o slippage protection)
+}
+
+export interface StrategyAddressI {
+  userAddress: Address;
+  strategyAddress: Address;
 }

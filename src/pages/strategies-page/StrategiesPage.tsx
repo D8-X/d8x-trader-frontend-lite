@@ -1,20 +1,23 @@
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect } from 'react';
+import { useAccount } from 'wagmi';
 
+import { STRATEGY_SYMBOL } from 'appConstants';
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { strategyAddressAtom } from 'store/strategies.store';
+import { selectedPoolAtom } from 'store/pools.store';
+import { strategyAddressesAtom } from 'store/strategies.store';
 
 import { ConnectBlock } from './components/connect-block/ConnectBlock';
 import { StrategyBlock } from './components/strategy-block/StrategyBlock';
 
 import styles from './StrategiesPage.module.scss';
-import { selectedPoolAtom } from 'store/pools.store';
-import { STRATEGY_SYMBOL } from 'appConstants';
-import { useEffect } from 'react';
 
 export const StrategiesPage = () => {
-  const strategyAddress = useAtomValue(strategyAddressAtom);
+  const { address } = useAccount();
+
+  const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setSelectedPool = useSetAtom(selectedPoolAtom);
 
   useEffect(() => {
@@ -26,7 +29,13 @@ export const StrategiesPage = () => {
       <Helmet title="Boost Station | D8X App" />
       <div className={styles.root}>
         <MaintenanceWrapper>
-          <Container className={styles.container}>{strategyAddress ? <StrategyBlock /> : <ConnectBlock />}</Container>
+          <Container className={styles.container}>
+            {address && strategyAddresses.some(({ userAddress }) => userAddress === address.toLowerCase()) ? (
+              <StrategyBlock />
+            ) : (
+              <ConnectBlock />
+            )}
+          </Container>
         </MaintenanceWrapper>
       </div>
     </>

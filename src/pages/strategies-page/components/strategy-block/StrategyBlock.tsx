@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasPositionAtom, strategyAddressAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -11,20 +11,29 @@ import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
 import { getPositionRisk } from 'network/network';
-import { useChainId } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import { STRATEGY_SYMBOL } from 'appConstants';
 
 export const StrategyBlock = () => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
+  const { address } = useAccount();
 
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
-  const strategyAddress = useAtomValue(strategyAddressAtom);
+  const strategyAddresses = useAtomValue(strategyAddressesAtom);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
+  const strategyAddress = useMemo(() => {
+    return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
+  }, [address, strategyAddresses]);
+
   useEffect(() => {
+    if (!strategyAddress) {
+      return;
+    }
+
     getPositionRisk(chainId, null, strategyAddress).then(({ data: positions }) => {
       setHasPosition(
         positions &&
