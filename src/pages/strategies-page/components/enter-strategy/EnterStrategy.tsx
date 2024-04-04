@@ -11,10 +11,12 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
+import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
+import { Address } from 'viem';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ export const EnterStrategy = () => {
   const weEthBalance = useAtomValue(poolTokenBalanceAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
+  const strategyAddress = useAtomValue(strategyAddressAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
@@ -114,9 +117,16 @@ export const EnterStrategy = () => {
           </Link>
         </Typography>
       ) : null}
-      <Button onClick={handleEnter} className={styles.button} variant="primary" disabled={requestSent}>
-        <span className={styles.modalButtonText}>{t('pages.strategies.enter.deposit-button')}</span>
-      </Button>
+      <GasDepositChecker address={strategyAddress as Address} className={styles.button}>
+        <Button
+          onClick={handleEnter}
+          className={styles.button}
+          variant="primary"
+          disabled={requestSent || addAmount === 0}
+        >
+          <span className={styles.modalButtonText}>{t('pages.strategies.enter.deposit-button')}</span>
+        </Button>
+      </GasDepositChecker>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
-import { createWalletClient, type Address, http } from 'viem';
+import { createWalletClient, type Address, http, erc20Abi, parseUnits } from 'viem';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -9,6 +9,7 @@ import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
+import { writeContract } from 'viem/actions';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
@@ -73,10 +74,20 @@ export async function enterStrategy({
   };
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
 
-  if (data.digests.length > 0) {
-    console.log('appproving margin token', marginTokenAddr, amount);
-    await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
+  if (!data.digests || data.digests.length === 0) {
+    return { hash: '0x' };
   }
+  console.log('appproving margin token', marginTokenAddr, amount);
+  await approveMarginToken(hedgeClient, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
+  console.log('funding strategy account');
+  await writeContract(walletClient, {
+    address: marginTokenAddr as Address,
+    chain: walletClient.chain,
+    abi: erc20Abi,
+    functionName: 'transfer',
+    args: [hedgeClient.account.address, parseUnits(amount.toFixed(), marginTokenDec)],
+    account: walletClient.account,
+  });
   console.log('posting order');
   return postOrder(hedgeClient, [HashZero], data);
 }
