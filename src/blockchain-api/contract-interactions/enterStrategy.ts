@@ -88,7 +88,7 @@ export async function enterStrategy({
     chain: walletClient.chain,
     abi: erc20Abi,
     functionName: 'transfer',
-    args: [hedgeClient.account.address, parseUnits(amount.toFixed(), marginTokenDec)],
+    args: [hedgeClient.account.address, parseUnits(amount.toString(), marginTokenDec)],
     account: walletClient.account,
   });
   console.log('posting order');

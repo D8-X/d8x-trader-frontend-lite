@@ -1,8 +1,8 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressesAtom, strategyPositionAtom } from 'store/strategies.store';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -22,6 +22,7 @@ export const StrategyBlock = () => {
 
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
+  const setStrategyPosition = useSetAtom(strategyPositionAtom);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
@@ -35,14 +36,13 @@ export const StrategyBlock = () => {
     }
 
     getPositionRisk(chainId, null, strategyAddress).then(({ data: positions }) => {
-      setHasPosition(
-        positions &&
-          positions.some(
-            ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
-          )
+      const strategy = positions.find(
+        ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
       );
+      setHasPosition(!!strategy);
+      setStrategyPosition(strategy);
     });
-  }, [chainId, strategyAddress, setHasPosition]);
+  }, [chainId, strategyAddress, setStrategyPosition, setHasPosition]);
 
   return (
     <div className={styles.root}>
