@@ -1,19 +1,20 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useChainId, useWalletClient } from 'wagmi';
 
 import { Button, Link, Typography } from '@mui/material';
 
+import { STRATEGY_SYMBOL } from 'appConstants';
+import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { pagesConfig } from 'config';
+import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
 import { hasPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
-import { useChainId, useWalletClient } from 'wagmi';
-import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
-import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
-import { STRATEGY_CHAINS, STRATEGY_SYMBOL } from 'appConstants';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
@@ -23,15 +24,16 @@ export const EnterStrategy = () => {
   const { data: walletClient } = useWalletClient();
 
   const weEthBalance = useAtomValue(poolTokenBalanceAtom);
-
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
+  const [requestSent, setRequestSent] = useState(false);
 
   const inputValueChangedRef = useRef(false);
+  const requestSentRef = useRef(false);
 
   const handleInputCapture = useCallback((orderSizeValue: string) => {
     if (orderSizeValue) {
@@ -52,15 +54,30 @@ export const EnterStrategy = () => {
   }, [addAmount]);
 
   const handleEnter = useCallback(() => {
-    if (!walletClient || !traderAPI || feeRate === undefined || !STRATEGY_CHAINS.includes(chainId) || addAmount === 0) {
+    console.log({ feeRate, addAmount });
+    if (
+      requestSentRef.current ||
+      !walletClient ||
+      !traderAPI ||
+      feeRate === undefined ||
+      !pagesConfig.enabledStrategiesPageByChains.includes(chainId) ||
+      addAmount === 0
+    ) {
       return;
     }
-    enterStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, amount: addAmount, feeRate }).then(
-      ({ hash }) => {
+
+    requestSentRef.current = true;
+    setRequestSent(true);
+
+    enterStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, amount: addAmount, feeRate })
+      .then(({ hash }) => {
         console.log(`submitting strategy txn ${hash}`);
         setHasPosition(true);
-      }
-    );
+      })
+      .finally(() => {
+        setRequestSent(false);
+        requestSentRef.current = false;
+      });
   }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition]);
 
   return (
@@ -97,7 +114,7 @@ export const EnterStrategy = () => {
           </Link>
         </Typography>
       ) : null}
-      <Button onClick={handleEnter} className={styles.button} variant="primary">
+      <Button onClick={handleEnter} className={styles.button} variant="primary" disabled={requestSent}>
         <span className={styles.modalButtonText}>{t('pages.strategies.enter.deposit-button')}</span>
       </Button>
     </div>

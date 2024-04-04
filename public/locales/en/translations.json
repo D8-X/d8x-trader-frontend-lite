@@ -655,6 +655,8 @@
     "change-language": "Change Language",
     "wallet-connect": "Connect",
     "account-button": "Account",
+    "close-button": "Close",
+    "cancel-button": "Cancel",
     "currency-label": "Currency",
     "amount-label": "Amount",
     "address-label": "Address",

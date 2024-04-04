@@ -1,13 +1,14 @@
 import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
 import { createWalletClient, type Address, http } from 'viem';
 
-import { orderDigest } from 'network/network';
-import { OrderSideE, OrderTypeE } from 'types/enums';
+import { HashZero } from 'appConstants';
 import { generateHedger } from 'blockchain-api/generateHedger';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
-import { postOrder } from './postOrder';
-import { HashZero } from 'appConstants';
+import { orderDigest } from 'network/network';
+import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
+
+import { postOrder } from './postOrder';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 

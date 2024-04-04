@@ -22,3 +22,20 @@
 .button {
   width: 100%;
 }
+
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 450px;
+  }
+}
+
+.dialogRoot {
+  width: 100%;
+  padding: 6 * $d8x-spacing 0 4 * $d8x-spacing 0;
+  text-align: center;
+}
+
+.dialogAction {
+  justify-content: center;
+}

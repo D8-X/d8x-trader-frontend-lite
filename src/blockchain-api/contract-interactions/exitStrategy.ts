@@ -1,11 +1,12 @@
 import { createWalletClient, type Address, http } from 'viem';
 
+import { HashZero } from 'appConstants';
+import { generateHedger } from 'blockchain-api/generateHedger';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
-import { generateHedger } from 'blockchain-api/generateHedger';
-import { postOrder } from './postOrder';
-import { HashZero } from 'appConstants';
 import { HedgeConfigI, OrderI } from 'types/types';
+
+import { postOrder } from './postOrder';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
