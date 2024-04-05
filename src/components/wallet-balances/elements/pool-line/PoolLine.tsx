@@ -1,9 +1,11 @@
+import { useAtomValue } from 'jotai';
 import { memo, useEffect } from 'react';
 import { useAccount, useConnect, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { AssetLine } from 'components/asset-line/AssetLine';
+import { depositModalAddressAtom } from 'store/app.store';
 import { PoolWithIdI } from 'types/types';
 
 interface PoolLinePropsI {
@@ -12,6 +14,8 @@ interface PoolLinePropsI {
 }
 
 export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
+  const depositModalAddress = useAtomValue(depositModalAddressAtom);
+
   const { address, isConnected } = useAccount();
   const { isPending } = useConnect();
 
@@ -22,7 +26,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         address: pool.marginTokenAddr as Address,
         abi: erc20Abi,
         functionName: 'balanceOf',
-        args: [address as Address],
+        args: [depositModalAddress || (address as Address)],
       },
       {
         address: pool.marginTokenAddr as Address,
@@ -30,7 +34,9 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         functionName: 'decimals',
       },
     ],
-    query: { enabled: address && pool.marginTokenAddr !== undefined && !isPending && isConnected },
+    query: {
+      enabled: (depositModalAddress || address) && pool.marginTokenAddr !== undefined && !isPending && isConnected,
+    },
   });
 
   useEffect(() => {

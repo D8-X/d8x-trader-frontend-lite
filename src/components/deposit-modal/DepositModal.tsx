@@ -13,7 +13,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
+import { activatedOneClickTradingAtom, depositModalAddressAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
@@ -27,19 +27,26 @@ export const DepositModal = () => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyItemI>();
 
+  const [depositModalAddress, setDepositModalAddress] = useAtom(depositModalAddressAtom);
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
 
-  const tradingAddress = useMemo(() => {
+  const targetAddress = useMemo(() => {
+    if (depositModalAddress) {
+      return depositModalAddress;
+    }
     if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
       return address;
     }
     return tradingClient?.account?.address;
-  }, [tradingClient?.account?.address, address, activatedOneClickTrading, selectedCurrency]);
+  }, [tradingClient?.account?.address, address, depositModalAddress, activatedOneClickTrading, selectedCurrency]);
 
-  const handleOnClose = () => setDepositModalOpen(false);
+  const handleOnClose = () => {
+    setDepositModalOpen(false);
+    setDepositModalAddress(null);
+  };
 
   const poolAddress = selectedCurrency?.contractAddress || '';
 
@@ -73,7 +80,7 @@ export const DepositModal = () => {
           </Typography>
         </div>
         <div className={styles.section}>
-          <CopyInput id="address" textToCopy={tradingAddress || ''} />
+          <CopyInput id="address" textToCopy={targetAddress || ''} />
         </div>
         <Separator />
         <div className={styles.section}>

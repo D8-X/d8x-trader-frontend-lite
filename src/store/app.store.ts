@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { type WalletClient } from 'viem';
+import type { Address, WalletClient } from 'viem';
 
 import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
@@ -32,6 +32,7 @@ export const defaultCurrencyAtom = atomWithStorage<DefaultCurrencyE>(DEFAULT_CUR
 
 export const appDimensionsAtom = atom<AppDimensionsI>({});
 export const delegateAddressAtom = atom('');
+export const depositModalAddressAtom = atom<Address | null>(null);
 
 export const activatedOneClickTradingAtom = atom(false);
 export const hideBetaTextAtom = atom(false);

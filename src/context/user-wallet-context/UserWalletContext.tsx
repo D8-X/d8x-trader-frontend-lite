@@ -7,9 +7,9 @@ import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { traderAPIAtom } from 'store/pools.store';
 import { MethodE } from 'types/enums';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
