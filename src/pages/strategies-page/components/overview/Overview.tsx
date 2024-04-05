@@ -21,9 +21,10 @@ export const Overview = () => {
 
   const pnlUSD = useMemo(() => {
     if (strategyPosition) {
+      console.log(strategyPosition);
       return (
-        (strategyPosition.collateralCC + strategyPosition.unrealizedFundingCollateralCCY) *
-          strategyPosition.collToQuoteConversion -
+        strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice +
+        strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion -
         strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
       );
     }
