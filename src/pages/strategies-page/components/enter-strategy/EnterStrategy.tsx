@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useChainId, useWalletClient } from 'wagmi';
 
 import { Button, Link, Typography } from '@mui/material';
 
@@ -12,7 +12,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { hasPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
@@ -21,13 +21,11 @@ export const EnterStrategy = () => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
-  const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const weEthBalance = useAtomValue(poolTokenBalanceAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
-  const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
@@ -82,10 +80,6 @@ export const EnterStrategy = () => {
       });
   }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition]);
 
-  const strategyAddress = strategyAddresses.find(
-    ({ userAddress }) => userAddress === address?.toLowerCase()
-  )?.strategyAddress;
-
   return (
     <div className={styles.root}>
       <Typography variant="h5" className={styles.title}>
@@ -112,7 +106,7 @@ export const EnterStrategy = () => {
           <Link onClick={() => handleInputCapture(`${weEthBalance}`)}>{formatToCurrency(weEthBalance, 'weETH')}</Link>
         </Typography>
       ) : null}
-      <GasDepositChecker address={strategyAddress} className={styles.button}>
+      <GasDepositChecker className={styles.button} multiplier={2n}>
         <Button
           onClick={handleEnter}
           className={styles.button}

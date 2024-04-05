@@ -1,12 +1,11 @@
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo } from 'react';
 import { formatUnits } from 'viem/utils';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
-import { depositModalAddressAtom } from 'store/app.store';
 import { poolsAtom } from 'store/pools.store';
 
 import { PoolLine } from './elements/pool-line/PoolLine';
@@ -15,13 +14,10 @@ import styles from './WalletBalances.module.scss';
 
 export const WalletBalances = () => {
   const pools = useAtomValue(poolsAtom);
-  const depositModalAddress = useAtomValue(depositModalAddressAtom);
 
   const { isConnected } = useAccount();
 
-  const { refetchWallet } = useUserWallet();
-
-  const { data: gasTokenBalance } = useBalance({ address: depositModalAddress || undefined });
+  const { gasTokenBalance, refetchWallet } = useUserWallet();
 
   useEffect(() => {
     if (!isConnected) {

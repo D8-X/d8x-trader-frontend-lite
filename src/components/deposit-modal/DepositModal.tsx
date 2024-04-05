@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -13,7 +13,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
-import { activatedOneClickTradingAtom, depositModalAddressAtom, tradingClientAtom } from 'store/app.store';
+import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
@@ -27,26 +27,21 @@ export const DepositModal = () => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyItemI>();
 
-  const [depositModalAddress, setDepositModalAddress] = useAtom(depositModalAddressAtom);
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
 
   const targetAddress = useMemo(() => {
-    if (depositModalAddress) {
-      return depositModalAddress;
-    }
     if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
       return address;
     }
     return tradingClient?.account?.address;
-  }, [tradingClient?.account?.address, address, depositModalAddress, activatedOneClickTrading, selectedCurrency]);
+  }, [tradingClient?.account?.address, address, activatedOneClickTrading, selectedCurrency]);
 
-  const handleOnClose = () => {
+  const handleOnClose = useCallback(() => {
     setDepositModalOpen(false);
-    setDepositModalAddress(null);
-  };
+  }, [setDepositModalOpen]);
 
   const poolAddress = selectedCurrency?.contractAddress || '';
 
