@@ -1,19 +1,20 @@
+import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@mui/material';
 
-import styles from './Overview.module.scss';
-import { useAtomValue } from 'jotai';
 import { strategyPositionAtom } from 'store/strategies.store';
-import { useMemo } from 'react';
 import { formatToCurrency } from 'utils/formatToCurrency';
+
+import styles from './Overview.module.scss';
 
 export const Overview = () => {
   const { t } = useTranslation();
 
   const strategyPosition = useAtomValue(strategyPositionAtom);
 
-  const syntethicPositionUSD = useMemo(() => {
+  const syntheticPositionUSD = useMemo(() => {
     if (strategyPosition) {
       return strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice;
     }
@@ -21,7 +22,6 @@ export const Overview = () => {
 
   const pnlUSD = useMemo(() => {
     if (strategyPosition) {
-      console.log(strategyPosition);
       return (
         strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion -
@@ -41,7 +41,7 @@ export const Overview = () => {
             {t('pages.strategies.overview.synthetic-position')}
           </Typography>
           <Typography variant="bodyMedium" className={styles.dataValue}>
-            {syntethicPositionUSD ? formatToCurrency(syntethicPositionUSD, 'USD') : '-'}
+            {syntheticPositionUSD ? formatToCurrency(syntheticPositionUSD, 'USD') : '-'}
           </Typography>
         </div>
         <div key="your-yield" className={styles.dataItem}>
@@ -49,7 +49,7 @@ export const Overview = () => {
             {t('pages.strategies.overview.your-yield')}
           </Typography>
           <Typography variant="bodyMedium" className={styles.dataValue}>
-            {pnlUSD && syntethicPositionUSD ? formatToCurrency((100 * pnlUSD) / syntethicPositionUSD, '%') : '-'}
+            {pnlUSD && syntheticPositionUSD ? formatToCurrency((100 * pnlUSD) / syntheticPositionUSD, '%') : '-'}
           </Typography>
         </div>
       </div>
