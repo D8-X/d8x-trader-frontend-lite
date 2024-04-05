@@ -6,6 +6,7 @@ import { useBalance } from 'wagmi';
 
 import { Button } from '@mui/material';
 
+import { depositModalAddressAtom } from 'store/app.store';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { MethodE } from 'types/enums';
@@ -22,6 +23,7 @@ export const GasDepositChecker = ({ children, multiplier = 1n, address, classNam
   const { hasEnoughGasForFee, calculateGasForFee, isConnected } = useUserWallet();
   const { data: gasTokenBalance } = useBalance({ address });
 
+  const setDepositModalAddress = useSetAtom(depositModalAddressAtom);
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
   const hasGas = gasTokenBalance
@@ -32,8 +34,13 @@ export const GasDepositChecker = ({ children, multiplier = 1n, address, classNam
     return children;
   }
 
+  const handleDepositModalOpen = () => {
+    address && setDepositModalAddress(address);
+    setDepositModalOpen(true);
+  };
+
   return (
-    <Button variant="buy" onClick={() => setDepositModalOpen(true)} className={className}>
+    <Button variant="buy" onClick={handleDepositModalOpen} className={className}>
       {t('common.deposit-gas')}
     </Button>
   );
