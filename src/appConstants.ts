@@ -12,3 +12,4 @@ export const MaxUint256 = '0xfffffffffffffffffffffffffffffffffffffffffffffffffff
 export const REFETCH_BALANCES_INTERVAL = 2000;
 
 export const STRATEGY_SYMBOL = 'ETH-USD-WEETH';
+export const STRATEGY_POOL_SYMBOL = 'WEETH';

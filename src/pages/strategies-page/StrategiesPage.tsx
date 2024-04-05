@@ -1,12 +1,9 @@
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useAtomValue } from 'jotai';
 import { useAccount } from 'wagmi';
 
-import { STRATEGY_SYMBOL } from 'appConstants';
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { selectedPoolAtom } from 'store/pools.store';
 import { strategyAddressesAtom } from 'store/strategies.store';
 
 import { ConnectBlock } from './components/connect-block/ConnectBlock';
@@ -18,15 +15,10 @@ export const StrategiesPage = () => {
   const { address } = useAccount();
 
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const setSelectedPool = useSetAtom(selectedPoolAtom);
-
-  useEffect(() => {
-    setSelectedPool(STRATEGY_SYMBOL.split('-')?.at(-1) ?? '');
-  }, [setSelectedPool]);
 
   return (
     <>
-      <Helmet title="Boost Station | D8X App" />
+      <Helmet title="Strategies | D8X App" />
       <div className={styles.root}>
         <MaintenanceWrapper>
           <Container className={styles.container}>

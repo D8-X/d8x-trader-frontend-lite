@@ -1,29 +1,31 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
 import { Button, Link, Typography } from '@mui/material';
 
-import { STRATEGY_SYMBOL } from 'appConstants';
+import { STRATEGY_POOL_SYMBOL, STRATEGY_SYMBOL } from 'appConstants';
 import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
-import { poolFeeAtom, poolTokenBalanceAtom, traderAPIAtom } from 'store/pools.store';
+import { poolFeeAtom, poolsAtom, traderAPIAtom } from 'store/pools.store';
 import { hasPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
+import { Address, erc20Abi, formatUnits } from 'viem';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
+  const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
-  const weEthBalance = useAtomValue(poolTokenBalanceAtom);
+  const pools = useAtomValue(poolsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
@@ -34,6 +36,38 @@ export const EnterStrategy = () => {
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
+
+  const weEthPool = useMemo(() => {
+    if (pools.length) {
+      const foundPool = pools.find((pool) => pool.poolSymbol === STRATEGY_POOL_SYMBOL);
+      if (foundPool) {
+        return foundPool;
+      }
+    }
+    return null;
+  }, [pools]);
+
+  const { data: weEthPoolBalance, refetch } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: weEthPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: weEthPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: {
+      enabled: address && traderAPI?.chainId === chainId && !!weEthPool?.marginTokenAddr && isConnected,
+    },
+  });
+
+  const weEthBalance = weEthPoolBalance ? +formatUnits(weEthPoolBalance[0], weEthPoolBalance[1]) : 0;
 
   const handleInputCapture = useCallback((orderSizeValue: string) => {
     if (orderSizeValue) {
@@ -54,7 +88,6 @@ export const EnterStrategy = () => {
   }, [addAmount]);
 
   const handleEnter = useCallback(() => {
-    console.log({ feeRate, addAmount });
     if (
       requestSentRef.current ||
       !walletClient ||
@@ -77,8 +110,9 @@ export const EnterStrategy = () => {
       .finally(() => {
         setRequestSent(false);
         requestSentRef.current = false;
+        refetch();
       });
-  }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition]);
+  }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition, refetch]);
 
   return (
     <div className={styles.root}>
