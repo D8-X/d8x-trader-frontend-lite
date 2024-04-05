@@ -1,4 +1,4 @@
-import { createWalletClient, type Address, http } from 'viem';
+import { createWalletClient, type Address, http, formatEther } from 'viem';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -7,8 +7,12 @@ import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
+import { getBalance } from 'viem/actions';
+import { transferFunds } from 'blockchain-api/transferFunds';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
+const GAS_TARGET = 2_000_000n; // good for arbitrum
 
 export async function exitStrategy({
   chainId,
@@ -16,6 +20,7 @@ export async function exitStrategy({
   symbol,
   traderAPI,
   limitPrice,
+  strategyAddress,
 }: HedgeConfigI): Promise<{ hash: Address }> {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
@@ -27,6 +32,7 @@ export async function exitStrategy({
       transport: http(),
     })
   );
+
   const position = await traderAPI
     .positionRisk(hedgeClient.account.address, symbol)
     .then((pos) => pos[0])
@@ -51,6 +57,19 @@ export async function exitStrategy({
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
     deadline: Math.floor(Date.now() / 1000 + DEADLINE),
   };
+  const strategyAddr = strategyAddress ?? hedgeClient.account.address;
+  const isDelegated = (await traderAPI
+    .getReadOnlyProxyInstance()
+    .isDelegate(strategyAddr, walletClient.account.address)) as boolean;
+  const gasBalance = await getBalance(walletClient, { address: strategyAddr });
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
-  return postOrder(hedgeClient, [HashZero], data);
+  if (isDelegated && hedgeClient === undefined) {
+    return postOrder(walletClient, [HashZero], data);
+  } else {
+    const gasPrice = await getGasPrice(walletClient.chain?.id);
+    if (gasBalance < GAS_TARGET * gasPrice) {
+      await transferFunds(walletClient, strategyAddr, +formatEther(2n * GAS_TARGET * gasPrice));
+    }
+    return postOrder(hedgeClient, [HashZero], data);
+  }
 }

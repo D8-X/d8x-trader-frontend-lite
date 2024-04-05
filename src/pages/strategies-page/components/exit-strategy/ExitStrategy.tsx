@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogTitle, Typography } from '@mui/material';
 
@@ -10,7 +10,7 @@ import { exitStrategy } from 'blockchain-api/contract-interactions/exitStrategy'
 import { Dialog } from 'components/dialog/Dialog';
 import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ExitStrategy.module.scss';
 
@@ -18,15 +18,21 @@ export const ExitStrategy = () => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
+  const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const traderAPI = useAtomValue(traderAPIAtom);
+  const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
 
   const requestSentRef = useRef(false);
+
+  const strategyAddress = useMemo(() => {
+    return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
+  }, [address, strategyAddresses]);
 
   const handleExit = useCallback(() => {
     if (
@@ -41,7 +47,7 @@ export const ExitStrategy = () => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
+    exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress })
       .then(({ hash }) => {
         console.log(`submitting strategy txn ${hash}`);
         setHasPosition(false);
@@ -51,7 +57,7 @@ export const ExitStrategy = () => {
         requestSentRef.current = false;
         setRequestSent(false);
       });
-  }, [chainId, walletClient, traderAPI, setHasPosition]);
+  }, [chainId, walletClient, traderAPI, strategyAddress, setHasPosition]);
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);

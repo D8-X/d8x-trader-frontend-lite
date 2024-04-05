@@ -12,7 +12,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, poolsAtom, traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom } from 'store/strategies.store';
+import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
@@ -28,6 +28,7 @@ export const EnterStrategy = () => {
   const pools = useAtomValue(poolsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
+  const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
@@ -36,6 +37,10 @@ export const EnterStrategy = () => {
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
+
+  const strategyAddress = useMemo(() => {
+    return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
+  }, [address, strategyAddresses]);
 
   const weEthPool = useMemo(() => {
     if (pools.length) {
@@ -102,7 +107,15 @@ export const EnterStrategy = () => {
     requestSentRef.current = true;
     setRequestSent(true);
 
-    enterStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, amount: addAmount, feeRate })
+    enterStrategy({
+      chainId,
+      walletClient,
+      symbol: STRATEGY_SYMBOL,
+      traderAPI,
+      amount: addAmount,
+      feeRate,
+      strategyAddress,
+    })
       .then(({ hash }) => {
         console.log(`submitting strategy txn ${hash}`);
         setHasPosition(true);
@@ -112,7 +125,7 @@ export const EnterStrategy = () => {
         requestSentRef.current = false;
         refetch();
       });
-  }, [chainId, walletClient, traderAPI, feeRate, addAmount, setHasPosition, refetch]);
+  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, setHasPosition, refetch]);
 
   return (
     <div className={styles.root}>

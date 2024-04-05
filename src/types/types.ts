@@ -460,6 +460,7 @@ export interface HedgeConfigI {
   feeRate?: number; // only used to open
   indexPrice?: number; // only used to open - defaults to mark price
   limitPrice?: number; // defaults to mark price to open, undefined to close (market w/o slippage protection)
+  strategyAddress?: Address; // strategy address, if already known
 }
 
 export interface StrategyAddressI {
