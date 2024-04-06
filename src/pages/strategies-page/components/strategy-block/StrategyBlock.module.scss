@@ -26,6 +26,17 @@
   background-color: var(--d8x-color-background-items);
 }
 
+.loaderWrapper {
+  position: absolute;
+  inset: 0;
+  margin: $d8x-spacing * 6 $d8x-spacing * 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--d8x-color-background-items-selected);
+  border-radius: $d8x-border-radius;
+}
+
 .divider {
   border-right: 1px solid var(--d8x-color-separator-border);
   margin: 10 * $d8x-spacing 0;
@@ -36,5 +47,10 @@
 }
 
 .emptyBlock {
+  position: relative;
+  flex: 1;
+  padding: 10 * $d8x-spacing 8 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
+  border-radius: 0 $d8x-border-radius $d8x-border-radius 0;
+  max-width: 400px;
 }

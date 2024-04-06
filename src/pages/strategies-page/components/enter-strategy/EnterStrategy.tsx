@@ -1,9 +1,10 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
-import { Button, Link, Typography } from '@mui/material';
+import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
 import { STRATEGY_POOL_SYMBOL, STRATEGY_SYMBOL } from 'appConstants';
 import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
@@ -12,11 +13,10 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, poolsAtom, traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { strategyAddressesAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
-import { Address, erc20Abi, formatUnits } from 'viem';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
@@ -29,13 +29,13 @@ export const EnterStrategy = () => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
   const [requestSent, setRequestSent] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [temporaryValue, setTemporaryValue] = useState(inputValue);
+  const [loading, setLoading] = useState(false);
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
@@ -151,6 +151,7 @@ export const EnterStrategy = () => {
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
 
     enterStrategy({
       chainId,
@@ -163,14 +164,13 @@ export const EnterStrategy = () => {
     })
       .then(({ hash }) => {
         console.log(`submitting strategy txn ${hash}`);
-        setHasPosition(true);
       })
       .finally(() => {
         setRequestSent(false);
         requestSentRef.current = false;
         refetch();
       });
-  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, setHasPosition, refetch]);
+  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, refetch]);
 
   return (
     <div className={styles.root}>
@@ -205,11 +205,17 @@ export const EnterStrategy = () => {
           onClick={handleEnter}
           className={styles.button}
           variant="primary"
-          disabled={requestSent || addAmount === 0}
+          disabled={requestSent || loading || addAmount === 0}
         >
-          <span className={styles.modalButtonText}>{t('pages.strategies.enter.deposit-button')}</span>
+          {t('pages.strategies.enter.deposit-button')}
         </Button>
       </GasDepositChecker>
+
+      {loading && (
+        <div className={styles.loaderWrapper}>
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 };

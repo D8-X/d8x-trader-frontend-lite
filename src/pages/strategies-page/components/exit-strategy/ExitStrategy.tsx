@@ -1,16 +1,16 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
-import { Button, DialogActions, DialogTitle, Typography } from '@mui/material';
+import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { exitStrategy } from 'blockchain-api/contract-interactions/exitStrategy';
 import { Dialog } from 'components/dialog/Dialog';
 import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
-import { hasPositionAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ExitStrategy.module.scss';
 
@@ -23,10 +23,10 @@ export const ExitStrategy = () => {
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const setHasPosition = useSetAtom(hasPositionAtom);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const requestSentRef = useRef(false);
 
@@ -45,19 +45,19 @@ export const ExitStrategy = () => {
     }
 
     requestSentRef.current = true;
+    setShowConfirmModal(false);
     setRequestSent(true);
+    setLoading(true);
 
     exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress })
       .then(({ hash }) => {
         console.log(`submitting strategy txn ${hash}`);
-        setHasPosition(false);
-        setShowConfirmModal(false);
       })
       .finally(() => {
         requestSentRef.current = false;
         setRequestSent(false);
       });
-  }, [chainId, walletClient, traderAPI, strategyAddress, setHasPosition]);
+  }, [chainId, walletClient, traderAPI, strategyAddress]);
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);
@@ -71,7 +71,7 @@ export const ExitStrategy = () => {
       <Typography variant="bodySmall" className={styles.note}>
         {t('pages.strategies.exit.note')}
       </Typography>
-      <Button onClick={() => setShowConfirmModal(true)} className={styles.button} variant="primary">
+      <Button onClick={() => setShowConfirmModal(true)} className={styles.button} variant="primary" disabled={loading}>
         <span className={styles.modalButtonText}>{t('pages.strategies.exit.exit-button')}</span>
       </Button>
 
@@ -86,11 +86,17 @@ export const ExitStrategy = () => {
           <Button onClick={handleModalClose} variant="secondary" size="small">
             {t('common.cancel-button')}
           </Button>
-          <Button onClick={handleExit} variant="warning" size="small" disabled={requestSent}>
+          <Button onClick={handleExit} variant="primary" size="small" disabled={requestSent || loading}>
             {t('pages.strategies.exit.confirm-modal.confirm-button')}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {loading && (
+        <div className={styles.loaderWrapper}>
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 };

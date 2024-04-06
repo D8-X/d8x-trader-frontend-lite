@@ -1,6 +1,7 @@
 @import '~styles/theme/theme.scss';
 
 .root {
+  position: relative;
   flex: 1;
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
   background-color: var(--d8x-color-background-items);
@@ -21,6 +22,17 @@
 
 .button {
   width: 100%;
+}
+
+.loaderWrapper {
+  position: absolute;
+  inset: 0;
+  margin: $d8x-spacing * 6 $d8x-spacing * 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--d8x-color-background-items-selected);
+  border-radius: $d8x-border-radius;
 }
 
 .dialog {

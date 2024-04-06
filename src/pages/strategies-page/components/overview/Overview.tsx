@@ -55,7 +55,7 @@ export const Overview = () => {
                 <span>{t('pages.strategies.overview.your-points')}</span>
               </>
             ) : (
-              '- %'
+              '-'
             )}
           </Typography>
         </div>

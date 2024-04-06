@@ -13,6 +13,7 @@ import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
+import { CircularProgress } from '@mui/material';
 
 const INTERVAL_FOR_DATA_POLLING = 10_000; // Each 10 sec
 
@@ -72,7 +73,13 @@ export const StrategyBlock = () => {
       <div className={styles.actionBlock}>
         <Disclaimer title={t('pages.strategies.info.title')} textBlocks={disclaimerTextBlocks} />
         <div className={styles.divider} />
-        {hasPosition === null && <div className={styles.emptyBlock} />}
+        {hasPosition === null && (
+          <div className={styles.emptyBlock}>
+            <div className={styles.loaderWrapper}>
+              <CircularProgress />
+            </div>
+          </div>
+        )}
         {hasPosition === true && <ExitStrategy />}
         {hasPosition === false && <EnterStrategy />}
       </div>
