@@ -99,11 +99,24 @@ export const EnterStrategy = () => {
   const handleBlur = () => {
     setIsEditing(false);
 
+    if (temporaryValue === '0') {
+      setAddAmount(0);
+      setInputValue('0');
+      return;
+    } else if (temporaryValue === '') {
+      setAddAmount(0);
+      setInputValue('');
+      return;
+    }
+
     // Convert the temporaryValue to a number and check it
     const numericValue = parseFloat(temporaryValue);
 
     // Enforce minimum only if the user leaves the field (on blur)
-    if (isNaN(numericValue) || numericValue < 0.01) {
+    if (numericValue === 0) {
+      setAddAmount(0);
+      setInputValue('0');
+    } else if (isNaN(numericValue) || numericValue < 0.01) {
       setAddAmount(0.01);
       setInputValue('0.01');
     } else {
@@ -158,8 +171,6 @@ export const EnterStrategy = () => {
         refetch();
       });
   }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, setHasPosition, refetch]);
-
-  console.log('isEditing', isEditing);
 
   return (
     <div className={styles.root}>
