@@ -589,33 +589,33 @@
     },
     "strategies": {
       "connect": {
-        "title": "Connect to Strategy Vault",
-        "connect-button": "Connect"
+        "title": "Conéctese a la página de estrategia",
+        "connect-button": "Conectar"
       },
       "overview": {
-        "title": "Delta-hedged yield strategy",
-        "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield",
-        "your-points": " + EigenLayer, ether.fi and D8X points"
+        "title": "Estrategia de rendimiento con cobertura delta",
+        "synthetic-position": "Posición sintética en USD",
+        "your-yield": "Rendimiento",
+        "your-points": "+ puntos EigenLayer, ether.fi y D8X"
       },
       "info": {
-        "title": "How it works",
-        "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
-        "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
+        "title": "Cómo funciona",
+        "text1": "Depositas weETH. La estrategia abre una posición venta perpetua equivalente a 1x ETH/USD, por lo que está cubierto por delta.",
+        "text2": "La estrategia genera rendimiento derivado de weETH (rendimiento haciendo staking de ETH, puntos EigenLayer, puntos ether.fi), así como pagos de tasas de financiación generados a partir de su posición venta en el ETH/USD perpetuo."
       },
       "enter": {
-        "title": "Enter strategy",
-        "amount-info": "Amount Info",
-        "deposit-button": "Deposit"
+        "title": "Iniciar la estrategia",
+        "amount-info": "La cantidad de weETH que pones en la estrategia. La estrategia abre una posición venta perpetua equivalente a 1x ETH/USD. Generar una posición sintética en USD que genere rendimiento.",
+        "deposit-button": "Iniciar"
       },
       "exit": {
-        "title": "Exit strategy",
+        "title": "Salir de la estrategia",
         "note": "Take your funds out of the strategy.",
         "exit-button": "Exit strategy",
         "confirm-modal": {
-          "title": "Exit strategy",
-          "text": "Are you sure you want to exit?",
-          "confirm-button": "Exit"
+          "title": "Salir de la estrategia",
+          "text": "¿Estás seguro de que quieres salir?",
+          "confirm-button": "Salida"
         }
       }
     },

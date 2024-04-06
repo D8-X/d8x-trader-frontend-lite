@@ -589,33 +589,33 @@
     },
     "strategies": {
       "connect": {
-        "title": "Connect to Strategy Vault",
-        "connect-button": "Connect"
+        "title": "连接到策略页面",
+        "connect-button": "连接"
       },
       "overview": {
-        "title": "Delta-hedged yield strategy",
-        "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield",
-        "your-points": " + EigenLayer, ether.fi and D8X points"
+        "title": "Delta 对冲收益率策略",
+        "synthetic-position": "合成美元头寸",
+        "your-yield": "产量",
+        "your-points": " + EigenLayer、ether.fi 和 D8X 点"
       },
       "info": {
-        "title": "How it works",
-        "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
-        "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
+        "title": "怎么运行的",
+        "text1": "您存入 weETH。该策略开设等值 1 倍 ETH/美元的永久空头头寸，因此您可以进行 Delta 对冲。",
+        "text2": "该策略产生来自 weETH 的收益（质押的以太坊收益、EigenLayer 积分、ether.fi 积分），以及您在 ETH/USD 永续合约空头头寸中产生的资金利率支付。"
       },
       "enter": {
-        "title": "Enter strategy",
-        "amount-info": "Amount Info",
-        "deposit-button": "Deposit"
+        "title": "开始策略",
+        "amount-info": "您投入策略的 weETH 金额。该策略开设等值 1 倍 ETH/美元的永久空头头寸。生成可赚取收益的合成美元头寸。",
+        "deposit-button": "启动它"
       },
       "exit": {
-        "title": "Exit strategy",
-        "note": "Take your funds out of the strategy.",
-        "exit-button": "Exit strategy",
+        "title": "退出策略",
+        "note": "将您的资金从策略中取出。",
+        "exit-button": "退出策略",
         "confirm-modal": {
-          "title": "Exit strategy",
-          "text": "Are you sure you want to exit?",
-          "confirm-button": "Exit"
+          "title": "退出策略",
+          "text": "你确定要离开？",
+          "confirm-button": "退出它"
         }
       }
     },
