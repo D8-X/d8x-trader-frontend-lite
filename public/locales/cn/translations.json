@@ -4,7 +4,7 @@
     "boost-station": "加速站",
     "refer": "邀请返佣",
     "vault": "金库",
-    "strategies": "Strategies",
+    "strategies": "策略",
     "portfolio": "投资组合"
   },
   "pages": {
@@ -595,7 +595,8 @@
       "overview": {
         "title": "Delta-hedged yield strategy",
         "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield"
+        "your-yield": "Your yield",
+        "your-points": " + EigenLayer, ether.fi and D8X points"
       },
       "info": {
         "title": "How it works",

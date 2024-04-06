@@ -4,7 +4,7 @@
     "boost-station": "Bomba",
     "refer": "Referir",
     "vault": "Bóveda",
-    "strategies": "Strategies",
+    "strategies": "Estrategias",
     "portfolio": "Cartera"
   },
   "pages": {
@@ -595,7 +595,8 @@
       "overview": {
         "title": "Delta-hedged yield strategy",
         "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield"
+        "your-yield": "Your yield",
+        "your-points": " + EigenLayer, ether.fi and D8X points"
       },
       "info": {
         "title": "How it works",

@@ -4,7 +4,7 @@
     "boost-station": "BoostStation",
     "refer": "Empfehlen",
     "vault": "Liquidität",
-    "strategies": "Strategies",
+    "strategies": "Strategien",
     "portfolio": "Portfolio"
   },
   "pages": {
@@ -589,32 +589,33 @@
     },
     "strategies": {
       "connect": {
-        "title": "Connect to Strategy Vault",
-        "connect-button": "Connect"
+        "title": "Mit Strategie Konto verbinden",
+        "connect-button": "Anmelden"
       },
       "overview": {
-        "title": "Delta-hedged yield strategy",
-        "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield"
+        "title": "Delta-gesicherte Renditestrategie",
+        "synthetic-position": "Synthetische USD-Position",
+        "your-yield": "Rendite",
+        "your-points": " + EigenLayer, ether.fi and D8X Punkte"
       },
       "info": {
-        "title": "How it works",
-        "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
-        "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
+        "title": "Wie es funktioniert",
+        "text1": "Sie zahlen weETH ein. Die Strategie eröffnet eine äquivalente 1x ETH/USD Perpetual Short Position, sodass Sie Delta-abgesichert sind.",
+        "text2": "Die Strategie generiert Erträge aus weETH (Ethereum Staking Rendite, EigenLayer-Punkte, ether.fi-Punkte) sowie Fundingzahlungen, die aus Ihrer Short-Position im ETH/USD Perpetual generiert werden."
       },
       "enter": {
-        "title": "Enter strategy",
-        "amount-info": "Amount Info",
-        "deposit-button": "Deposit"
+        "title": "Strategie starten",
+        "amount-info": "Die Menge an weETH, die Sie in die Strategie stecken. Die Strategie eröffnet eine äquivalente 1x ETH/USD Perpetual Short Position. Dies generiert eine synthetische USD-Position, die Rendite erwirtschaftet.",
+        "deposit-button": "starten"
       },
       "exit": {
-        "title": "Exit strategy",
-        "note": "Take your funds out of the strategy.",
-        "exit-button": "Exit strategy",
+        "title": "Strategie beenden",
+        "note": "Nehmen Sie Ihr Kapital aus der Strategie heraus.",
+        "exit-button": "Beenden",
         "confirm-modal": {
-          "title": "Exit strategy",
-          "text": "Are you sure you want to exit?",
-          "confirm-button": "Exit"
+          "title": "Strategie beenden",
+          "text": "Sie sind sicher, dass Sie beenden wollen?",
+          "confirm-button": "beenden"
         }
       }
     },

@@ -49,7 +49,14 @@ export const Overview = () => {
             {t('pages.strategies.overview.your-yield')}
           </Typography>
           <Typography variant="bodyMedium" className={styles.dataValue}>
-            {pnlUSD && syntheticPositionUSD ? formatToCurrency((100 * pnlUSD) / syntheticPositionUSD, '%') : '-'}
+            {pnlUSD && syntheticPositionUSD ? (
+              <>
+                {formatToCurrency((100 * pnlUSD) / syntheticPositionUSD, '%')}
+                <span>{t('pages.strategies.overview.your-points')}</span>
+              </>
+            ) : (
+              '- %'
+            )}
           </Typography>
         </div>
       </div>

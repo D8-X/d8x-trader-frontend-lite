@@ -593,19 +593,20 @@
         "connect-button": "Connect"
       },
       "overview": {
-        "title": "Delta-hedged yield strategy",
+        "title": "Delta-hedged yield",
         "synthetic-position": "Synthetic USD position",
-        "your-yield": "Your yield"
+        "your-yield": "Your yield",
+        "your-points": " + EigenLayer, ether.fi and D8X points"
       },
       "info": {
-        "title": "How it works",
+        "title": "How you earn",
         "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
         "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
       },
       "enter": {
         "title": "Enter strategy",
-        "amount-info": "Amount Info",
-        "deposit-button": "Deposit"
+        "amount-info": "The amount of weETH you put into the strategy. The strategy opens an equivalent 1x ETH/USD perpetual short position. Generating a synthetic USD position that earns yield.",
+        "deposit-button": "Enter"
       },
       "exit": {
         "title": "Exit strategy",
