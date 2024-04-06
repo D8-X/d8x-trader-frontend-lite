@@ -606,7 +606,17 @@
       "enter": {
         "title": "Iniciar la estrategia",
         "amount-info": "La cantidad de weETH que pones en la estrategia. La estrategia abre una posición venta perpetua equivalente a 1x ETH/USD. Generar una posición sintética en USD que genere rendimiento.",
-        "deposit-button": "Iniciar"
+        "deposit-button": "Iniciar",
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully entered the strategy",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       },
       "exit": {
         "title": "Salir de la estrategia",
@@ -616,6 +626,15 @@
           "title": "Salir de la estrategia",
           "text": "¿Estás seguro de que quieres salir?",
           "confirm-button": "Salida"
+        },
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully exit from the strategy"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
         }
       }
     },

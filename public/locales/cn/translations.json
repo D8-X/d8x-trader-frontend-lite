@@ -606,7 +606,17 @@
       "enter": {
         "title": "开始策略",
         "amount-info": "您投入策略的 weETH 金额。该策略开设等值 1 倍 ETH/美元的永久空头头寸。生成可赚取收益的合成美元头寸。",
-        "deposit-button": "启动它"
+        "deposit-button": "启动它",
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully entered the strategy",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       },
       "exit": {
         "title": "退出策略",
@@ -616,6 +626,15 @@
           "title": "退出策略",
           "text": "你确定要离开？",
           "confirm-button": "退出它"
+        },
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully exit from the strategy"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
         }
       }
     },

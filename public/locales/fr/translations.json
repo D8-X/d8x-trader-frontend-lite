@@ -606,7 +606,17 @@
       "enter": {
         "title": "Entrez la stratégie",
         "amount-info": "Le montant de weETH que vous investissez dans la stratégie. La stratégie ouvre une position équivalente, short en ETH/USD avec un levier de 1x. Ceci génère une position synthétique en USD qui génère du rendement.",
-        "deposit-button": "Entrez"
+        "deposit-button": "Entrez",
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully entered the strategy",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       },
       "exit": {
         "title": "Quitter la stratégie",
@@ -616,6 +626,15 @@
           "title": "Quitter la stratégie",
           "text": "Êtes-vous sûr de vouloir quitter la stratégie?",
           "confirm-button": "Quitter"
+        },
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully exit from the strategy"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
         }
       }
     },

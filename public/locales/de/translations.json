@@ -606,7 +606,17 @@
       "enter": {
         "title": "Strategie starten",
         "amount-info": "Die Menge an weETH, die Sie in die Strategie stecken. Die Strategie eröffnet eine äquivalente 1x ETH/USD Perpetual Short Position. Dies generiert eine synthetische USD-Position, die Rendite erwirtschaftet.",
-        "deposit-button": "starten"
+        "deposit-button": "starten",
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully entered the strategy",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       },
       "exit": {
         "title": "Strategie beenden",
@@ -616,6 +626,15 @@
           "title": "Strategie beenden",
           "text": "Sie sind sicher, dass Sie beenden wollen?",
           "confirm-button": "beenden"
+        },
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully exit from the strategy"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
         }
       }
     },
