@@ -9,3 +9,4 @@ export const strategyAddressesAtom = atomWithStorage<StrategyAddressI[]>(STRATEG
 
 export const hasPositionAtom = atom<boolean | null>(null);
 export const strategyPositionAtom = atom<MarginAccountI | undefined>(undefined);
+export const enableFrequentUpdatesAtom = atom(false);

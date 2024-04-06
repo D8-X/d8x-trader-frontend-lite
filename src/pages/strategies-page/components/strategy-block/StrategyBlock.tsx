@@ -1,11 +1,18 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useChainId } from 'wagmi';
 
+import { CircularProgress } from '@mui/material';
+
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { getPositionRisk } from 'network/network';
-import { hasPositionAtom, strategyAddressesAtom, strategyPositionAtom } from 'store/strategies.store';
+import {
+  enableFrequentUpdatesAtom,
+  hasPositionAtom,
+  strategyAddressesAtom,
+  strategyPositionAtom,
+} from 'store/strategies.store';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -13,9 +20,10 @@ import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
-import { CircularProgress } from '@mui/material';
 
-const INTERVAL_FOR_DATA_POLLING = 10_000; // Each 10 sec
+const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
+const INTERVAL_FREQUENT_POLLING = 1_000; // Each 1 sec
+const MAX_FREQUENT_UPDATES = 10;
 
 export const StrategyBlock = () => {
   const { t } = useTranslation();
@@ -24,8 +32,11 @@ export const StrategyBlock = () => {
   const { address } = useAccount();
 
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
+  const [isFrequentUpdates, enableFrequentUpdates] = useAtom(enableFrequentUpdatesAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setStrategyPosition = useSetAtom(strategyPositionAtom);
+
+  const [frequentUpdates, setFrequentUpdates] = useState(0);
 
   const requestSentRef = useRef(false);
 
@@ -35,37 +46,54 @@ export const StrategyBlock = () => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const fetchStrategyPosition = useCallback(() => {
-    if (requestSentRef.current || !strategyAddress || !address) {
-      return;
-    }
+  const fetchStrategyPosition = useCallback(
+    (frequentUpdatesEnabled: boolean) => {
+      if (requestSentRef.current || !strategyAddress || !address) {
+        return;
+      }
 
-    requestSentRef.current = true;
+      if (frequentUpdatesEnabled) {
+        setFrequentUpdates((prevState) => prevState + 1);
+      }
 
-    getPositionRisk(chainId, null, strategyAddress)
-      .then(({ data: positions }) => {
-        const strategy = positions.find(
-          ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
-        );
-        setHasPosition(!!strategy);
-        setStrategyPosition(strategy);
-      })
-      .finally(() => {
-        requestSentRef.current = false;
-      });
-  }, [chainId, strategyAddress, address, setStrategyPosition, setHasPosition]);
+      requestSentRef.current = true;
+
+      getPositionRisk(chainId, null, strategyAddress)
+        .then(({ data: positions }) => {
+          const strategy = positions.find(
+            ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
+          );
+          setHasPosition(!!strategy);
+          setStrategyPosition(strategy);
+        })
+        .finally(() => {
+          requestSentRef.current = false;
+        });
+    },
+    [chainId, strategyAddress, address, setStrategyPosition, setHasPosition]
+  );
 
   useEffect(() => {
-    fetchStrategyPosition();
+    fetchStrategyPosition(isFrequentUpdates);
 
-    const intervalId = setInterval(() => {
-      fetchStrategyPosition();
-    }, INTERVAL_FOR_DATA_POLLING);
+    const intervalId = setInterval(
+      () => {
+        fetchStrategyPosition(isFrequentUpdates);
+      },
+      isFrequentUpdates ? INTERVAL_FREQUENT_POLLING : INTERVAL_FOR_DATA_POLLING
+    );
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchStrategyPosition]);
+  }, [fetchStrategyPosition, isFrequentUpdates]);
+
+  useEffect(() => {
+    if (frequentUpdates >= MAX_FREQUENT_UPDATES) {
+      setFrequentUpdates(0);
+      enableFrequentUpdates(false);
+    }
+  }, [frequentUpdates, enableFrequentUpdates]);
 
   return (
     <div className={styles.root}>

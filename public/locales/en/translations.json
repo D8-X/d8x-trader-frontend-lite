@@ -606,7 +606,17 @@
       "enter": {
         "title": "Enter strategy",
         "amount-info": "The amount of weETH you put into the strategy. The strategy opens an equivalent 1x ETH/USD perpetual short position. Generating a synthetic USD position that earns yield.",
-        "deposit-button": "Enter"
+        "deposit-button": "Enter",
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully entered the strategy",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       },
       "exit": {
         "title": "Exit strategy",
@@ -616,6 +626,15 @@
           "title": "Exit strategy",
           "text": "Are you sure you want to exit?",
           "confirm-button": "Exit"
+        },
+        "toasts": {
+          "tx-submitted": {
+            "title": "You have successfully exit from the strategy"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
         }
       }
     },
