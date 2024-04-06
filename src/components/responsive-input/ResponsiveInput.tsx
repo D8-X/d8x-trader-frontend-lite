@@ -15,6 +15,7 @@ interface ResponsiveInputPropsI {
   inputValue: string | number | null;
   setInputValue: (newValue: string) => void;
   handleInputBlur?: () => void;
+  handleInputFocus?: () => void;
   currency: ReactNode | undefined;
   placeholder?: string;
   step?: string;
@@ -32,6 +33,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     inputValue,
     setInputValue,
     handleInputBlur,
+    handleInputFocus,
     currency,
     placeholder,
     step = '1',
@@ -117,6 +119,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         placeholder={placeholder}
         onChange={handleValueChange}
         onBlur={handleInputBlur}
+        onFocus={handleInputFocus}
         value={inputNumeric === null ? '' : inputValue}
         disabled={disabled}
       />

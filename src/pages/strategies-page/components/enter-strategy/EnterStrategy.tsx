@@ -34,6 +34,8 @@ export const EnterStrategy = () => {
   const [addAmount, setAddAmount] = useState(0);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
   const [requestSent, setRequestSent] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [temporaryValue, setTemporaryValue] = useState(inputValue);
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
@@ -74,16 +76,46 @@ export const EnterStrategy = () => {
 
   const weEthBalance = weEthPoolBalance ? +formatUnits(weEthPoolBalance[0], weEthPoolBalance[1]) : 0;
 
-  const handleInputCapture = useCallback((orderSizeValue: string) => {
-    if (orderSizeValue) {
-      setAddAmount(+orderSizeValue);
-      setInputValue(orderSizeValue);
+  const handleInputCapture = useCallback(
+    (orderSizeValue: string) => {
+      // Directly update the temporaryValue with user input without any validation
+      if (isEditing) {
+        setTemporaryValue(orderSizeValue);
+      } else {
+        // This part is for handling non-editing updates, like programmatically setting the value
+        const numericValue = parseFloat(orderSizeValue);
+        if (!isNaN(numericValue) && numericValue >= 0.01) {
+          setAddAmount(numericValue);
+          setInputValue(orderSizeValue);
+        } else {
+          setAddAmount(0);
+          setInputValue('');
+        }
+      }
+    },
+    [isEditing]
+  );
+
+  const handleBlur = () => {
+    setIsEditing(false);
+
+    // Convert the temporaryValue to a number and check it
+    const numericValue = parseFloat(temporaryValue);
+
+    // Enforce minimum only if the user leaves the field (on blur)
+    if (isNaN(numericValue) || numericValue < 0.01) {
+      setAddAmount(0.01);
+      setInputValue('0.01');
     } else {
-      setAddAmount(0);
-      setInputValue('');
+      setAddAmount(numericValue);
+      setInputValue(numericValue.toString());
     }
-    inputValueChangedRef.current = true;
-  }, []);
+  };
+
+  const handleFocus = () => {
+    setIsEditing(true);
+    setTemporaryValue(inputValue);
+  };
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
@@ -127,6 +159,8 @@ export const EnterStrategy = () => {
       });
   }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, setHasPosition, refetch]);
 
+  console.log('isEditing', isEditing);
+
   return (
     <div className={styles.root}>
       <Typography variant="h5" className={styles.title}>
@@ -139,11 +173,13 @@ export const EnterStrategy = () => {
         <ResponsiveInput
           id="enter-amount-size"
           className={styles.inputHolder}
-          inputValue={inputValue}
+          inputValue={isEditing ? temporaryValue : inputValue}
           setInputValue={handleInputCapture}
+          handleInputBlur={handleBlur}
+          handleInputFocus={handleFocus}
           currency="weETH"
           step="0.001"
-          min={0}
+          min={isEditing ? undefined : 0.01}
           max={weEthBalance || 0}
         />
       </div>
