@@ -102,12 +102,16 @@ export const StrategyBlock = () => {
   }, [frequentUpdates, enableFrequentUpdates]);
 
   useEffect(() => {
-    console.log(hasPosition, hadPosition, chainId);
+    console.log(hasPosition, hadPosition, chainId, claimRequestSentRef.current);
     if (!hasPosition && hadPosition && !claimRequestSentRef.current && traderAPI && walletClient) {
       claimRequestSentRef.current = true;
-      claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI }).then(() => {
-        console.log('claiming funds');
-      });
+      claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
+        .then(() => {
+          console.log('claiming funds');
+        })
+        .finally(() => {
+          claimRequestSentRef.current = false;
+        });
     }
   }, [hasPosition, hadPosition, chainId, traderAPI, walletClient]);
 

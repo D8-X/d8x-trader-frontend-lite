@@ -44,14 +44,15 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
     functionName: 'balanceOf',
     args: [hedgeClient.account.address],
   });
+
   if (marginTokenBalance > 0n) {
-    await writeContract(walletClient, {
+    await writeContract(hedgeClient, {
       address: marginTokenAddr as Address,
       chain: walletClient.chain,
       abi: erc20Abi,
       functionName: 'transfer',
-      args: [hedgeClient.account.address, marginTokenBalance],
-      account: walletClient.account,
+      args: [walletClient.account.address, marginTokenBalance],
+      account: hedgeClient.account,
     });
   }
   const gasLimit = await estimateGas(walletClient, {
