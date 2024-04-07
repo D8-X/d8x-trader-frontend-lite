@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@mui/material';
 
-import { strategyPositionAtom } from 'store/strategies.store';
+import { strategyPerpetualAtom, strategyPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './Overview.module.scss';
@@ -13,6 +13,7 @@ export const Overview = () => {
   const { t } = useTranslation();
 
   const strategyPosition = useAtomValue(strategyPositionAtom);
+  const strategyPerpetual = useAtomValue(strategyPerpetualAtom);
 
   const syntheticPositionUSD = useMemo(() => {
     if (strategyPosition) {
@@ -21,7 +22,7 @@ export const Overview = () => {
   }, [strategyPosition]);
 
   const pnlUSD = useMemo(() => {
-    if (strategyPosition) {
+    if (strategyPosition && strategyPerpetual) {
       console.log(
         'strategyPosition.collateralCC * strategyPosition.collToQuoteConversion',
         strategyPosition.collateralCC * strategyPosition.collToQuoteConversion
@@ -40,12 +41,12 @@ export const Overview = () => {
       console.log('strategyPosition.positionNotionalBaseCCY', strategyPosition.positionNotionalBaseCCY);
 
       return (
-        strategyPosition.collateralCC * strategyPosition.collToQuoteConversion -
+        (strategyPosition.collateralCC * strategyPosition.collToQuoteConversion) / strategyPerpetual?.indexPrice -
         strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
     }
-  }, [strategyPosition]);
+  }, [strategyPosition, strategyPerpetual]);
 
   console.log('pnl', pnlUSD);
 

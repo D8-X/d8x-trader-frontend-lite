@@ -7,15 +7,15 @@ import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt,
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
-import { STRATEGY_POOL_SYMBOL, STRATEGY_SYMBOL } from 'appConstants';
+import { STRATEGY_SYMBOL } from 'appConstants';
 import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrategy';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
-import { poolFeeAtom, poolsAtom, traderAPIAtom } from 'store/pools.store';
-import { enableFrequentUpdatesAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { poolFeeAtom, traderAPIAtom } from 'store/pools.store';
+import { enableFrequentUpdatesAtom, strategyAddressesAtom, strategyPoolAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './EnterStrategy.module.scss';
@@ -27,7 +27,7 @@ export const EnterStrategy = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
-  const pools = useAtomValue(poolsAtom);
+  const strategyPool = useAtomValue(strategyPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
@@ -48,33 +48,23 @@ export const EnterStrategy = () => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const weEthPool = useMemo(() => {
-    if (pools.length) {
-      const foundPool = pools.find((pool) => pool.poolSymbol === STRATEGY_POOL_SYMBOL);
-      if (foundPool) {
-        return foundPool;
-      }
-    }
-    return null;
-  }, [pools]);
-
   const { data: weEthPoolBalance, refetch } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
-        address: weEthPool?.marginTokenAddr as Address,
+        address: strategyPool?.marginTokenAddr as Address,
         abi: erc20Abi,
         functionName: 'balanceOf',
         args: [address as Address],
       },
       {
-        address: weEthPool?.marginTokenAddr as Address,
+        address: strategyPool?.marginTokenAddr as Address,
         abi: erc20Abi,
         functionName: 'decimals',
       },
     ],
     query: {
-      enabled: address && traderAPI?.chainId === chainId && !!weEthPool?.marginTokenAddr && isConnected,
+      enabled: address && traderAPI?.chainId === chainId && !!strategyPool?.marginTokenAddr && isConnected,
     },
   });
 
