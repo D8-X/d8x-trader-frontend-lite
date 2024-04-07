@@ -596,17 +596,17 @@
         "title": "Delta 对冲收益率策略",
         "synthetic-position": "合成美元头寸",
         "your-yield": "产量",
-        "your-points": " + EigenLayer、ether.fi 和 D8X 点"
+        "your-points": " + EigenLayer、ether.fi 和 D8X 积分"
       },
       "info": {
-        "title": "怎么运行的",
+        "title": "如何赚取",
         "text1": "您存入 weETH。该策略开设等值 1 倍 ETH/美元的永久空头头寸，因此您可以进行 Delta 对冲。",
         "text2": "该策略产生来自 weETH 的收益（质押的以太坊收益、EigenLayer 积分、ether.fi 积分），以及您在 ETH/USD 永续合约空头头寸中产生的资金利率支付。"
       },
       "enter": {
         "title": "开始策略",
         "amount-info": "您投入策略的 weETH 金额。该策略开设等值 1 倍 ETH/美元的永久空头头寸。生成可赚取收益的合成美元头寸。",
-        "deposit-button": "启动它",
+        "deposit-button": "启动",
         "toasts": {
           "tx-submitted": {
             "title": "You have successfully entered the strategy",
@@ -625,7 +625,7 @@
         "confirm-modal": {
           "title": "退出策略",
           "text": "你确定要离开？",
-          "confirm-button": "退出它"
+          "confirm-button": "退出"
         },
         "toasts": {
           "tx-submitted": {
