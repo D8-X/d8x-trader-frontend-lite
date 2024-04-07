@@ -22,13 +22,32 @@ export const Overview = () => {
 
   const pnlUSD = useMemo(() => {
     if (strategyPosition) {
-      return (
-        strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice +
-        strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion -
+      console.log(
+        'strategyPosition.collateralCC * strategyPosition.collToQuoteConversion',
+        strategyPosition.collateralCC * strategyPosition.collToQuoteConversion
+      );
+      console.log(
+        'strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice',
         strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
+      );
+      console.log(
+        'strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion',
+        strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
+      );
+      console.log('strategyPosition.collToQuoteConversion', strategyPosition.collToQuoteConversion);
+      console.log('strategyPosition.markPrice', strategyPosition.markPrice);
+      console.log('strategyPosition.collateralCC', strategyPosition.collateralCC);
+      console.log('strategyPosition.positionNotionalBaseCCY', strategyPosition.positionNotionalBaseCCY);
+
+      return (
+        strategyPosition.collateralCC * strategyPosition.collToQuoteConversion -
+        strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice +
+        strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
     }
   }, [strategyPosition]);
+
+  console.log('pnl', pnlUSD);
 
   return (
     <div className={styles.root}>
@@ -51,7 +70,7 @@ export const Overview = () => {
           <Typography variant="bodyMedium" className={styles.dataValue}>
             {pnlUSD && syntheticPositionUSD ? (
               <>
-                {formatToCurrency((100 * pnlUSD) / syntheticPositionUSD, '%')}
+                {formatToCurrency(100 * (pnlUSD / syntheticPositionUSD), '%')}
                 <span>{t('pages.strategies.overview.your-points')}</span>
               </>
             ) : (
