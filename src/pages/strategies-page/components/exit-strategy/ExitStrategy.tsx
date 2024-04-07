@@ -93,7 +93,7 @@ export const ExitStrategy = () => {
 
     exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress })
       .then(({ hash }) => {
-        console.log(`submitting strategy txn ${hash}`);
+        console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
       })
       .finally(() => {

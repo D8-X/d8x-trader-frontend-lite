@@ -1,4 +1,4 @@
-import { createWalletClient, type Address, http, formatEther } from 'viem';
+import { createWalletClient, http, formatEther } from 'viem';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -10,6 +10,8 @@ import { postOrder } from './postOrder';
 import { getBalance } from 'viem/actions';
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+// import { PROXY_ABI } from '@d8x/perpetuals-sdk';
+// import { claimStrategyFunds } from './claimStrategyFunds';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const GAS_TARGET = 2_000_000n; // good for arbitrum
@@ -21,7 +23,7 @@ export async function exitStrategy({
   traderAPI,
   limitPrice,
   strategyAddress,
-}: HedgeConfigI): Promise<{ hash: Address }> {
+}: HedgeConfigI) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }

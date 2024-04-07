@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
@@ -20,6 +20,8 @@ import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
+import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
+import { traderAPIAtom } from 'store/pools.store';
 
 const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
 const INTERVAL_FREQUENT_POLLING = 1_000; // Each 1 sec
@@ -30,15 +32,19 @@ export const StrategyBlock = () => {
 
   const chainId = useChainId();
   const { address } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
+  const traderAPI = useAtomValue(traderAPIAtom);
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
   const [isFrequentUpdates, enableFrequentUpdates] = useAtom(enableFrequentUpdatesAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
   const setStrategyPosition = useSetAtom(strategyPositionAtom);
 
   const [frequentUpdates, setFrequentUpdates] = useState(0);
+  const [hadPosition, setHadPosition] = useState(hasPosition);
 
   const requestSentRef = useRef(false);
+  const claimRequestSentRef = useRef(false);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
@@ -94,6 +100,20 @@ export const StrategyBlock = () => {
       enableFrequentUpdates(false);
     }
   }, [frequentUpdates, enableFrequentUpdates]);
+
+  useEffect(() => {
+    console.log(hasPosition, hadPosition, chainId);
+    if (!hasPosition && hadPosition && !claimRequestSentRef.current && traderAPI && walletClient) {
+      claimRequestSentRef.current = true;
+      claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI }).then(() => {
+        console.log('claiming funds');
+      });
+    }
+  }, [hasPosition, hadPosition, chainId, traderAPI, walletClient]);
+
+  useEffect(() => {
+    setHadPosition(!hasPosition);
+  }, [hasPosition, setHadPosition]);
 
   return (
     <div className={styles.root}>

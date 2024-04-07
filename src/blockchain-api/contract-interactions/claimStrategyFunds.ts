@@ -1,7 +1,6 @@
 import { createWalletClient, type Address, http, erc20Abi } from 'viem';
 
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
-import { OrderSideE } from 'types/enums';
 import { HedgeConfigI } from 'types/types';
 
 import { getGasPrice } from 'blockchain-api/getGasPrice';
@@ -13,6 +12,7 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
+  console.log('generating account');
   const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
     createWalletClient({
       account,
@@ -30,7 +30,7 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
   if (!position || !marginTokenAddr || !marginTokenDec) {
     throw new Error(`No hedging strategy available for symbol ${symbol} on chain ID ${chainId}`);
   }
-  if (position.positionNotionalBaseCCY === 0 || position.side !== OrderSideE.Sell) {
+  if (position.positionNotionalBaseCCY !== 0) {
     throw new Error(
       `Invalid hedging position for trader ${walletClient.account?.address} and symbol ${symbol} on chain ID ${chainId}`
     );

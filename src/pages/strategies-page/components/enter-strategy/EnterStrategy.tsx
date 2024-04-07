@@ -225,7 +225,7 @@ export const EnterStrategy = () => {
       strategyAddress,
     })
       .then(({ hash }) => {
-        console.log(`submitting strategy txn ${hash}`);
+        console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
       })
       .finally(() => {
