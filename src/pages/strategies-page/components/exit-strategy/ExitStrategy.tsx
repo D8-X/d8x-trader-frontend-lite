@@ -1,23 +1,25 @@
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { Address } from 'viem';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { exitStrategy } from 'blockchain-api/contract-interactions/exitStrategy';
 import { Dialog } from 'components/dialog/Dialog';
-import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
-import { enableFrequentUpdatesAtom, strategyAddressesAtom } from 'store/strategies.store';
+import { strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ExitStrategy.module.scss';
+import { useExitStrategy } from './hooks/useExitStrategy';
 
-export const ExitStrategy = () => {
+interface ExitStrategyPropsI {
+  isLoading: boolean;
+}
+
+export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
@@ -26,12 +28,10 @@ export const ExitStrategy = () => {
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const enableFrequentUpdates = useSetAtom(enableFrequentUpdatesAtom);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [loading, setLoading] = useState(isLoading);
 
   const requestSentRef = useRef(false);
 
@@ -39,42 +39,7 @@ export const ExitStrategy = () => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
-    hash: txHash,
-    query: { enabled: !!address && !!txHash },
-  });
-
-  useEffect(() => {
-    if (!isFetched || !txHash) {
-      return;
-    }
-    setTxHash(undefined);
-  }, [isFetched, txHash]);
-
-  useEffect(() => {
-    if (!isError || !error || !txHash) {
-      return;
-    }
-    toast.error(
-      <ToastContent
-        title={t('pages.strategies.exit.toasts.tx-failed.title')}
-        bodyLines={[
-          {
-            label: t('pages.strategies.exit.toasts.tx-failed.body'),
-            value: error.message,
-          },
-        ]}
-      />
-    );
-  }, [isError, error, txHash, t]);
-
-  useEffect(() => {
-    if (!isSuccess || !txHash) {
-      return;
-    }
-    toast.success(<ToastContent title={t('pages.strategies.exit.toasts.tx-submitted.title')} bodyLines={[]} />);
-    enableFrequentUpdates(true);
-  }, [isSuccess, txHash, enableFrequentUpdates, t]);
+  const { setTxHash } = useExitStrategy();
 
   const handleExit = useCallback(() => {
     if (
@@ -100,7 +65,7 @@ export const ExitStrategy = () => {
         requestSentRef.current = false;
         setRequestSent(false);
       });
-  }, [chainId, walletClient, traderAPI, strategyAddress]);
+  }, [chainId, walletClient, traderAPI, strategyAddress, setTxHash]);
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);

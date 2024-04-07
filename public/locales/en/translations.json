@@ -636,6 +636,18 @@
             "body": "Reason"
           }
         }
+      },
+      "claim-funds": {
+        "toasts": {
+          "tx-submitted": {
+            "title": "Your funds are successfully claimed",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       }
     },
     "portfolio": {

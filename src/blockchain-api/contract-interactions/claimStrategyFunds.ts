@@ -8,7 +8,9 @@ import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { getBalance } from '@wagmi/core';
 import { estimateGas, readContract, writeContract } from 'viem/actions';
 
-export async function claimStrategyFunds({ chainId, walletClient, symbol, traderAPI }: HedgeConfigI) {
+export async function claimStrategyFunds({ chainId, walletClient, symbol, traderAPI }: HedgeConfigI): Promise<{
+  hash: Address | null;
+}> {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
@@ -21,6 +23,7 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
     })
   );
 
+  console.log('get position');
   const position = await traderAPI
     .positionRisk(hedgeClient.account.address, symbol)
     .then((pos) => pos[0])
@@ -36,6 +39,7 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
     );
   }
 
+  console.log('get balance and gas');
   const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
   const gasPrice = await getGasPrice(walletClient.chain?.id);
   const marginTokenBalance = await readContract(walletClient, {
@@ -46,6 +50,7 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
   });
 
   if (marginTokenBalance > 0n) {
+    console.log('writeContract');
     await writeContract(hedgeClient, {
       address: marginTokenAddr as Address,
       chain: walletClient.chain,
@@ -55,20 +60,30 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
       account: hedgeClient.account,
     });
   }
+
+  console.log('estimateGas');
   const gasLimit = await estimateGas(walletClient, {
     to: walletClient.account.address,
     value: 1n,
     account: hedgeClient.account,
     gasPrice,
-  }).catch(() => undefined);
+  }).catch((error) => {
+    console.error(error);
+    return undefined;
+  });
+
   if (gasLimit && gasLimit * gasPrice < balance) {
-    await walletClient.sendTransaction({
-      to: walletClient.account.address,
-      value: balance - gasLimit * gasPrice,
-      chain: walletClient.chain,
-      gas: gasLimit,
-      gasPrice,
-      account: hedgeClient.account,
-    });
+    console.log('sendTransaction');
+    return walletClient
+      .sendTransaction({
+        to: walletClient.account.address,
+        value: balance - gasLimit * gasPrice,
+        chain: walletClient.chain,
+        gas: gasLimit,
+        gasPrice,
+        account: hedgeClient.account,
+      })
+      .then((tx) => ({ hash: tx }));
   }
+  return { hash: null };
 }

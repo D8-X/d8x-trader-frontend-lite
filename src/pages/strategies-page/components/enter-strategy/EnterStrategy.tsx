@@ -1,9 +1,8 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
@@ -12,11 +11,12 @@ import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrateg
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
-import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, traderAPIAtom } from 'store/pools.store';
-import { enableFrequentUpdatesAtom, strategyAddressesAtom, strategyPoolAtom } from 'store/strategies.store';
+import { strategyAddressesAtom, strategyPoolAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+
+import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
 
@@ -31,7 +31,6 @@ export const EnterStrategy = () => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const enableFrequentUpdates = useSetAtom(enableFrequentUpdatesAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
@@ -39,7 +38,6 @@ export const EnterStrategy = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [temporaryValue, setTemporaryValue] = useState(inputValue);
   const [loading, setLoading] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
@@ -70,52 +68,7 @@ export const EnterStrategy = () => {
 
   const weEthBalance = weEthPoolBalance ? +formatUnits(weEthPoolBalance[0], weEthPoolBalance[1]) : 0;
 
-  const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
-    hash: txHash,
-    query: { enabled: !!address && !!txHash && addAmount >= 0.01 },
-  });
-
-  useEffect(() => {
-    if (!isFetched || !txHash) {
-      return;
-    }
-    setTxHash(undefined);
-  }, [isFetched, txHash]);
-
-  useEffect(() => {
-    if (!isError || !error || !txHash) {
-      return;
-    }
-    toast.error(
-      <ToastContent
-        title={t('pages.strategies.enter.toasts.tx-failed.title')}
-        bodyLines={[
-          {
-            label: t('pages.strategies.enter.toasts.tx-failed.body'),
-            value: error.message,
-          },
-        ]}
-      />
-    );
-  }, [isError, error, txHash, t]);
-
-  useEffect(() => {
-    if (!isSuccess || !txHash) {
-      return;
-    }
-    toast.success(
-      <ToastContent
-        title={t('pages.strategies.enter.toasts.tx-submitted.title')}
-        bodyLines={[
-          {
-            label: t('pages.strategies.enter.toasts.tx-submitted.body'),
-            value: formatToCurrency(addAmount, 'weETH'),
-          },
-        ]}
-      />
-    );
-    enableFrequentUpdates(true);
-  }, [isSuccess, txHash, addAmount, enableFrequentUpdates, t]);
+  const { setTxHash } = useEnterStrategy(addAmount);
 
   const handleInputCapture = useCallback(
     (orderSizeValue: string) => {
@@ -223,7 +176,7 @@ export const EnterStrategy = () => {
         requestSentRef.current = false;
         refetch();
       });
-  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, refetch]);
+  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, setTxHash, refetch]);
 
   return (
     <div className={styles.root}>

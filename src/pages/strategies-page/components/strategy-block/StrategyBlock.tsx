@@ -1,16 +1,20 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { Address, erc20Abi, formatUnits } from 'viem';
+import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
+import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
 import { getPositionRisk } from 'network/network';
+import { traderAPIAtom } from 'store/pools.store';
 import {
   enableFrequentUpdatesAtom,
   hasPositionAtom,
   strategyAddressesAtom,
+  strategyPoolAtom,
   strategyPositionAtom,
 } from 'store/strategies.store';
 
@@ -20,21 +24,22 @@ import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
 
 import styles from './StrategyBlock.module.scss';
-import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
-import { traderAPIAtom } from 'store/pools.store';
+
+import { useClaimFunds } from './hooks/useClaimFunds';
 
 const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
-const INTERVAL_FREQUENT_POLLING = 1_000; // Each 1 sec
-const MAX_FREQUENT_UPDATES = 10;
+const INTERVAL_FREQUENT_POLLING = 2_000; // Each 1 sec
+const MAX_FREQUENT_UPDATES = 15;
 
 export const StrategyBlock = () => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const traderAPI = useAtomValue(traderAPIAtom);
+  const strategyPool = useAtomValue(strategyPoolAtom);
   const [hasPosition, setHasPosition] = useAtom(hasPositionAtom);
   const [isFrequentUpdates, enableFrequentUpdates] = useAtom(enableFrequentUpdatesAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
@@ -51,6 +56,36 @@ export const StrategyBlock = () => {
   const strategyAddress = useMemo(() => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
+
+  const { data: strategyAddressBalanceData, refetch: refetchStrategyAddressBalance } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: strategyPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [strategyAddress!],
+      },
+      {
+        address: strategyPool?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: {
+      enabled: strategyAddress && traderAPI?.chainId === chainId && !!strategyPool?.marginTokenAddr && isConnected,
+    },
+  });
+
+  const strategyAddressBalance = strategyAddressBalanceData
+    ? +formatUnits(strategyAddressBalanceData[0], strategyAddressBalanceData[1])
+    : null;
+
+  const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance);
+
+  useEffect(() => {
+    refetchStrategyAddressBalance();
+  }, [refetchStrategyAddressBalance, hasPosition]);
 
   const fetchStrategyPosition = useCallback(
     (frequentUpdatesEnabled: boolean) => {
@@ -102,22 +137,29 @@ export const StrategyBlock = () => {
   }, [frequentUpdates, enableFrequentUpdates]);
 
   useEffect(() => {
-    console.log(hasPosition, hadPosition, chainId, claimRequestSentRef.current);
     if (!hasPosition && hadPosition && !claimRequestSentRef.current && traderAPI && walletClient) {
       claimRequestSentRef.current = true;
       claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
-        .then(() => {
-          console.log('claiming funds');
+        .then(({ hash }) => {
+          if (hash) {
+            setTxHash(hash);
+            console.log('claiming funds::success');
+          } else {
+            console.log('claiming funds::no hash');
+          }
         })
+        .catch(console.error)
         .finally(() => {
           claimRequestSentRef.current = false;
         });
     }
-  }, [hasPosition, hadPosition, chainId, traderAPI, walletClient]);
+  }, [hasPosition, hadPosition, chainId, traderAPI, walletClient, setTxHash]);
 
   useEffect(() => {
-    setHadPosition(!hasPosition);
-  }, [hasPosition, setHadPosition]);
+    if (!hasPosition && strategyAddressBalance !== null && strategyAddressBalance > 0) {
+      setHadPosition(true);
+    }
+  }, [hasPosition, strategyAddressBalance]);
 
   return (
     <div className={styles.root}>
@@ -125,15 +167,20 @@ export const StrategyBlock = () => {
       <div className={styles.actionBlock}>
         <Disclaimer title={t('pages.strategies.info.title')} textBlocks={disclaimerTextBlocks} />
         <div className={styles.divider} />
-        {hasPosition === null && (
+        {hasPosition === null || strategyAddressBalance === null ? (
           <div className={styles.emptyBlock}>
             <div className={styles.loaderWrapper}>
               <CircularProgress />
             </div>
           </div>
+        ) : (
+          <>
+            {(hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
+              <ExitStrategy isLoading={!hasPosition && strategyAddressBalance > 0} />
+            )}
+            {!hasPosition && strategyAddressBalance === 0 && <EnterStrategy />}
+          </>
         )}
-        {hasPosition === true && <ExitStrategy />}
-        {hasPosition === false && <EnterStrategy />}
       </div>
     </div>
   );
