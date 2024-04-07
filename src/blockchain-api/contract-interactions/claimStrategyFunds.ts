@@ -6,7 +6,9 @@ import { HedgeConfigI } from 'types/types';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { getBalance } from '@wagmi/core';
-import { estimateGas, readContract, writeContract } from 'viem/actions';
+import { estimateGas, readContract, waitForTransactionReceipt, writeContract } from 'viem/actions';
+
+const GAS_TARGET = 1_000_000n;
 
 export async function claimStrategyFunds({ chainId, walletClient, symbol, traderAPI }: HedgeConfigI): Promise<{
   hash: Address | null;
@@ -40,28 +42,54 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
   }
 
   console.log('get balance and gas');
-  const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
   const marginTokenBalance = await readContract(walletClient, {
     address: marginTokenAddr as Address,
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: [hedgeClient.account.address],
   });
-
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
   if (marginTokenBalance > 0n) {
-    console.log('writeContract');
-    await writeContract(hedgeClient, {
+    const params = {
       address: marginTokenAddr as Address,
       chain: walletClient.chain,
       abi: erc20Abi,
       functionName: 'transfer',
       args: [walletClient.account.address, marginTokenBalance],
       account: hedgeClient.account,
+      gasPrice,
+    };
+    console.log('estimateGas: erc20');
+    const gasLimit = await estimateGas(hedgeClient, params).catch(() => undefined);
+    const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
+    if (!gasLimit || balance < gasPrice * gasLimit) {
+      console.log('sending funds to strategy acct');
+      const tx0 = await walletClient.sendTransaction({
+        to: hedgeClient.account.address,
+        value: (gasLimit ?? GAS_TARGET) * gasPrice,
+        chain: walletClient.chain,
+        gas: gasLimit,
+        gasPrice,
+        account: walletClient.account,
+      });
+      await waitForTransactionReceipt(hedgeClient, { hash: tx0 });
+    }
+    console.log(`sending ${marginTokenBalance} tokens`);
+    const tx1 = await writeContract(hedgeClient, {
+      address: marginTokenAddr as Address,
+      chain: walletClient.chain,
+      abi: erc20Abi,
+      functionName: 'transfer',
+      args: [walletClient.account.address, marginTokenBalance],
+      account: hedgeClient.account,
+      gas: gasLimit,
+      gasPrice,
     });
+    await waitForTransactionReceipt(hedgeClient, { hash: tx1 });
   }
 
-  console.log('estimateGas');
+  console.log('estimateGas: gas');
+
   const gasLimit = await estimateGas(walletClient, {
     to: walletClient.account.address,
     value: 1n,
@@ -71,10 +99,10 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
     console.error(error);
     return undefined;
   });
-
+  const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
   if (gasLimit && gasLimit * gasPrice < balance) {
     console.log('sendTransaction');
-    return walletClient
+    return hedgeClient
       .sendTransaction({
         to: walletClient.account.address,
         value: balance - gasLimit * gasPrice,

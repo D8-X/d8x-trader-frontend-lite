@@ -1,4 +1,5 @@
 import { createWalletClient, http, formatEther } from 'viem';
+import { getBalance } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -7,11 +8,8 @@ import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
-import { getBalance } from 'viem/actions';
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
-// import { PROXY_ABI } from '@d8x/perpetuals-sdk';
-// import { claimStrategyFunds } from './claimStrategyFunds';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const GAS_TARGET = 2_000_000n; // good for arbitrum

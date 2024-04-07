@@ -11,6 +11,7 @@ import {
   Chain,
   Account,
 } from 'viem';
+import { getBalance, readContract, writeContract } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -20,7 +21,6 @@ import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
-import { getBalance, readContract, writeContract } from 'viem/actions';
 import { setDelegate } from './setDelegate';
 import { transferFunds } from 'blockchain-api/transferFunds';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
