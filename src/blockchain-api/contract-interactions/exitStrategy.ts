@@ -26,9 +26,6 @@ export async function exitStrategy({
     throw new Error('Account not connected');
   }
 
-  // eslint-disable-next-line no-debugger
-  debugger;
-
   const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
     createWalletClient({
       account,
