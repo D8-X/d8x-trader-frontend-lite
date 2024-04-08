@@ -102,7 +102,7 @@ export async function enterStrategy({
     feeRate * 1e-5, // fee rate
     position.markPrice, // mark price
     indexPrice ?? position.markPrice, // index price
-    position.collToQuoteConversion // collateral price
+    position.collToQuoteConversion * 1.03 // collateral price
   );
 
   const order: OrderI = {
@@ -124,7 +124,7 @@ export async function enterStrategy({
 
   if (!isDelegated) {
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await transferFunds(walletClient, strategyAddr, +formatEther(GAS_TARGET * gasPrice));
+      await transferFunds(walletClient, strategyAddr, +formatEther(GAS_TARGET * gasPrice), gasPrice);
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
@@ -173,7 +173,7 @@ export async function enterStrategy({
     return postOrder(walletClient, [HashZero], data);
   } else {
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await transferFunds(walletClient, strategyAddr, +formatEther(2n * GAS_TARGET * gasPrice));
+      await transferFunds(walletClient, strategyAddr, +formatEther(2n * GAS_TARGET * gasPrice), gasPrice);
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>

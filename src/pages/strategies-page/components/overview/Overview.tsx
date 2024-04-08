@@ -28,8 +28,8 @@ export const Overview = () => {
           0,
           strategyPosition.collateralCC *
             (strategyPosition.collToQuoteConversion / strategyPerpetualStats.indexPrice) *
-            strategyPosition.markPrice -
-            strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
+            strategyPerpetualStats.markPrice -
+            strategyPosition.positionNotionalBaseCCY * strategyPerpetualStats.markPrice
         ) +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
