@@ -60,7 +60,9 @@ export async function claimStrategyFunds({ chainId, walletClient, symbol, trader
       gasPrice,
     };
     console.log('estimateGas: erc20');
-    const gasLimit = await estimateGas(hedgeClient, params).catch(() => undefined);
+    const gasLimit = await estimateGas(hedgeClient, params)
+      .then((gas) => (gas * 150n) / 100n)
+      .catch(() => undefined);
     const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
     if (!gasLimit || balance < gasPrice * gasLimit) {
       console.log('sending funds to strategy acct');
