@@ -50,6 +50,7 @@ export const StrategyBlock = () => {
 
   const requestSentRef = useRef(false);
   const claimRequestSentRef = useRef(false);
+  const refetchBalanceRequestSentRef = useRef(false);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
@@ -57,7 +58,12 @@ export const StrategyBlock = () => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const { data: strategyAddressBalanceData, refetch: refetchStrategyAddressBalance } = useReadContracts({
+  const {
+    data: strategyAddressBalanceData,
+    refetch: refetchStrategyAddressBalance,
+    isRefetching,
+    isFetched,
+  } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
@@ -81,10 +87,18 @@ export const StrategyBlock = () => {
     ? +formatUnits(strategyAddressBalanceData[0], strategyAddressBalanceData[1])
     : null;
 
-  const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance);
+  useEffect(() => {
+    if (isRefetching) {
+      refetchBalanceRequestSentRef.current = true;
+    } else if (isFetched) {
+      refetchBalanceRequestSentRef.current = false;
+    }
+  }, [isRefetching, isFetched]);
+
+  const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance, refetchStrategyAddressBalance);
 
   useEffect(() => {
-    refetchStrategyAddressBalance();
+    refetchStrategyAddressBalance().then();
   }, [refetchStrategyAddressBalance, hasPosition]);
 
   const fetchStrategyPosition = useCallback(
@@ -137,8 +151,19 @@ export const StrategyBlock = () => {
   }, [frequentUpdates, enableFrequentUpdates]);
 
   useEffect(() => {
-    if (!hasPosition && hadPosition && !claimRequestSentRef.current && traderAPI && walletClient) {
+    if (
+      !hasPosition &&
+      hadPosition &&
+      !claimRequestSentRef.current &&
+      !refetchBalanceRequestSentRef.current &&
+      strategyAddressBalance !== null &&
+      strategyAddressBalance > 0 &&
+      traderAPI &&
+      walletClient
+    ) {
+      console.log({ hasPosition, hadPosition, strategyAddressBalance });
       claimRequestSentRef.current = true;
+      console.log('claiming funds');
       claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
         .then(({ hash }) => {
           if (hash) {
@@ -153,10 +178,16 @@ export const StrategyBlock = () => {
           claimRequestSentRef.current = false;
         });
     }
-  }, [hasPosition, hadPosition, chainId, traderAPI, walletClient, setTxHash]);
+  }, [hasPosition, hadPosition, strategyAddressBalance, chainId, traderAPI, walletClient, setTxHash]);
 
   useEffect(() => {
-    if (!hasPosition && strategyAddressBalance !== null && strategyAddressBalance > 0) {
+    if (
+      !hasPosition &&
+      strategyAddressBalance !== null &&
+      strategyAddressBalance > 0 &&
+      !claimRequestSentRef.current &&
+      !refetchBalanceRequestSentRef.current
+    ) {
       setHadPosition(true);
     }
   }, [hasPosition, strategyAddressBalance]);

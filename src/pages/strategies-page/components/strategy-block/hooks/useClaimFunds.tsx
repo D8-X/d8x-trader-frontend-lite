@@ -1,3 +1,5 @@
+import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
+import { type ReadContractsErrorType } from '@wagmi/core';
 import { useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +11,13 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { enableFrequentUpdatesAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-export const useClaimFunds = (hasPosition: boolean | null, strategyAddressBalance: number | null) => {
+export const useClaimFunds = (
+  hasPosition: boolean | null,
+  strategyAddressBalance: number | null,
+  refetchStrategyAddressBalance: (
+    options?: RefetchOptions | undefined
+  ) => Promise<QueryObserverResult<[bigint, number], ReadContractsErrorType>>
+) => {
   const { t } = useTranslation();
 
   const { address } = useAccount();
@@ -71,7 +79,8 @@ export const useClaimFunds = (hasPosition: boolean | null, strategyAddressBalanc
     );
     enableFrequentUpdates(true);
     setClaimedBalance(0);
-  }, [isSuccess, txHash, enableFrequentUpdates, claimedBalance, t]);
+    refetchStrategyAddressBalance().then();
+  }, [isSuccess, txHash, enableFrequentUpdates, claimedBalance, refetchStrategyAddressBalance, t]);
 
   return {
     setTxHash,
