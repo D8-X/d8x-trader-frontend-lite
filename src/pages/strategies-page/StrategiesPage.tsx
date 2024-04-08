@@ -16,6 +16,7 @@ import {
 
 import { ConnectBlock } from './components/connect-block/ConnectBlock';
 import { StrategyBlock } from './components/strategy-block/StrategyBlock';
+import { StrategyPoolSubscription } from './components/StrategyPoolSubscription';
 
 import styles from './StrategiesPage.module.scss';
 
@@ -38,17 +39,27 @@ export const StrategiesPage = () => {
           (perpetual) =>
             perpetual.baseCurrency === STRATEGY_BASE_CURRENCY && perpetual.quoteCurrency === STRATEGY_QUOTE_CURRENCY
         );
-        setStrategyPerpetual(foundPerpetual || null);
+        if (foundPerpetual) {
+          setStrategyPerpetual(foundPerpetual);
+          setStrategyPerpetualStats({
+            ...foundPerpetual,
+            poolName: foundPool.poolSymbol,
+          });
+        } else {
+          setStrategyPerpetual(null);
+        }
         return;
       }
     }
     setStrategyPool(null);
     setStrategyPerpetual(null);
-  }, [pools, setStrategyPool, setStrategyPerpetual]);
+  }, [pools, setStrategyPool, setStrategyPerpetual, setStrategyPerpetualStats]);
 
   useEffect(() => {
     const strategyPerpetualStats = allPerpetualStatistics[STRATEGY_SYMBOL];
-    setStrategyPerpetualStats(strategyPerpetualStats || null);
+    if (strategyPerpetualStats) {
+      setStrategyPerpetualStats(strategyPerpetualStats);
+    }
   }, [allPerpetualStatistics, setStrategyPerpetualStats]);
 
   return (
@@ -64,6 +75,8 @@ export const StrategiesPage = () => {
             )}
           </Container>
         </MaintenanceWrapper>
+
+        <StrategyPoolSubscription />
       </div>
     </>
   );
