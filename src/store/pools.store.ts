@@ -41,7 +41,7 @@ export const triggerPositionsUpdateAtom = atom(true);
 export const triggerBalancesUpdateAtom = atom(true);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
-const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});
+export const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});
 export const allPerpetualStatisticsAtom = atom(null, (_get, set, updates: Record<string, PerpetualStatisticsI>) => {
   set(allPerpetualStatisticsPrimitiveAtom, (prev) => ({
     ...prev,

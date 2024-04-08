@@ -115,11 +115,13 @@ export const StrategyBlock = () => {
 
       getPositionRisk(chainId, null, strategyAddress)
         .then(({ data: positions }) => {
-          const strategy = positions.find(
-            ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
-          );
-          setHasPosition(!!strategy);
-          setStrategyPosition(strategy);
+          if (positions && positions.length > 0) {
+            const strategy = positions.find(
+              ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
+            );
+            setHasPosition(!!strategy);
+            setStrategyPosition(strategy);
+          }
         })
         .finally(() => {
           requestSentRef.current = false;
@@ -161,9 +163,7 @@ export const StrategyBlock = () => {
       traderAPI &&
       walletClient
     ) {
-      console.log({ hasPosition, hadPosition, strategyAddressBalance });
       claimRequestSentRef.current = true;
-      console.log('claiming funds');
       claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
         .then(({ hash }) => {
           if (hash) {

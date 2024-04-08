@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Typography } from '@mui/material';
 
-import { strategyPerpetualAtom, strategyPositionAtom } from 'store/strategies.store';
+import { strategyPerpetualStatsAtom, strategyPositionAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './Overview.module.scss';
@@ -13,7 +13,7 @@ export const Overview = () => {
   const { t } = useTranslation();
 
   const strategyPosition = useAtomValue(strategyPositionAtom);
-  const strategyPerpetual = useAtomValue(strategyPerpetualAtom);
+  const strategyPerpetualStats = useAtomValue(strategyPerpetualStatsAtom);
 
   const syntheticPositionUSD = useMemo(() => {
     if (strategyPosition) {
@@ -22,19 +22,19 @@ export const Overview = () => {
   }, [strategyPosition]);
 
   const pnlUSD = useMemo(() => {
-    if (strategyPosition && strategyPerpetual) {
+    if (strategyPosition && strategyPerpetualStats) {
       return (
         Math.max(
           0,
           strategyPosition.collateralCC *
-            (strategyPosition.collToQuoteConversion / strategyPerpetual?.indexPrice) *
+            (strategyPosition.collToQuoteConversion / strategyPerpetualStats.indexPrice) *
             strategyPosition.markPrice -
             strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
         ) +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
     }
-  }, [strategyPosition, strategyPerpetual]);
+  }, [strategyPosition, strategyPerpetualStats]);
 
   return (
     <div className={styles.root}>

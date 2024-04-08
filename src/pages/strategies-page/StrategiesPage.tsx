@@ -2,12 +2,17 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 
-import { STRATEGY_BASE_CURRENCY, STRATEGY_POOL_SYMBOL, STRATEGY_QUOTE_CURRENCY } from 'appConstants';
+import { STRATEGY_BASE_CURRENCY, STRATEGY_POOL_SYMBOL, STRATEGY_QUOTE_CURRENCY, STRATEGY_SYMBOL } from 'appConstants';
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { poolsAtom } from 'store/pools.store';
-import { strategyAddressesAtom, strategyPerpetualAtom, strategyPoolAtom } from 'store/strategies.store';
+import { allPerpetualStatisticsPrimitiveAtom, poolsAtom } from 'store/pools.store';
+import {
+  strategyAddressesAtom,
+  strategyPerpetualAtom,
+  strategyPerpetualStatsAtom,
+  strategyPoolAtom,
+} from 'store/strategies.store';
 
 import { ConnectBlock } from './components/connect-block/ConnectBlock';
 import { StrategyBlock } from './components/strategy-block/StrategyBlock';
@@ -19,8 +24,10 @@ export const StrategiesPage = () => {
 
   const pools = useAtomValue(poolsAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
+  const allPerpetualStatistics = useAtomValue(allPerpetualStatisticsPrimitiveAtom);
   const setStrategyPool = useSetAtom(strategyPoolAtom);
   const setStrategyPerpetual = useSetAtom(strategyPerpetualAtom);
+  const setStrategyPerpetualStats = useSetAtom(strategyPerpetualStatsAtom);
 
   useEffect(() => {
     if (pools.length) {
@@ -38,6 +45,11 @@ export const StrategiesPage = () => {
     setStrategyPool(null);
     setStrategyPerpetual(null);
   }, [pools, setStrategyPool, setStrategyPerpetual]);
+
+  useEffect(() => {
+    const strategyPerpetualStats = allPerpetualStatistics[STRATEGY_SYMBOL];
+    setStrategyPerpetualStats(strategyPerpetualStats || null);
+  }, [allPerpetualStatistics, setStrategyPerpetualStats]);
 
   return (
     <>

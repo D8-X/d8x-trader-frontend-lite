@@ -43,6 +43,7 @@ export async function enterStrategy({
   if (!walletClient.account?.address || !amount || !feeRate) {
     throw new Error('Invalid arguments');
   }
+
   let strategyAddr: Address;
   let hedgeClient: WalletClient<Transport, Chain | undefined, Account> | undefined = undefined;
   if (!strategyAddress) {

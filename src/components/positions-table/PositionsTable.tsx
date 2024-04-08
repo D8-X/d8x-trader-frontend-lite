@@ -142,7 +142,9 @@ export const PositionsTable = () => {
       try {
         const { data } = await getPositionRisk(chainId, traderAPI, address, Date.now());
         clearPositions();
-        data.map(setPositions);
+        if (data && data.length > 0) {
+          data.map(setPositions);
+        }
       } catch (err) {
         console.error(err);
       } finally {

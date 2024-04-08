@@ -13,7 +13,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, traderAPIAtom } from 'store/pools.store';
-import { strategyAddressesAtom, strategyPerpetualAtom, strategyPoolAtom } from 'store/strategies.store';
+import { strategyAddressesAtom, strategyPerpetualStatsAtom, strategyPoolAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { useEnterStrategy } from './hooks/useEnterStrategy';
@@ -31,7 +31,7 @@ export const EnterStrategy = () => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const feeRate = useAtomValue(poolFeeAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
-  const strategyPerpetual = useAtomValue(strategyPerpetualAtom);
+  const strategyPerpetualStats = useAtomValue(strategyPerpetualStatsAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
@@ -150,6 +150,7 @@ export const EnterStrategy = () => {
       !traderAPI ||
       feeRate === undefined ||
       !pagesConfig.enabledStrategiesPageByChains.includes(chainId) ||
+      !strategyPerpetualStats ||
       addAmount === 0
     ) {
       return;
@@ -166,7 +167,7 @@ export const EnterStrategy = () => {
       traderAPI,
       amount: addAmount,
       feeRate,
-      indexPrice: strategyPerpetual?.indexPrice,
+      indexPrice: strategyPerpetualStats.indexPrice,
       strategyAddress,
     })
       .then(({ hash }) => {
@@ -178,7 +179,17 @@ export const EnterStrategy = () => {
         requestSentRef.current = false;
         refetch();
       });
-  }, [chainId, walletClient, traderAPI, feeRate, addAmount, strategyAddress, strategyPerpetual, setTxHash, refetch]);
+  }, [
+    chainId,
+    walletClient,
+    traderAPI,
+    feeRate,
+    addAmount,
+    strategyAddress,
+    strategyPerpetualStats,
+    setTxHash,
+    refetch,
+  ]);
 
   return (
     <div className={styles.root}>
