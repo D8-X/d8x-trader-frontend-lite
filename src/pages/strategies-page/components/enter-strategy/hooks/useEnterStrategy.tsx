@@ -24,10 +24,6 @@ export const useEnterStrategy = (amount: number) => {
   });
 
   useEffect(() => {
-    console.log({ txHash });
-  }, [txHash]);
-
-  useEffect(() => {
     if (!isFetched || !txHash) {
       return;
     }

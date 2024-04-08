@@ -25,6 +25,10 @@ export async function exitStrategy({
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
+
+  // eslint-disable-next-line no-debugger
+  debugger;
+
   const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
     createWalletClient({
       account,
@@ -63,7 +67,8 @@ export async function exitStrategy({
     .isDelegate(strategyAddr, walletClient.account.address)) as boolean;
   const gasBalance = await getBalance(walletClient, { address: strategyAddr });
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
-  if (isDelegated && hedgeClient === undefined) {
+
+  if (isDelegated) {
     return postOrder(walletClient, [HashZero], data);
   } else {
     const gasPrice = await getGasPrice(walletClient.chain?.id);

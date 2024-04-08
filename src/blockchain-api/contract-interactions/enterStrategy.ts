@@ -69,7 +69,7 @@ export async function enterStrategy({
     .then((pos) => pos[0])
     .catch(() => undefined);
   if (!position || !marginTokenAddr || !marginTokenDec) {
-    console.log(position, marginTokenAddr, marginTokenDec);
+    console.log({ position, marginTokenAddr, marginTokenDec });
     throw new Error(`No hedging strategy available for symbol ${symbol} on chain ID ${chainId}`);
   }
   const gasBalance = await getBalance(walletClient, { address: strategyAddr });
@@ -155,7 +155,7 @@ export async function enterStrategy({
     });
   }
   if (allowance < amountBigint) {
-    console.log('appproving margin token', marginTokenAddr, amount);
+    console.log('approving margin token', { marginTokenAddr, amount });
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
         createWalletClient({
