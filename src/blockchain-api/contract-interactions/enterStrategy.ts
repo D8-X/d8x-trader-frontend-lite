@@ -97,7 +97,7 @@ export async function enterStrategy({
     0, // current locked-in value
     -1, // trade direction
     limitPrice ?? position.markPrice, // limit price
-    1, // margin rate
+    (indexPrice ?? position.markPrice) / position.markPrice, // margin rate
     feeRate * 1e-5, // fee rate
     position.markPrice, // mark price
     indexPrice ?? position.markPrice, // index price
@@ -110,7 +110,7 @@ export async function enterStrategy({
     type: OrderTypeE.Market,
     quantity: Math.abs(orderSize),
     limitPrice: limitPrice,
-    leverage: 1,
+    leverage: position.markPrice / (indexPrice ?? position.markPrice),
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
     deadline: Math.floor(Date.now() / 1000 + DEADLINE),
   };

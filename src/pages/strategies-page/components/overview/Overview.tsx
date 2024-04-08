@@ -24,10 +24,13 @@ export const Overview = () => {
   const pnlUSD = useMemo(() => {
     if (strategyPosition && strategyPerpetual) {
       return (
-        strategyPosition.collateralCC *
-          (strategyPosition.collToQuoteConversion / strategyPerpetual?.indexPrice) *
-          strategyPosition.markPrice -
-        strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice +
+        Math.max(
+          0,
+          strategyPosition.collateralCC *
+            (strategyPosition.collToQuoteConversion / strategyPerpetual?.indexPrice) *
+            strategyPosition.markPrice -
+            strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
+        ) +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
     }
@@ -52,7 +55,7 @@ export const Overview = () => {
             {t('pages.strategies.overview.your-yield')}
           </Typography>
           <Typography variant="bodyMedium" className={styles.dataValue}>
-            {pnlUSD && syntheticPositionUSD ? (
+            {pnlUSD !== null && pnlUSD !== undefined && syntheticPositionUSD ? (
               <>
                 {formatToCurrency(100 * (pnlUSD / syntheticPositionUSD), '%')}
                 <span>{t('pages.strategies.overview.your-points')}</span>
