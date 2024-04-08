@@ -98,7 +98,7 @@ export const Footer = memo(() => {
         </div>
         <div className={styles.copyrightHolder}>
           <Typography color={'var(--d8x-color-text-main)'} variant="caption" gutterBottom={false}>
-            © Copyright 2023 D8X
+            © Copyright 2024 D8X
           </Typography>
         </div>
       </Container>

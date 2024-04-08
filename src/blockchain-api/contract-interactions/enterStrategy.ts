@@ -39,7 +39,11 @@ export async function enterStrategy({
   indexPrice,
   limitPrice,
   strategyAddress,
-}: HedgeConfigI): Promise<{ hash: Address }> {
+}: HedgeConfigI): Promise<{
+  hash?: Address;
+  interrupted?: boolean;
+  interruptedMessage?: string;
+}> {
   if (!walletClient.account?.address || !amount || !feeRate) {
     throw new Error('Invalid arguments');
   }
@@ -118,7 +122,8 @@ export async function enterStrategy({
   const { data } = await orderDigest(chainId, [order], strategyAddr);
 
   if (!data.digests || data.digests.length === 0) {
-    return { hash: '0x' };
+    console.error('orderDigest error:', data.error);
+    throw new Error('An error appeared to enter a strategy');
   }
   const gasPrice = await getGasPrice(walletClient.chain?.id);
 
@@ -142,6 +147,7 @@ export async function enterStrategy({
       DELEGATE_INDEX
     );
   }
+
   const amountBigint = parseUnits(amount.toString(), marginTokenDec);
   if (marginTokenBalance < amountBigint) {
     console.log('funding strategy account');
@@ -152,6 +158,9 @@ export async function enterStrategy({
       functionName: 'transfer',
       args: [strategyAddr, amountBigint],
       account: walletClient.account,
+    }).catch((error) => {
+      console.log(error);
+      throw new Error(error.shortMessage);
     });
   }
   if (allowance < amountBigint) {
@@ -165,7 +174,12 @@ export async function enterStrategy({
         })
       );
     }
-    await approveMarginToken(hedgeClient!, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec);
+    await approveMarginToken(hedgeClient!, marginTokenAddr, traderAPI.getProxyAddress(), amount, marginTokenDec).catch(
+      (error) => {
+        console.log(error);
+        throw new Error(error.shortMessage);
+      }
+    );
   }
 
   console.log('posting order');

@@ -14,6 +14,8 @@ import { strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ExitStrategy.module.scss';
 import { useExitStrategy } from './hooks/useExitStrategy';
+import { toast } from 'react-toastify';
+import { ToastContent } from '../../../../components/toast-content/ToastContent';
 
 interface ExitStrategyPropsI {
   isLoading: boolean;
@@ -61,6 +63,11 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
         console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
       })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+        setLoading(false);
+      })
       .finally(() => {
         requestSentRef.current = false;
         setRequestSent(false);
@@ -91,10 +98,10 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
           </Typography>
         </div>
         <DialogActions className={styles.dialogAction}>
-          <Button onClick={handleModalClose} variant="secondary" size="small">
+          <Button onClick={handleModalClose} variant="secondary">
             {t('common.cancel-button')}
           </Button>
-          <Button onClick={handleExit} variant="primary" size="small" disabled={requestSent || loading}>
+          <Button onClick={handleExit} variant="primary" disabled={requestSent || loading}>
             {t('pages.strategies.exit.confirm-modal.confirm-button')}
           </Button>
         </DialogActions>

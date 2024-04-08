@@ -213,6 +213,8 @@ export interface OrderDigestI {
   OrderBookAddr: string;
   abi: string | string[];
   SCOrders: SmartContractOrder[];
+  error?: string;
+  usage?: string;
 }
 
 export interface CancelOrderResponseI {

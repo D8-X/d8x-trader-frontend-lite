@@ -26,6 +26,8 @@ import { Overview } from '../overview/Overview';
 import styles from './StrategyBlock.module.scss';
 
 import { useClaimFunds } from './hooks/useClaimFunds';
+import { toast } from 'react-toastify';
+import { ToastContent } from '../../../../components/toast-content/ToastContent';
 
 const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
 const INTERVAL_FREQUENT_POLLING = 2_000; // Each 1 sec
@@ -47,10 +49,11 @@ export const StrategyBlock = () => {
 
   const [frequentUpdates, setFrequentUpdates] = useState(0);
   const [hadPosition, setHadPosition] = useState(hasPosition);
+  const [refetchBalanceRequestSent, setRefetchBalanceRequestSent] = useState(false);
+  const [triggerClaimFunds, setTriggerClaimFunds] = useState(false);
 
   const requestSentRef = useRef(false);
   const claimRequestSentRef = useRef(false);
-  const refetchBalanceRequestSentRef = useRef(false);
 
   const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
@@ -89,9 +92,9 @@ export const StrategyBlock = () => {
 
   useEffect(() => {
     if (isRefetching) {
-      refetchBalanceRequestSentRef.current = true;
+      setRefetchBalanceRequestSent(true);
     } else if (isFetched) {
-      refetchBalanceRequestSentRef.current = false;
+      setRefetchBalanceRequestSent(false);
     }
   }, [isRefetching, isFetched]);
 
@@ -157,13 +160,14 @@ export const StrategyBlock = () => {
       !hasPosition &&
       hadPosition &&
       !claimRequestSentRef.current &&
-      !refetchBalanceRequestSentRef.current &&
+      !refetchBalanceRequestSent &&
       strategyAddressBalance !== null &&
       strategyAddressBalance > 0 &&
       traderAPI &&
       walletClient
     ) {
       claimRequestSentRef.current = true;
+      console.log('claiming funds');
       claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
         .then(({ hash }) => {
           if (hash) {
@@ -173,12 +177,26 @@ export const StrategyBlock = () => {
             console.log('claiming funds::no hash');
           }
         })
-        .catch(console.error)
+        .catch((error) => {
+          console.error(error);
+          toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+          setTriggerClaimFunds((prev) => !prev);
+        })
         .finally(() => {
           claimRequestSentRef.current = false;
         });
     }
-  }, [hasPosition, hadPosition, strategyAddressBalance, chainId, traderAPI, walletClient, setTxHash]);
+  }, [
+    hasPosition,
+    hadPosition,
+    refetchBalanceRequestSent,
+    strategyAddressBalance,
+    chainId,
+    traderAPI,
+    walletClient,
+    setTxHash,
+    triggerClaimFunds,
+  ]);
 
   useEffect(() => {
     if (
@@ -186,11 +204,11 @@ export const StrategyBlock = () => {
       strategyAddressBalance !== null &&
       strategyAddressBalance > 0 &&
       !claimRequestSentRef.current &&
-      !refetchBalanceRequestSentRef.current
+      !refetchBalanceRequestSent
     ) {
       setHadPosition(true);
     }
-  }, [hasPosition, strategyAddressBalance]);
+  }, [hasPosition, refetchBalanceRequestSent, strategyAddressBalance]);
 
   return (
     <div className={styles.root}>

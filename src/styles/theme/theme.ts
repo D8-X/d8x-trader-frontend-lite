@@ -220,6 +220,7 @@ export const theme = createTheme({
             backgroundColor: 'var(--d8x-color-background-items)',
             border: '1px solid var(--d8x-color-action)',
             color: 'var(--d8x-color-action)',
+            fontSize: '16px',
             ':hover': {
               backgroundColor: 'var(--d8x-color-background-table)',
             },

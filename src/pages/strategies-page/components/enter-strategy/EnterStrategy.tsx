@@ -19,6 +19,8 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
+import { toast } from 'react-toastify';
+import { ToastContent } from '../../../../components/toast-content/ToastContent';
 
 export const EnterStrategy = () => {
   const { t } = useTranslation();
@@ -173,6 +175,11 @@ export const EnterStrategy = () => {
       .then(({ hash }) => {
         console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+        setLoading(false);
       })
       .finally(() => {
         setRequestSent(false);
