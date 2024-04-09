@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
@@ -11,6 +12,7 @@ import { enterStrategy } from 'blockchain-api/contract-interactions/enterStrateg
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
 import { poolFeeAtom, traderAPIAtom } from 'store/pools.store';
 import { strategyAddressesAtom, strategyPerpetualStatsAtom, strategyPoolAtom } from 'store/strategies.store';
@@ -19,10 +21,12 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
-import { toast } from 'react-toastify';
-import { ToastContent } from '../../../../components/toast-content/ToastContent';
 
-export const EnterStrategy = () => {
+interface EnterStrategyPropsI {
+  isLoading: boolean;
+}
+
+export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
@@ -40,7 +44,7 @@ export const EnterStrategy = () => {
   const [requestSent, setRequestSent] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [temporaryValue, setTemporaryValue] = useState(inputValue);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(isLoading);
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);

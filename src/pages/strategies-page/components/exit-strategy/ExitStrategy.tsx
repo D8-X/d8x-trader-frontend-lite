@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { useAccount, useChainId, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
@@ -8,14 +9,13 @@ import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { exitStrategy } from 'blockchain-api/contract-interactions/exitStrategy';
 import { Dialog } from 'components/dialog/Dialog';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
 import { strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ExitStrategy.module.scss';
 import { useExitStrategy } from './hooks/useExitStrategy';
-import { toast } from 'react-toastify';
-import { ToastContent } from '../../../../components/toast-content/ToastContent';
 
 interface ExitStrategyPropsI {
   isLoading: boolean;
