@@ -101,7 +101,7 @@ export async function enterStrategy({
     0, // current position
     0, // current locked-in value
     -1, // trade direction
-    limitPrice ?? position.markPrice * 0.999, // limit price
+    limitPrice ?? position.markPrice, // limit price
     (indexPrice ?? position.markPrice) / position.markPrice, // margin rate
     feeRate * 1e-5, // fee rate
     position.markPrice, // mark price

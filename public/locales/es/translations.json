@@ -609,19 +609,19 @@
         "deposit-button": "Iniciar",
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully entered the strategy",
-            "body": "Amount"
+            "title": "Entrando en la estrategia",
+            "body": "Cantidad"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transacción Fallida",
+            "body": "Razón"
           }
         }
       },
       "exit": {
         "title": "Salir de la estrategia",
-        "note": "Take your funds out of the strategy.",
-        "exit-button": "Exit strategy",
+        "note": "Saque sus fondos de la estrategia.",
+        "exit-button": "Salir de la estrategia",
         "confirm-modal": {
           "title": "Salir de la estrategia",
           "text": "¿Estás seguro de que quieres salir?",
@@ -629,11 +629,11 @@
         },
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully exit from the strategy"
+            "title": "Salir de la estrategia"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transacción Fallida",
+            "body": "Razón"
           }
         }
       }

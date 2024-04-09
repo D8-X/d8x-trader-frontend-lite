@@ -593,15 +593,15 @@
         "connect-button": "Connect"
       },
       "overview": {
-        "title": "Delta-hedged yield",
+        "title": "The Synthetic US Dollar Trade",
         "synthetic-position": "Synthetic USD position",
         "your-yield": "Your yield",
         "your-points": " + EigenLayer, ether.fi and D8X points"
       },
       "info": {
-        "title": "How you earn",
-        "text1": "You deposit weETH. The strategy opens an equivalent 1x ETH/USD perpetual short position, so you are delta-hedged.",
-        "text2": "The strategy generates yield derived from weETH (staked Ethereum yield, EigenLayer points, ether.fi points), as well as funding rate payments generated from your short position in the ETH/USD perpetual."
+        "title": "Strategy Mechanics",
+        "text1": "When you deposit weETH (wrapper EtherFi ETH), the strategy is to automatically open an equivalent 1x ETH/USD perpetual short position to hedge your deposit.",
+        "text2": "You earn yield derived from weETH i.e. staked ETH yield, EigenLayer points, ether.fi points, as well as funding rate payments generated from the equivalent 1x ETH/USD perpetual short position and D8X points. Welcome to the onchain Synthetic USD Trade"
       },
       "enter": {
         "title": "Enter strategy",
@@ -609,7 +609,7 @@
         "deposit-button": "Enter",
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully entered the strategy",
+            "title": "Entering the strategy",
             "body": "Amount"
           },
           "tx-failed": {
@@ -629,7 +629,7 @@
         },
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully exit from the strategy"
+            "title": "Exiting the strategy"
           },
           "tx-failed": {
             "title": "Transaction Failed",
