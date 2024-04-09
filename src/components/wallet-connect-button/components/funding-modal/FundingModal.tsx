@@ -130,7 +130,7 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
                 estimatedGas,
                 gasPrice
               );
-              setTxHash(transferTxHash.hash);
+              setTxHash(transferTxHash);
             }}
             disabled={!!txHash || !inputValue || +inputValue === 0}
           >
