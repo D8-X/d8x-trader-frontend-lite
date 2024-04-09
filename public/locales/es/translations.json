@@ -756,7 +756,17 @@
         "funding-modal": {
           "title": "Agregar fondos a la cuenta delegada",
           "description": "Agrega fodos a tu cuenta delegada para poder pagar por gas.",
-          "fund": "Agregar Fondos"
+          "fund": "Agregar Fondos",
+          "toasts": {
+            "tx-submitted": {
+              "title": "You have successfully sent funds to delegate wallet",
+              "body": "Amount"
+            },
+            "tx-failed": {
+              "title": "Transaction Failed",
+              "body": "Reason"
+            }
+          }
         }
       }
     },

@@ -770,7 +770,17 @@
         "funding-modal": {
           "title": "Fund delegate wallet",
           "description": "Fund your delegate wallet to pay for gas.",
-          "fund": "Fund"
+          "fund": "Fund",
+          "toasts": {
+            "tx-submitted": {
+              "title": "You have successfully sent funds to delegate wallet",
+              "body": "Amount"
+            },
+            "tx-failed": {
+              "title": "Transaction Failed",
+              "body": "Reason"
+            }
+          }
         }
       }
     },

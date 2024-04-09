@@ -1,10 +1,10 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { useAccount, useBalance, usePublicClient, useWalletClient } from 'wagmi';
+import { BaseError, useAccount, useBalance, usePublicClient, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
@@ -24,6 +24,7 @@ import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 
 import { FundingModal } from '../funding-modal/FundingModal';
+import { useRemoveDelegateHash } from './hooks/useRemoveDelegateHash';
 
 import styles from './OneClickTradingModal.module.scss';
 
@@ -35,6 +36,7 @@ export const OneClickTradingModal = () => {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
+  const { data: sendHash, error: sendError, isPending, sendTransaction } = useSendTransaction();
 
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [delegateAddress, setDelegateAddress] = useAtom(delegateAddressAtom);
@@ -53,6 +55,35 @@ export const OneClickTradingModal = () => {
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
 
+  const successCallback = useCallback(() => {
+    setActivatedOneClickTrading(false);
+    setDelegated(false);
+    handleRemoveRef.current = false;
+    setActionLoading(false);
+  }, [setActivatedOneClickTrading]);
+
+  const errorCallback = useCallback(() => {
+    handleRemoveRef.current = false;
+    setActionLoading(false);
+  }, []);
+
+  const { setTxHash } = useRemoveDelegateHash(successCallback, errorCallback);
+
+  useEffect(() => {
+    setTxHash(sendHash);
+  }, [sendHash, setTxHash]);
+
+  useEffect(() => {
+    if (sendError) {
+      console.error(sendError);
+      toast.error(<ToastContent title={(sendError as BaseError).shortMessage || sendError.message} bodyLines={[]} />);
+    }
+  }, [sendError]);
+
+  useEffect(() => {
+    setLoading(isPending);
+  }, [isPending]);
+
   useEffect(() => {
     if (!address || !traderAPI || traderAPI?.chainId !== publicClient?.chain.id) {
       return;
@@ -63,7 +94,7 @@ export const OneClickTradingModal = () => {
     hasDelegate(publicClient, traderAPI.getProxyAddress() as Address, address)
       .then(setDelegated)
       .finally(() => setLoading(false));
-  }, [publicClient, address, traderAPI]);
+  }, [publicClient, address, traderAPI, isOneClickModalOpen]);
 
   useEffect(() => {
     if (!isDelegated || (address && address !== walletClient?.account?.address)) {
@@ -185,19 +216,13 @@ export const OneClickTradingModal = () => {
 
     getStorageKey(walletClient)
       .then((strgKey) => generateDelegate(walletClient, strgKey))
-      .then((delegateAccount) => removeDelegate(walletClient, delegateAccount, proxyAddr as Address))
+      .then((delegateAccount) => removeDelegate(walletClient, delegateAccount, proxyAddr as Address, sendTransaction))
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
-        setActivatedOneClickTrading(false);
-        setDelegated(false);
-        toast.success(
-          <ToastContent
-            title={t('common.settings.one-click-modal.manage-delegate.remove-action-result')}
-            bodyLines={[]}
-          />
-        );
       })
-      .finally(() => {
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
         handleRemoveRef.current = false;
         setActionLoading(false);
       });

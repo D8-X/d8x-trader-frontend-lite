@@ -396,9 +396,7 @@ export const ActionBlock = memo(() => {
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // success submitting order to the node - inform backend
-                  orderSubmitted(walletClient.chain.id, data.data.orderIds)
-                    .then()
-                    .catch((error) => console.log(error));
+                  orderSubmitted(walletClient.chain.id, data.data.orderIds).then().catch(console.error);
                   // order was sent
                   clearInputsData();
                   toast.success(

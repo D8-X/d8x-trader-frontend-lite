@@ -756,7 +756,17 @@
         "funding-modal": {
           "title": "存入资金至委托钱包",
           "description": "向委托钱包存入资金用于支付gas费",
-          "fund": "存入资金"
+          "fund": "存入资金",
+          "toasts": {
+            "tx-submitted": {
+              "title": "You have successfully sent funds to delegate wallet",
+              "body": "Amount"
+            },
+            "tx-failed": {
+              "title": "Transaction Failed",
+              "body": "Reason"
+            }
+          }
         }
       }
     },

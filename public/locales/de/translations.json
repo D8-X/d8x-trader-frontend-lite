@@ -756,7 +756,17 @@
         "funding-modal": {
           "title": "Auf Delegiertenkonto einzahlen",
           "description": "Auf Delegiertenkonto einzahlen um gas zu bezahlen.",
-          "fund": "Einzahlen"
+          "fund": "Einzahlen",
+          "toasts": {
+            "tx-submitted": {
+              "title": "You have successfully sent funds to delegate wallet",
+              "body": "Amount"
+            },
+            "tx-failed": {
+              "title": "Transaction Failed",
+              "body": "Reason"
+            }
+          }
         }
       }
     },

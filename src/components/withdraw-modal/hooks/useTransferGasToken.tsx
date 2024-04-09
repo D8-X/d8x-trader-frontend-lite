@@ -13,11 +13,20 @@ export const useTransferGasToken = (amount: string, currency: string | undefined
   const { address } = useAccount();
 
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [savedAmount, setSavedAmount] = useState('');
+  const [savedCurrency, setSavedCurrency] = useState('');
 
   const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!address && !!txHash && amount !== '' },
+    query: { enabled: !!address && !!txHash && savedAmount !== '' },
   });
+
+  useEffect(() => {
+    if (amount !== '' && currency) {
+      setSavedAmount(amount);
+      setSavedCurrency(currency);
+    }
+  }, [amount, currency]);
 
   useEffect(() => {
     if (!isFetched || !txHash) {
@@ -41,6 +50,7 @@ export const useTransferGasToken = (amount: string, currency: string | undefined
         ]}
       />
     );
+    setTxHash(undefined);
   }, [isError, error, txHash, t]);
 
   useEffect(() => {
@@ -53,12 +63,15 @@ export const useTransferGasToken = (amount: string, currency: string | undefined
         bodyLines={[
           {
             label: t('common.withdraw-modal.toasts.tx-submitted.body'),
-            value: formatToCurrency(+amount, currency),
+            value: formatToCurrency(+savedAmount, savedCurrency),
           },
         ]}
       />
     );
-  }, [isSuccess, txHash, amount, currency, t]);
+    setSavedAmount('');
+    setSavedCurrency('');
+    setTxHash(undefined);
+  }, [isSuccess, txHash, savedAmount, savedCurrency, t]);
 
   return {
     setTxHash,

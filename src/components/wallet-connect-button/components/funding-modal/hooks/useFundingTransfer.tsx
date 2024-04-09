@@ -7,7 +7,7 @@ import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-export const useTransferTokens = (amount: string, currency: string | undefined) => {
+export const useFundingTransfer = (amount: string, currency: string | undefined) => {
   const { t } = useTranslation();
 
   const { address } = useAccount();
@@ -18,7 +18,7 @@ export const useTransferTokens = (amount: string, currency: string | undefined) 
 
   const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!address && !!txHash && !!savedAmount && !!savedCurrency },
+    query: { enabled: !!address && !!txHash && savedAmount !== '' },
   });
 
   useEffect(() => {
@@ -41,10 +41,10 @@ export const useTransferTokens = (amount: string, currency: string | undefined) 
     }
     toast.error(
       <ToastContent
-        title={t('common.withdraw-modal.toasts.tx-failed.title')}
+        title={t('common.settings.one-click-modal.funding-modal.toasts.tx-failed.title')}
         bodyLines={[
           {
-            label: t('common.withdraw-modal.toasts.tx-failed.body'),
+            label: t('common.settings.one-click-modal.funding-modal.toasts.tx-failed.body'),
             value: error.message,
           },
         ]}
@@ -59,10 +59,10 @@ export const useTransferTokens = (amount: string, currency: string | undefined) 
     }
     toast.success(
       <ToastContent
-        title={t('common.withdraw-modal.toasts.tx-submitted.title')}
+        title={t('common.settings.one-click-modal.funding-modal.toasts.tx-submitted.title')}
         bodyLines={[
           {
-            label: t('common.withdraw-modal.toasts.tx-submitted.body'),
+            label: t('common.settings.one-click-modal.funding-modal.toasts.tx-submitted.body'),
             value: formatToCurrency(+savedAmount, savedCurrency),
           },
         ]}
@@ -74,6 +74,7 @@ export const useTransferTokens = (amount: string, currency: string | undefined) 
   }, [isSuccess, txHash, savedAmount, savedCurrency, t]);
 
   return {
+    isFetched,
     setTxHash,
   };
 };

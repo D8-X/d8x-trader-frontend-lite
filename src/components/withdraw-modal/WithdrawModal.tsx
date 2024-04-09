@@ -4,8 +4,8 @@ import { useAtom } from 'jotai';
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, erc20Abi, formatUnits, parseUnits } from 'viem';
-import { useAccount, useReadContracts, useWalletClient } from 'wagmi';
+import { type Address, erc20Abi, formatUnits, parseEther, parseUnits } from 'viem';
+import { type BaseError, useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import {
   Button,
@@ -18,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 
-import { transferFunds } from 'blockchain-api/transferFunds';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
 import { CurrencyItemI } from 'components/currency-selector/types';
@@ -57,6 +56,25 @@ export const WithdrawModal = () => {
 
   const { data: walletClient } = useWalletClient();
   const { address, isConnected } = useAccount();
+  const { data: sendHash, error: sendError, isPending, sendTransaction } = useSendTransaction();
+
+  useEffect(() => {
+    setTxHashForGasTransfer(sendHash);
+  }, [sendHash, setTxHashForGasTransfer]);
+
+  useEffect(() => {
+    if (sendError) {
+      console.error(sendError);
+      toast.error(<ToastContent title={(sendError as BaseError).shortMessage || sendError.message} bodyLines={[]} />);
+    }
+  }, [sendError]);
+
+  useEffect(() => {
+    setLoading(isPending);
+    if (!isPending) {
+      setAmountValue('');
+    }
+  }, [isPending]);
 
   const { data: selectedTokenBalanceData } = useReadContracts({
     allowFailure: false,
@@ -118,20 +136,12 @@ export const WithdrawModal = () => {
             setLoading(false);
           });
       } else if (!selectedCurrency.contractAddress) {
-        setLoading(true);
         // Transfer GAS token without contractAddress
-        transferFunds(walletClient, addressValue as Address, +amountValue)
-          .then((tx) => {
-            setTxHashForGasTransfer(tx);
-            setAmountValue('');
-          })
-          .catch((error) => {
-            console.error(error);
-            toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+        sendTransaction({
+          account: walletClient.account,
+          to: addressValue as Address,
+          value: parseEther(amountValue),
+        });
       }
     }
   }, [
@@ -142,7 +152,8 @@ export const WithdrawModal = () => {
     addressValue,
     amountValue,
     setTxHashForTokensTransfer,
-    setTxHashForGasTransfer,
+    // setTxHashForGasTransfer,
+    sendTransaction,
   ]);
 
   return (

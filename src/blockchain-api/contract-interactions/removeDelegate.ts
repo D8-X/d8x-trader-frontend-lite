@@ -1,6 +1,7 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
-import { getBalance } from '@wagmi/core';
-import { PrivateKeyAccount, type Address, type WalletClient } from 'viem';
+import { type Config, getBalance } from '@wagmi/core';
+import { type SendTransactionMutate } from '@wagmi/core/query';
+import { PrivateKeyAccount, type Address, type WalletClient, zeroAddress } from 'viem';
 import { estimateGas } from 'viem/actions';
 
 import { getGasPrice } from 'blockchain-api/getGasPrice';
@@ -9,7 +10,8 @@ import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 export async function removeDelegate(
   walletClient: WalletClient,
   delegateAccount: PrivateKeyAccount,
-  proxyAddr: Address
+  proxyAddr: Address,
+  sendTransaction: SendTransactionMutate<Config, unknown>
 ): Promise<{ hash: Address }> {
   const account = walletClient.account?.address;
   if (!account) {
@@ -17,17 +19,22 @@ export async function removeDelegate(
   }
   // remove delegate
   const gasPrice = await getGasPrice(walletClient.chain?.id);
+
   const tx = await walletClient.writeContract({
     chain: walletClient.chain,
     address: proxyAddr as Address,
     abi: PROXY_ABI,
-    functionName: 'removeDelegate',
-    args: [],
+    functionName: 'setDelegate',
+    args: [zeroAddress, 0],
     gasPrice: gasPrice,
     account: account,
   });
+
   // reclaim delegate funds
   if (account !== delegateAccount.address) {
+    // eslint-disable-next-line no-debugger
+    debugger;
+
     const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
     const gasLimit = await estimateGas(walletClient, {
       to: account,
@@ -36,13 +43,13 @@ export async function removeDelegate(
       gasPrice,
     }).catch(() => undefined);
     if (gasLimit && gasLimit * gasPrice < balance) {
-      await walletClient.sendTransaction({
+      sendTransaction({
+        account: delegateAccount,
         to: account,
         value: balance - gasLimit * gasPrice,
-        chain: walletClient.chain,
+        chainId: walletClient.chain?.id,
         gas: gasLimit,
         gasPrice,
-        account: delegateAccount,
       });
     }
   }

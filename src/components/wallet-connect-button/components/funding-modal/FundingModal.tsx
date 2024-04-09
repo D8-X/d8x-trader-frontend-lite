@@ -1,21 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+import { type Address, formatUnits, parseEther } from 'viem';
 import {
+  BaseError,
   useAccount,
   useBalance,
   useEstimateGas,
   useGasPrice,
-  useWaitForTransactionReceipt,
+  useSendTransaction,
   useWalletClient,
 } from 'wagmi';
-import { type Address, formatUnits } from 'viem';
 
-import { Button, Link, Typography } from '@mui/material';
+import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
-import { transferFunds } from 'blockchain-api/transferFunds';
 import { Dialog } from 'components/dialog/Dialog';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+
+import { useFundingTransfer } from './hooks/useFundingTransfer';
 
 import styles from './FundingModal.module.scss';
 
@@ -30,16 +34,11 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
 
   const { data: walletClient } = useWalletClient();
   const { address, isConnected } = useAccount();
+  const { data: sendHash, error: sendError, isPending, sendTransaction } = useSendTransaction();
 
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [inputValue, setInputValue] = useState('');
 
-  const { isFetched } = useWaitForTransactionReceipt({
-    hash: txHash,
-    query: { enabled: !!txHash },
-  });
-
-  const { data: gasTokenBalance } = useBalance({
+  const { data: gasTokenBalance, refetch } = useBalance({
     address,
     query: {
       enabled: address && isConnected,
@@ -50,12 +49,32 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
     address: delegateAddress,
   });
 
+  const { isFetched, setTxHash } = useFundingTransfer(inputValue, delegateBalance?.symbol);
+
+  useEffect(() => {
+    setTxHash(sendHash);
+  }, [sendHash, setTxHash]);
+
+  useEffect(() => {
+    if (sendError) {
+      console.error(sendError);
+      toast.error(<ToastContent title={(sendError as BaseError).shortMessage || sendError.message} bodyLines={[]} />);
+    }
+  }, [sendError]);
+
+  useEffect(() => {
+    if (!isPending) {
+      setInputValue('');
+      refetch();
+    }
+  }, [isPending, refetch]);
+
   useEffect(() => {
     if (isFetched) {
-      setTxHash(undefined);
       onClose();
+      refetch();
     }
-  }, [isFetched, onClose]);
+  }, [isFetched, onClose, refetch]);
 
   const { data: estimatedGas } = useEstimateGas({
     account: walletClient?.account,
@@ -83,6 +102,20 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
       setInputValue('');
     }
   };
+
+  const handleTransferFunds = useCallback(() => {
+    if (!walletClient || !inputValue) {
+      return;
+    }
+
+    sendTransaction({
+      account: walletClient.account,
+      to: delegateAddress,
+      value: parseEther(inputValue),
+      gasPrice,
+      gas: estimatedGas,
+    });
+  }, [walletClient, delegateAddress, inputValue, gasPrice, estimatedGas, sendTransaction]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
@@ -119,21 +152,10 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
           <Button
             variant="primary"
             className={styles.actionButton}
-            onClick={async () => {
-              if (!walletClient) {
-                return;
-              }
-              const transferTxHash = await transferFunds(
-                walletClient,
-                delegateAddress,
-                Number(inputValue),
-                estimatedGas,
-                gasPrice
-              );
-              setTxHash(transferTxHash);
-            }}
-            disabled={!!txHash || !inputValue || +inputValue === 0}
+            onClick={handleTransferFunds}
+            disabled={isPending || !inputValue || +inputValue === 0}
           >
+            {isPending && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t(`common.settings.one-click-modal.funding-modal.fund`)}
           </Button>
         </div>

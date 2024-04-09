@@ -207,7 +207,7 @@ export function getMaxOrderSizeForTrader(
         } as ValidatedResponseI<MaxOrderSizeResponseI>;
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         throw new Error(error);
       });
   } else {

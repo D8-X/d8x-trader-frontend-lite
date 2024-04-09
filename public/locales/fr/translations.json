@@ -756,7 +756,17 @@
         "funding-modal": {
           "title": "Financer le portefeuille délégué",
           "description": "Déposer dans votre portefeuille délégué pour payer le gaz.",
-          "fund": "Financer"
+          "fund": "Financer",
+          "toasts": {
+            "tx-submitted": {
+              "title": "You have successfully sent funds to delegate wallet",
+              "body": "Amount"
+            },
+            "tx-failed": {
+              "title": "Transaction Failed",
+              "body": "Reason"
+            }
+          }
         }
       }
     },

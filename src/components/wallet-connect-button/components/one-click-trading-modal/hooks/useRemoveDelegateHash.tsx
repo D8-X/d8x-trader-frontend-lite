@@ -5,28 +5,18 @@ import { type Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { formatToCurrency } from 'utils/formatToCurrency';
 
-export const useTransferTokens = (amount: string, currency: string | undefined) => {
+export const useRemoveDelegateHash = (successCallback: () => void, errorCallback: () => void) => {
   const { t } = useTranslation();
 
   const { address } = useAccount();
 
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
-  const [savedAmount, setSavedAmount] = useState('');
-  const [savedCurrency, setSavedCurrency] = useState('');
 
   const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!address && !!txHash && !!savedAmount && !!savedCurrency },
+    query: { enabled: !!address && !!txHash },
   });
-
-  useEffect(() => {
-    if (amount !== '' && currency) {
-      setSavedAmount(amount);
-      setSavedCurrency(currency);
-    }
-  }, [amount, currency]);
 
   useEffect(() => {
     if (!isFetched || !txHash) {
@@ -41,37 +31,29 @@ export const useTransferTokens = (amount: string, currency: string | undefined) 
     }
     toast.error(
       <ToastContent
-        title={t('common.withdraw-modal.toasts.tx-failed.title')}
+        title={t('common.settings.one-click-modal.funding-modal.toasts.tx-failed.title')}
         bodyLines={[
           {
-            label: t('common.withdraw-modal.toasts.tx-failed.body'),
+            label: t('common.settings.one-click-modal.funding-modal.toasts.tx-failed.body'),
             value: error.message,
           },
         ]}
       />
     );
+    errorCallback();
     setTxHash(undefined);
-  }, [isError, error, txHash, t]);
+  }, [isError, error, txHash, errorCallback, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
       return;
     }
     toast.success(
-      <ToastContent
-        title={t('common.withdraw-modal.toasts.tx-submitted.title')}
-        bodyLines={[
-          {
-            label: t('common.withdraw-modal.toasts.tx-submitted.body'),
-            value: formatToCurrency(+savedAmount, savedCurrency),
-          },
-        ]}
-      />
+      <ToastContent title={t('common.settings.one-click-modal.manage-delegate.remove-action-result')} bodyLines={[]} />
     );
-    setSavedAmount('');
-    setSavedCurrency('');
+    successCallback();
     setTxHash(undefined);
-  }, [isSuccess, txHash, savedAmount, savedCurrency, t]);
+  }, [isSuccess, txHash, successCallback, t]);
 
   return {
     setTxHash,
