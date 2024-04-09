@@ -829,7 +829,17 @@
     "withdraw-modal": {
       "title": "Retirer",
       "withdraw-button": "Retirer",
-      "withdraw-address-error": "Veuillez entrer une adresse valide"
+      "withdraw-address-error": "Veuillez entrer une adresse valide",
+      "toasts": {
+        "tx-submitted": {
+          "title": "You have successfully withdrawn your tokens",
+          "body": "Amount"
+        },
+        "tx-failed": {
+          "title": "Transaction Failed",
+          "body": "Reason"
+        }
+      }
     },
     "connect-modal": {
       "title": "Connecter",

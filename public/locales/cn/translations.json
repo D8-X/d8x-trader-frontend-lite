@@ -829,7 +829,17 @@
     "withdraw-modal": {
       "title": "提款",
       "withdraw-button": "提款",
-      "withdraw-address-error": "请输入有效地址"
+      "withdraw-address-error": "请输入有效地址",
+      "toasts": {
+        "tx-submitted": {
+          "title": "You have successfully withdrawn your tokens",
+          "body": "Amount"
+        },
+        "tx-failed": {
+          "title": "Transaction Failed",
+          "body": "Reason"
+        }
+      }
     },
     "connect-modal": {
       "title": "登录",

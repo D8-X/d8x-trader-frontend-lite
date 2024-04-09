@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
@@ -8,7 +9,8 @@ import { CircularProgress } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
-import { getPositionRisk } from 'network/network';
+import { ToastContent } from 'components/toast-content/ToastContent';
+import { getOpenOrders, getPositionRisk } from 'network/network';
 import { traderAPIAtom } from 'store/pools.store';
 import {
   enableFrequentUpdatesAtom,
@@ -17,6 +19,7 @@ import {
   strategyPoolAtom,
   strategyPositionAtom,
 } from 'store/strategies.store';
+import { OrderI } from 'types/types';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -26,8 +29,7 @@ import { Overview } from '../overview/Overview';
 import styles from './StrategyBlock.module.scss';
 
 import { useClaimFunds } from './hooks/useClaimFunds';
-import { toast } from 'react-toastify';
-import { ToastContent } from '../../../../components/toast-content/ToastContent';
+import { OrderSideE } from '../../../../types/enums';
 
 const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
 const INTERVAL_FREQUENT_POLLING = 2_000; // Each 1 sec
@@ -51,11 +53,11 @@ export const StrategyBlock = () => {
   const [hadPosition, setHadPosition] = useState(hasPosition);
   const [refetchBalanceRequestSent, setRefetchBalanceRequestSent] = useState(false);
   const [triggerClaimFunds, setTriggerClaimFunds] = useState(false);
+  const [strategyOpenOrders, setStrategyOpenOrders] = useState<Record<string, OrderI>>({});
 
-  const requestSentRef = useRef(false);
+  const strategyPositionRequestSentRef = useRef(false);
+  const openOrdersRequestSentRef = useRef(false);
   const claimRequestSentRef = useRef(false);
-
-  const disclaimerTextBlocks = useMemo(() => [t('pages.strategies.info.text1'), t('pages.strategies.info.text2')], [t]);
 
   const strategyAddress = useMemo(() => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
@@ -106,7 +108,7 @@ export const StrategyBlock = () => {
 
   const fetchStrategyPosition = useCallback(
     (frequentUpdatesEnabled: boolean) => {
-      if (requestSentRef.current || !strategyAddress || !address) {
+      if (strategyPositionRequestSentRef.current || !strategyAddress || !address) {
         return;
       }
 
@@ -114,7 +116,7 @@ export const StrategyBlock = () => {
         setFrequentUpdates((prevState) => prevState + 1);
       }
 
-      requestSentRef.current = true;
+      strategyPositionRequestSentRef.current = true;
 
       getPositionRisk(chainId, null, strategyAddress)
         .then(({ data: positions }) => {
@@ -127,18 +129,44 @@ export const StrategyBlock = () => {
           }
         })
         .finally(() => {
-          requestSentRef.current = false;
+          strategyPositionRequestSentRef.current = false;
         });
     },
     [chainId, strategyAddress, address, setStrategyPosition, setHasPosition]
   );
 
+  const fetchStrategyOpenOrders = useCallback(() => {
+    if (openOrdersRequestSentRef.current || !strategyAddress || !address) {
+      return;
+    }
+
+    openOrdersRequestSentRef.current = true;
+
+    getOpenOrders(chainId, null, strategyAddress)
+      .then((data) => {
+        const updatedOpenOrders: Record<string, OrderI> = {};
+        data.data.map((openOrders) => {
+          openOrders.orderIds?.forEach((orderId, index) => (updatedOpenOrders[orderId] = openOrders.orders[index]));
+        });
+        setStrategyOpenOrders(updatedOpenOrders);
+      })
+      .catch((error) => {
+        console.error(error);
+        setStrategyOpenOrders({});
+      })
+      .finally(() => {
+        openOrdersRequestSentRef.current = false;
+      });
+  }, [chainId, strategyAddress, address]);
+
   useEffect(() => {
     fetchStrategyPosition(isFrequentUpdates);
+    fetchStrategyOpenOrders();
 
     const intervalId = setInterval(
       () => {
         fetchStrategyPosition(isFrequentUpdates);
+        fetchStrategyOpenOrders();
       },
       isFrequentUpdates ? INTERVAL_FREQUENT_POLLING : INTERVAL_FOR_DATA_POLLING
     );
@@ -146,7 +174,33 @@ export const StrategyBlock = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchStrategyPosition, isFrequentUpdates]);
+  }, [fetchStrategyPosition, fetchStrategyOpenOrders, isFrequentUpdates]);
+
+  // This happens when we Enter strategy. OpenOrder is created, but not executed
+  const hasSellOpenOrder = useMemo(() => {
+    const ordersIds = Object.keys(strategyOpenOrders);
+    if (ordersIds.length === 0) {
+      return false;
+    }
+    const orders = Object.values(strategyOpenOrders);
+    const foundSellOpenOrder = orders.find(
+      (openOrder) => openOrder.symbol === STRATEGY_SYMBOL && openOrder.side === OrderSideE.Sell
+    );
+    return !!foundSellOpenOrder;
+  }, [strategyOpenOrders]);
+
+  // This happens when we Exit strategy. OpenOrder is created, but not executed
+  const hasBuyOpenOrder = useMemo(() => {
+    const ordersIds = Object.keys(strategyOpenOrders);
+    if (ordersIds.length === 0) {
+      return false;
+    }
+    const orders = Object.values(strategyOpenOrders);
+    const foundBuyOpenOrder = orders.find(
+      (openOrder) => openOrder.symbol === STRATEGY_SYMBOL && openOrder.side === OrderSideE.Buy
+    );
+    return !!foundBuyOpenOrder;
+  }, [strategyOpenOrders]);
 
   useEffect(() => {
     if (frequentUpdates >= MAX_FREQUENT_UPDATES) {
@@ -159,6 +213,7 @@ export const StrategyBlock = () => {
     if (
       !hasPosition &&
       hadPosition &&
+      !hasBuyOpenOrder &&
       !claimRequestSentRef.current &&
       !refetchBalanceRequestSent &&
       strategyAddressBalance !== null &&
@@ -189,6 +244,7 @@ export const StrategyBlock = () => {
   }, [
     hasPosition,
     hadPosition,
+    hasBuyOpenOrder,
     refetchBalanceRequestSent,
     strategyAddressBalance,
     chainId,
@@ -204,17 +260,30 @@ export const StrategyBlock = () => {
       strategyAddressBalance !== null &&
       strategyAddressBalance > 0 &&
       !claimRequestSentRef.current &&
-      !refetchBalanceRequestSent
+      !refetchBalanceRequestSent &&
+      !hasSellOpenOrder
     ) {
       setHadPosition(true);
     }
-  }, [hasPosition, refetchBalanceRequestSent, strategyAddressBalance]);
+  }, [hasPosition, hasSellOpenOrder, refetchBalanceRequestSent, strategyAddressBalance]);
+
+  // Reset all states
+  useEffect(() => {
+    setStrategyOpenOrders({});
+    setHasPosition(false);
+    setHadPosition(false);
+    setFrequentUpdates(0);
+    enableFrequentUpdates(false);
+  }, [chainId, address, setHasPosition, enableFrequentUpdates]);
 
   return (
     <div className={styles.root}>
       <Overview />
       <div className={styles.actionBlock}>
-        <Disclaimer title={t('pages.strategies.info.title')} textBlocks={disclaimerTextBlocks} />
+        <Disclaimer
+          title={t('pages.strategies.info.title')}
+          textBlocks={[t('pages.strategies.info.text1'), t('pages.strategies.info.text2')]}
+        />
         <div className={styles.divider} />
         {hasPosition === null || strategyAddressBalance === null ? (
           <div className={styles.emptyBlock}>
@@ -224,10 +293,12 @@ export const StrategyBlock = () => {
           </div>
         ) : (
           <>
-            {(hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
+            {!hasSellOpenOrder && (hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
               <ExitStrategy isLoading={!hasPosition && strategyAddressBalance > 0} />
             )}
-            {!hasPosition && strategyAddressBalance === 0 && <EnterStrategy />}
+            {((!hasPosition && strategyAddressBalance === 0) || hasSellOpenOrder) && (
+              <EnterStrategy isLoading={hasSellOpenOrder} />
+            )}
           </>
         )}
       </div>
