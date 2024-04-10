@@ -106,9 +106,9 @@ export async function enterStrategy(
     symbol: symbol,
     side: OrderSideE.Sell,
     type: OrderTypeE.Market,
-    quantity: Math.abs(orderSize),
+    quantity: Math.abs(orderSize * 0.99),
     limitPrice: limitPrice,
-    leverage: position.markPrice / (indexPrice ?? position.markPrice),
+    leverage: (0.99 * position.markPrice) / (indexPrice ?? position.markPrice),
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
     deadline: Math.floor(Date.now() / 1000 + DEADLINE),
   };

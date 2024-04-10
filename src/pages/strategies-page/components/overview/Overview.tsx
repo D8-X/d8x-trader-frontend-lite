@@ -27,9 +27,10 @@ export const Overview = () => {
         Math.max(
           0,
           strategyPosition.collateralCC *
-            (strategyPosition.collToQuoteConversion / strategyPerpetualStats.indexPrice) *
-            strategyPerpetualStats.markPrice -
-            strategyPosition.positionNotionalBaseCCY * strategyPerpetualStats.markPrice
+            (strategyPosition.collToQuoteConversion /
+              (strategyPerpetualStats.indexPrice + (strategyPosition.markPrice - strategyPerpetualStats.markPrice))) *
+            strategyPosition.markPrice -
+            strategyPosition.positionNotionalBaseCCY * strategyPosition.markPrice
         ) +
         strategyPosition.unrealizedFundingCollateralCCY * strategyPosition.collToQuoteConversion
       );
