@@ -213,7 +213,7 @@ export const StrategyBlock = () => {
   useEffect(() => {
     if (
       hasPosition === false &&
-      hadPosition === true &&
+      hadPosition &&
       !hasBuyOpenOrder &&
       !claimRequestSentRef.current &&
       !refetchBalanceRequestSent &&

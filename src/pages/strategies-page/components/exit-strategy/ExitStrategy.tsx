@@ -61,7 +61,7 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
 
     exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress }, sendTransactionAsync)
       .then(({ hash }) => {
-        console.log(`submitting close strategy txn ${hash}`);
+        // console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
       })
       .catch((error) => {
