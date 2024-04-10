@@ -609,12 +609,12 @@
         "deposit-button": "starten",
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully entered the strategy",
-            "body": "Amount"
+            "title": "Strategie wird gestartet",
+            "body": "Menge"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
           }
         }
       },
@@ -629,11 +629,11 @@
         },
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully exit from the strategy"
+            "title": "Strategie wird beendet"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
           }
         }
       }

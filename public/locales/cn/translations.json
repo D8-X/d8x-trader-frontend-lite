@@ -609,12 +609,12 @@
         "deposit-button": "启动",
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully entered the strategy",
-            "body": "Amount"
+            "title": "开始策略",
+            "body": "数量"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "交易失败",
+            "body": "原因"
           }
         }
       },
@@ -629,11 +629,11 @@
         },
         "toasts": {
           "tx-submitted": {
-            "title": "You have successfully exit from the strategy"
+            "title": "退出策略"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "交易失败",
+            "body": "原因"
           }
         }
       }

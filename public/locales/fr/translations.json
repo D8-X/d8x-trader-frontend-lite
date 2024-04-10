@@ -610,11 +610,11 @@
         "toasts": {
           "tx-submitted": {
             "title": "You have successfully entered the strategy",
-            "body": "Amount"
+            "body": "Montant"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Échec de la Transaction",
+            "body": "Raison"
           }
         }
       },
@@ -632,8 +632,8 @@
             "title": "You have successfully exit from the strategy"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Échec de la Transaction",
+            "body": "Raison"
           }
         }
       }
