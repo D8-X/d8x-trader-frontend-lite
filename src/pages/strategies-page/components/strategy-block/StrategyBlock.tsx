@@ -223,14 +223,14 @@ export const StrategyBlock = () => {
       walletClient
     ) {
       claimRequestSentRef.current = true;
-      console.log('claiming funds');
+      //console.log('claiming funds');
       claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI }, sendTransactionAsync)
         .then(({ hash }) => {
           if (hash) {
             setTxHash(hash);
-            console.log('claiming funds::success');
+            //console.log('claiming funds::success');
           } else {
-            console.log('claiming funds::no hash');
+            //console.log('claiming funds::no hash');
           }
         })
         .catch((error) => {
