@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
@@ -41,6 +41,7 @@ export const StrategyBlock = () => {
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { sendTransactionAsync } = useSendTransaction();
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyPool = useAtomValue(strategyPoolAtom);
@@ -223,7 +224,7 @@ export const StrategyBlock = () => {
     ) {
       claimRequestSentRef.current = true;
       console.log('claiming funds');
-      claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI })
+      claimStrategyFunds({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI }, sendTransactionAsync)
         .then(({ hash }) => {
           if (hash) {
             setTxHash(hash);
@@ -251,6 +252,7 @@ export const StrategyBlock = () => {
     traderAPI,
     walletClient,
     setTxHash,
+    sendTransactionAsync,
     triggerClaimFunds,
   ]);
 

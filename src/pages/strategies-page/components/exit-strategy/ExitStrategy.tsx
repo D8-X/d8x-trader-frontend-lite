@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
 
@@ -27,6 +27,7 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
   const chainId = useChainId();
   const { address } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { sendTransactionAsync } = useSendTransaction();
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
@@ -58,7 +59,7 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
     setRequestSent(true);
     setLoading(true);
 
-    exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress })
+    exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress }, sendTransactionAsync)
       .then(({ hash }) => {
         console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
@@ -72,7 +73,7 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
         requestSentRef.current = false;
         setRequestSent(false);
       });
-  }, [chainId, walletClient, traderAPI, strategyAddress, setTxHash]);
+  }, [chainId, walletClient, traderAPI, strategyAddress, sendTransactionAsync, setTxHash]);
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);

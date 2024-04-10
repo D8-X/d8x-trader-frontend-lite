@@ -152,7 +152,6 @@ export const WithdrawModal = () => {
     addressValue,
     amountValue,
     setTxHashForTokensTransfer,
-    // setTxHashForGasTransfer,
     sendTransaction,
   ]);
 

@@ -1,27 +1,24 @@
-import { createWalletClient, http, formatEther } from 'viem';
+import { type Config } from '@wagmi/core';
+import { type SendTransactionMutateAsync } from '@wagmi/core/query';
+import { createWalletClient, http } from 'viem';
 import { getBalance } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
-import { transferFunds } from 'blockchain-api/transferFunds';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const GAS_TARGET = 2_000_000n; // good for arbitrum
 
-export async function exitStrategy({
-  chainId,
-  walletClient,
-  symbol,
-  traderAPI,
-  limitPrice,
-  strategyAddress,
-}: HedgeConfigI) {
+export async function exitStrategy(
+  { chainId, walletClient, symbol, traderAPI, limitPrice, strategyAddress }: HedgeConfigI,
+  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>
+) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
@@ -70,7 +67,13 @@ export async function exitStrategy({
   } else {
     const gasPrice = await getGasPrice(walletClient.chain?.id);
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await transferFunds(walletClient, strategyAddr, +formatEther(2n * GAS_TARGET * gasPrice));
+      await sendTransactionAsync({
+        account: walletClient.account,
+        chainId: walletClient.chain?.id,
+        to: strategyAddr,
+        value: 2n * GAS_TARGET * gasPrice,
+        // gas: gasPrice,
+      });
     }
     return postOrder(hedgeClient, [HashZero], data);
   }

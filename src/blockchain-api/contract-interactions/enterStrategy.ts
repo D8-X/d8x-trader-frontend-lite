@@ -1,11 +1,12 @@
 import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
+import { type Config } from '@wagmi/core';
+import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import {
   createWalletClient,
   type Address,
   http,
   erc20Abi,
   parseUnits,
-  formatEther,
   WalletClient,
   Transport,
   Chain,
@@ -14,32 +15,24 @@ import {
 import { getBalance, readContract, writeContract } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
-import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
+import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
 import { setDelegate } from './setDelegate';
-import { transferFunds } from 'blockchain-api/transferFunds';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const DELEGATE_INDEX = 2; // to be emitted
 const GAS_TARGET = 2_000_000n; // good for arbitrum
 
-export async function enterStrategy({
-  chainId,
-  walletClient,
-  symbol,
-  traderAPI,
-  amount,
-  feeRate,
-  indexPrice,
-  limitPrice,
-  strategyAddress,
-}: HedgeConfigI): Promise<{
+export async function enterStrategy(
+  { chainId, walletClient, symbol, traderAPI, amount, feeRate, indexPrice, limitPrice, strategyAddress }: HedgeConfigI,
+  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>
+): Promise<{
   hash?: Address;
   interrupted?: boolean;
   interruptedMessage?: string;
@@ -129,7 +122,13 @@ export async function enterStrategy({
 
   if (!isDelegated) {
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await transferFunds(walletClient, strategyAddr, +formatEther(GAS_TARGET * gasPrice), gasPrice);
+      await sendTransactionAsync({
+        account: walletClient.account,
+        chainId: walletClient.chain?.id,
+        to: strategyAddr,
+        value: GAS_TARGET * gasPrice,
+        gas: gasPrice,
+      });
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
@@ -187,7 +186,13 @@ export async function enterStrategy({
     return postOrder(walletClient, [HashZero], data);
   } else {
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await transferFunds(walletClient, strategyAddr, +formatEther(2n * GAS_TARGET * gasPrice), gasPrice);
+      await sendTransactionAsync({
+        account: walletClient.account,
+        chainId: walletClient.chain?.id,
+        to: strategyAddr,
+        value: 2n * GAS_TARGET * gasPrice,
+        gas: gasPrice,
+      });
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>

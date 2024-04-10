@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
@@ -32,6 +32,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
   const chainId = useChainId();
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { sendTransactionAsync } = useSendTransaction();
 
   const strategyPool = useAtomValue(strategyPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -166,16 +167,19 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
     setRequestSent(true);
     setLoading(true);
 
-    enterStrategy({
-      chainId,
-      walletClient,
-      symbol: STRATEGY_SYMBOL,
-      traderAPI,
-      amount: addAmount,
-      feeRate,
-      indexPrice: strategyPerpetualStats.indexPrice,
-      strategyAddress,
-    })
+    enterStrategy(
+      {
+        chainId,
+        walletClient,
+        symbol: STRATEGY_SYMBOL,
+        traderAPI,
+        amount: addAmount,
+        feeRate,
+        indexPrice: strategyPerpetualStats.indexPrice,
+        strategyAddress,
+      },
+      sendTransactionAsync
+    )
       .then(({ hash }) => {
         console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
@@ -198,6 +202,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
     addAmount,
     strategyAddress,
     strategyPerpetualStats,
+    sendTransactionAsync,
     setTxHash,
     refetch,
   ]);
