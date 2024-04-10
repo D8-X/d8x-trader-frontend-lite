@@ -307,8 +307,8 @@ export const OneClickTradingModal = () => {
         </Box>
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
-            <GasDepositChecker address={walletClient?.account.address} className={styles.actionButton}>
-              {!isLoading && isDelegated === false && (
+            {!isLoading && isDelegated === false && (
+              <GasDepositChecker address={walletClient?.account.address} className={styles.actionButton}>
                 <Button
                   variant="primary"
                   className={styles.actionButton}
@@ -317,49 +317,49 @@ export const OneClickTradingModal = () => {
                 >
                   {t(`common.settings.one-click-modal.create-delegate.create`)}
                 </Button>
-              )}
-              {!isLoading && isDelegated === true && (
-                <>
-                  {activatedOneClickTrading ? (
-                    <Button
-                      variant="primary"
-                      className={styles.actionButton}
-                      onClick={() => setActivatedOneClickTrading(false)}
-                      disabled={isActionLoading}
-                    >
-                      {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="primary"
-                      className={styles.actionButton}
-                      onClick={handleActivate}
-                      disabled={isActionLoading}
-                    >
-                      {t(`common.settings.one-click-modal.manage-delegate.activate`)}
-                    </Button>
-                  )}
+              </GasDepositChecker>
+            )}
+            {!isLoading && isDelegated === true && (
+              <GasDepositChecker address={delegateAddress as Address} className={styles.actionButton}>
+                {activatedOneClickTrading ? (
                   <Button
                     variant="primary"
                     className={styles.actionButton}
-                    onClick={handleRemove}
+                    onClick={() => setActivatedOneClickTrading(false)}
                     disabled={isActionLoading}
                   >
-                    {t(`common.settings.one-click-modal.manage-delegate.remove`)}
+                    {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
                   </Button>
-                  {activatedOneClickTrading && (
-                    <Button
-                      variant="primary"
-                      className={styles.actionButton}
-                      onClick={handleFund}
-                      disabled={isActionLoading}
-                    >
-                      {t(`common.settings.one-click-modal.manage-delegate.fund`)}
-                    </Button>
-                  )}
-                </>
-              )}
-            </GasDepositChecker>
+                ) : (
+                  <Button
+                    variant="primary"
+                    className={styles.actionButton}
+                    onClick={handleActivate}
+                    disabled={isActionLoading}
+                  >
+                    {t(`common.settings.one-click-modal.manage-delegate.activate`)}
+                  </Button>
+                )}
+                <Button
+                  variant="primary"
+                  className={styles.actionButton}
+                  onClick={handleRemove}
+                  disabled={isActionLoading}
+                >
+                  {t(`common.settings.one-click-modal.manage-delegate.remove`)}
+                </Button>
+                {activatedOneClickTrading && (
+                  <Button
+                    variant="primary"
+                    className={styles.actionButton}
+                    onClick={handleFund}
+                    disabled={isActionLoading}
+                  >
+                    {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                  </Button>
+                )}
+              </GasDepositChecker>
+            )}
           </Box>
         </Box>
         <Separator />
