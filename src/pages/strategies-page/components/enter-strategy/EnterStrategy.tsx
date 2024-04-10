@@ -74,7 +74,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
     },
   });
 
-  const weEthBalance = weEthPoolBalance ? +formatUnits(weEthPoolBalance[0], weEthPoolBalance[1]) : 0;
+  const weEthBalance = weEthPoolBalance ? +formatUnits(weEthPoolBalance[0], weEthPoolBalance[1]) * 0.99 : 0;
 
   const { setTxHash } = useEnterStrategy(addAmount);
 
