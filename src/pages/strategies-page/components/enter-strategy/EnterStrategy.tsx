@@ -181,7 +181,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
       sendTransactionAsync
     )
       .then(({ hash }) => {
-        console.log(`submitting enter strategy txn ${hash}`);
+        // console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
       })
       .catch((error) => {
