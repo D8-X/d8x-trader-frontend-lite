@@ -127,7 +127,6 @@ export async function enterStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: GAS_TARGET * gasPrice,
-        gas: gasPrice,
       });
     }
     if (hedgeClient === undefined) {
@@ -191,7 +190,6 @@ export async function enterStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
-        gas: gasPrice,
       });
     }
     if (hedgeClient === undefined) {

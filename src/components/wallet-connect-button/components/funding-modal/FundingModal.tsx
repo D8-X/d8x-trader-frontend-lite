@@ -112,10 +112,8 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
       account: walletClient.account,
       to: delegateAddress,
       value: parseEther(inputValue),
-      gasPrice,
-      gas: estimatedGas,
     });
-  }, [walletClient, delegateAddress, inputValue, gasPrice, estimatedGas, sendTransaction]);
+  }, [walletClient, delegateAddress, inputValue, sendTransaction]);
 
   return (
     <Dialog open={isOpen} onClose={onClose}>

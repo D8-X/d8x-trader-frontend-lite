@@ -78,7 +78,6 @@ export async function claimStrategyFunds(
         to: hedgeClient.account.address,
         value: (gasLimit ?? GAS_TARGET) * gasPrice,
         gas: gasLimit,
-        gasPrice,
       });
       await waitForTransactionReceipt(hedgeClient, { hash: tx0 });
     }
@@ -116,7 +115,6 @@ export async function claimStrategyFunds(
       to: walletClient.account.address,
       value: balance - gasLimit * gasPrice,
       gas: gasLimit,
-      gasPrice,
     }).then((tx) => ({ hash: tx }));
   }
   return { hash: null };

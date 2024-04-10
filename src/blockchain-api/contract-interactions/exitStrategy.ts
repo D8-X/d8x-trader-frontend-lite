@@ -72,7 +72,6 @@ export async function exitStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
-        // gas: gasPrice,
       });
     }
     return postOrder(hedgeClient, [HashZero], data);

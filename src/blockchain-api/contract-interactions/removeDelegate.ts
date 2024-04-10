@@ -32,9 +32,6 @@ export async function removeDelegate(
 
   // reclaim delegate funds
   if (account !== delegateAccount.address) {
-    // eslint-disable-next-line no-debugger
-    debugger;
-
     const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
     const gasLimit = await estimateGas(walletClient, {
       to: account,
@@ -42,14 +39,13 @@ export async function removeDelegate(
       account: delegateAccount,
       gasPrice,
     }).catch(() => undefined);
-    if (gasLimit && gasLimit * gasPrice < balance) {
+    if (gasLimit && 2n * gasLimit * gasPrice < balance) {
       sendTransaction({
         account: delegateAccount,
         to: account,
-        value: balance - gasLimit * gasPrice,
+        value: balance - 2n * gasLimit * gasPrice,
         chainId: walletClient.chain?.id,
-        gas: gasLimit,
-        gasPrice,
+        gas: gasLimit * 2n,
       });
     }
   }
