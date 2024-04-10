@@ -8,7 +8,7 @@ export async function setDelegate(
   proxyAddr: Address,
   delegateAddr: Address,
   delegateIndex: number
-): Promise<{ hash: Address }> {
+): Promise<Address> {
   const account = walletClient.account;
   if (!account) {
     throw new Error('account not connected');
@@ -29,5 +29,6 @@ export async function setDelegate(
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 110n) / 100n)
     .catch(() => undefined);
-  return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
+  await walletClient.writeContract({ ...params, gas: gasLimit });
+  return delegateAddr;
 }

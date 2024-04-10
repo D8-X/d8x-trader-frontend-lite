@@ -1,10 +1,10 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
-import { BaseError, useAccount, useBalance, usePublicClient, useSendTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useBalance, usePublicClient, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
@@ -24,7 +24,6 @@ import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 
 import { FundingModal } from '../funding-modal/FundingModal';
-import { useRemoveDelegateHash } from './hooks/useRemoveDelegateHash';
 
 import styles from './OneClickTradingModal.module.scss';
 
@@ -36,7 +35,7 @@ export const OneClickTradingModal = () => {
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
-  const { data: sendHash, error: sendError, isPending, sendTransaction } = useSendTransaction();
+  const { sendTransactionAsync } = useSendTransaction();
 
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
   const [delegateAddress, setDelegateAddress] = useAtom(delegateAddressAtom);
@@ -48,41 +47,14 @@ export const OneClickTradingModal = () => {
 
   const [isLoading, setLoading] = useState(false);
   const [isActionLoading, setActionLoading] = useState(false);
+  const [isRemoveActionLoading, setRemoveActionLoading] = useState(false);
+  const [isActivateActionLoading, setActivateActionLoading] = useState(false);
   const [isDelegated, setDelegated] = useState<boolean | null>(null);
   const [isFundingModalOpen, setFundingModalOpen] = useState(false);
 
   const handleRemoveRef = useRef(false);
   const handleActivateRef = useRef(false);
   const handleCreateRef = useRef(false);
-
-  const successCallback = useCallback(() => {
-    setActivatedOneClickTrading(false);
-    setDelegated(false);
-    handleRemoveRef.current = false;
-    setActionLoading(false);
-  }, [setActivatedOneClickTrading]);
-
-  const errorCallback = useCallback(() => {
-    handleRemoveRef.current = false;
-    setActionLoading(false);
-  }, []);
-
-  const { setTxHash } = useRemoveDelegateHash(successCallback, errorCallback);
-
-  useEffect(() => {
-    setTxHash(sendHash);
-  }, [sendHash, setTxHash]);
-
-  useEffect(() => {
-    if (sendError) {
-      console.error(sendError);
-      toast.error(<ToastContent title={(sendError as BaseError).shortMessage || sendError.message} bodyLines={[]} />);
-    }
-  }, [sendError]);
-
-  useEffect(() => {
-    setLoading(isPending);
-  }, [isPending]);
 
   useEffect(() => {
     if (!address || !traderAPI || traderAPI?.chainId !== publicClient?.chain.id) {
@@ -111,20 +83,35 @@ export const OneClickTradingModal = () => {
     handleCreateRef.current = true;
     setActionLoading(true);
 
-    const strgKey = await getStorageKey(walletClient);
-    setStorageKey(strgKey);
-    const delegateAddr = (await generateDelegate(walletClient, strgKey)).address;
-    await setDelegate(walletClient, proxyAddr as Address, delegateAddr, DELEGATE_INDEX);
-    setDelegated(true);
-    setActivatedOneClickTrading(true);
-    setDelegateAddress(delegateAddr);
+    getStorageKey(walletClient)
+      .then((strgKey) => {
+        setStorageKey(strgKey);
+        return generateDelegate(walletClient, strgKey);
+      })
+      .then((delegate) => {
+        const delegateAddr = delegate.address;
+        return setDelegate(walletClient, proxyAddr as Address, delegateAddr, DELEGATE_INDEX);
+      })
+      .then((delegateAddr) => {
+        setDelegated(true);
+        setActivatedOneClickTrading(true);
+        setDelegateAddress(delegateAddr);
 
-    toast.success(
-      <ToastContent title={t('common.settings.one-click-modal.create-delegate.create-success-result')} bodyLines={[]} />
-    );
-
-    handleCreateRef.current = false;
-    setActionLoading(false);
+        toast.success(
+          <ToastContent
+            title={t('common.settings.one-click-modal.create-delegate.create-success-result')}
+            bodyLines={[]}
+          />
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+      })
+      .finally(() => {
+        handleCreateRef.current = false;
+        setActionLoading(false);
+      });
   };
 
   const handleActivate = async () => {
@@ -140,6 +127,7 @@ export const OneClickTradingModal = () => {
 
     handleActivateRef.current = true;
     setActionLoading(true);
+    setActivateActionLoading(true);
 
     try {
       let strgKey = storageKey;
@@ -174,6 +162,7 @@ export const OneClickTradingModal = () => {
 
     handleActivateRef.current = false;
     setActionLoading(false);
+    setActivateActionLoading(false);
   };
 
   const handleFund = async () => {
@@ -213,18 +202,32 @@ export const OneClickTradingModal = () => {
     }
     handleRemoveRef.current = true;
     setActionLoading(true);
+    setRemoveActionLoading(true);
 
     getStorageKey(walletClient)
       .then((strgKey) => generateDelegate(walletClient, strgKey))
-      .then((delegateAccount) => removeDelegate(walletClient, delegateAccount, proxyAddr as Address, sendTransaction))
+      .then((delegateAccount) =>
+        removeDelegate(walletClient, delegateAccount, proxyAddr as Address, sendTransactionAsync)
+      )
       .then((result) => {
         console.debug('Remove action hash: ', result.hash);
+        setActivatedOneClickTrading(false);
+        setDelegated(false);
+        toast.success(
+          <ToastContent
+            title={t('common.settings.one-click-modal.manage-delegate.remove-action-result')}
+            bodyLines={[]}
+          />
+        );
       })
       .catch((error) => {
         console.error(error);
         toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+      })
+      .finally(() => {
         handleRemoveRef.current = false;
         setActionLoading(false);
+        setRemoveActionLoading(false);
       });
   };
 
@@ -313,8 +316,9 @@ export const OneClickTradingModal = () => {
                   variant="primary"
                   className={styles.actionButton}
                   onClick={handleCreate}
-                  disabled={isActionLoading}
+                  disabled={!proxyAddr || isActionLoading}
                 >
+                  {isActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
                   {t(`common.settings.one-click-modal.create-delegate.create`)}
                 </Button>
               </GasDepositChecker>
@@ -335,8 +339,9 @@ export const OneClickTradingModal = () => {
                     variant="primary"
                     className={styles.actionButton}
                     onClick={handleActivate}
-                    disabled={isActionLoading}
+                    disabled={!proxyAddr || isActionLoading}
                   >
+                    {isActivateActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
                     {t(`common.settings.one-click-modal.manage-delegate.activate`)}
                   </Button>
                 )}
@@ -344,8 +349,9 @@ export const OneClickTradingModal = () => {
                   variant="primary"
                   className={styles.actionButton}
                   onClick={handleRemove}
-                  disabled={isActionLoading}
+                  disabled={!proxyAddr || isActionLoading}
                 >
+                  {isRemoveActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
                   {t(`common.settings.one-click-modal.manage-delegate.remove`)}
                 </Button>
                 {activatedOneClickTrading && (
