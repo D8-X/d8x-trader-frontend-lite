@@ -212,8 +212,8 @@ export const StrategyBlock = () => {
 
   useEffect(() => {
     if (
-      !hasPosition &&
-      hadPosition &&
+      hasPosition === false &&
+      hadPosition === true &&
       !hasBuyOpenOrder &&
       !claimRequestSentRef.current &&
       !refetchBalanceRequestSent &&
@@ -272,8 +272,8 @@ export const StrategyBlock = () => {
   // Reset all states
   useEffect(() => {
     setStrategyOpenOrders({});
-    setHasPosition(false);
-    setHadPosition(false);
+    setHasPosition(null);
+    setHadPosition(null);
     setFrequentUpdates(0);
     enableFrequentUpdates(false);
   }, [chainId, address, setHasPosition, enableFrequentUpdates]);
@@ -296,7 +296,7 @@ export const StrategyBlock = () => {
         ) : (
           <>
             {!hasSellOpenOrder && (hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
-              <ExitStrategy isLoading={!hasPosition && strategyAddressBalance > 0} />
+              <ExitStrategy isLoading={(!hasPosition && strategyAddressBalance > 0) || hasBuyOpenOrder} />
             )}
             {((!hasPosition && strategyAddressBalance === 0) || hasSellOpenOrder) && (
               <EnterStrategy isLoading={hasSellOpenOrder} />
