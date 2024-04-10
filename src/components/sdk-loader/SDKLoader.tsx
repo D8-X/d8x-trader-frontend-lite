@@ -35,7 +35,6 @@ export const SDKLoader = memo(() => {
   const loadSDK = useCallback(
     async (_publicClient: Client, _chainId: number) => {
       if (loadingAPIRef.current) {
-        console.log('not loading sdk because ref');
         return;
       }
       loadingAPIRef.current = true;
