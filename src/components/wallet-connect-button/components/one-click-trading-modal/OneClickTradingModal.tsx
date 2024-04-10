@@ -320,7 +320,7 @@ export const OneClickTradingModal = () => {
               </GasDepositChecker>
             )}
             {!isLoading && isDelegated === true && (
-              <GasDepositChecker address={delegateAddress as Address} className={styles.actionButton}>
+              <>
                 {activatedOneClickTrading ? (
                   <Button
                     variant="primary"
@@ -358,7 +358,7 @@ export const OneClickTradingModal = () => {
                     {t(`common.settings.one-click-modal.manage-delegate.fund`)}
                   </Button>
                 )}
-              </GasDepositChecker>
+              </>
             )}
           </Box>
         </Box>
