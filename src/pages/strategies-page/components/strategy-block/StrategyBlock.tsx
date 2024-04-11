@@ -296,7 +296,10 @@ export const StrategyBlock = () => {
         ) : (
           <>
             {!hasSellOpenOrder && (hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
-              <ExitStrategy isLoading={(!hasPosition && strategyAddressBalance > 0) || hasBuyOpenOrder} />
+              <ExitStrategy
+                isLoading={(!hasPosition && strategyAddressBalance > 0) || hasBuyOpenOrder}
+                hasBuyOpenOrder={hasBuyOpenOrder}
+              />
             )}
             {((!hasPosition && strategyAddressBalance === 0) || hasSellOpenOrder) && (
               <EnterStrategy isLoading={hasSellOpenOrder} />

@@ -616,6 +616,11 @@
             "title": "Échec de la Transaction",
             "body": "Raison"
           }
+        },
+        "phases": {
+          "funding": "Funding strategy account",
+          "posting": "Posting short order",
+          "waiting": "Waiting for order execution"
         }
       },
       "exit": {
@@ -634,6 +639,23 @@
           "tx-failed": {
             "title": "Échec de la Transaction",
             "body": "Raison"
+          }
+        },
+        "phases": {
+          "posting": "Posting order to close position",
+          "waiting": "Waiting for order execution",
+          "sending": "Sending funds to main wallet"
+        }
+      },
+      "claim-funds": {
+        "toasts": {
+          "tx-submitted": {
+            "title": "Your funds are successfully claimed",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
           }
         }
       }

@@ -616,6 +616,11 @@
             "title": "Transaction Failed",
             "body": "Reason"
           }
+        },
+        "phases": {
+          "funding": "Funding strategy account",
+          "posting": "Posting short order",
+          "waiting": "Waiting for order execution"
         }
       },
       "exit": {
@@ -635,6 +640,11 @@
             "title": "Transaction Failed",
             "body": "Reason"
           }
+        },
+        "phases": {
+          "posting": "Posting order to close position",
+          "waiting": "Waiting for order execution",
+          "sending": "Sending funds to main wallet"
         }
       },
       "claim-funds": {

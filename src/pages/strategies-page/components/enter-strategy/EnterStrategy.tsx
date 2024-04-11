@@ -21,6 +21,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
+import { Engineering } from '@mui/icons-material';
 
 interface EnterStrategyPropsI {
   isLoading: boolean;
@@ -46,6 +47,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
   const [isEditing, setIsEditing] = useState(false);
   const [temporaryValue, setTemporaryValue] = useState(inputValue);
   const [loading, setLoading] = useState(isLoading);
+  const [currentPhaseKey, setCurrentPhaseKey] = useState('');
 
   const inputValueChangedRef = useRef(false);
   const requestSentRef = useRef(false);
@@ -163,6 +165,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
       return;
     }
 
+    setCurrentPhaseKey('');
     requestSentRef.current = true;
     setRequestSent(true);
     setLoading(true);
@@ -178,11 +181,13 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
         indexPrice: strategyPerpetualStats.indexPrice,
         strategyAddress,
       },
-      sendTransactionAsync
+      sendTransactionAsync,
+      setCurrentPhaseKey
     )
       .then(({ hash }) => {
         // console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
+        setCurrentPhaseKey('pages.strategies.enter.phases.waiting');
       })
       .catch((error) => {
         console.error(error);
@@ -206,6 +211,12 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
     setTxHash,
     refetch,
   ]);
+
+  useEffect(() => {
+    if (isLoading) {
+      setCurrentPhaseKey('pages.strategies.enter.phases.waiting');
+    }
+  }, [isLoading]);
 
   return (
     <div className={styles.root}>
@@ -249,6 +260,12 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
       {loading && (
         <div className={styles.loaderWrapper}>
           <CircularProgress />
+          {currentPhaseKey && (
+            <span className={styles.phase}>
+              <Engineering fontSize="small" />
+              {t(currentPhaseKey)}
+            </span>
+          )}
         </div>
       )}
     </div>

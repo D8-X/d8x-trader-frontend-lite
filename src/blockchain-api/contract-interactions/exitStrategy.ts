@@ -1,5 +1,6 @@
 import { type Config } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
+import type { Dispatch, SetStateAction } from 'react';
 import { createWalletClient, http } from 'viem';
 import { getBalance } from 'viem/actions';
 
@@ -17,7 +18,8 @@ const GAS_TARGET = 2_000_000n; // good for arbitrum
 
 export async function exitStrategy(
   { chainId, walletClient, symbol, traderAPI, limitPrice, strategyAddress }: HedgeConfigI,
-  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>
+  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>,
+  setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
@@ -63,6 +65,7 @@ export async function exitStrategy(
   const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
 
   if (isDelegated) {
+    setCurrentPhaseKey('pages.strategies.exit.phases.posting');
     return postOrder(walletClient, [HashZero], data);
   } else {
     const gasPrice = await getGasPrice(walletClient.chain?.id);
@@ -74,6 +77,7 @@ export async function exitStrategy(
         value: 2n * GAS_TARGET * gasPrice,
       });
     }
+    setCurrentPhaseKey('pages.strategies.exit.phases.posting');
     return postOrder(hedgeClient, [HashZero], data);
   }
 }

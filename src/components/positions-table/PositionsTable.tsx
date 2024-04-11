@@ -51,11 +51,11 @@ export const PositionsTable = () => {
   const [traderAPI] = useAtom(traderAPIAtom);
   const removePosition = useSetAtom(removePositionAtom);
   const [isSDKConnected] = useAtom(sdkConnectedAtom);
-  const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
+  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
   const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
 
-  const isAPIBusyRef = useRef(isAPIBusy);
+  const isAPIBusyRef = useRef(false);
   const isSelectedPositionSetRef = useRef(false);
 
   const chainId = useChainId();
@@ -138,7 +138,10 @@ export const PositionsTable = () => {
       if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
         return;
       }
+
       setAPIBusy(true);
+      isAPIBusyRef.current = true;
+
       try {
         const { data } = await getPositionRisk(chainId, traderAPI, address, Date.now());
         clearPositions();
@@ -149,6 +152,7 @@ export const PositionsTable = () => {
         console.error(err);
       } finally {
         setAPIBusy(false);
+        isAPIBusyRef.current = false;
       }
     }
   }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setPositions, clearPositions, traderAPI]);

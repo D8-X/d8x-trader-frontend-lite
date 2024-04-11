@@ -33,6 +33,19 @@
   justify-content: center;
   background-color: var(--d8x-color-background-items-selected);
   border-radius: $d8x-border-radius;
+
+  .phase {
+    position: absolute;
+    bottom: $d8x-spacing * 3;
+    left: $d8x-spacing * 6;
+    display: flex;
+    align-items: center;
+    gap: $d8x-spacing;
+
+    > svg {
+      margin-bottom: $d8x-spacing;
+    }
+  }
 }
 
 .dialog {

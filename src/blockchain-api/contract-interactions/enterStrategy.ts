@@ -1,6 +1,7 @@
 import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
 import { type Config } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
+import type { Dispatch, SetStateAction } from 'react';
 import {
   createWalletClient,
   type Address,
@@ -31,7 +32,8 @@ const GAS_TARGET = 2_000_000n; // good for arbitrum
 
 export async function enterStrategy(
   { chainId, walletClient, symbol, traderAPI, amount, feeRate, indexPrice, limitPrice, strategyAddress }: HedgeConfigI,
-  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>
+  sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>,
+  setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ): Promise<{
   hash?: Address;
   interrupted?: boolean;
@@ -149,6 +151,7 @@ export async function enterStrategy(
   const amountBigint = parseUnits(amount.toString(), marginTokenDec);
   if (marginTokenBalance < amountBigint) {
     //console.log('funding strategy account');
+    setCurrentPhaseKey('pages.strategies.enter.phases.funding');
     await writeContract(walletClient, {
       address: marginTokenAddr as Address,
       chain: walletClient.chain,
@@ -182,6 +185,7 @@ export async function enterStrategy(
 
   //console.log('posting order');
   if (isDelegated && hedgeClient === undefined) {
+    setCurrentPhaseKey('pages.strategies.enter.phases.posting');
     return postOrder(walletClient, [HashZero], data);
   } else {
     if (gasBalance < GAS_TARGET * gasPrice) {
@@ -201,6 +205,7 @@ export async function enterStrategy(
         })
       );
     }
+    setCurrentPhaseKey('pages.strategies.enter.phases.posting');
     return postOrder(hedgeClient!, [HashZero], data);
   }
 }

@@ -1,9 +1,10 @@
 import { useAtomValue } from 'jotai';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useSendTransaction, useWalletClient } from 'wagmi';
 
+import { Engineering } from '@mui/icons-material';
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
@@ -14,14 +15,16 @@ import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
 import { strategyAddressesAtom } from 'store/strategies.store';
 
-import styles from './ExitStrategy.module.scss';
 import { useExitStrategy } from './hooks/useExitStrategy';
+
+import styles from './ExitStrategy.module.scss';
 
 interface ExitStrategyPropsI {
   isLoading: boolean;
+  hasBuyOpenOrder: boolean;
 }
 
-export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
+export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI) => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
@@ -35,6 +38,7 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [loading, setLoading] = useState(isLoading);
+  const [currentPhaseKey, setCurrentPhaseKey] = useState('');
 
   const requestSentRef = useRef(false);
 
@@ -55,14 +59,20 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
     }
 
     requestSentRef.current = true;
+    setCurrentPhaseKey('');
     setShowConfirmModal(false);
     setRequestSent(true);
     setLoading(true);
 
-    exitStrategy({ chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress }, sendTransactionAsync)
+    exitStrategy(
+      { chainId, walletClient, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress },
+      sendTransactionAsync,
+      setCurrentPhaseKey
+    )
       .then(({ hash }) => {
         // console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
+        setCurrentPhaseKey('pages.strategies.exit.phases.waiting');
       })
       .catch((error) => {
         console.error(error);
@@ -78,6 +88,14 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);
   }, []);
+
+  useEffect(() => {
+    if (isLoading && hasBuyOpenOrder) {
+      setCurrentPhaseKey('pages.strategies.exit.phases.waiting');
+    } else if (isLoading) {
+      setCurrentPhaseKey('pages.strategies.exit.phases.sending');
+    }
+  }, [isLoading, hasBuyOpenOrder]);
 
   return (
     <div className={styles.root}>
@@ -111,6 +129,12 @@ export const ExitStrategy = ({ isLoading }: ExitStrategyPropsI) => {
       {loading && (
         <div className={styles.loaderWrapper}>
           <CircularProgress />
+          {currentPhaseKey && (
+            <span className={styles.phase}>
+              <Engineering fontSize="small" />
+              {t(currentPhaseKey)}
+            </span>
+          )}
         </div>
       )}
     </div>
