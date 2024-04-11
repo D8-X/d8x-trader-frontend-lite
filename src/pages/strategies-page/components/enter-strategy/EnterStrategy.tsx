@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
+import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
@@ -21,7 +22,6 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
-import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 
 interface EnterStrategyPropsI {
   isLoading: boolean;
