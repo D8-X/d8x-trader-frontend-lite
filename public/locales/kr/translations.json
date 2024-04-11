@@ -663,6 +663,10 @@
             "assets-pool": "풀의 자산",
             "earnings-pool": "풀당 수익",
             "total": "총 추정치. 수입"
+          },
+          "strategies": {
+            "title": "Strategies",
+            "usd-position": "Synthetic USD position"
           }
         }
       }

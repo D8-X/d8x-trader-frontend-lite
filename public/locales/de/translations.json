@@ -685,6 +685,10 @@
             "assets-pool": "Vermögenswerte in Pools",
             "earnings-pool": "Einnahmen pro Pool",
             "total": ".. davon Einnahmen"
+          },
+          "strategies": {
+            "title": "Strategien",
+            "usd-position": "Synthetische USD-Position"
           }
         }
       }

@@ -685,6 +685,10 @@
             "assets-pool": "Assets in pools",
             "earnings-pool": "Earnings per pool",
             "total": "..of which estim. earnings"
+          },
+          "strategies": {
+            "title": "Strategies",
+            "usd-position": "Synthetic USD position"
           }
         }
       }

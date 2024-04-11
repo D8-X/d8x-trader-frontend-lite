@@ -685,6 +685,10 @@
             "assets-pool": "Actifs dans les pools",
             "earnings-pool": "Gains par pool",
             "total": ".. dont gains estimés"
+          },
+          "strategies": {
+            "title": "Stratégies",
+            "usd-position": "Position synthétique en USD"
           }
         }
       }

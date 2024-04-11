@@ -3,7 +3,7 @@ import { atomWithStorage } from 'jotai/utils';
 
 import { MarginAccountI, PerpetualI, PerpetualStatisticsI, PoolWithIdI, StrategyAddressI } from '../types/types';
 
-const STRATEGY_ADDRESSES_LS_KEY = 'd8x_strategyAddresses';
+export const STRATEGY_ADDRESSES_LS_KEY = 'd8x_strategyAddresses';
 
 export const strategyAddressesAtom = atomWithStorage<StrategyAddressI[]>(STRATEGY_ADDRESSES_LS_KEY, []);
 

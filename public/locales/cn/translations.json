@@ -685,6 +685,10 @@
             "assets-pool": "集合资产",
             "earnings-pool": "每池收益",
             "total": "预估收益"
+          },
+          "strategies": {
+            "title": "策略",
+            "usd-position": "合成美元头寸"
           }
         }
       }
