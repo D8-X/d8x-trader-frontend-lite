@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
@@ -29,8 +29,8 @@ export const TradeHistoryTable = memo(() => {
   const { t } = useTranslation();
 
   const [tradesHistory, setTradesHistory] = useAtom(tradesHistoryAtom);
-  const [perpetuals] = useAtom(perpetualsAtom);
-  const [openOrders] = useAtom(openOrdersAtom);
+  const perpetuals = useAtomValue(perpetualsAtom);
+  const openOrders = useAtomValue(openOrdersAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
 
   const updateTradesHistoryRef = useRef(false);

@@ -1,6 +1,6 @@
 import { LOB_ABI, PROXY_ABI } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
@@ -53,16 +53,16 @@ const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'Executio
 export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
 
-  const { chain, address, isDisconnected, isConnected } = useAccount();
   const chainId = useChainId();
+  const { chain, address, isDisconnected, isConnected } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
-  const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
+  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
@@ -75,7 +75,7 @@ export const OpenOrdersTable = memo(() => {
   const [orderBy, setOrderBy] = useState<keyof OrderWithIdI>('executionTimestamp');
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
 
-  const isAPIBusyRef = useRef(isAPIBusy);
+  const isAPIBusyRef = useRef(false);
 
   useEffect(() => {
     if (isDisconnected || traderAPI?.chainId !== chainId) {
@@ -98,17 +98,20 @@ export const OpenOrdersTable = memo(() => {
       if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
         return;
       }
+
       setAPIBusy(true);
+      isAPIBusyRef.current = true;
+
       await getOpenOrders(chainId, traderAPI, address, Date.now())
         .then(({ data }) => {
-          setAPIBusy(false);
           clearOpenOrders();
           if (data?.length > 0) {
             data.map(setOpenOrders);
           }
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(console.error)
+        .finally(() => {
+          isAPIBusyRef.current = false;
           setAPIBusy(false);
         });
     }

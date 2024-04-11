@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
@@ -44,23 +44,20 @@ const MIN_WIDTH_FOR_TABLE = 788;
 export const PositionsTable = () => {
   const { t } = useTranslation();
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [selectedPerpetual] = useAtom(selectedPerpetualAtom);
-  const [openOrders] = useAtom(openOrdersAtom);
-  const [positions, setPositions] = useAtom(positionsAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const removePosition = useSetAtom(removePositionAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
-  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
-  const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
-
-  const isAPIBusyRef = useRef(false);
-  const isSelectedPositionSetRef = useRef(false);
-
   const chainId = useChainId();
   const { address, isConnected, isDisconnected } = useAccount();
   const { width, ref } = useResizeDetector();
+
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const openOrders = useAtomValue(openOrdersAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
+  const [positions, setPositions] = useAtom(positionsAtom);
+  const removePosition = useSetAtom(removePositionAtom);
+  const setAPIBusy = useSetAtom(traderAPIBusyAtom);
+  const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
+  const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
 
   const [isTpSlChangeModalOpen, setTpSlChangeModalOpen] = useState(false);
   const [isModifyModalOpen, setModifyModalOpen] = useState(false);
@@ -71,6 +68,9 @@ export const PositionsTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
   const [orderBy, setOrderBy] = useState<keyof MarginAccountWithAdditionalDataI>('symbol');
+
+  const isAPIBusyRef = useRef(false);
+  const isSelectedPositionSetRef = useRef(false);
 
   const handleTpSlModify = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setTpSlChangeModalOpen(true);
