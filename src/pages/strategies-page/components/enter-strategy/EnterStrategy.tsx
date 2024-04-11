@@ -21,7 +21,7 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
 import styles from './EnterStrategy.module.scss';
-import { Engineering } from '@mui/icons-material';
+import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 
 interface EnterStrategyPropsI {
   isLoading: boolean;
@@ -262,7 +262,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
           <CircularProgress />
           {currentPhaseKey && (
             <span className={styles.phase}>
-              <Engineering fontSize="small" />
+              <EmojiFoodBeverageOutlined fontSize="small" />
               {t(currentPhaseKey)}
             </span>
           )}

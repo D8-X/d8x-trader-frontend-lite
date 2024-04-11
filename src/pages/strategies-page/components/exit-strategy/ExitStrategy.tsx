@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useSendTransaction, useWalletClient } from 'wagmi';
 
-import { Engineering } from '@mui/icons-material';
+import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
@@ -131,7 +131,7 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI)
           <CircularProgress />
           {currentPhaseKey && (
             <span className={styles.phase}>
-              <Engineering fontSize="small" />
+              <EmojiFoodBeverageOutlined fontSize="small" />
               {t(currentPhaseKey)}
             </span>
           )}
