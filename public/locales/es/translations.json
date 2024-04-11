@@ -547,7 +547,7 @@
           "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
           "validity-no-funds": "No hay fondos para retirar",
-          "validity-no-gas": "No gas to proceed",
+          "validity-no-gas": "No hay gas para continuar",
           "validity-amount-too-big": "Cantidad demasiado grande",
           "validity-amount-below-min": "Cantidad por debajo del mínimo",
           "validity-no-amount": "Ingresar cantidad"
@@ -618,9 +618,9 @@
           }
         },
         "phases": {
-          "funding": "Funding strategy account",
-          "posting": "Posting short order",
-          "waiting": "Waiting for order execution"
+          "funding": "Enviar fondos a la cuenta estratégica",
+          "posting": "Publicar ordena venta",
+          "waiting": "Ejecución de orden en curso"
         }
       },
       "exit": {
@@ -642,20 +642,20 @@
           }
         },
         "phases": {
-          "posting": "Posting order to close position",
-          "waiting": "Waiting for order execution",
-          "sending": "Sending funds to main wallet"
+          "posting": "Publicar orden para cerrar posición",
+          "waiting": "Ejecución de orden en curso",
+          "sending": "Enviar fondos a la billetera principal"
         }
       },
       "claim-funds": {
         "toasts": {
           "tx-submitted": {
-            "title": "Your funds are successfully claimed",
-            "body": "Amount"
+            "title": "Sus fondos se reclamaron exitosamente",
+            "body": "Cantidad"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transacción Fallida",
+            "body": "Razón"
           }
         }
       }
@@ -704,7 +704,7 @@
     "currency-label": "Divisa",
     "amount-label": "Cantidad",
     "address-label": "Direccion",
-    "deposit-gas": "Deposit gas",
+    "deposit-gas": "Deposite gasolina",
     "max": "Max:",
     "copied": "Copiado",
     "copy-error": "Apareció un error al copiar al portapapeles.",
@@ -785,12 +785,12 @@
           "fund": "Agregar Fondos",
           "toasts": {
             "tx-submitted": {
-              "title": "You have successfully sent funds to delegate wallet",
-              "body": "Amount"
+              "title": "Has enviado fondos correctamente a la billetera delegada.",
+              "body": "Cantidad"
             },
             "tx-failed": {
-              "title": "Transaction Failed",
-              "body": "Reason"
+              "title": "Transacción Fallida",
+              "body": "Razón"
             }
           }
         }
@@ -868,12 +868,12 @@
       "withdraw-address-error": "Por favor ingresar una dirección valida",
       "toasts": {
         "tx-submitted": {
-          "title": "You have successfully withdrawn your tokens",
-          "body": "Amount"
+          "title": "Has retirado exitosamente tus tokens",
+          "body": "Cantidad"
         },
         "tx-failed": {
-          "title": "Transaction Failed",
-          "body": "Reason"
+          "title": "Transacción Fallida",
+          "body": "Razón"
         }
       }
     },

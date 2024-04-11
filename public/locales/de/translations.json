@@ -72,7 +72,7 @@
           "remove": "Sicherheit entfernen",
           "pos-details": {
             "title": "Neue Position - Details",
-            "title-existing": "Existing position details",
+            "title-existing": "Bisherige Position - Details",
             "size": "Positionsgrösse:",
             "margin": "Margin:",
             "leverage": "Hebel:",
@@ -547,7 +547,7 @@
           "validity-no-address": "Brieftasche verbinden",
           "validity-empty": "-",
           "validity-no-funds": "Keine auszahlbaren Mittel",
-          "validity-no-gas": "No gas to proceed",
+          "validity-no-gas": "Kein Gas",
           "validity-amount-too-big": "Betrag zu gross",
           "validity-amount-below-min": "Betrag unter Minimum",
           "validity-no-amount": "Betrag eingeben"
@@ -618,9 +618,9 @@
           }
         },
         "phases": {
-          "funding": "Funding strategy account",
-          "posting": "Posting short order",
-          "waiting": "Waiting for order execution"
+          "funding": "Strategie Konto füllen",
+          "posting": "Short Order absenden",
+          "waiting": "Auf Auftragsausführung warten"
         }
       },
       "exit": {
@@ -642,20 +642,20 @@
           }
         },
         "phases": {
-          "posting": "Posting order to close position",
-          "waiting": "Waiting for order execution",
-          "sending": "Sending funds to main wallet"
+          "posting": "Order absenden um Position zu schliessen",
+          "waiting": "Auf Auftragsausführung warten",
+          "sending": "Geld zu meiner Hauptwallet schicken"
         }
       },
       "claim-funds": {
         "toasts": {
           "tx-submitted": {
-            "title": "Your funds are successfully claimed",
-            "body": "Amount"
+            "title": "Ihr Geld ist erfolgreich eingegangen",
+            "body": "Menge"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
           }
         }
       }
@@ -704,7 +704,7 @@
     "currency-label": "Währung",
     "amount-label": "Anzahl",
     "address-label": "Adresse",
-    "deposit-gas": "Deposit gas",
+    "deposit-gas": "Gas deponieren",
     "max": "Max:",
     "copied": "Kopiert",
     "copy-error": "Beim Kopieren in die Zwischenablage ist ein Fehler aufgetreten",
@@ -785,12 +785,12 @@
           "fund": "Einzahlen",
           "toasts": {
             "tx-submitted": {
-              "title": "You have successfully sent funds to delegate wallet",
-              "body": "Amount"
+              "title": "Sie haben erfolgreich Geld an ihre Delegation-Wallet gesendet",
+              "body": "Menge"
             },
             "tx-failed": {
-              "title": "Transaction Failed",
-              "body": "Reason"
+              "title": "Transaktion fehlgeschlagen",
+              "body": "Grund"
             }
           }
         }

@@ -72,7 +72,7 @@
           "remove": "减少抵押品",
           "pos-details": {
             "title": "新仓位详情",
-            "title-existing": "Existing position details",
+            "title-existing": "现有仓位详情",
             "size": "仓位大小",
             "margin": "本金",
             "leverage": "杠杆",
@@ -547,7 +547,7 @@
           "validity-no-address": "连接钱包",
           "validity-empty": "-",
           "validity-no-funds": "无资金可提取",
-          "validity-no-gas": "No gas to proceed",
+          "validity-no-gas": "没有燃料",
           "validity-amount-too-big": "金额太大",
           "validity-amount-below-min": "金额低于最小",
           "validity-no-amount": "输入金额"
@@ -618,9 +618,9 @@
           }
         },
         "phases": {
-          "funding": "Funding strategy account",
-          "posting": "Posting short order",
-          "waiting": "Waiting for order execution"
+          "funding": "策略资金账户",
+          "posting": "发布短期订单",
+          "waiting": "等待订单执行"
         }
       },
       "exit": {
@@ -642,20 +642,20 @@
           }
         },
         "phases": {
-          "posting": "Posting order to close position",
-          "waiting": "Waiting for order execution",
-          "sending": "Sending funds to main wallet"
+          "posting": "发布订单平仓",
+          "waiting": "等待订单执行",
+          "sending": "将资金发送至主钱包"
         }
       },
       "claim-funds": {
         "toasts": {
           "tx-submitted": {
-            "title": "Your funds are successfully claimed",
-            "body": "Amount"
+            "title": "您的资金已成功领取",
+            "body": "数量"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "交易失败",
+            "body": "原因"
           }
         }
       }
@@ -704,7 +704,7 @@
     "currency-label": "货币",
     "amount-label": "数量",
     "address-label": "地址",
-    "deposit-gas": "Deposit gas",
+    "deposit-gas": "存入燃料",
     "max": "最大：",
     "copied": "已复制",
     "copy-error": "复制到剪贴板时出现错误",
@@ -785,12 +785,12 @@
           "fund": "存入资金",
           "toasts": {
             "tx-submitted": {
-              "title": "You have successfully sent funds to delegate wallet",
-              "body": "Amount"
+              "title": "您已成功将资金发送至委托钱包",
+              "body": "量"
             },
             "tx-failed": {
-              "title": "Transaction Failed",
-              "body": "Reason"
+              "title": "交易失败",
+              "body": "原因"
             }
           }
         }
@@ -868,12 +868,12 @@
       "withdraw-address-error": "请输入有效地址",
       "toasts": {
         "tx-submitted": {
-          "title": "You have successfully withdrawn your tokens",
-          "body": "Amount"
+          "title": "您已成功提取您的代币",
+          "body": "量"
         },
         "tx-failed": {
-          "title": "Transaction Failed",
-          "body": "Reason"
+          "title": "交易失败",
+          "body": "原因"
         }
       }
     },

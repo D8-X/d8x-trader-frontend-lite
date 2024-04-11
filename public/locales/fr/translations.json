@@ -72,7 +72,7 @@
           "remove": "Retirer du collatéral",
           "pos-details": {
             "title": "Détails de la nouvelle position",
-            "title-existing": "Existing position details",
+            "title-existing": "Détails de la position existant",
             "size": "Taille de la position:",
             "margin": "Marge:",
             "leverage": "Effet de levier:",
@@ -547,7 +547,7 @@
           "validity-no-address": "Connectez le portefeuille",
           "validity-empty": "-",
           "validity-no-funds": "Pas de fonds à retirer",
-          "validity-no-gas": "No gas to proceed",
+          "validity-no-gas": "Pas de gaz pour continuer",
           "validity-amount-too-big": "Montant trop large",
           "validity-amount-below-min": "Montant inférieur au minimum",
           "validity-no-amount": "Entrer un montant"
@@ -618,9 +618,9 @@
           }
         },
         "phases": {
-          "funding": "Funding strategy account",
-          "posting": "Posting short order",
-          "waiting": "Waiting for order execution"
+          "funding": "Transfert de fonds",
+          "posting": "Publication d'un order VENDRE",
+          "waiting": "Exécution de l'ordre en cours"
         }
       },
       "exit": {
@@ -642,20 +642,20 @@
           }
         },
         "phases": {
-          "posting": "Posting order to close position",
-          "waiting": "Waiting for order execution",
-          "sending": "Sending funds to main wallet"
+          "posting": "Publier un ordre de clôture de position",
+          "waiting": "Exécution de l'ordre en cours",
+          "sending": "Restituer les fonds dans le portefeuille principal"
         }
       },
       "claim-funds": {
         "toasts": {
           "tx-submitted": {
-            "title": "Your funds are successfully claimed",
-            "body": "Amount"
+            "title": "Vos fonds ont été réclamés avec succès",
+            "body": "Montant"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "La transaction a échoué",
+            "body": "Raison"
           }
         }
       }
@@ -704,7 +704,7 @@
     "currency-label": "Devise",
     "amount-label": "Montant",
     "address-label": "Adresse",
-    "deposit-gas": "Deposit gas",
+    "deposit-gas": "Déposer du gaz",
     "max": "Max:",
     "copied": "Copié",
     "copy-error": "Une erreur est apparue lors de la copie dans le presse-papiers",
@@ -785,12 +785,12 @@
           "fund": "Financer",
           "toasts": {
             "tx-submitted": {
-              "title": "You have successfully sent funds to delegate wallet",
-              "body": "Amount"
+              "title": "Vous avez envoyé avec succès des fonds au portefeuille délégué",
+              "body": "Montant"
             },
             "tx-failed": {
-              "title": "Transaction Failed",
-              "body": "Reason"
+              "title": "La transaction a échoué",
+              "body": "Raison"
             }
           }
         }
@@ -868,12 +868,12 @@
       "withdraw-address-error": "Veuillez entrer une adresse valide",
       "toasts": {
         "tx-submitted": {
-          "title": "You have successfully withdrawn your tokens",
-          "body": "Amount"
+          "title": "Vous avez retiré avec succès vos tokens",
+          "body": "Montant"
         },
         "tx-failed": {
-          "title": "Transaction Failed",
-          "body": "Reason"
+          "title": "La transaction a échoué",
+          "body": "Raison"
         }
       }
     },
