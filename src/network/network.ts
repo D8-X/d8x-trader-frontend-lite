@@ -75,7 +75,6 @@ export async function getPositionRisk(
   traderAddr: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<MarginAccountI[]>> {
-  console.log('getPositionRisk', { chainId, traderAPI, traderAddr, timestamp, currentTime: Date.now() });
   const params = new URLSearchParams({
     traderAddr,
   });
