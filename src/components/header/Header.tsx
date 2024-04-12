@@ -147,7 +147,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
     if (chainId && (!traderAPI || traderAPI.chainId === chainId) && address) {
       positionsRequestRef.current = true;
-      getPositionRisk(chainId, traderAPI, address, Date.now())
+      getPositionRisk(chainId, null, address, Date.now())
         .then(({ data }) => {
           if (data && data.length > 0) {
             data.map(setPositions);
@@ -164,7 +164,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     if (!exchangeRequestRef.current && chainId && (!traderAPI || traderAPI.chainId === chainId)) {
       exchangeRequestRef.current = true;
       setExchangeInfo(null);
-      getExchangeInfo(chainId, traderAPI)
+      getExchangeInfo(chainId, null)
         .then(({ data }) => {
           setExchangeInfo(data);
         })
