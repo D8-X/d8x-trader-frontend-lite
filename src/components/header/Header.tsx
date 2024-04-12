@@ -145,7 +145,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       return;
     }
 
-    if (chainId && (!traderAPI || traderAPI.chainId === chainId) && address) {
+    if (chainId && address) {
       positionsRequestRef.current = true;
       getPositionRisk(chainId, null, address, Date.now())
         .then(({ data }) => {
@@ -158,10 +158,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           positionsRequestRef.current = false;
         });
     }
-  }, [triggerPositionsUpdate, setPositions, chainId, traderAPI, address]);
+  }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    if (!exchangeRequestRef.current && chainId && (!traderAPI || traderAPI.chainId === chainId)) {
+    if (!exchangeRequestRef.current && chainId) {
       exchangeRequestRef.current = true;
       setExchangeInfo(null);
       getExchangeInfo(chainId, null)
@@ -173,7 +173,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           exchangeRequestRef.current = false;
         });
     }
-  }, [chainId, setExchangeInfo, traderAPI]);
+  }, [chainId, setExchangeInfo]);
 
   const {
     data: poolTokenBalance,
