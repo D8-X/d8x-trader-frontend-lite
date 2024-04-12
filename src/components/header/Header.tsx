@@ -94,10 +94,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const setExchangeInfo = useCallback(
     (data: ExchangeInfoI | null) => {
-      if (!traderAPI) {
-        return;
-      }
-
       if (!data) {
         setProxyAddr(undefined);
         return;
@@ -105,10 +101,21 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
       const pools = data.pools
         .filter((pool) => pool.isRunning)
-        .map((pool) => ({
-          ...pool,
-          poolId: traderAPI.getPoolIdFromSymbol(pool.poolSymbol),
-        }));
+        .map((pool) => {
+          let poolId = 0;
+          if (traderAPI) {
+            try {
+              poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+
+          return {
+            ...pool,
+            poolId,
+          };
+        });
       setPools(pools);
 
       setCollaterals(pools.map((pool) => pool.poolSymbol));
@@ -157,8 +164,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    // traderAPI added based on `setExchangeInfo` requirement
-    if (exchangeRequestRef.current || !chainId || !traderAPI) {
+    if (exchangeRequestRef.current || !chainId) {
       return;
     }
 
@@ -173,7 +179,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       .finally(() => {
         exchangeRequestRef.current = false;
       });
-  }, [chainId, setExchangeInfo, traderAPI]);
+  }, [chainId, setExchangeInfo]);
 
   const {
     data: poolTokenBalance,

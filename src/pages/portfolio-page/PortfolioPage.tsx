@@ -31,7 +31,7 @@ export const PortfolioPage = () => {
   const requestSentRef = useRef(false);
 
   useEffect(() => {
-    if (requestSentRef.current || !traderAPI || !address || !pools.length) {
+    if (requestSentRef.current || !traderAPI || !address || !pools.length || pools.some(({ poolId }) => poolId === 0)) {
       return;
     }
 
