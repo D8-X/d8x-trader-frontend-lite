@@ -56,6 +56,8 @@ export const GlobalStats = () => {
   useEffect(() => {
     setDCurrencyPrice(null);
     if (traderAPI && isSDKConnected && selectedPool?.poolSymbol) {
+      console.log('globalstats getShareTokenPrice', Date.now());
+
       traderAPI.getShareTokenPrice(selectedPool.poolSymbol).then((price) => setDCurrencyPrice(price));
     }
   }, [traderAPI, selectedPool?.poolSymbol, triggerUserStatsUpdate, isSDKConnected, setDCurrencyPrice]);
@@ -63,6 +65,8 @@ export const GlobalStats = () => {
   useEffect(() => {
     setTvl(null);
     if (traderAPI && isSDKConnected && selectedPool?.poolSymbol) {
+      console.log('globalstats getPoolState', Date.now());
+
       traderAPI.getPoolState(selectedPool.poolSymbol).then((PoolState) => setTvl(PoolState.pnlParticipantCashCC));
     }
   }, [traderAPI, selectedPool?.poolSymbol, triggerUserStatsUpdate, isSDKConnected, setTvl]);

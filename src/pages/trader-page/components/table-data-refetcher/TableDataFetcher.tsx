@@ -78,6 +78,8 @@ export const TableDataFetcher = memo(() => {
       }
       for (const order of openOrders) {
         if (!newOrderInfo.some(({ orderIds }) => orderIds.some((orderId) => order.id === orderId))) {
+          console.log('tabledatafetcher', Date.now());
+
           const orderStatus = await traderAPI.getOrderStatus(order.symbol, order.id);
           if (orderStatus === OrderStatus.EXECUTED && !executedOrders.has(order.id)) {
             setOrderExecuted(order.id);

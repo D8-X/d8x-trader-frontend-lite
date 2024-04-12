@@ -44,6 +44,8 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   useEffect(() => {
     setUserAmount(null);
     if (selectedPool?.poolSymbol && traderAPI && isSDKConnected && address) {
+      console.log('personalstats getPoolShareTokenBalance', Date.now());
+
       traderAPI.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
         setUserAmount(amount);
       });

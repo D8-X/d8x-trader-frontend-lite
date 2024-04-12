@@ -37,7 +37,11 @@ export async function exitStrategy(
     .positionRisk(hedgeClient.account.address, symbol)
     .then((pos) => pos[0])
     .catch(() => undefined);
+  console.log('exitstartegy', Date.now());
+
   const marginTokenAddr = traderAPI.getMarginTokenFromSymbol(symbol);
+  console.log('exitstartegy', Date.now());
+
   const marginTokenDec = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
   if (!position || !marginTokenAddr || !marginTokenDec) {
     throw new Error(`No hedging strategy available for symbol ${symbol} on chain ID ${chainId}`);

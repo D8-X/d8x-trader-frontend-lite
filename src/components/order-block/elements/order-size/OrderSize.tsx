@@ -131,11 +131,15 @@ export const OrderSize = memo(() => {
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
       if (traderAPI && !fetchedMaxSizes.current) {
+        console.log('ordersize getSymbolFromPerpId', Date.now());
+
         const symbol = traderAPI.getSymbolFromPerpId(_perpId);
         if (!symbol) {
           return;
         }
         fetchedMaxSizes.current = true;
+        console.log('ordersize --> getMaxOrderSizeForTrader', Date.now());
+
         const data = await getMaxOrderSizeForTrader(_chainId, traderAPI, _address, symbol).catch((err) => {
           console.error(err);
         });

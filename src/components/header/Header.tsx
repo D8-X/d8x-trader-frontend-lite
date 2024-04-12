@@ -104,6 +104,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           let poolId = 0;
           if (traderAPI) {
             try {
+              console.log('header getPoolIdFromSymbol', Date.now());
+
               poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
             } catch (error) {
               console.log(error);

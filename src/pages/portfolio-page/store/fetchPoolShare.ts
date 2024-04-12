@@ -27,7 +27,11 @@ export const fetchPoolShareAtom = atom(null, async (get, set, userAddress: Addre
   const poolShareTokenBalances: { symbol: string; balance: number }[] = [];
 
   for (const pool of pools) {
+    console.log('fetchPoolShare getShareTokenPrice', Date.now());
+
     dCurrencyPriceMap[pool.poolSymbol] = await traderAPI.getShareTokenPrice(pool.poolSymbol);
+    console.log('fetchPoolShare getPoolShareTokenBalance', Date.now());
+
     const poolShareBalance = await traderAPI.getPoolShareTokenBalance(userAddress, pool.poolSymbol);
     poolShareTokenBalances.push({
       symbol: pool.poolSymbol,

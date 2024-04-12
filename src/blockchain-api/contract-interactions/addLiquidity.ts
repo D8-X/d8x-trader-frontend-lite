@@ -9,7 +9,9 @@ export async function addLiquidity(
   symbol: string,
   amount: number
 ): Promise<{ hash: Address }> {
+  console.log('addliquidity', Date.now());
   const decimals = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
+  console.log('addliquidity', Date.now());
   const poolId = traderAPI.getPoolIdFromSymbol(symbol);
   const account = walletClient.account?.address;
   if (!decimals || !poolId || !account) {

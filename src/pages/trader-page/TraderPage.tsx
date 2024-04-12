@@ -132,6 +132,8 @@ export const TraderPage = () => {
       }
       fetchPositionsRef.current = true;
       try {
+        console.log('traderPage --> getPositionRisk', Date.now());
+
         const { data } = await getPositionRisk(_chainId, traderAPI, _address);
         if (data && data.length > 0) {
           data.map(setPositions);
@@ -152,6 +154,8 @@ export const TraderPage = () => {
       }
       fetchOrdersRef.current = true;
       try {
+        console.log('traderpage --> getOpenOrders', Date.now());
+
         const { data } = await getOpenOrders(_chainId, traderAPI, _address);
         data.map(setOpenOrders);
       } catch (err) {

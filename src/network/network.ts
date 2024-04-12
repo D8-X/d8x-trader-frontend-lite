@@ -46,6 +46,8 @@ export async function getExchangeInfo(
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
     // console.log('exchangeInfo via SDK');
+    console.log('network exchange info', Date.now());
+
     const info = await traderAPI.exchangeInfo();
     return { type: 'exchange-info', msg: '', data: info };
   } else {
@@ -61,6 +63,8 @@ export async function getPerpetualStaticInfo(
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
     // console.log('perpStaticInfo via SDK');
+    console.log('network getPerpetualStaticInfo', Date.now());
+
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
@@ -84,6 +88,8 @@ export async function getPositionRisk(
 
   if (traderAPI && traderAPI.chainId === chainId) {
     // console.log(`positionRisk via SDK`);
+    console.log('network positionRisk', Date.now());
+
     const data = await traderAPI.positionRisk(traderAddr);
     return { type: 'position-risk', msg: '', data };
   } else {
@@ -107,6 +113,8 @@ export function positionRiskOnTrade(
     maxShortTrade: number;
   }>
 > {
+  console.log('network positionRiskOnTrade', Date.now());
+
   return traderAPI
     .positionRiskOnTrade(traderAddr, order, curAccount, undefined, { tradingFeeTbps: tradingFeeTbps })
     .then((data) => {
@@ -128,7 +136,11 @@ export function positionRiskOnCollateralAction(
 ): Promise<ValidatedResponseI<{ newPositionRisk: MarginAccountI; availableMargin: number }>> {
   if (traderAPI && traderAPI.chainId === chainId) {
     // console.log('positionRiskOnCollateral via SDK');
+    console.log('network positionRIskOnColalteralAction step 1', Date.now());
+
     return traderAPI.positionRiskOnCollateralAction(amount, positionRisk).then((data) => {
+      console.log('network positionRIskOnColalteralAction step 2', Date.now());
+
       return traderAPI.getAvailableMargin(traderAddr, positionRisk.symbol).then((margin) => {
         return {
           type: 'position-risk-on-collateral-action',
@@ -165,6 +177,8 @@ export async function getOpenOrders(
 ): Promise<ValidatedResponseI<PerpetualOpenOrdersI[]>> {
   if (traderAPI && traderAPI.chainId === chainId) {
     // console.log(`openOrders via SDK`);
+    console.log('network openOrders', Date.now());
+
     const data = await traderAPI.openOrders(traderAddr);
     return { type: 'open-orders', msg: '', data };
   } else {
@@ -197,6 +211,8 @@ export function getMaxOrderSizeForTrader(
   timestamp?: number
 ): Promise<ValidatedResponseI<MaxOrderSizeResponseI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
+    console.log('network maxOrderSizeForTrader', Date.now());
+
     return traderAPI
       .maxOrderSizeForTrader(traderAddr, symbol)
       .then(({ buy, sell }) => {
@@ -252,8 +268,14 @@ export function getCancelOrder(
   orderId: string
 ): Promise<ValidatedResponseI<CancelOrderResponseI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
+    console.log('network getCancelOrder 1', Date.now());
+
     const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
+    console.log('network getCancelOrder 2', Date.now());
+
     return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
+      console.log('network getCancelOrder 3', Date.now());
+
       return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
         return {
           type: 'cancel-order',
@@ -292,6 +314,8 @@ export function getAddCollateral(
   amount: number
 ): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
   if (traderAPI) {
+    console.log('network getCancelOrder 4 traderAPI calls', Date.now());
+
     const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
     const proxyAddr = traderAPI.getProxyAddress();
     const proxyABI = traderAPI.getProxyABI('deposit');
@@ -334,6 +358,8 @@ export function getAvailableMargin(
   traderAddr: string
 ): Promise<ValidatedResponseI<{ amount: number }>> {
   if (traderAPI) {
+    console.log('network getAvailableMargin', Date.now());
+
     return traderAPI.getAvailableMargin(traderAddr, symbol).then((margin) => {
       return { type: 'available-margin', msg: '', data: { amount: margin } };
     });
@@ -358,6 +384,8 @@ export async function getRemoveCollateral(
   amount: number
 ): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
   if (traderAPI) {
+    console.log('network getRemoveCollateral 4 calls', Date.now());
+
     const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
     const proxyAddr = traderAPI.getProxyAddress();
     const proxyABI = traderAPI.getProxyABI('withdraw');

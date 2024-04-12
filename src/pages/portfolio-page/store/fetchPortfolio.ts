@@ -13,6 +13,8 @@ import { fetchUnrealizedPnLAtom } from './fetchUnrealizedPnL';
 import { fetchStrategySyntheticPosition } from './fetchStrategySyntheticPosition';
 
 const getPoolUsdPrice = async (traderAPI: TraderInterface, pool: PoolWithIdI) => {
+  console.log('fetchPortfolio getPriceInUSD', Date.now());
+
   const info = await traderAPI.getPriceInUSD(
     `${pool.perpetuals[0].baseCurrency}-${pool.perpetuals[0].quoteCurrency}-${pool.poolSymbol}`
   );
@@ -28,6 +30,8 @@ const getBaseUSDPrice = async (traderAPI: TraderInterface, pool: PoolWithIdI) =>
   const basePricesMap: Record<string, number> = {};
 
   for (const perpetual of pool.perpetuals) {
+    console.log('fetchPortfolio getPriceInUSD line 33', Date.now());
+
     const info = await traderAPI.getPriceInUSD(
       `${perpetual.baseCurrency}-${perpetual.quoteCurrency}-${pool.poolSymbol}`
     );

@@ -8,7 +8,11 @@ export async function executeLiquidityWithdrawal(
   traderAPI: TraderInterface,
   symbol: string
 ): Promise<{ hash: Address }> {
+  console.log('executeliquiditywithdrawal', Date.now());
+
   const decimals = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
+  console.log('executeliquiditywithdrawal', Date.now());
+
   const poolId = traderAPI.getPoolIdFromSymbol(symbol);
   const account = walletClient.account?.address;
   if (!decimals || !poolId || !account) {

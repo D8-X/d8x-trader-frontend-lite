@@ -61,7 +61,9 @@ export async function enterStrategy(
     .getReadOnlyProxyInstance()
     .isDelegate(strategyAddr, walletClient.account.address)) as boolean;
 
+  console.log('enterStrategy', Date.now());
   const marginTokenAddr = traderAPI.getMarginTokenFromSymbol(symbol);
+  console.log('enterStrategy', Date.now());
   const marginTokenDec = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
   const position = await traderAPI
     .positionRisk(strategyAddr, symbol)
