@@ -56,15 +56,15 @@ export const SDKLoader = memo(() => {
       newTraderAPI
         .createProxyInstance()
         .then(() => {
-          loadingAPIRef.current = false;
-          setAPIBusy(false);
           setSDKConnected(true);
           setTraderAPI(newTraderAPI);
         })
         .catch((e) => {
           console.log('error loading SDK', e);
-          loadingAPIRef.current = false;
+        })
+        .finally(() => {
           setAPIBusy(false);
+          loadingAPIRef.current = false;
         });
     },
     [setTraderAPI, setSDKConnected, setAPIBusy]

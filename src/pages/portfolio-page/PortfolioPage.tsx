@@ -1,5 +1,5 @@
-import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useRef, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
@@ -22,14 +22,27 @@ export const PortfolioPage = () => {
 
   const { openRewards } = useFetchOpenRewards();
 
-  const [traderAPI] = useAtom(traderAPIAtom);
-  const [{ isLoading }, fetchPortfolio] = useAtom(fetchPortfolioAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const fetchPortfolio = useSetAtom(fetchPortfolioAtom);
+
+  const [isLoading, setLoading] = useState(true);
+
+  const requestSentRef = useRef(false);
 
   useEffect(() => {
-    if (traderAPI) {
-      // eslint-disable-next-line
-      fetchPortfolio(address!, chainId, openRewards).then();
+    if (requestSentRef.current || !traderAPI || !address || openRewards.length) {
+      return;
     }
+
+    requestSentRef.current = true;
+
+    fetchPortfolio(address!, chainId, openRewards)
+      .then()
+      .catch(console.error)
+      .finally(() => {
+        requestSentRef.current = false;
+        setLoading(false);
+      });
   }, [openRewards, traderAPI, address, chainId, fetchPortfolio]);
 
   if (isLoading) {

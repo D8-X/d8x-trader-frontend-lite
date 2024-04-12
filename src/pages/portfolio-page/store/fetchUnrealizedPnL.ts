@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { Address } from 'viem';
 
 import { getPositionRisk } from 'network/network';
+import { traderAPIAtom } from 'store/pools.store';
 
 import { poolUsdPriceAtom } from './fetchPortfolio';
 
@@ -16,9 +17,14 @@ export const totalUnrealizedPnLAtom = atom(0);
 export const unrealizedPnLListAtom = atom<UnrealizedPnLListAtomI[]>([]);
 
 export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: Address, chainId: number) => {
+  const traderAPI = get(traderAPIAtom);
+  if (!traderAPI) {
+    return;
+  }
+
   const poolUsdPrice = get(poolUsdPriceAtom);
 
-  const { data } = await getPositionRisk(chainId, null, userAddress, Date.now());
+  const { data } = await getPositionRisk(chainId, traderAPI, userAddress, Date.now());
   const activePositions = data.filter(({ side }) => side !== 'CLOSED');
 
   const unrealizedPnLReduced: Record<string, number> = {};

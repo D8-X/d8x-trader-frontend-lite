@@ -43,12 +43,11 @@ interface PoolUsdPriceI {
 }
 
 export const poolUsdPriceAtom = atom<Record<string, PoolUsdPriceI>>({});
-const isLoadingAtom = atom(true);
 export const totalOpenRewardsAtom = atom<number>(0);
 export const accountValueAtom = atom(0);
 
 export const fetchPortfolioAtom = atom(
-  (get) => ({ isLoading: get(isLoadingAtom) }),
+  null,
   async (get, set, userAddress: Address, chainId: number, openRewards: OpenTraderRebateI[]) => {
     const traderAPI = get(traderAPIAtom);
     if (!traderAPI) {
@@ -56,8 +55,6 @@ export const fetchPortfolioAtom = atom(
     }
 
     const pools = get(poolsAtom).filter((pool) => pool.isRunning);
-
-    set(isLoadingAtom, false);
 
     let totalReferralRewards = 0;
 
