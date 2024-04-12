@@ -8,7 +8,7 @@ import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
 import { useFetchOpenRewards } from 'pages/refer-page/components/trader-tab/useFetchOpenRewards';
-import { traderAPIAtom } from 'store/pools.store';
+import { poolsAtom, traderAPIAtom } from 'store/pools.store';
 
 import { AccountValue } from './components/AccountValue/AccountValue';
 import { AssetsBlock } from './components/AssetsBlock/AssetsBlock';
@@ -22,6 +22,7 @@ export const PortfolioPage = () => {
 
   const { openRewards } = useFetchOpenRewards();
 
+  const pools = useAtomValue(poolsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const fetchPortfolio = useSetAtom(fetchPortfolioAtom);
 
@@ -30,7 +31,7 @@ export const PortfolioPage = () => {
   const requestSentRef = useRef(false);
 
   useEffect(() => {
-    if (requestSentRef.current || !traderAPI || !address || openRewards.length) {
+    if (requestSentRef.current || !traderAPI || !address || !pools.length) {
       return;
     }
 
@@ -43,7 +44,7 @@ export const PortfolioPage = () => {
         requestSentRef.current = false;
         setLoading(false);
       });
-  }, [openRewards, traderAPI, address, chainId, fetchPortfolio]);
+  }, [openRewards, traderAPI, address, chainId, pools, fetchPortfolio]);
 
   if (isLoading) {
     return (

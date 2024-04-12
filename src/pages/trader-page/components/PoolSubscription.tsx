@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 
@@ -11,7 +11,7 @@ export const PoolSubscription = () => {
 
   const { isConnected, send } = useWebSocketContext();
 
-  const [pools] = useAtom(poolsAtom);
+  const pools = useAtomValue(poolsAtom);
 
   useEffect(() => {
     if (pools.length && isConnected) {

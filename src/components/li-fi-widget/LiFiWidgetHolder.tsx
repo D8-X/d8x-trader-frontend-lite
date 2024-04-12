@@ -1,6 +1,6 @@
 import { LiFiWidget, useWidgetEvents, type WidgetConfig, WidgetEvent } from '@lifi/widget';
 import { LanguageKey } from '@lifi/widget/providers';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
@@ -32,9 +32,9 @@ export const LiFiWidgetHolder = () => {
   const signer = useEthersSigner();
   const widgetEvents = useWidgetEvents();
 
-  const [enabledDarkMode] = useAtom(enabledDarkModeAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [pools] = useAtom(poolsAtom);
+  const enabledDarkMode = useAtomValue(enabledDarkModeAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const pools = useAtomValue(poolsAtom);
 
   const [triggerSwap, setTriggerSwap] = useState(false);
 

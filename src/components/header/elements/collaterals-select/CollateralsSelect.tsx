@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -41,10 +41,10 @@ export const CollateralsSelect = memo(() => {
 
   const { isConnected, send } = useWebSocketContext();
 
-  const [pools] = useAtom(poolsAtom);
-  const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
+  const pools = useAtomValue(poolsAtom);
   const setSelectedPerpetual = useSetAtom(selectedPerpetualAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
+  const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
 
   const urlChangesAppliedRed = useRef(false);
 

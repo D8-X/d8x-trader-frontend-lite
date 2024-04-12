@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
@@ -19,7 +19,7 @@ import styles from './TraderTab.module.scss';
 export const TraderTab = () => {
   const { t } = useTranslation();
 
-  const [pools] = useAtom(poolsAtom);
+  const pools = useAtomValue(poolsAtom);
 
   const { address } = useAccount();
 

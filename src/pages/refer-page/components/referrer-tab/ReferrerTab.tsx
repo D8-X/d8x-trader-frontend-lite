@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
@@ -19,8 +19,8 @@ import styles from './ReferrerTab.module.scss';
 export const ReferrerTab = memo(() => {
   const { t } = useTranslation();
 
-  const [pools] = useAtom(poolsAtom);
-  const [commissionRate] = useAtom(commissionRateAtom);
+  const pools = useAtomValue(poolsAtom);
+  const commissionRate = useAtomValue(commissionRateAtom);
 
   const { address } = useAccount();
 

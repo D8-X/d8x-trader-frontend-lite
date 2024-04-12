@@ -43,7 +43,7 @@ interface PoolUsdPriceI {
 }
 
 export const poolUsdPriceAtom = atom<Record<string, PoolUsdPriceI>>({});
-export const totalOpenRewardsAtom = atom<number>(0);
+export const totalOpenRewardsAtom = atom(0);
 export const accountValueAtom = atom(0);
 
 export const fetchPortfolioAtom = atom(
