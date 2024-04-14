@@ -34,7 +34,8 @@ export async function postOrder(
     gasPrice: gasPrice,
   };
   const gasLimit = await estimateContractGas(walletClient, params)
-    .then((gas) => (gas * 110n) / 100n)
-    .catch(() => undefined);
+    .then((gas) => (gas * 200n) / 100n)
+    .catch(() => 5_000_000n);
+
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

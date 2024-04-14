@@ -38,7 +38,8 @@ export async function removeDelegate(
       value: 1n,
       account: delegateAccount,
       gasPrice,
-    }).catch(() => undefined);
+    }).catch(() => 4_000_000n);
+
     if (gasLimit && 2n * gasLimit * gasPrice < balance) {
       await sendTransactionAsync({
         account: delegateAccount,

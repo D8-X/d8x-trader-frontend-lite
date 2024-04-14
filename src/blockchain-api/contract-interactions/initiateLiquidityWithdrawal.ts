@@ -27,7 +27,7 @@ export async function initiateLiquidityWithdrawal(
     account: account,
   };
   const gasLimit = await estimateContractGas(walletClient, params)
-    .then((gas) => (gas * 110n) / 100n)
-    .catch(() => undefined);
+    .then((gas) => (gas * 130n) / 100n)
+    .catch(() => 5_000_000n);
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

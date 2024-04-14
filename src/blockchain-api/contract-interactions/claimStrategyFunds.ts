@@ -68,7 +68,7 @@ export async function claimStrategyFunds(
     //console.log('estimateGas: erc20');
     const gasLimit = await estimateGas(hedgeClient, params)
       .then((gas) => (gas * 150n) / 100n)
-      .catch(() => undefined);
+      .catch(() => 4_000_000n);
     const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
     if (!gasLimit || balance < gasPrice * gasLimit) {
       //console.log('sending funds to strategy acct');
@@ -102,10 +102,9 @@ export async function claimStrategyFunds(
     value: 1n,
     account: hedgeClient.account,
     gasPrice,
-  }).catch((error) => {
-    console.error(error);
-    return undefined;
-  });
+  })
+    .then((gas) => (gas * 150n) / 100n)
+    .catch(() => 4_000_000n);
   const { value: balance } = await getBalance(wagmiConfig, { address: hedgeClient.account.address });
   if (gasLimit && gasLimit * gasPrice < balance) {
     //console.log('sendTransactionAsync');

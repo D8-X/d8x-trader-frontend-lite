@@ -185,7 +185,7 @@ export async function enterStrategy(
     );
   }
 
-  //console.log('posting order');
+  console.log('posting order');
   if (isDelegated && hedgeClient === undefined) {
     setCurrentPhaseKey('pages.strategies.enter.phases.posting');
     return postOrder(walletClient, [HashZero], data);

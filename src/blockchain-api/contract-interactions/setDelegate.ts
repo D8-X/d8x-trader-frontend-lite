@@ -27,8 +27,8 @@ export async function setDelegate(
     account,
   };
   const gasLimit = await estimateContractGas(walletClient, params)
-    .then((gas) => (gas * 110n) / 100n)
-    .catch(() => undefined);
+    .then((gas) => (gas * 130n) / 100n)
+    .catch(() => 4_000_000n);
   await walletClient.writeContract({ ...params, gas: gasLimit });
   return delegateAddr;
 }
