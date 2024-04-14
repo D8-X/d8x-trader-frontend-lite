@@ -75,6 +75,7 @@ export async function exitStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
+        gas: GAS_TARGET,
       });
     }
     setCurrentPhaseKey('pages.strategies.exit.phases.posting');

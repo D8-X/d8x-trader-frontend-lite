@@ -129,6 +129,7 @@ export async function enterStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: GAS_TARGET * gasPrice,
+        gas: GAS_TARGET,
       });
     }
     if (hedgeClient === undefined) {
@@ -159,6 +160,7 @@ export async function enterStrategy(
       functionName: 'transfer',
       args: [strategyAddr, amountBigint],
       account: walletClient.account,
+      gas: GAS_TARGET,
     }).catch((error) => {
       //console.log(error);
       throw new Error(error.shortMessage);
@@ -194,6 +196,7 @@ export async function enterStrategy(
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
+        gas: GAS_TARGET,
       });
     }
     if (hedgeClient === undefined) {
