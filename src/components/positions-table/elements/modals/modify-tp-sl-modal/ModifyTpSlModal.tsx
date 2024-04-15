@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi } from 'viem';
@@ -17,10 +17,10 @@ import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { orderDigest, positionRiskOnTrade } from 'network/network';
+import { getTradingFee, orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { poolFeeAtom, poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -68,7 +68,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
-  const poolFee = useAtomValue(poolFeeAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
@@ -77,9 +76,11 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [selectedPool, setSelectedPool] = useState<PoolWithIdI>();
+  const [poolFee, setPoolFee] = useState<number>();
 
   const validityCheckRef = useRef(false);
   const requestSentRef = useRef(false);
+  const fetchFeeRef = useRef(false);
 
   useEffect(() => {
     if (validityCheckRef.current) {
@@ -104,14 +105,14 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
   }, [selectedPosition, address, traderAPI, chainId, poolFee]);
 
   useEffect(() => {
-    if (selectedPosition && pools.length > 0) {
+    if (selectedPosition?.symbol && pools.length > 0) {
       const parsedSymbol = parseSymbol(selectedPosition.symbol);
       const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
       setSelectedPool(foundPool);
     } else {
       setSelectedPool(undefined);
     }
-  }, [selectedPosition, pools]);
+  }, [selectedPosition?.symbol, pools]);
 
   const { data: poolTokenBalance } = useReadContracts({
     allowFailure: false,
@@ -130,6 +131,30 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, closeModal }: M
     ],
     query: { enabled: address && chainId === chain?.id && !!selectedPool?.marginTokenAddr && isConnected },
   });
+
+  const fetchPoolFee = useCallback((_chainId: number, _poolSymbol: string, _address: Address) => {
+    if (fetchFeeRef.current) {
+      return;
+    }
+
+    fetchFeeRef.current = true;
+
+    getTradingFee(_chainId, _poolSymbol, _address)
+      .then((data) => {
+        setPoolFee(data.data);
+      })
+      .catch(console.error)
+      .finally(() => {
+        fetchFeeRef.current = false;
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!chainId || !selectedPool?.poolSymbol || !address) {
+      return;
+    }
+    fetchPoolFee(chainId, selectedPool.poolSymbol, address);
+  }, [chainId, selectedPool?.poolSymbol, address, fetchPoolFee]);
 
   const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
     hash: txHash,

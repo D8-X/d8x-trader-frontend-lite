@@ -1,9 +1,9 @@
-import { useAtom, useSetAtom } from 'jotai';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
-import { type Address } from 'viem';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address, erc20Abi } from 'viem';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -18,9 +18,10 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { orderDigest } from 'network/network';
 import { parseSymbol } from 'helpers/parseSymbol';
+import { orderSubmitted } from 'network/broker';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { poolTokenDecimalsAtom, proxyAddrAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
+import { poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI } from 'types/types';
 import { OrderWithIdI } from 'types/types';
@@ -30,7 +31,6 @@ import { cancelOrders } from '../../../helpers/cancelOrders';
 
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
-import { orderSubmitted } from 'network/broker';
 
 interface CloseModalPropsI {
   isOpen: boolean;
@@ -41,23 +41,65 @@ interface CloseModalPropsI {
 export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseModalPropsI) => {
   const { t } = useTranslation();
 
-  const [proxyAddr] = useAtom(proxyAddrAtom);
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [poolTokenDecimals] = useAtom(poolTokenDecimalsAtom);
+  const pools = useAtomValue(poolsAtom);
+  const proxyAddr = useAtomValue(proxyAddrAtom);
+  const tradingClient = useAtomValue(tradingClientAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
-  const [tradingClient] = useAtom(tradingClientAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
 
   const chainId = useChainId();
-  const { address, chain } = useAccount();
+  const { address, chain, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [symbolForTx, setSymbolForTx] = useState('');
   const [closeOpenOrders, setCloseOpenOrders] = useState(true);
+  const [poolTokenDecimals, setPoolTokenDecimals] = useState<number>();
 
   const requestSentRef = useRef(false);
+
+  const poolByPosition = useMemo(() => {
+    if (!selectedPosition?.symbol || pools.length === 0) {
+      return null;
+    }
+
+    const parsedSymbol = parseSymbol(selectedPosition.symbol);
+    const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
+    return foundPool || null;
+  }, [pools, selectedPosition?.symbol]);
+
+  const {
+    data: poolTokenBalanceData,
+    isError: isPoolBalanceError,
+    refetch,
+  } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: poolByPosition?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: {
+      enabled: address && traderAPI?.chainId === chain?.id && !!poolByPosition?.marginTokenAddr && isConnected,
+    },
+  });
+
+  useEffect(() => {
+    if (address && chain) {
+      refetch().then().catch(console.error);
+    }
+  }, [address, chain, refetch]);
+
+  useEffect(() => {
+    if (poolTokenBalanceData && chain && !isPoolBalanceError) {
+      setPoolTokenDecimals(poolTokenBalanceData[0]);
+    } else {
+      setPoolTokenDecimals(undefined);
+    }
+  }, [chain, poolTokenBalanceData, isPoolBalanceError]);
 
   const {
     isSuccess,
@@ -128,7 +170,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     if (
       !selectedPosition ||
       !address ||
-      !selectedPool ||
+      !poolByPosition ||
       !proxyAddr ||
       !walletClient ||
       !tradingClient ||
@@ -153,7 +195,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
     orderDigest(chainId, [closeOrder], address)
       .then((data) => {
         if (data.data.digests.length > 0) {
-          approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
+          approveMarginToken(walletClient, poolByPosition.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
             postOrder(tradingClient, signatures, data.data)
               .then((tx) => {

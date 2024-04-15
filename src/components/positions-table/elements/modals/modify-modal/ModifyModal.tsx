@@ -2,8 +2,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
-import { Address } from 'viem';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { Address, erc20Abi, formatUnits } from 'viem';
 
 import {
   Button,
@@ -36,10 +36,8 @@ import {
 } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import {
-  poolTokenBalanceAtom,
-  poolTokenDecimalsAtom,
+  poolsAtom,
   proxyAddrAtom,
-  selectedPoolAtom,
   traderAPIAtom,
   traderAPIBusyAtom,
   triggerBalancesUpdateAtom,
@@ -62,16 +60,14 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const { t } = useTranslation();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
-  const selectedPool = useAtomValue(selectedPoolAtom);
+  const pools = useAtomValue(poolsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
-  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
-  const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
   const chainId = useChainId();
-  const { address, chain } = useAccount();
+  const { address, chain, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
@@ -85,9 +81,61 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
   const [addCollateral, setAddCollateral] = useState(0);
   const [removeCollateral, setRemoveCollateral] = useState(0);
   const [maxCollateral, setMaxCollateral] = useState<number>();
+  const [poolTokenBalance, setPoolTokenBalance] = useState<number>();
+  const [poolTokenDecimals, setPoolTokenDecimals] = useState<number>();
 
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
+
+  const poolByPosition = useMemo(() => {
+    if (!selectedPosition?.symbol || pools.length === 0) {
+      return null;
+    }
+
+    const parsedSymbol = parseSymbol(selectedPosition.symbol);
+    const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
+    return foundPool || null;
+  }, [pools, selectedPosition?.symbol]);
+
+  const {
+    data: poolTokenBalanceData,
+    isError,
+    refetch,
+  } = useReadContracts({
+    allowFailure: false,
+    contracts: [
+      {
+        address: poolByPosition?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'balanceOf',
+        args: [address as Address],
+      },
+      {
+        address: poolByPosition?.marginTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'decimals',
+      },
+    ],
+    query: {
+      enabled: address && traderAPI?.chainId === chain?.id && !!poolByPosition?.marginTokenAddr && isConnected,
+    },
+  });
+
+  useEffect(() => {
+    if (address && chain) {
+      refetch().then().catch(console.error);
+    }
+  }, [address, chain, refetch]);
+
+  useEffect(() => {
+    if (poolTokenBalanceData && chain && !isError) {
+      setPoolTokenBalance(+formatUnits(poolTokenBalanceData[0], poolTokenBalanceData[1]));
+      setPoolTokenDecimals(poolTokenBalanceData[1]);
+    } else {
+      setPoolTokenBalance(undefined);
+      setPoolTokenDecimals(undefined);
+    }
+  }, [chain, poolTokenBalanceData, isError]);
 
   const {
     isSuccess: isAddSuccess,
@@ -388,7 +436,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     if (
       !selectedPosition ||
       !address ||
-      !selectedPool ||
+      !poolByPosition ||
       !proxyAddr ||
       !walletClient ||
       !tradingClient ||
@@ -404,7 +452,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
         .then(({ data }) => {
           approveMarginToken(
             walletClient,
-            selectedPool.marginTokenAddr,
+            poolByPosition.marginTokenAddr,
             proxyAddr,
             addCollateral,
             poolTokenDecimals
@@ -507,7 +555,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                     id="add-collateral"
                     endAdornment={
                       <InputAdornment position="end">
-                        <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
+                        <Typography variant="adornment">{poolByPosition?.poolSymbol}</Typography>
                       </InputAdornment>
                     }
                     type="number"
@@ -540,7 +588,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
                       id="remove-collateral"
                       endAdornment={
                         <InputAdornment position="end">
-                          <Typography variant="adornment">{selectedPool?.poolSymbol}</Typography>
+                          <Typography variant="adornment">{poolByPosition?.poolSymbol}</Typography>
                         </InputAdornment>
                       }
                       type="number"
