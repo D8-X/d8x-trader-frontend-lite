@@ -35,7 +35,7 @@ export async function postOrder(
   };
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 150n) / 100n)
-    .catch(() => 5_000_000n);
+    .catch(() => 5_000_000n * BigInt(orders.length));
 
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }
