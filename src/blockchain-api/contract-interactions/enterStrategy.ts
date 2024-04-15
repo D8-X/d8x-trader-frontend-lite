@@ -13,7 +13,7 @@ import {
   Chain,
   Account,
 } from 'viem';
-import { getBalance, readContract, writeContract } from 'viem/actions';
+import { getBalance, readContract, waitForTransactionReceipt, writeContract } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
@@ -28,7 +28,7 @@ import { setDelegate } from './setDelegate';
 
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const DELEGATE_INDEX = 2; // to be emitted
-const GAS_TARGET = 2_000_000n; // good for arbitrum
+const GAS_TARGET = 4_000_000n; // good for arbitrum
 
 export async function enterStrategy(
   { chainId, walletClient, symbol, traderAPI, amount, feeRate, indexPrice, limitPrice, strategyAddress }: HedgeConfigI,
@@ -124,13 +124,16 @@ export async function enterStrategy(
 
   if (!isDelegated) {
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await sendTransactionAsync({
+      const tx0 = await sendTransactionAsync({
         account: walletClient.account,
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: GAS_TARGET * gasPrice,
         gas: GAS_TARGET,
+      }).catch((error) => {
+        throw new Error(error.shortMessage);
       });
+      await waitForTransactionReceipt(walletClient, { hash: tx0 });
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
@@ -153,7 +156,7 @@ export async function enterStrategy(
   if (marginTokenBalance < amountBigint) {
     //console.log('funding strategy account');
     setCurrentPhaseKey('pages.strategies.enter.phases.funding');
-    await writeContract(walletClient, {
+    const tx1 = await writeContract(walletClient, {
       address: marginTokenAddr as Address,
       chain: walletClient.chain,
       abi: erc20Abi,
@@ -162,9 +165,9 @@ export async function enterStrategy(
       account: walletClient.account,
       gas: GAS_TARGET,
     }).catch((error) => {
-      //console.log(error);
       throw new Error(error.shortMessage);
     });
+    await waitForTransactionReceipt(walletClient, { hash: tx1 });
   }
   if (allowance < amountBigint) {
     //console.log('approving margin token', { marginTokenAddr, amount });
@@ -185,7 +188,7 @@ export async function enterStrategy(
     );
   }
 
-  console.log('posting order');
+  //console.log('posting order');
   if (isDelegated && hedgeClient === undefined) {
     setCurrentPhaseKey('pages.strategies.enter.phases.posting');
     return postOrder(walletClient, [HashZero], data);
@@ -197,6 +200,8 @@ export async function enterStrategy(
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
         gas: GAS_TARGET,
+      }).catch((error) => {
+        throw new Error(error);
       });
     }
     if (hedgeClient === undefined) {
