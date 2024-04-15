@@ -52,6 +52,9 @@ export const SDKLoader = memo(() => {
           configSDK.priceFeedEndpoints = [{ type: 'pyth', endpoints: [config.priceFeedEndpoint[_chainId]] }];
         }
       }
+      if (config.httpRPC[_chainId] && config.httpRPC[_chainId] !== '') {
+        configSDK.nodeURL = config.httpRPC[_chainId];
+      }
       const newTraderAPI = new TraderInterface(configSDK);
       newTraderAPI
         .createProxyInstance()
