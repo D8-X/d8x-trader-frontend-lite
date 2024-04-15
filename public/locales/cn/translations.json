@@ -855,7 +855,11 @@
         "5": "通过 <bold>{{chainName}}</bold>发送。"
       },
       "deposit-note": "确保存入足够的<bold>{{currencyName}}</bold>作为燃料费，并至少有一份抵押品。",
-      "done-button": "完成"
+      "done-button": "完成",
+      "convert": {
+        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
+        "button": "Convert"
+      }
     },
     "extract-pk-modal": {
       "title": "提取私钥",

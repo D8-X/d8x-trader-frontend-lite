@@ -8,6 +8,7 @@ import { Button, DialogTitle, Typography } from '@mui/material';
 import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
 import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
 import { Dialog } from 'components/dialog/Dialog';
+import { OrSeparator } from 'components/separator/OrSeparator';
 import { Separator } from 'components/separator/Separator';
 import { Web3SignInMethodE } from 'types/enums';
 
@@ -36,12 +37,7 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
             <div className={styles.actionButtonsContainer}>
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
-              <div className={styles.orSeparator}>
-                <Separator />
-                <div className={styles.orTextHolder}>
-                  <span>{t('common.connect-modal.or-separator')}</span>
-                </div>
-              </div>
+              <OrSeparator />
               <WalletConnectButton
                 connectButtonLabel={
                   <>

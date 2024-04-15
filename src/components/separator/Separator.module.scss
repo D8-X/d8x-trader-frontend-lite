@@ -16,6 +16,25 @@
   }
 }
 
+.orSeparator {
+  position: relative;
+  width: 100%;
+  padding: 0 9 * $d8x-spacing;
+  text-align: center;
+}
+
+.orTextHolder {
+  position: absolute;
+  inset: -($d8x-spacing * 1.5) 0 0;
+  text-align: center;
+
+  span {
+    width: 40px;
+    background-color: var(--d8x-color-background);
+    padding: 0 2 * $d8x-spacing;
+  }
+}
+
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
   .root {

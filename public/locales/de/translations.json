@@ -855,7 +855,11 @@
         "5": "Senden Sie nur über <bold>{{chainName}}</bold>."
       },
       "deposit-note": "Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens eine Sicherheit hinterlegen.",
-      "done-button": "Gemacht"
+      "done-button": "Gemacht",
+      "convert": {
+        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
+        "button": "Convert"
+      }
     },
     "extract-pk-modal": {
       "title": "Privaten Schlüssel extrahieren",

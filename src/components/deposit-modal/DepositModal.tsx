@@ -18,6 +18,8 @@ import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 
+import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
+
 import styles from './DepositModal.module.scss';
 
 export const DepositModal = () => {
@@ -53,6 +55,7 @@ export const DepositModal = () => {
         <div className={styles.section}>
           <CurrencySelect selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
         </div>
+        <OKXConvertor selectedCurrency={selectedCurrency} />
         <div className={styles.section}>
           <Typography variant="bodyTiny" className={styles.noteText}>
             <Translate

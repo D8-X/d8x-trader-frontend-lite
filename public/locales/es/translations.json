@@ -855,7 +855,11 @@
         "5": "Envíe por <bold>{{chainName}}</bold>."
       },
       "deposit-note": "Asegúrese de depositar suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía.",
-      "done-button": "Hecho"
+      "done-button": "Hecho",
+      "convert": {
+        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
+        "button": "Convert"
+      }
     },
     "extract-pk-modal": {
       "title": "Extraer clave privada",

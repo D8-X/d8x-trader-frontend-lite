@@ -855,7 +855,11 @@
         "5": "Envoyez par <bold>{{chainName}}</bold>."
       },
       "deposit-note": "Assurez-vous de déposer suffisamment de <bold>{{currencyName}}</bold> pour le gaz et au moins une devise comme collatéral.",
-      "done-button": "Complété"
+      "done-button": "Complété",
+      "convert": {
+        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
+        "button": "Convert"
+      }
     },
     "extract-pk-modal": {
       "title": "Extraire la clé privée",
