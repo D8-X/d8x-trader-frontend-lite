@@ -857,8 +857,8 @@
       "deposit-note": "Asegúrese de depositar suficiente <bold>{{currencyName}}</bold> para gasolina y al menos una garantía.",
       "done-button": "Hecho",
       "convert": {
-        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
-        "button": "Convert"
+        "text": "Convierta su <bold>{{fromCurrency}}</bold> a <bold>{{toCurrency}}</bold> sin deslizamiento:",
+        "button": "Convierta"
       }
     },
     "extract-pk-modal": {

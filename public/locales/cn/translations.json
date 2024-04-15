@@ -857,8 +857,8 @@
       "deposit-note": "确保存入足够的<bold>{{currencyName}}</bold>作为燃料费，并至少有一份抵押品。",
       "done-button": "完成",
       "convert": {
-        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
-        "button": "Convert"
+        "text": "将您的 <bold>{{fromCurrency}}</bold> 转换为 <bold>{{toCurrency}}</bold>，无滑点：",
+        "button": "转变"
       }
     },
     "extract-pk-modal": {

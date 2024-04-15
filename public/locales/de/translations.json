@@ -857,8 +857,8 @@
       "deposit-note": "Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens eine Sicherheit hinterlegen.",
       "done-button": "Gemacht",
       "convert": {
-        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
-        "button": "Convert"
+        "text": "Konvertieren Sie Ihr <bold>{{fromCurrency}}</bold> ohne Slippage in <bold>{{toCurrency}}</bold>:",
+        "button": "Konvertieren"
       }
     },
     "extract-pk-modal": {

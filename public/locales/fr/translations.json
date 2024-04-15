@@ -857,8 +857,8 @@
       "deposit-note": "Assurez-vous de déposer suffisamment de <bold>{{currencyName}}</bold> pour le gaz et au moins une devise comme collatéral.",
       "done-button": "Complété",
       "convert": {
-        "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
-        "button": "Convert"
+        "text": "Convertissez votre <bold>{{fromCurrency}}</bold> en <bold>{{toCurrency}></bold> sans glissement:",
+        "button": "Convertissez"
       }
     },
     "extract-pk-modal": {
