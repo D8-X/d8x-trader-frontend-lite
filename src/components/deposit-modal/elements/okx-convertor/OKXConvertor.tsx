@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
@@ -16,6 +16,7 @@ import { xlayer } from 'utils/chains';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from '../../DepositModal.module.scss';
+import { wrapOKB } from 'blockchain-api/contract-interactions/wrapOKB';
 
 const OKX_LAYER_CHAIN_ID = 196;
 const OKX_GAS_TOKEN_NAME = xlayer.nativeCurrency.name;
@@ -38,6 +39,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
   const { address, isConnected } = useAccount();
 
   const pools = useAtomValue(poolsAtom);
+  const { data: walletClient } = useWalletClient();
 
   const [amountValue, setAmountValue] = useState('0');
   const [loading, setLoading] = useState(false);
@@ -86,20 +88,35 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
   }, [selectedCurrency, gasTokenBalance, tokenBalanceData]);
 
   const wrapOKBToken = useCallback(() => {
+    if (!walletClient || !poolByWrappedToken || !tokenBalanceData) {
+      return;
+    }
     setLoading(true);
 
-    setTimeout(() => {
+    wrapOKB({
+      walletClient,
+      wrappedTokenAddress: poolByWrappedToken.marginTokenAddr as Address,
+      wrappedTokenDecimals: tokenBalanceData[1],
+      amountWrap: +amountValue,
+    }).then(() => {
       setLoading(false);
-    }, 5000);
-  }, []);
+    });
+  }, [walletClient, poolByWrappedToken, tokenBalanceData, amountValue]);
 
   const unwrapOKBToken = useCallback(() => {
+    if (!walletClient || !poolByWrappedToken || !tokenBalanceData) {
+      return;
+    }
     setLoading(true);
-
-    setTimeout(() => {
+    wrapOKB({
+      walletClient,
+      wrappedTokenAddress: poolByWrappedToken.marginTokenAddr as Address,
+      wrappedTokenDecimals: tokenBalanceData[1],
+      amountUnwrap: +amountValue,
+    }).then(() => {
       setLoading(false);
-    }, 5000);
-  }, []);
+    });
+  }, [walletClient, poolByWrappedToken, tokenBalanceData, amountValue]);
 
   const handleInputBlur = useCallback(() => {
     if (tokenBalance > 0 && amountValue !== '0' && +amountValue > tokenBalance) {

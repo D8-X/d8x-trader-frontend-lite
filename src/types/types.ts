@@ -469,3 +469,11 @@ export interface StrategyAddressI {
   userAddress: Address;
   strategyAddress: Address;
 }
+
+export interface WrapOKBConfigI {
+  walletClient: WalletClient;
+  wrappedTokenAddress: Address;
+  wrappedTokenDecimals: number;
+  amountWrap?: number;
+  amountUnwrap?: number;
+}
