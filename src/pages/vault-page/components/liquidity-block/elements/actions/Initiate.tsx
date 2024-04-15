@@ -51,7 +51,7 @@ export const Initiate = memo(() => {
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
 
   const [inputValue, setInputValue] = useState(`${initiateAmount}`);
 

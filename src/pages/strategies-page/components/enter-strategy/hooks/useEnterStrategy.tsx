@@ -16,7 +16,7 @@ export const useEnterStrategy = (amount: number) => {
 
   const enableFrequentUpdates = useSetAtom(enableFrequentUpdatesAtom);
 
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
 
   const { isSuccess, isError, isFetched, error } = useWaitForTransactionReceipt({
     hash: txHash,

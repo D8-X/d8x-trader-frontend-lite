@@ -56,7 +56,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const { address, chain } = useAccount();
 
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
 
   const requestSentRef = useRef(false);
 

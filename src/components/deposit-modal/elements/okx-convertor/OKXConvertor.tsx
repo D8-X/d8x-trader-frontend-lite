@@ -1,22 +1,27 @@
-import { useAtomValue } from 'jotai';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWalletClient } from 'wagmi';
+import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
+import { wrapOKB } from 'blockchain-api/contract-interactions/wrapOKB';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { CurrencyItemI } from 'components/currency-selector/types';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { OrSeparator } from 'components/separator/OrSeparator';
 import { Translate } from 'components/translate/Translate';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { poolsAtom } from 'store/pools.store';
+import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { xlayer } from 'utils/chains';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
+import modalStyles from '../../../positions-table/elements/modals/Modal.module.scss';
 import styles from '../../DepositModal.module.scss';
-import { wrapOKB } from 'blockchain-api/contract-interactions/wrapOKB';
 
 const OKX_LAYER_CHAIN_ID = 196;
 const OKX_GAS_TOKEN_NAME = xlayer.nativeCurrency.name;
@@ -32,19 +37,30 @@ interface OKXConvertorPropsI {
   selectedCurrency: CurrencyItemI | undefined;
 }
 
+interface ActionDataI {
+  amount: number;
+  isWrap: boolean;
+  currency: string;
+}
+
 export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
   const { t } = useTranslation();
 
   const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chain, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+
+  const { gasTokenBalance, refetchWallet } = useUserWallet();
 
   const pools = useAtomValue(poolsAtom);
-  const { data: walletClient } = useWalletClient();
+  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
   const [amountValue, setAmountValue] = useState('0');
   const [loading, setLoading] = useState(false);
+  const [txHash, setTxHash] = useState<Address>();
+  const [actionData, setActionData] = useState<ActionDataI>();
 
-  const { gasTokenBalance /*, refetchWallet*/ } = useUserWallet();
+  const requestSentRef = useRef(false);
 
   const poolByWrappedToken = useMemo(() => {
     if (pools.length === 0) {
@@ -53,7 +69,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     return pools.find(({ poolSymbol }) => poolSymbol === OKX_WRAPPED_TOKEN_NAME) || null;
   }, [pools]);
 
-  const { data: tokenBalanceData /*, refetch*/ } = useReadContracts({
+  const { data: tokenBalanceData, refetch } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
@@ -87,36 +103,146 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     return tokenBalanceData ? +formatUnits(tokenBalanceData[0], tokenBalanceData[1]) : 0;
   }, [selectedCurrency, gasTokenBalance, tokenBalanceData]);
 
-  const wrapOKBToken = useCallback(() => {
-    if (!walletClient || !poolByWrappedToken || !tokenBalanceData) {
+  const {
+    isSuccess,
+    isError,
+    isFetched,
+    error: reason,
+  } = useWaitForTransactionReceipt({
+    hash: txHash,
+    query: { enabled: !!txHash },
+  });
+
+  useEffect(() => {
+    if (!isFetched || !txHash) {
       return;
     }
+    setTxHash(undefined);
+    setTriggerUserStatsUpdate((prevValue) => !prevValue);
+    refetch();
+    refetchWallet();
+    setLoading(false);
+  }, [isFetched, txHash, refetch, refetchWallet, setTriggerUserStatsUpdate]);
+
+  useEffect(() => {
+    if (!isError || !reason || !txHash) {
+      return;
+    }
+    toast.error(
+      <ToastContent
+        title={t('common.deposit-modal.convert.toasts.tx-failed.title')}
+        bodyLines={[{ label: t('common.deposit-modal.convert.toasts.tx-failed.body'), value: reason.message }]}
+      />
+    );
+    setTxHash(undefined);
+    setActionData(undefined);
+    setLoading(false);
+  }, [isError, txHash, reason, t]);
+
+  useEffect(() => {
+    if (!isSuccess || !txHash) {
+      return;
+    }
+    toast.success(
+      <ToastContent
+        title={t(`common.deposit-modal.convert.toasts.success-${actionData?.isWrap ? 'wrap' : 'unwrap'}.title`)}
+        bodyLines={[
+          {
+            label: t(`common.deposit-modal.convert.toasts.success-${actionData?.isWrap ? 'wrap' : 'unwrap'}.body`),
+            value: formatToCurrency(actionData?.amount, actionData?.currency),
+          },
+          {
+            label: '',
+            value: (
+              <a
+                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
+                target="_blank"
+                rel="noreferrer"
+                className={modalStyles.shareLink}
+              >
+                {txHash}
+              </a>
+            ),
+          },
+        ]}
+      />
+    );
+    setActionData(undefined);
+    setLoading(false);
+  }, [isSuccess, actionData, txHash, chain, t]);
+
+  const wrapOKBToken = useCallback(() => {
+    if (requestSentRef.current || !walletClient || !poolByWrappedToken || !gasTokenBalance) {
+      return;
+    }
+
+    requestSentRef.current = true;
     setLoading(true);
 
     wrapOKB({
       walletClient,
       wrappedTokenAddress: poolByWrappedToken.marginTokenAddr as Address,
-      wrappedTokenDecimals: tokenBalanceData[1],
+      wrappedTokenDecimals: gasTokenBalance.decimals,
       amountWrap: +amountValue,
-    }).then(() => {
-      setLoading(false);
-    });
-  }, [walletClient, poolByWrappedToken, tokenBalanceData, amountValue]);
+    })
+      .then((hash) => {
+        setTxHash(hash);
+        setActionData({
+          amount: +amountValue,
+          isWrap: true,
+          currency: OKX_GAS_TOKEN_NAME,
+        });
+      })
+      .catch((error) => {
+        toast.error(
+          <ToastContent
+            title={t('common.deposit-modal.convert.toasts.tx-failed.title')}
+            bodyLines={[
+              {
+                label: t('common.deposit-modal.convert.toasts.tx-failed.body'),
+                value: error.shortMessage || error.message,
+              },
+            ]}
+          />
+        );
+        console.error(error);
+        setLoading(false);
+      })
+      .finally(() => {
+        requestSentRef.current = false;
+      });
+  }, [walletClient, poolByWrappedToken, gasTokenBalance, amountValue, t]);
 
   const unwrapOKBToken = useCallback(() => {
-    if (!walletClient || !poolByWrappedToken || !tokenBalanceData) {
+    if (requestSentRef.current || !walletClient || !poolByWrappedToken || !gasTokenBalance) {
       return;
     }
+
+    requestSentRef.current = true;
     setLoading(true);
+
     wrapOKB({
       walletClient,
       wrappedTokenAddress: poolByWrappedToken.marginTokenAddr as Address,
-      wrappedTokenDecimals: tokenBalanceData[1],
+      wrappedTokenDecimals: gasTokenBalance.decimals,
       amountUnwrap: +amountValue,
-    }).then(() => {
-      setLoading(false);
-    });
-  }, [walletClient, poolByWrappedToken, tokenBalanceData, amountValue]);
+    })
+      .then((hash) => {
+        setTxHash(hash);
+        setActionData({
+          amount: +amountValue,
+          isWrap: false,
+          currency: OKX_WRAPPED_TOKEN_NAME,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      })
+      .finally(() => {
+        requestSentRef.current = false;
+      });
+  }, [walletClient, poolByWrappedToken, gasTokenBalance, amountValue]);
 
   const handleInputBlur = useCallback(() => {
     if (tokenBalance > 0 && amountValue !== '0' && +amountValue > tokenBalance) {
@@ -152,6 +278,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
             currency={currencyConvertMap[selectedCurrency.name]}
             min={0}
             max={tokenBalance || 0}
+            disabled={loading}
           />
           {tokenBalance ? (
             <Typography className={styles.helperText} variant="bodyTiny">

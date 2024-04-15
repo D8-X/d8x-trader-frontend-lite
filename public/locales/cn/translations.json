@@ -858,7 +858,21 @@
       "done-button": "完成",
       "convert": {
         "text": "将您的 <bold>{{fromCurrency}}</bold> 转换为 <bold>{{toCurrency}}</bold>，无滑点：",
-        "button": "转变"
+        "button": "转变",
+        "toasts": {
+          "success-wrap": {
+            "title": "Tokens successfully wrapped",
+            "body": "Amount"
+          },
+          "success-unwrap": {
+            "title": "Tokens successfully unwrapped",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       }
     },
     "extract-pk-modal": {

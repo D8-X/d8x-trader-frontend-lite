@@ -12,7 +12,7 @@ export const useFundingTransfer = (amount: string, currency: string | undefined)
 
   const { address } = useAccount();
 
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
   const [savedAmount, setSavedAmount] = useState('');
   const [savedCurrency, setSavedCurrency] = useState('');
 

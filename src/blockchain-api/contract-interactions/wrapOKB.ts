@@ -1,6 +1,6 @@
+import { WriteContractParameters } from '@wagmi/core';
 import { parseEther, parseUnits, type Address } from 'viem';
 import { estimateContractGas } from 'viem/actions';
-import { WriteContractParameters } from '@wagmi/core';
 
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { WrapOKBConfigI } from 'types/types';

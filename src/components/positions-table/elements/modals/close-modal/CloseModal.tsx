@@ -54,7 +54,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const { poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
 
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
   const [symbolForTx, setSymbolForTx] = useState('');
   const [closeOpenOrders, setCloseOpenOrders] = useState(true);
 

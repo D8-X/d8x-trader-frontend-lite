@@ -73,7 +73,7 @@ export const OpenOrdersTable = memo(() => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof OrderWithIdI>('executionTimestamp');
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
 
   const isAPIBusyRef = useRef(false);
 

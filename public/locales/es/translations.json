@@ -858,7 +858,21 @@
       "done-button": "Hecho",
       "convert": {
         "text": "Convierta su <bold>{{fromCurrency}}</bold> a <bold>{{toCurrency}}</bold> sin deslizamiento:",
-        "button": "Convierta"
+        "button": "Convierta",
+        "toasts": {
+          "success-wrap": {
+            "title": "Tokens successfully wrapped",
+            "body": "Amount"
+          },
+          "success-unwrap": {
+            "title": "Tokens successfully unwrapped",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       }
     },
     "extract-pk-modal": {

@@ -858,7 +858,21 @@
       "done-button": "Gemacht",
       "convert": {
         "text": "Konvertieren Sie Ihr <bold>{{fromCurrency}}</bold> ohne Slippage in <bold>{{toCurrency}}</bold>:",
-        "button": "Konvertieren"
+        "button": "Konvertieren",
+        "toasts": {
+          "success-wrap": {
+            "title": "Tokens successfully wrapped",
+            "body": "Amount"
+          },
+          "success-unwrap": {
+            "title": "Tokens successfully unwrapped",
+            "body": "Amount"
+          },
+          "tx-failed": {
+            "title": "Transaction Failed",
+            "body": "Reason"
+          }
+        }
       }
     },
     "extract-pk-modal": {

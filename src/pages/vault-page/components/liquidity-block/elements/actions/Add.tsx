@@ -54,7 +54,7 @@ export const Add = memo(() => {
   const [addAmount, setAddAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
 
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);

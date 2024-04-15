@@ -24,7 +24,7 @@ export const useClaimFunds = (
 
   const enableFrequentUpdates = useSetAtom(enableFrequentUpdatesAtom);
 
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
   const [claimedBalance, setClaimedBalance] = useState(0);
 
   useEffect(() => {

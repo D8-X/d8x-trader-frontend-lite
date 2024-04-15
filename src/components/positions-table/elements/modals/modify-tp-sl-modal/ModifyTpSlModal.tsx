@@ -75,7 +75,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const [takeProfitPrice, setTakeProfitPrice] = useState<number | null | undefined>(undefined);
   const [stopLossPrice, setStopLossPrice] = useState<number | null | undefined>(undefined);
   const [requestSent, setRequestSent] = useState(false);
-  const [txHash, setTxHash] = useState<Address | undefined>(undefined);
+  const [txHash, setTxHash] = useState<Address>();
   const [poolFee, setPoolFee] = useState<number>();
 
   const validityCheckRef = useRef(false);
