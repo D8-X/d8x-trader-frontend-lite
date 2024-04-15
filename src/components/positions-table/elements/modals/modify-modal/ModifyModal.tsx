@@ -28,6 +28,7 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { useDebounce } from 'helpers/useDebounce';
+import { useDebouncedEffect } from 'helpers/useDebouncedEffect';
 import {
   getAddCollateral,
   getAvailableMargin,
@@ -35,14 +36,8 @@ import {
   positionRiskOnCollateralAction,
 } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
-import {
-  poolsAtom,
-  proxyAddrAtom,
-  traderAPIAtom,
-  traderAPIBusyAtom,
-  triggerBalancesUpdateAtom,
-} from 'store/pools.store';
-import type { MarginAccountI } from 'types/types';
+import { proxyAddrAtom, traderAPIAtom, traderAPIBusyAtom, triggerBalancesUpdateAtom } from 'store/pools.store';
+import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -53,14 +48,14 @@ import styles from '../Modal.module.scss';
 interface ModifyModalPropsI {
   isOpen: boolean;
   selectedPosition?: MarginAccountI | null;
+  poolByPosition?: PoolWithIdI | null;
   closeModal: () => void;
 }
 
-export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: ModifyModalPropsI) => {
+export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
-  const pools = useAtomValue(poolsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
@@ -86,16 +81,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
 
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
-
-  const poolByPosition = useMemo(() => {
-    if (!selectedPosition?.symbol || pools.length === 0) {
-      return null;
-    }
-
-    const parsedSymbol = parseSymbol(selectedPosition.symbol);
-    const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
-    return foundPool || null;
-  }, [pools, selectedPosition?.symbol]);
 
   const {
     data: poolTokenBalanceData,
@@ -324,9 +309,13 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, closeModal }: Modif
     traderAPI,
   ]);
 
-  useEffect(() => {
-    handleRefreshPositionRisk();
-  }, [debouncedAddCollateral, debouncedRemoveCollateral, handleRefreshPositionRisk]);
+  useDebouncedEffect(
+    () => {
+      handleRefreshPositionRisk();
+    },
+    [debouncedAddCollateral, debouncedRemoveCollateral, handleRefreshPositionRisk],
+    1000
+  );
 
   useEffect(() => {
     setAddCollateral(0);

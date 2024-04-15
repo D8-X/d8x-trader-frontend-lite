@@ -15,9 +15,10 @@ import { createSymbol } from 'helpers/createSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getPositionRisk } from 'network/network';
 import {
+  clearPositionsAtom,
   openOrdersAtom,
+  poolsAtom,
   positionsAtom,
-  removePositionAtom,
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -38,6 +39,7 @@ import { PositionBlock } from './elements/position-block/PositionBlock';
 import { PositionRow } from './elements/position-row/PositionRow';
 
 import styles from './PositionsTable.module.scss';
+import { parseSymbol } from '../../helpers/parseSymbol';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 
@@ -49,15 +51,16 @@ export const PositionsTable = () => {
   const { width, ref } = useResizeDetector();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
+  const pools = useAtomValue(poolsAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const openOrders = useAtomValue(openOrdersAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const [positions, setPositions] = useAtom(positionsAtom);
-  const removePosition = useSetAtom(removePositionAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
   const setHasTpSlOrders = useSetAtom(hasTpSlOrdersAtom);
+  const clearPositions = useSetAtom(clearPositionsAtom);
 
   const [isTpSlChangeModalOpen, setTpSlChangeModalOpen] = useState(false);
   const [isModifyModalOpen, setModifyModalOpen] = useState(false);
@@ -114,18 +117,15 @@ export const PositionsTable = () => {
     isSelectedPositionSetRef.current = true;
   }, []);
 
-  const clearPositions = useCallback(() => {
-    if (selectedPool?.perpetuals) {
-      selectedPool.perpetuals.forEach(({ baseCurrency, quoteCurrency }) => {
-        const symbol = createSymbol({
-          baseCurrency,
-          quoteCurrency,
-          poolSymbol: selectedPool.poolSymbol,
-        });
-        removePosition(symbol);
-      });
+  const poolByPosition = useMemo(() => {
+    if (!selectedPosition?.symbol || pools.length === 0) {
+      return null;
     }
-  }, [selectedPool, removePosition]);
+
+    const parsedSymbol = parseSymbol(selectedPosition.symbol);
+    const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
+    return foundPool || null;
+  }, [pools, selectedPosition?.symbol]);
 
   useEffect(() => {
     if (isDisconnected || traderAPI?.chainId !== chainId) {
@@ -489,9 +489,24 @@ export const PositionsTable = () => {
           isSelectedPositionSetRef.current = true;
         }}
       />
-      <ModifyTpSlModal isOpen={isTpSlChangeModalOpen} selectedPosition={selectedPosition} closeModal={closeTpSlModal} />
-      <ModifyModal isOpen={isModifyModalOpen} selectedPosition={selectedPosition} closeModal={closeModifyModal} />
-      <CloseModal isOpen={isCloseModalOpen} selectedPosition={selectedPosition} closeModal={closeCloseModal} />
+      <ModifyTpSlModal
+        isOpen={isTpSlChangeModalOpen}
+        selectedPosition={selectedPosition}
+        poolByPosition={poolByPosition}
+        closeModal={closeTpSlModal}
+      />
+      <ModifyModal
+        isOpen={isModifyModalOpen}
+        selectedPosition={selectedPosition}
+        poolByPosition={poolByPosition}
+        closeModal={closeModifyModal}
+      />
+      <CloseModal
+        isOpen={isCloseModalOpen}
+        selectedPosition={selectedPosition}
+        poolByPosition={poolByPosition}
+        closeModal={closeCloseModal}
+      />
     </div>
   );
 };

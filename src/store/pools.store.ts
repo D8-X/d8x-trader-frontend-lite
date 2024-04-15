@@ -31,7 +31,6 @@ export const newPositionRiskAtom = atom<MarginAccountI | null>(null);
 export const collateralDepositAtom = atom(0);
 export const webSocketReadyAtom = atom(false);
 export const mainWsLatestMessageTimeAtom = atom(Date.now());
-export const proxyABIAtom = atom<string[] | undefined>(undefined);
 export const poolTokenBalanceAtom = atom<number | undefined>(undefined);
 export const gasTokenSymbolAtom = atom<string | undefined>(undefined);
 export const poolTokenDecimalsAtom = atom<number | undefined>(undefined);
@@ -83,9 +82,6 @@ export const selectedPoolAtom = atom(
   },
   (_get, set, newPool: string) => {
     set(selectedPoolNameAtom, newPool);
-    // Clear data about previous stats and orders
-    // set(perpetualsStatsAtom, {});
-    // set(ordersAtom, {});
   }
 );
 
@@ -192,20 +188,16 @@ export const removeOpenOrderAtom = atom(null, (_get, set, orderIdToRemove: strin
   });
 });
 
-export const removePositionAtom = atom(null, (_get, set, symbolToRemove: string) => {
-  set(perpetualsStatsAtom, (prev) => {
-    const perpetualsStats = { ...prev };
-    delete perpetualsStats[symbolToRemove];
-    return perpetualsStats;
-  });
-});
-
 export const failOrderAtom = atom(null, (_get, set, orderIdToUpdate: string) => {
   set(ordersAtom, (prev) => {
     const updatedOpenOrders = { ...prev };
     delete updatedOpenOrders[orderIdToUpdate];
     return updatedOpenOrders;
   });
+});
+
+export const clearPositionsAtom = atom(null, (_get, set) => {
+  set(perpetualsStatsAtom, {});
 });
 
 export const clearOpenOrdersAtom = atom(null, (_get, set) => {

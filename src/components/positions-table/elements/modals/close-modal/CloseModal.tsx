@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
@@ -21,10 +21,9 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { orderSubmitted } from 'network/broker';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { poolsAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
-import type { MarginAccountWithAdditionalDataI, OrderI } from 'types/types';
-import { OrderWithIdI } from 'types/types';
+import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
@@ -35,13 +34,13 @@ import styles from './CloseModal.module.scss';
 interface CloseModalPropsI {
   isOpen: boolean;
   selectedPosition?: MarginAccountWithAdditionalDataI | null;
+  poolByPosition?: PoolWithIdI | null;
   closeModal: () => void;
 }
 
-export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseModalPropsI) => {
+export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, closeModal }: CloseModalPropsI) => {
   const { t } = useTranslation();
 
-  const pools = useAtomValue(poolsAtom);
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -58,16 +57,6 @@ export const CloseModal = memo(({ isOpen, selectedPosition, closeModal }: CloseM
   const [poolTokenDecimals, setPoolTokenDecimals] = useState<number>();
 
   const requestSentRef = useRef(false);
-
-  const poolByPosition = useMemo(() => {
-    if (!selectedPosition?.symbol || pools.length === 0) {
-      return null;
-    }
-
-    const parsedSymbol = parseSymbol(selectedPosition.symbol);
-    const foundPool = pools.find(({ poolSymbol }) => poolSymbol === parsedSymbol?.poolSymbol);
-    return foundPool || null;
-  }, [pools, selectedPosition?.symbol]);
 
   const {
     data: poolTokenBalanceData,
