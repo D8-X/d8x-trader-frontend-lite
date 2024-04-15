@@ -12,6 +12,7 @@ import { FilterModal } from 'components/table/filter-modal/FilterModal';
 import { useFilter } from 'components/table/filter-modal/useFilter';
 import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { createSymbol } from 'helpers/createSymbol';
+import { parseSymbol } from 'helpers/parseSymbol';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getPositionRisk } from 'network/network';
 import {
@@ -39,7 +40,6 @@ import { PositionBlock } from './elements/position-block/PositionBlock';
 import { PositionRow } from './elements/position-row/PositionRow';
 
 import styles from './PositionsTable.module.scss';
-import { parseSymbol } from '../../helpers/parseSymbol';
 
 const MIN_WIDTH_FOR_TABLE = 788;
 
