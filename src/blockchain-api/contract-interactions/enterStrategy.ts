@@ -133,7 +133,7 @@ export async function enterStrategy(
       }).catch((error) => {
         throw new Error(error.shortMessage);
       });
-      await waitForTransactionReceipt(walletClient, { hash: tx0 });
+      await waitForTransactionReceipt(walletClient, { hash: tx0, timeout: 30_000 });
     }
     if (hedgeClient === undefined) {
       hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
@@ -167,7 +167,7 @@ export async function enterStrategy(
     }).catch((error) => {
       throw new Error(error.shortMessage);
     });
-    await waitForTransactionReceipt(walletClient, { hash: tx1 });
+    await waitForTransactionReceipt(walletClient, { hash: tx1, timeout: 30_000 });
   }
   if (allowance < amountBigint) {
     //console.log('approving margin token', { marginTokenAddr, amount });

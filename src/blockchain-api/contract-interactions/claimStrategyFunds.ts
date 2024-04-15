@@ -79,7 +79,7 @@ export async function claimStrategyFunds(
         value: (gasLimit ?? GAS_TARGET) * gasPrice,
         gas: gasLimit,
       });
-      await waitForTransactionReceipt(hedgeClient, { hash: tx0 });
+      await waitForTransactionReceipt(hedgeClient, { hash: tx0, timeout: 30_000 });
     }
 
     //console.log(`sending ${marginTokenBalance} tokens`);
@@ -93,7 +93,7 @@ export async function claimStrategyFunds(
       gas: gasLimit,
       gasPrice,
     });
-    await waitForTransactionReceipt(hedgeClient, { hash: tx1 });
+    await waitForTransactionReceipt(hedgeClient, { hash: tx1, timeout: 30_000 });
   }
 
   //console.log('estimateGas: gas');
