@@ -2,8 +2,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
-import { Address, erc20Abi, formatUnits } from 'viem';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
 
 import {
   Button,
@@ -41,6 +41,7 @@ import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
+import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
 import styles from '../Modal.module.scss';
@@ -62,7 +63,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
   const chainId = useChainId();
-  const { address, chain, isConnected } = useAccount();
+  const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
@@ -76,51 +77,11 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const [addCollateral, setAddCollateral] = useState(0);
   const [removeCollateral, setRemoveCollateral] = useState(0);
   const [maxCollateral, setMaxCollateral] = useState<number>();
-  const [poolTokenBalance, setPoolTokenBalance] = useState<number>();
-  const [poolTokenDecimals, setPoolTokenDecimals] = useState<number>();
 
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
 
-  const {
-    data: poolTokenBalanceData,
-    isError,
-    refetch,
-  } = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        address: poolByPosition?.marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: [address as Address],
-      },
-      {
-        address: poolByPosition?.marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'decimals',
-      },
-    ],
-    query: {
-      enabled: address && traderAPI?.chainId === chain?.id && !!poolByPosition?.marginTokenAddr && isConnected,
-    },
-  });
-
-  useEffect(() => {
-    if (address && chain) {
-      refetch().then().catch(console.error);
-    }
-  }, [address, chain, refetch]);
-
-  useEffect(() => {
-    if (poolTokenBalanceData && chain && !isError) {
-      setPoolTokenBalance(+formatUnits(poolTokenBalanceData[0], poolTokenBalanceData[1]));
-      setPoolTokenDecimals(poolTokenBalanceData[1]);
-    } else {
-      setPoolTokenBalance(undefined);
-      setPoolTokenDecimals(undefined);
-    }
-  }, [chain, poolTokenBalanceData, isError]);
+  const { poolTokenBalance, poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
 
   const {
     isSuccess: isAddSuccess,

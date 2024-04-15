@@ -2,8 +2,8 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
-import { type Address, erc20Abi } from 'viem';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
 
 import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -27,6 +27,7 @@ import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithId
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
+import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
@@ -47,48 +48,17 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const chainId = useChainId();
-  const { address, chain, isConnected } = useAccount();
+  const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
+
+  const { poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address | undefined>(undefined);
   const [symbolForTx, setSymbolForTx] = useState('');
   const [closeOpenOrders, setCloseOpenOrders] = useState(true);
-  const [poolTokenDecimals, setPoolTokenDecimals] = useState<number>();
 
   const requestSentRef = useRef(false);
-
-  const {
-    data: poolTokenBalanceData,
-    isError: isPoolBalanceError,
-    refetch,
-  } = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        address: poolByPosition?.marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'decimals',
-      },
-    ],
-    query: {
-      enabled: address && traderAPI?.chainId === chain?.id && !!poolByPosition?.marginTokenAddr && isConnected,
-    },
-  });
-
-  useEffect(() => {
-    if (address && chain) {
-      refetch().then().catch(console.error);
-    }
-  }, [address, chain, refetch]);
-
-  useEffect(() => {
-    if (poolTokenBalanceData && chain && !isPoolBalanceError) {
-      setPoolTokenDecimals(poolTokenBalanceData[0]);
-    } else {
-      setPoolTokenDecimals(undefined);
-    }
-  }, [chain, poolTokenBalanceData, isPoolBalanceError]);
 
   const {
     isSuccess,

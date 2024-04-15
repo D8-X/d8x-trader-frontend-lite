@@ -3,8 +3,8 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { type Address, erc20Abi } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { type Address } from 'viem';
+import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -26,6 +26,7 @@ import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithId
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
+import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
@@ -59,7 +60,7 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const { address, chain, isConnected } = useAccount();
+  const { address, chain } = useAccount();
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({
     chainId,
@@ -80,6 +81,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const validityCheckRef = useRef(false);
   const requestSentRef = useRef(false);
   const fetchFeeRef = useRef(false);
+
+  const { poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
 
   useEffect(() => {
     if (validityCheckRef.current) {
@@ -102,24 +105,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         validityCheckRef.current = false;
       });
   }, [selectedPosition, address, traderAPI, chainId, poolFee]);
-
-  const { data: poolTokenBalance } = useReadContracts({
-    allowFailure: false,
-    contracts: [
-      {
-        address: poolByPosition?.marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'balanceOf',
-        args: [address as Address],
-      },
-      {
-        address: poolByPosition?.marginTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'decimals',
-      },
-    ],
-    query: { enabled: address && chainId === chain?.id && !!poolByPosition?.marginTokenAddr && isConnected },
-  });
 
   const fetchPoolFee = useCallback((_chainId: number, _poolSymbol: string, _address: Address) => {
     if (fetchFeeRef.current) {
@@ -211,8 +196,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       !proxyAddr ||
       !walletClient ||
       collateralDeposit === null ||
-      !poolTokenBalance ||
-      !poolTokenBalance[1]
+      !poolTokenDecimals
     ) {
       return;
     }
@@ -290,7 +274,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 poolByPosition.marginTokenAddr,
                 proxyAddr,
                 collateralDeposit,
-                poolTokenBalance[1]
+                poolTokenDecimals
               )
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
