@@ -120,7 +120,17 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI)
           <Button onClick={handleModalClose} variant="secondary">
             {t('common.cancel-button')}
           </Button>
-          <Button onClick={handleExit} variant="primary" disabled={requestSent || loading}>
+          <Button
+            onClick={handleExit}
+            variant="primary"
+            disabled={
+              requestSent ||
+              loading ||
+              !walletClient ||
+              !traderAPI ||
+              !pagesConfig.enabledStrategiesPageByChains.includes(chainId)
+            }
+          >
             {t('pages.strategies.exit.confirm-modal.confirm-button')}
           </Button>
         </DialogActions>

@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Address, erc20Abi, formatUnits } from 'viem';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
@@ -19,17 +19,16 @@ import {
   strategyPoolAtom,
   strategyPositionAtom,
 } from 'store/strategies.store';
-import { OrderI } from 'types/types';
+import { OrderSideE } from 'types/enums';
+import { type OrderI } from 'types/types';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
 import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
+import { useClaimFunds } from './hooks/useClaimFunds';
 
 import styles from './StrategyBlock.module.scss';
-
-import { useClaimFunds } from './hooks/useClaimFunds';
-import { OrderSideE } from '../../../../types/enums';
 
 const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
 const INTERVAL_FREQUENT_POLLING = 2_000; // Each 1 sec
@@ -109,7 +108,7 @@ export const StrategyBlock = () => {
 
   const fetchStrategyPosition = useCallback(
     (frequentUpdatesEnabled: boolean) => {
-      if (strategyPositionRequestSentRef.current || !strategyAddress || !address) {
+      if (strategyPositionRequestSentRef.current || !traderAPI || !strategyAddress || !address) {
         return;
       }
 

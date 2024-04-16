@@ -289,7 +289,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   }, [modifyType, addCollateral, removeCollateral]);
 
   useEffect(() => {
-    if (!address || !selectedPosition?.symbol || !chainId || isAPIBusy) {
+    if (!address || !traderAPI || !selectedPosition?.symbol || !chainId || isAPIBusy) {
       return;
     }
 
@@ -386,6 +386,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (
       !selectedPosition ||
       !address ||
+      !traderAPI ||
       !poolByPosition ||
       !proxyAddr ||
       !walletClient ||

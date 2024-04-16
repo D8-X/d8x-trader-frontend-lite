@@ -26,7 +26,7 @@ export const PerpetualInfoFetcher = () => {
   }, [selectedPool, selectedPerpetual]);
 
   useEffect(() => {
-    if (symbol && chainId && chainId === traderAPI?.chainId) {
+    if (symbol && chainId && traderAPI && chainId === traderAPI.chainId) {
       getPerpetualStaticInfo(chainId, traderAPI, symbol)
         .then(({ data }) => {
           setPerpetualStaticInfo(data);

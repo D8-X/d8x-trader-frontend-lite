@@ -128,14 +128,14 @@ export const PositionsTable = () => {
   }, [pools, selectedPosition?.symbol]);
 
   useEffect(() => {
-    if (isDisconnected || traderAPI?.chainId !== chainId) {
+    if (isDisconnected || !traderAPI || traderAPI.chainId !== chainId) {
       clearPositions();
     }
   }, [isDisconnected, chainId, clearPositions, traderAPI]);
 
   const refreshPositions = useCallback(async () => {
-    if (address && isConnected && chainId && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== traderAPI?.chainId) {
+    if (address && traderAPI && isConnected && chainId && isSDKConnected) {
+      if (isAPIBusyRef.current || chainId !== traderAPI.chainId) {
         return;
       }
 
