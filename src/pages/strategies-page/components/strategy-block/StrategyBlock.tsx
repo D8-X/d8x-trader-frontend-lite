@@ -119,7 +119,7 @@ export const StrategyBlock = () => {
 
       strategyPositionRequestSentRef.current = true;
 
-      getPositionRisk(chainId, null, strategyAddress)
+      getPositionRisk(chainId, traderAPI, strategyAddress)
         .then(({ data: positions }) => {
           if (positions && positions.length > 0) {
             const strategy = positions.find(
@@ -133,7 +133,7 @@ export const StrategyBlock = () => {
           strategyPositionRequestSentRef.current = false;
         });
     },
-    [chainId, strategyAddress, address, setStrategyPosition, setHasPosition]
+    [chainId, strategyAddress, traderAPI, address, setStrategyPosition, setHasPosition]
   );
 
   const fetchStrategyOpenOrders = useCallback(() => {
