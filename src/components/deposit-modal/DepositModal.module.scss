@@ -30,9 +30,9 @@
 }
 
 .orSeparator {
-  padding:  0 100px;
-  margin-top: 24px;
-  margin-bottom: 24px;
+  padding: 0 $d8x-spacing * 25;
+  margin-top: $d8x-spacing * 8;
+  margin-bottom: $d8x-spacing * 8;
 }
 
 .dataLine {

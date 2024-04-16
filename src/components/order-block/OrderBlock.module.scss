@@ -24,9 +24,10 @@
 .depositLink {
   margin-top: 2 * $d8x-spacing;
   color: var(--d8x-color-action);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: $d8x-spacing;
+  cursor: pointer;
 }
 
 .textOffset {

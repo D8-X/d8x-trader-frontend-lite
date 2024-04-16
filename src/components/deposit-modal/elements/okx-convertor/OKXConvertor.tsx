@@ -20,7 +20,6 @@ import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { xlayer } from 'utils/chains';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-import modalStyles from '../../../positions-table/elements/modals/Modal.module.scss';
 import styles from '../../DepositModal.module.scss';
 
 const OKX_LAYER_CHAIN_ID = 196;
@@ -117,7 +116,6 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     if (!isFetched || !txHash) {
       return;
     }
-    setTxHash(undefined);
     setTriggerUserStatsUpdate((prevValue) => !prevValue);
     refetch();
     refetchWallet();
@@ -154,12 +152,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
           {
             label: '',
             value: (
-              <a
-                href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)}
-                target="_blank"
-                rel="noreferrer"
-                className={modalStyles.shareLink}
-              >
+              <a href={getTxnLink(chain?.blockExplorers?.default?.url, txHash)} target="_blank" rel="noreferrer">
                 {txHash}
               </a>
             ),
@@ -167,7 +160,9 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
         ]}
       />
     );
+    setTxHash(undefined);
     setActionData(undefined);
+    setAmountValue('0');
     setLoading(false);
   }, [isSuccess, actionData, txHash, chain, t]);
 
