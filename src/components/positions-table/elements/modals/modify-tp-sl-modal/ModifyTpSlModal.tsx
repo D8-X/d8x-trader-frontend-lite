@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { type Address } from 'viem';
 import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
@@ -77,6 +77,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address>();
   const [poolFee, setPoolFee] = useState<number>();
+  const [loading, setLoading] = useState(false);
 
   const validityCheckRef = useRef(false);
   const requestSentRef = useRef(false);
@@ -140,7 +141,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       return;
     }
     setTxHash(undefined);
-  }, [isFetched, setLatestOrderSentTimestamp]);
+    setLoading(false);
+    closeModal();
+  }, [isFetched, setLatestOrderSentTimestamp, closeModal]);
 
   useEffect(() => {
     if (!isError) {
@@ -203,6 +206,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
 
     const ordersToCancel: OrderWithIdI[] = [];
     if (takeProfitPrice !== selectedPosition.takeProfit.fullValue && selectedPosition.takeProfit.orders.length > 0) {
@@ -280,7 +284,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
                   postOrder(tradingClient, signatures, data.data, false)
-                    .then((tx) => {
+                    .then(({ hash }) => {
                       // success submitting order to the node
                       // order was sent
                       setTakeProfitPrice(null);
@@ -291,8 +295,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                           bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
                         />
                       );
-                      setTxHash(tx.hash);
+                      setTxHash(hash);
                       setLatestOrderSentTimestamp(Date.now());
+                    })
+                    .catch((error) => {
+                      console.error(error);
+                      setLoading(false);
                     })
                     .finally(() => {
                       // ensure we can trade again - but modal is left open if user rejects txn
@@ -303,23 +311,27 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .catch((error) => {
                   // not a transaction error, but probably metamask or network -> no toast
                   console.error(error);
+                  setLoading(false);
                 });
             }
           })
           .catch((error) => {
             // not a transaction error, but probably metamask or network -> no toast
             console.error(error);
+            setLoading(false);
           });
       }, 1_000);
+    } else {
+      requestSentRef.current = false;
+      setRequestSent(false);
+      setLoading(false);
+      closeModal();
     }
-
-    requestSentRef.current = false;
-    setRequestSent(false);
-    closeModal();
   };
 
   const isDisabledCreateButton =
     !poolByPosition ||
+    loading ||
     requestSent ||
     collateralDeposit === null ||
     (takeProfitPrice === selectedPosition.takeProfit.fullValue &&
@@ -335,8 +347,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       </DialogContent>
       <Separator />
       <DialogContent className={styles.selectors}>
-        <TakeProfitSelector setTakeProfitPrice={setTakeProfitPrice} position={selectedPosition} />
-        <StopLossSelector setStopLossPrice={setStopLossPrice} position={selectedPosition} />
+        <TakeProfitSelector setTakeProfitPrice={setTakeProfitPrice} position={selectedPosition} disabled={loading} />
+        <StopLossSelector setStopLossPrice={setStopLossPrice} position={selectedPosition} disabled={loading} />
       </DialogContent>
       <Separator />
       <DialogActions>
@@ -350,6 +362,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
             size="small"
             disabled={isDisabledCreateButton}
           >
+            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t('pages.trade.positions-table.modify-modal.create')}
           </Button>
         </GasDepositChecker>

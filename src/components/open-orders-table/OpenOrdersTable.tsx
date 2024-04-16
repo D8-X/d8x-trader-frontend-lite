@@ -10,6 +10,7 @@ import { useAccount, useChainId, useWaitForTransactionReceipt } from 'wagmi';
 
 import {
   Button,
+  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -39,7 +40,7 @@ import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom }
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
-import { type OrderWithIdI, type TableHeaderI, TemporaryAnyT } from 'types/types';
+import { type OrderWithIdI, type TableHeaderI, type TemporaryAnyT } from 'types/types';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
@@ -74,6 +75,7 @@ export const OpenOrdersTable = memo(() => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof OrderWithIdI>('executionTimestamp');
   const [txHash, setTxHash] = useState<Address>();
+  const [loading, setLoading] = useState(false);
 
   const isAPIBusyRef = useRef(false);
 
@@ -133,6 +135,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
     setTxHash(undefined);
+    setLoading(false);
     refreshOpenOrders().then();
     setLatestOrderSentTimestamp(Date.now());
   }, [isFetched, setTxHash, refreshOpenOrders, setLatestOrderSentTimestamp]);
@@ -214,29 +217,35 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
+    setLoading(true);
     setRequestSent(true);
     getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
           cancelOrder(tradingClient, HashZero, data.data, selectedOrder.id)
-            .then((tx) => {
+            .then(({ hash }) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
               setRequestSent(false);
               toast.success(
                 <ToastContent title={t('pages.trade.orders-table.toasts.cancel-order.title')} bodyLines={[]} />
               );
-              setTxHash(tx.hash);
+              setTxHash(hash);
             })
             .catch((e) => {
               console.error(e);
               setRequestSent(false);
+              setLoading(false);
             });
+        } else {
+          setLoading(false);
+          setRequestSent(false);
         }
       })
       .catch((e) => {
         console.error(e);
         setRequestSent(false);
+        setLoading(false);
       });
   };
 
@@ -412,7 +421,8 @@ export const OpenOrdersTable = memo(() => {
             {t('pages.trade.orders-table.cancel-modal.back')}
           </Button>
           <GasDepositChecker>
-            <Button onClick={handleCancelOrderConfirm} variant="primary" size="small" disabled={requestSent}>
+            <Button onClick={handleCancelOrderConfirm} variant="primary" size="small" disabled={loading || requestSent}>
+              {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
               {t('pages.trade.orders-table.cancel-modal.confirm')}
             </Button>
           </GasDepositChecker>

@@ -24,9 +24,10 @@ import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 interface TakeProfitSelectorPropsI {
   setTakeProfitPrice: Dispatch<SetStateAction<number | null | undefined>>;
   position: MarginAccountWithAdditionalDataI;
+  disabled?: boolean;
 }
 
-export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakeProfitSelectorPropsI) => {
+export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled }: TakeProfitSelectorPropsI) => {
   const { t } = useTranslation();
 
   const [takeProfit, setTakeProfit] = useState<TakeProfitE | null>(null);
@@ -148,6 +149,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position }: TakePr
       selectedPrice={takeProfit}
       currency={parsedSymbol?.quoteCurrency}
       stepSize={stepSize}
+      disabled={disabled}
     />
   );
 });

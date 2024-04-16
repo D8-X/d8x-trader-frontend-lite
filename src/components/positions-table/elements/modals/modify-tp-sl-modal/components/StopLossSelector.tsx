@@ -24,9 +24,10 @@ import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 interface StopLossSelectorPropsI {
   setStopLossPrice: Dispatch<SetStateAction<number | null | undefined>>;
   position: MarginAccountWithAdditionalDataI;
+  disabled?: boolean;
 }
 
-export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSelectorPropsI) => {
+export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: StopLossSelectorPropsI) => {
   const { t } = useTranslation();
 
   const [stopLoss, setStopLoss] = useState<StopLossE | null>(null);
@@ -151,6 +152,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position }: StopLossSe
       selectedPrice={stopLoss}
       currency={parsedSymbol?.quoteCurrency}
       stepSize={stepSize}
+      disabled={disabled}
     />
   );
 });
