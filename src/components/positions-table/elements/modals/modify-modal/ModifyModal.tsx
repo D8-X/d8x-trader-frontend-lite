@@ -7,6 +7,7 @@ import { type Address } from 'viem';
 
 import {
   Button,
+  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -39,7 +40,7 @@ import { tradingClientAtom } from 'store/app.store';
 import { proxyAddrAtom, traderAPIAtom, traderAPIBusyAtom, triggerBalancesUpdateAtom } from 'store/pools.store';
 import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
-import { formatToCurrency } from 'utils/formatToCurrency';
+import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
@@ -74,9 +75,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const [amountForRemove, setAmountForRemove] = useState(0);
   const [symbolForTx, setSymbolForTx] = useState('');
   const [newPositionRisk, setNewPositionRisk] = useState<MarginAccountI | null>();
-  const [addCollateral, setAddCollateral] = useState(0);
-  const [removeCollateral, setRemoveCollateral] = useState(0);
+  const [addCollateral, setAddCollateral] = useState('0');
+  const [removeCollateral, setRemoveCollateral] = useState('0');
   const [maxCollateral, setMaxCollateral] = useState<number>();
+  const [loading, setLoading] = useState(false);
 
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
@@ -100,6 +102,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     setTxHashForAdd(undefined);
     setAmountForAdd(0);
     setSymbolForTx('');
+    setLoading(false);
   }, [isAddFetched]);
 
   useEffect(() => {
@@ -147,8 +150,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       />
     );
     setTriggerBalancesUpdate((prevValue) => !prevValue);
-    // setTimeout(() => {
-    // }, 1000);
   }, [isAddSuccess, txHashForAdd, amountForAdd, chain, symbolForTx, t, setTriggerBalancesUpdate]);
 
   const {
@@ -168,6 +169,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     setTxHashForRemove(undefined);
     setAmountForRemove(0);
     setSymbolForTx('');
+    setLoading(false);
   }, [isRemoveFetched]);
 
   useEffect(() => {
@@ -219,12 +221,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     }, 5000);
   }, [isRemoveSuccess, txHashForRemove, amountForRemove, chain, symbolForTx, t, setTriggerBalancesUpdate]);
 
-  const handleMaxCollateral = () => {
-    if (maxCollateral) {
-      setRemoveCollateral(maxCollateral);
-    }
-  };
-
   const debouncedAddCollateral = useDebounce(addCollateral, 500);
 
   const debouncedRemoveCollateral = useDebounce(removeCollateral, 500);
@@ -234,11 +230,11 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       return;
     }
 
-    if (modifyType === ModifyTypeE.Add && debouncedAddCollateral === 0) {
+    if (modifyType === ModifyTypeE.Add && debouncedAddCollateral === '0') {
       return;
     }
 
-    if (modifyType === ModifyTypeE.Remove && debouncedRemoveCollateral === 0) {
+    if (modifyType === ModifyTypeE.Remove && debouncedRemoveCollateral === '0') {
       return;
     }
 
@@ -247,7 +243,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       chainId,
       traderAPI,
       address,
-      modifyType === ModifyTypeE.Add ? debouncedAddCollateral : -debouncedRemoveCollateral,
+      modifyType === ModifyTypeE.Add ? +debouncedAddCollateral : -debouncedRemoveCollateral,
       selectedPosition
     )
       .then((data) => {
@@ -279,8 +275,8 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   );
 
   useEffect(() => {
-    setAddCollateral(0);
-    setRemoveCollateral(0);
+    setAddCollateral('0');
+    setRemoveCollateral('0');
     setModifyType(ModifyTypeE.Add);
   }, [isOpen]);
 
@@ -321,10 +317,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (selectedPosition) {
       switch (modifyType) {
         case ModifyTypeE.Add:
-          margin = selectedPosition.collateralCC + addCollateral;
+          margin = selectedPosition.collateralCC + +addCollateral;
           break;
         case ModifyTypeE.Remove:
-          margin = selectedPosition.collateralCC - removeCollateral;
+          margin = selectedPosition.collateralCC - +removeCollateral;
           break;
         default:
           margin = selectedPosition.collateralCC;
@@ -370,13 +366,19 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const isConfirmButtonDisabled = useMemo(() => {
     switch (modifyType) {
       case ModifyTypeE.Add:
-        return requestSent || addCollateral <= 0 || addCollateral < 0;
+        return loading || requestSent || +addCollateral <= 0 || +addCollateral < 0;
       case ModifyTypeE.Remove:
-        return requestSent || removeCollateral <= 0 || maxCollateral === undefined || maxCollateral < removeCollateral;
+        return (
+          loading ||
+          requestSent ||
+          +removeCollateral <= 0 ||
+          maxCollateral === undefined ||
+          maxCollateral < +removeCollateral
+        );
       default:
         return false;
     }
-  }, [requestSent, modifyType, addCollateral, removeCollateral, maxCollateral]);
+  }, [requestSent, modifyType, addCollateral, removeCollateral, maxCollateral, loading]);
 
   const handleModifyPositionConfirm = async () => {
     if (requestSentRef.current) {
@@ -399,64 +401,69 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (modifyType === ModifyTypeE.Add) {
       requestSentRef.current = true;
       setRequestSent(true);
-      getAddCollateral(chainId, traderAPI, selectedPosition.symbol, addCollateral)
+      setLoading(true);
+      getAddCollateral(chainId, traderAPI, selectedPosition.symbol, +addCollateral)
         .then(({ data }) => {
-          approveMarginToken(
-            walletClient,
-            poolByPosition.marginTokenAddr,
-            proxyAddr,
-            addCollateral,
-            poolTokenDecimals
-          ).then(() => {
-            deposit(tradingClient, address, data)
-              .then((tx) => {
-                setTxHashForAdd(tx.hash);
-                setAmountForAdd(addCollateral);
-                setSymbolForTx(selectedPosition.symbol);
-                setTriggerBalancesUpdate((prevValue) => !prevValue);
-                toast.success(
-                  <ToastContent
-                    title={t('pages.trade.positions-table.toasts.adding-collateral.title')}
-                    bodyLines={[]}
-                  />
-                );
-              })
-              .catch((error) => {
-                let msg = (error?.message ?? error) as string;
-                msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
-                toast.error(
-                  <ToastContent
-                    title={t('pages.trade.positions-table.toasts.error-processing.title')}
-                    bodyLines={[{ label: t('pages.trade.positions-table.toasts.error-processing.body'), value: msg }]}
-                  />
-                );
-                console.error(error);
-              })
-              .finally(() => {
-                requestSentRef.current = false;
-                setRequestSent(false);
-                closeModal();
-              });
-          });
+          approveMarginToken(walletClient, poolByPosition.marginTokenAddr, proxyAddr, +addCollateral, poolTokenDecimals)
+            .then(() => {
+              deposit(tradingClient, address, data)
+                .then((tx) => {
+                  setTxHashForAdd(tx.hash);
+                  setAmountForAdd(+addCollateral);
+                  setSymbolForTx(selectedPosition.symbol);
+                  setTriggerBalancesUpdate((prevValue) => !prevValue);
+                  toast.success(
+                    <ToastContent
+                      title={t('pages.trade.positions-table.toasts.adding-collateral.title')}
+                      bodyLines={[]}
+                    />
+                  );
+                })
+                .catch((error) => {
+                  let msg = (error?.message ?? error) as string;
+                  msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+                  toast.error(
+                    <ToastContent
+                      title={t('pages.trade.positions-table.toasts.error-processing.title')}
+                      bodyLines={[{ label: t('pages.trade.positions-table.toasts.error-processing.body'), value: msg }]}
+                    />
+                  );
+                  console.error(error);
+                  setLoading(false);
+                })
+                .finally(() => {
+                  requestSentRef.current = false;
+                  setRequestSent(false);
+                  closeModal();
+                });
+            })
+            .catch((error) => {
+              console.error(error);
+              setLoading(false);
+              requestSentRef.current = false;
+              setRequestSent(false);
+            });
         })
         .catch((error) => {
           console.error(error);
           setRequestSent(false);
           requestSentRef.current = false;
+          setLoading(false);
         });
     } else if (modifyType === ModifyTypeE.Remove) {
-      if (!maxCollateral || maxCollateral < removeCollateral) {
+      if (!maxCollateral || maxCollateral < +removeCollateral) {
         return;
       }
 
       requestSentRef.current = true;
       setRequestSent(true);
-      getRemoveCollateral(chainId, traderAPI, selectedPosition.symbol, removeCollateral)
+      setLoading(true);
+      getRemoveCollateral(chainId, traderAPI, selectedPosition.symbol, +removeCollateral)
         .then(({ data }) => {
           withdraw(tradingClient, address, data)
-            .then((tx) => {
-              setTxHashForRemove(tx.hash);
-              setAmountForRemove(removeCollateral);
+            .then(({ hash }) => {
+              setTxHashForRemove(hash);
+              setAmountForRemove(+removeCollateral);
               setSymbolForTx(selectedPosition.symbol);
               setTriggerBalancesUpdate((prevValue) => !prevValue);
               toast.success(
@@ -467,7 +474,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
               );
             })
             .catch((error) => {
-              console.error(error);
               let msg = (error?.message ?? error) as string;
               msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
               toast.error(
@@ -476,6 +482,8 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
                   bodyLines={[{ label: t('pages.trade.positions-table.toasts.error-processing.body'), value: msg }]}
                 />
               );
+              console.error(error);
+              setLoading(false);
             })
             .finally(() => {
               setRequestSent(false);
@@ -487,9 +495,15 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
           console.error(error);
           requestSentRef.current = false;
           setRequestSent(false);
+          setLoading(false);
         });
     }
   };
+
+  const unroundedMaxAddValue = poolTokenBalance ? poolTokenBalance : 1;
+  const unroundedMaxRemoveValue = maxCollateral ? maxCollateral : 1;
+  const digitsForMaxAdd = valueToFractionDigits(unroundedMaxAddValue);
+  const digitsForMaxRemove = valueToFractionDigits(unroundedMaxRemoveValue);
 
   return (
     <Dialog open={isOpen} className={styles.root}>
@@ -510,9 +524,9 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
                       </InputAdornment>
                     }
                     type="number"
-                    inputProps={{ step: 0.1, min: 0, max: poolTokenBalance }}
+                    inputProps={{ step: 0.01, min: 0, max: poolTokenBalance }}
                     value={addCollateral}
-                    onChange={(event) => setAddCollateral(+event.target.value)}
+                    onChange={(event) => setAddCollateral(event.target.value)}
                   />
                 }
               />
@@ -522,7 +536,9 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
                   rightSide={
                     <Typography className={styles.helperText} variant="bodyTiny">
                       {t('common.max')}{' '}
-                      <Link onClick={() => setAddCollateral(poolTokenBalance)}>{formatNumber(poolTokenBalance)}</Link>
+                      <Link onClick={() => setAddCollateral(poolTokenBalance.toFixed(digitsForMaxAdd))}>
+                        {poolTokenBalance.toFixed(digitsForMaxAdd)}
+                      </Link>
                     </Typography>
                   }
                 />
@@ -543,9 +559,9 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
                         </InputAdornment>
                       }
                       type="number"
-                      inputProps={{ step: 0.1, min: 0, max: maxCollateral }}
+                      inputProps={{ step: 0.01, min: 0, max: maxCollateral }}
                       value={removeCollateral}
-                      onChange={(event) => setRemoveCollateral(+event.target.value)}
+                      onChange={(event) => setRemoveCollateral(event.target.value)}
                     />
                   </FormControl>
                 }
@@ -555,7 +571,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
                   leftSide=" "
                   rightSide={
                     <Typography className={styles.helperText} variant="bodyTiny">
-                      {t('common.max')} <Link onClick={handleMaxCollateral}>{formatNumber(maxCollateral)}</Link>
+                      {t('common.max')}{' '}
+                      <Link onClick={() => setRemoveCollateral(maxCollateral.toFixed(digitsForMaxRemove))}>
+                        {maxCollateral.toFixed(digitsForMaxRemove)}
+                      </Link>
                     </Typography>
                   }
                 />
@@ -602,6 +621,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
             size="small"
             disabled={isConfirmButtonDisabled}
           >
+            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t('pages.trade.positions-table.modify-modal.confirm')}
           </Button>
         </GasDepositChecker>
