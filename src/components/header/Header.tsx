@@ -56,6 +56,7 @@ interface HeaderPropsI {
 }
 
 const DRAWER_WIDTH_FOR_TABLETS = 340;
+const MAX_RETRIES = 3;
 
 export const Header = memo(({ window }: HeaderPropsI) => {
   const theme = useTheme();
@@ -171,14 +172,34 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     exchangeRequestRef.current = true;
 
     setExchangeInfo(null);
-    getExchangeInfo(chainId, null)
-      .then(({ data }) => {
-        setExchangeInfo(data);
-      })
+
+    let retries = 0;
+    const executeQuery = async () => {
+      while (retries < MAX_RETRIES) {
+        try {
+          const data = await getExchangeInfo(chainId, null);
+          setExchangeInfo(data.data);
+          retries = MAX_RETRIES;
+        } catch (error) {
+          console.log(`ExchangeInfo attempt ${retries + 1} failed: ${error}`);
+          retries++;
+          if (retries === MAX_RETRIES) {
+            // Throw the error if max retries reached
+            throw new Error('ExchangeInfo failed after maximum retries: ' + error);
+          }
+        }
+      }
+    };
+
+    executeQuery()
       .catch(console.error)
       .finally(() => {
         exchangeRequestRef.current = false;
       });
+
+    return () => {
+      exchangeRequestRef.current = false;
+    };
   }, [chainId, setExchangeInfo]);
 
   const {
