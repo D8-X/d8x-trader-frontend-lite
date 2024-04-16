@@ -17,12 +17,12 @@
 }
 
 .section {
-  margin: $d8x-spacing * 4 0;
+  margin: $d8x-spacing * 6 0;
 }
 
 .noteText {
   display: block;
-  margin: $d8x-spacing * 8 0;
+  margin: $d8x-spacing * 6 0;
 }
 
 .copyText {
@@ -30,7 +30,9 @@
 }
 
 .orSeparator {
-  padding: 0;
+  padding:  0 100px;
+  margin-top: 24px;
+  margin-bottom: 24px;
 }
 
 .dataLine {
@@ -38,7 +40,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: $d8x-spacing * 4;
-  margin-bottom: $d8x-spacing * 8;
+  margin-bottom: $d8x-spacing * 4;
 
   .inputHolder {
     flex: 1;

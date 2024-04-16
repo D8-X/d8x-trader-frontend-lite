@@ -159,10 +159,10 @@ export const WithdrawModal = () => {
     <Dialog open={isWithdrawModalOpen} onClose={handleOnClose} className={styles.dialog}>
       <DialogTitle>{t('common.withdraw-modal.title')}</DialogTitle>
       <DialogContent className={styles.dialogContent}>
-        <Separator />
         <div className={styles.section}>
           <CurrencySelect selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
         </div>
+        <Separator />
         <div className={styles.section}>
           <div className={styles.dataLine}>
             <div className={styles.label}>{t('common.amount-label')}</div>

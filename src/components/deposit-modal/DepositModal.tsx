@@ -51,10 +51,10 @@ export const DepositModal = () => {
     <Dialog open={isDepositModalOpen} onClose={handleOnClose} className={styles.dialog}>
       <DialogTitle>{t('common.deposit-modal.title')}</DialogTitle>
       <DialogContent className={styles.dialogContent}>
-        <Separator />
         <div className={styles.section}>
           <CurrencySelect selectedCurrency={selectedCurrency} setSelectedCurrency={setSelectedCurrency} />
         </div>
+        <Separator />
         <OKXConvertor selectedCurrency={selectedCurrency} />
         <div className={styles.section}>
           <Typography variant="bodyTiny" className={styles.noteText}>
@@ -87,7 +87,6 @@ export const DepositModal = () => {
             <Translate i18nKey="common.deposit-modal.deposit-note" values={{ currencyName: gasTokenSymbol }} />
           </Typography>
         </div>
-        <Separator />
       </DialogContent>
       <DialogActions className={styles.dialogAction}>
         <Button onClick={handleOnClose} variant="secondary">
