@@ -21,6 +21,18 @@
   background-color: var(--d8x-color-background-order-block);
 }
 
+.depositLink {
+  margin-top: 2 * $d8x-spacing;
+  color: var(--d8x-color-action);
+  display: flex;
+  align-items: center;
+  gap: $d8x-spacing;
+}
+
+.textOffset {
+  margin-top: $d8x-spacing;
+}
+
 @media screen and ($d8x-breakpoint-max-lg) {
   .bottomCard {
     padding-top: 8px;

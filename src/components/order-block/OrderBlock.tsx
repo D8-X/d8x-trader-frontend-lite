@@ -1,7 +1,11 @@
 import classnames from 'classnames';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSetAtom } from 'jotai';
 
-import { Card, CardContent } from '@mui/material';
+import { ArrowForward } from '@mui/icons-material';
+import { Card, CardContent, Link } from '@mui/material';
+import { useAccount } from 'wagmi';
 
 import { Separator } from '../separator/Separator';
 import { ActionBlock } from './elements/action-block/ActionBlock';
@@ -14,10 +18,15 @@ import { OrderTypeSelector } from './elements/order-type-selector/OrderTypeSelec
 import { StopLossSelector } from './elements/stop-loss-selector/StopLossSelector';
 import { TakeProfitSelector } from './elements/take-profit-selector/TakeProfitSelector';
 import { TriggerPrice } from './elements/trigger-price/TriggerPrice';
+import { depositModalOpenAtom } from 'store/global-modals.store';
 
 import styles from './OrderBlock.module.scss';
 
 export const OrderBlock = memo(() => {
+  const { t } = useTranslation();
+  const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
+  const { isConnected } = useAccount();
+
   return (
     <Card className={styles.root}>
       <OrderSelector />
@@ -39,6 +48,12 @@ export const OrderBlock = memo(() => {
       <CardContent className={styles.bottomCard}>
         <InfoBlock />
         <ActionBlock />
+        {isConnected && (
+          <Link onClick={() => setDepositModalOpen(true)} className={styles.depositLink}>
+            <ArrowForward fontSize="small" />
+            <span className={styles.textOffset}>{t('common.deposit-modal.title')}</span>
+          </Link>
+        )}
       </CardContent>
     </Card>
   );
