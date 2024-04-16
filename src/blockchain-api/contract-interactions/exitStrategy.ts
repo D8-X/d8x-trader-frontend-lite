@@ -2,7 +2,7 @@ import { type Config } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import type { Dispatch, SetStateAction } from 'react';
 import { createWalletClient, http } from 'viem';
-import { getBalance } from 'viem/actions';
+import { getBalance, waitForTransactionReceipt } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
@@ -70,13 +70,16 @@ export async function exitStrategy(
   } else {
     const gasPrice = await getGasPrice(walletClient.chain?.id);
     if (gasBalance < GAS_TARGET * gasPrice) {
-      await sendTransactionAsync({
+      const tx0 = await sendTransactionAsync({
         account: walletClient.account,
         chainId: walletClient.chain?.id,
         to: strategyAddr,
         value: 2n * GAS_TARGET * gasPrice,
         gas: GAS_TARGET,
+      }).catch((error) => {
+        throw new Error(error.shortMessage);
       });
+      await waitForTransactionReceipt(walletClient, { hash: tx0, timeout: 30_000 });
     }
     setCurrentPhaseKey('pages.strategies.exit.phases.posting');
     return postOrder(hedgeClient, [HashZero], data);
