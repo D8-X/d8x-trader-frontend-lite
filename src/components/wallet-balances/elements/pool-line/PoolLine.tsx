@@ -5,6 +5,7 @@ import { type Address, erc20Abi, formatUnits } from 'viem';
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { PoolWithIdI } from 'types/types';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
@@ -51,11 +52,13 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   if (!showEmpty && tokenBalanceData?.[0] === 0n) {
     return null;
   }
+  const unroundedCCValue = tokenBalanceData ? +formatUnits(tokenBalanceData[0], tokenBalanceData[1]) : 1;
+  const numberDigits = valueToFractionDigits(unroundedCCValue);
 
   return (
     <AssetLine
       symbol={pool.poolSymbol}
-      value={tokenBalanceData ? +formatUnits(tokenBalanceData[0], tokenBalanceData[1]) : ''}
+      value={tokenBalanceData ? (+formatUnits(tokenBalanceData[0], tokenBalanceData[1])).toFixed(numberDigits) : ''}
     />
   );
 });

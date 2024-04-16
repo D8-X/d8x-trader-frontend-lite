@@ -11,6 +11,7 @@ import { poolsAtom } from 'store/pools.store';
 import { PoolLine } from './elements/pool-line/PoolLine';
 
 import styles from './WalletBalances.module.scss';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const WalletBalances = () => {
   const pools = useAtomValue(poolsAtom);
@@ -34,13 +35,17 @@ export const WalletBalances = () => {
 
   const activePools = useMemo(() => pools.filter((pool) => pool.isRunning), [pools]);
   const inactivePools = useMemo(() => pools.filter((pool) => !pool.isRunning), [pools]);
+  const unroundedGasValue = gasTokenBalance ? +formatUnits(gasTokenBalance.value, gasTokenBalance.decimals) : 1;
+  const numberDigits = valueToFractionDigits(unroundedGasValue);
 
   return (
     <div className={styles.root}>
       <AssetLine
         key={gasTokenBalance?.symbol || 'gas-token'}
         symbol={gasTokenBalance?.symbol || ''}
-        value={gasTokenBalance ? formatUnits(gasTokenBalance.value, gasTokenBalance.decimals) : ''}
+        value={
+          gasTokenBalance ? (+formatUnits(gasTokenBalance.value, gasTokenBalance.decimals)).toFixed(numberDigits) : ''
+        }
       />
       {activePools.map((pool) => (
         <PoolLine key={pool.poolSymbol} pool={pool} />
