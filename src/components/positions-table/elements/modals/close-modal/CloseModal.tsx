@@ -5,7 +5,16 @@ import { toast } from 'react-toastify';
 import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
 
-import { Box, Button, Checkbox, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  CircularProgress,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from '@mui/material';
 
 import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
@@ -57,6 +66,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const [txHash, setTxHash] = useState<Address>();
   const [symbolForTx, setSymbolForTx] = useState('');
   const [closeOpenOrders, setCloseOpenOrders] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const requestSentRef = useRef(false);
 
@@ -77,6 +87,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     setTxHash(undefined);
     setSymbolForTx('');
     setLatestOrderSentTimestamp(Date.now());
+    setLoading(false);
   }, [isFetched, txHash, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
@@ -119,7 +130,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         ]}
       />
     );
-  }, [isSuccess, txHash, chain, symbolForTx, t]);
+    closeModal();
+  }, [isSuccess, txHash, chain, symbolForTx, closeModal, t]);
 
   const handleClosePositionConfirm = async () => {
     if (requestSentRef.current) {
@@ -140,6 +152,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
 
     const closeOrder: OrderI = {
       symbol: selectedPosition.symbol,
@@ -157,8 +170,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
           approveMarginToken(walletClient, poolByPosition.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
             postOrder(tradingClient, signatures, data.data)
-              .then((tx) => {
-                setTxHash(tx.hash);
+              .then(({ hash }) => {
+                setTxHash(hash);
                 setSymbolForTx(selectedPosition.symbol);
                 orderSubmitted(walletClient.chain.id, data.data.orderIds).then().catch(console.error);
                 toast.success(
@@ -167,6 +180,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
               })
               .catch((error) => {
                 console.error(error);
+                setLoading(false);
                 let msg = (error?.message ?? error) as string;
                 msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
                 toast.error(
@@ -179,7 +193,6 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
               .finally(() => {
                 setRequestSent(false);
                 requestSentRef.current = false;
-                closeModal();
               });
           });
         }
@@ -188,6 +201,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         console.error(error);
         setRequestSent(false);
         requestSentRef.current = false;
+        setLoading(false);
       });
 
     if (closeOpenOrders) {
@@ -288,7 +302,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
         <GasDepositChecker>
-          <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={requestSent}>
+          <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={loading || requestSent}>
+            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t('pages.trade.positions-table.modify-modal.confirm')}
           </Button>
         </GasDepositChecker>

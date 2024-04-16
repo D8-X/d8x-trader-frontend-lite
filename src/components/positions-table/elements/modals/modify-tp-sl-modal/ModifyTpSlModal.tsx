@@ -142,8 +142,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
     }
     setTxHash(undefined);
     setLoading(false);
-    closeModal();
-  }, [isFetched, setLatestOrderSentTimestamp, closeModal]);
+  }, [isFetched, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
     if (!isError) {
@@ -181,7 +180,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         ]}
       />
     );
-  }, [isSuccess, txHash, chain, selectedPosition?.symbol, setLatestOrderSentTimestamp, t]);
+    closeModal();
+  }, [isSuccess, txHash, chain, selectedPosition?.symbol, setLatestOrderSentTimestamp, closeModal, t]);
 
   if (!selectedPosition) {
     return null;
