@@ -273,6 +273,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
             currency={currencyConvertMap[selectedCurrency.name]}
             min={0}
             max={tokenBalance || 0}
+            step={'0.01'}
             disabled={loading}
           />
           {tokenBalance ? (
