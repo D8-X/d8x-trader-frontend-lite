@@ -1,7 +1,8 @@
+import classnames from 'classnames';
+
 import { Button } from '@mui/material';
 
 import styles from './Tabs.module.scss';
-import classnames from 'classnames';
 
 interface TabsPropsI {
   options: { label: string; value: number }[];

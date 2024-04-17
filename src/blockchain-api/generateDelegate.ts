@@ -1,5 +1,5 @@
 import { etc } from '@noble/secp256k1';
-import { WalletClient, bytesToHex, stringToBytes } from 'viem';
+import { type WalletClient, bytesToHex, stringToBytes } from 'viem';
 import secureLocalStorage from 'react-secure-storage';
 import CryptoJS from 'crypto-js';
 import { privateKeyToAccount } from 'viem/accounts';

@@ -1,6 +1,6 @@
 import { multicall } from '@wagmi/core';
 import { atom } from 'jotai';
-import { Address, erc20Abi } from 'viem';
+import { type Address, erc20Abi } from 'viem';
 
 import { poolsAtom } from 'store/pools.store';
 

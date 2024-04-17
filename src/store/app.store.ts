@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import type { WalletClient } from 'viem';
+import { type WalletClient } from 'viem';
 
 import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';

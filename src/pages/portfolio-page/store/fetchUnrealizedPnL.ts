@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { getPositionRisk } from 'network/network';
 import { traderAPIAtom } from 'store/pools.store';

@@ -1,4 +1,4 @@
-import { Address, WalletClient } from 'viem';
+import type { Address, WalletClient } from 'viem';
 import secureLocalStorage from 'react-secure-storage';
 import { generateStrategyAccount } from './generateStrategyAccount';
 

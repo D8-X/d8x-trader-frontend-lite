@@ -1,6 +1,6 @@
 import secureLocalStorage from 'react-secure-storage';
 import CryptoJS from 'crypto-js';
-import { WalletClient } from 'viem';
+import { type WalletClient } from 'viem';
 
 export function getDelegateKey(walletClient: WalletClient, storageKey: string) {
   const userAddress = walletClient.account?.address;

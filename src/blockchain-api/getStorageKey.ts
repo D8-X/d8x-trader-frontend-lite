@@ -1,5 +1,5 @@
 import { etc } from '@noble/secp256k1';
-import { WalletClient, toHex, stringToBytes } from 'viem';
+import { type WalletClient, toHex, stringToBytes } from 'viem';
 
 export function getStorageKey(walletClient: WalletClient) {
   const account = walletClient.account;

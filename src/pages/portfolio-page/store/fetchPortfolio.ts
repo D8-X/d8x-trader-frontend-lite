@@ -1,6 +1,6 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { poolsAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenTraderRebateI, PoolWithIdI } from 'types/types';

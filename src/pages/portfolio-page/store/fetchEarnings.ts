@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { getEarnings } from 'network/history';
 import { poolsAtom } from 'store/pools.store';

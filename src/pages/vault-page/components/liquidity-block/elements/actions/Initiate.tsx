@@ -2,7 +2,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';

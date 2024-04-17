@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
-import { Address, erc20Abi, formatUnits } from 'viem';
+import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useReadContracts } from 'wagmi';
 
 import { traderAPIAtom } from 'store/pools.store';

@@ -1,7 +1,7 @@
 import { Web3Provider } from '@ethersproject/providers';
 import { getWalletClient } from '@wagmi/core';
 import { useMemo } from 'react';
-import { WalletClient } from 'viem';
+import { type WalletClient } from 'viem';
 import { useWalletClient } from 'wagmi';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';

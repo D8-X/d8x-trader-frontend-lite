@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { useAccount, useChainId } from 'wagmi';
 
 import { getTradingFee } from 'network/network';

@@ -1,7 +1,7 @@
 import { useSetAtom } from 'jotai';
 import { PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 import { useBalance } from 'wagmi';
 
 import { Button } from '@mui/material';

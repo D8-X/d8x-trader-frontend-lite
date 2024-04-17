@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { Address } from 'viem';
+import { type Address } from 'viem';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
 import { pagesConfig } from 'config';
