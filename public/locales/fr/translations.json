@@ -861,16 +861,16 @@
         "button": "Convertissez",
         "toasts": {
           "success-wrap": {
-            "title": "Tokens successfully wrapped",
-            "body": "Amount"
+            "title": "Jetons emballés avec succès",
+            "body": "Montant"
           },
           "success-unwrap": {
-            "title": "Tokens successfully unwrapped",
-            "body": "Amount"
+            "title": "Jetons dérobés avec succès",
+            "body": "Montant"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "La transaction a échoué",
+            "body": "Raison"
           }
         }
       }

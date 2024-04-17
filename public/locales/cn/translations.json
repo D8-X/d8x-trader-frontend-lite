@@ -861,16 +861,16 @@
         "button": "转变",
         "toasts": {
           "success-wrap": {
-            "title": "Tokens successfully wrapped",
-            "body": "Amount"
+            "title": "令牌包装成功",
+            "body": "量"
           },
           "success-unwrap": {
-            "title": "Tokens successfully unwrapped",
-            "body": "Amount"
+            "title": "令牌成功解包",
+            "body": "量"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "交易失败",
+            "body": "原因"
           }
         }
       }

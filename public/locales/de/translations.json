@@ -861,16 +861,16 @@
         "button": "Konvertieren",
         "toasts": {
           "success-wrap": {
-            "title": "Tokens successfully wrapped",
-            "body": "Amount"
+            "title": "Token erfolgreich eingewickelt",
+            "body": "Menge"
           },
           "success-unwrap": {
-            "title": "Tokens successfully unwrapped",
-            "body": "Amount"
+            "title": "Token erfolgreich abgewickelt",
+            "body": "Menge"
           },
           "tx-failed": {
-            "title": "Transaction Failed",
-            "body": "Reason"
+            "title": "Transaktion fehlgeschlagen",
+            "body": "Grund"
           }
         }
       }
@@ -886,12 +886,12 @@
       "withdraw-address-error": "Bitte geben Sie eine gültige Adresse ein",
       "toasts": {
         "tx-submitted": {
-          "title": "You have successfully withdrawn your tokens",
-          "body": "Amount"
+          "title": "Sie haben Ihre Token erfolgreich abgehoben",
+          "body": "Menge"
         },
         "tx-failed": {
-          "title": "Transaction Failed",
-          "body": "Reason"
+          "title": "Transaktion fehlgeschlagen",
+          "body": "Grund"
         }
       }
     },
