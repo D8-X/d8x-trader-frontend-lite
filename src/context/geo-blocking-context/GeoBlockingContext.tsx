@@ -83,7 +83,11 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
   }, [currentPosition, isIpGeolocationSuccess]);
 
   useEffect(() => {
-    if (isGeoCheckExpired && config.ipGeolocationApiKey) {
+    if (!config.ipGeolocationApiKey) {
+      setIpGeolocationSuccess(false);
+      return;
+    }
+    if (isGeoCheckExpired) {
       getIpGeolocationData()
         .then((data) => {
           if (data.country_code2) {
