@@ -1,5 +1,5 @@
 import Geonames from 'geonames.js';
-import { memo, type PropsWithChildren, useEffect, useState } from 'react';
+import { memo, type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import { config } from 'config';
 import { getIpGeolocationData } from 'network/public';
@@ -49,6 +49,8 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
   const [hasAccess, setAccess] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const ipGeolocationSentRef = useRef(false);
+
   const geoLatestCheck = localStorage.getItem(GEO_LATEST_CHECK_LS_KEY);
   const isGeoCheckExpired = geoLatestCheck === null || +geoLatestCheck <= Date.now() - ONE_DAY_AGO_MS;
 
@@ -87,14 +89,18 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
       setIpGeolocationSuccess(false);
       return;
     }
-    if (isGeoCheckExpired) {
+    if (!ipGeolocationSentRef.current && isGeoCheckExpired) {
+      ipGeolocationSentRef.current = true;
+
       getIpGeolocationData()
         .then((data) => {
           if (data.country_code2) {
             const isBlocked = BLOCKED_COUNTRIES.includes(data.country_code2);
             setAccess(!isBlocked);
+            if (!isBlocked) {
+              localStorage.setItem(GEO_LATEST_CHECK_LS_KEY, `${Date.now()}`);
+            }
             setIpGeolocationSuccess(true);
-            localStorage.setItem(GEO_LATEST_CHECK_LS_KEY, `${Date.now()}`);
           } else {
             setIpGeolocationSuccess(false);
           }
@@ -102,6 +108,9 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
         .catch((error) => {
           console.error(error);
           setIpGeolocationSuccess(false);
+        })
+        .finally(() => {
+          ipGeolocationSentRef.current = false;
         });
     }
   }, [isGeoCheckExpired]);

@@ -196,10 +196,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       .finally(() => {
         exchangeRequestRef.current = false;
       });
-
-    return () => {
-      exchangeRequestRef.current = false;
-    };
   }, [chainId, setExchangeInfo]);
 
   const {
