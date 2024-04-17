@@ -1,4 +1,7 @@
+import { Button } from '@mui/material';
+
 import styles from './Tabs.module.scss';
+import classnames from 'classnames';
 
 interface TabsPropsI {
   options: { label: string; value: number }[];
@@ -10,13 +13,14 @@ export const Tabs = ({ options, currentValue, setCurrentValue }: TabsPropsI) => 
   return (
     <div className={styles.container}>
       {options.map((option) => (
-        <div
+        <Button
           key={option.value}
-          className={currentValue === option.value ? styles.active : styles.inactive}
+          className={classnames({ [styles.selected]: currentValue === option.value })}
+          variant="link"
           onClick={() => setCurrentValue(option.value)}
         >
           {option.label}
-        </div>
+        </Button>
       ))}
     </div>
   );

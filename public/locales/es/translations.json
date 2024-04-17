@@ -530,10 +530,12 @@
         },
         "receive": "d{{poolSymbol}} que recibes",
         "button": "Añadir",
-        "validity-empty": "Conectar cartera",
+        "validity-empty": "-",
+        "validity-no-address": "Conectar cartera",
+        "validity-no-amount": "Ingresar cantidad",
+        "validity-no-funds": "Depósito",
         "validity-amount-too-big": "Fondos insuficientes",
-        "validity-amount-below-min": "Cantidad por debajo del mínimo",
-        "validity-no-amount": "Ingresar cantidad"
+        "validity-amount-below-min": "Cantidad por debajo del mínimo"
       },
       "withdraw": {
         "title": "Remover Liquidez",
@@ -544,13 +546,13 @@
           "info1": "Ingresa el monto de d{{poolSymbol}} que quieres intercambiar por {{poolSymbol}}.",
           "info2": "Despues de 48 horas, este monto puede ser convertido a {{poolSymbol}} y removido de las reservas.",
           "button": "Iniciar Retiro",
-          "validity-no-address": "Conectar cartera",
           "validity-empty": "-",
+          "validity-no-address": "Conectar cartera",
           "validity-no-funds": "No hay fondos para retirar",
           "validity-no-gas": "No hay gas para continuar",
+          "validity-no-amount": "Ingresar cantidad",
           "validity-amount-too-big": "Cantidad demasiado grande",
-          "validity-amount-below-min": "Cantidad por debajo del mínimo",
-          "validity-no-amount": "Ingresar cantidad"
+          "validity-amount-below-min": "Cantidad por debajo del mínimo"
         },
         "action": {
           "title": "Retirar {{poolSymbol}}",

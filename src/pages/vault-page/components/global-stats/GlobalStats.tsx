@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChainId } from 'wagmi';
@@ -21,12 +21,12 @@ export const GlobalStats = () => {
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [traderAPI] = useAtom(traderAPIAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
+  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const [dCurrencyPrice, setDCurrencyPrice] = useAtom(dCurrencyPriceAtom);
   const [tvl, setTvl] = useAtom(tvlAtom);
-  const [triggerUserStatsUpdate] = useAtom(triggerUserStatsUpdateAtom);
-  const [isSDKConnected] = useAtom(sdkConnectedAtom);
 
   const [weeklyAPI, setWeeklyAPI] = useState<number>();
 

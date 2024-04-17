@@ -348,7 +348,7 @@ export interface OpenWithdrawalI {
 }
 
 export interface OpenWithdrawalsI {
-  withdrawals: OpenWithdrawalI[];
+  withdrawals?: OpenWithdrawalI[];
 }
 
 export interface RebateI {

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Button, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
+import { Button, CircularProgress, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
 import SwitchIcon from 'assets/icons/switchSeparator.svg?react';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
@@ -15,6 +15,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
+import { depositModalOpenAtom } from 'store/global-modals.store';
 import {
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
@@ -29,6 +30,7 @@ import styles from './Action.module.scss';
 
 enum ValidityCheckAddE {
   Empty = '-',
+  NoFunds = 'no-funds',
   NoAmount = 'no-amount',
   NoAddress = 'not-connected',
   AmountTooBig = 'amount-too-big',
@@ -39,7 +41,7 @@ enum ValidityCheckAddE {
 export const Add = memo(() => {
   const { t } = useTranslation();
 
-  const { address, chain } = useAccount();
+  const { address, chain, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
@@ -50,11 +52,13 @@ export const Add = memo(() => {
   const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
   const [addAmount, setAddAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
   const [inputValue, setInputValue] = useState(`${addAmount}`);
   const [txHash, setTxHash] = useState<Address>();
+  const [loading, setLoading] = useState(false);
 
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
@@ -88,15 +92,16 @@ export const Add = memo(() => {
   });
 
   useEffect(() => {
-    if (!isFetched) {
+    if (!isFetched || !txHash) {
       return;
     }
     setTxHash(undefined);
+    setLoading(false);
     setTriggerUserStatsUpdate((prevValue) => !prevValue);
-  }, [isFetched, setTriggerUserStatsUpdate]);
+  }, [isFetched, txHash, setTriggerUserStatsUpdate]);
 
   useEffect(() => {
-    if (!isError || !reason) {
+    if (!isError || !reason || !txHash) {
       return;
     }
     toast.error(
@@ -105,7 +110,7 @@ export const Add = memo(() => {
         bodyLines={[{ label: t('pages.vault.toast.error.body'), value: reason.message }]}
       />
     );
-  }, [isError, reason, t]);
+  }, [isError, txHash, reason, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -131,6 +136,8 @@ export const Add = memo(() => {
         ]}
       />
     );
+    setAddAmount(0);
+    setInputValue('0');
   }, [isSuccess, txHash, chain, t]);
 
   const handleAddLiquidity = () => {
@@ -148,12 +155,14 @@ export const Add = memo(() => {
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
     approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
       .then(() => {
-        addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount).then((tx) => {
-          setTxHash(tx.hash);
-          toast.success(<ToastContent title={t('pages.vault.toast.adding')} bodyLines={[]} />);
-        });
+        return addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount);
+      })
+      .then((tx) => {
+        setTxHash(tx.hash);
+        toast.success(<ToastContent title={t('pages.vault.toast.adding')} bodyLines={[]} />);
       })
       .catch((err) => {
         console.error(err);
@@ -165,11 +174,9 @@ export const Add = memo(() => {
             bodyLines={[{ label: t('pages.vault.toast.error.body'), value: msg }]}
           />
         );
+        setLoading(false);
       })
       .finally(() => {
-        setAddAmount(0);
-        setInputValue('0');
-        setTriggerUserStatsUpdate((prevValue) => !prevValue);
         requestSentRef.current = false;
         setRequestSent(false);
       });
@@ -183,15 +190,28 @@ export const Add = memo(() => {
   }, [addAmount, dCurrencyPrice]);
 
   const isButtonDisabled = useMemo(() => {
-    if (!addAmount || requestSent || !isSDKConnected || !selectedPool?.brokerCollateralLotSize || !poolTokenBalance) {
+    if (
+      !addAmount ||
+      loading ||
+      requestSent ||
+      !isSDKConnected ||
+      !selectedPool?.brokerCollateralLotSize ||
+      !poolTokenBalance
+    ) {
       return true;
     }
     return addAmount > poolTokenBalance || addAmount < selectedPool.brokerCollateralLotSize;
-  }, [addAmount, requestSent, isSDKConnected, selectedPool, poolTokenBalance]);
+  }, [addAmount, loading, requestSent, isSDKConnected, selectedPool, poolTokenBalance]);
 
   const validityCheckAddType = useMemo(() => {
-    if (requestSent || !isSDKConnected || !selectedPool?.brokerCollateralLotSize || !poolTokenBalance) {
+    if (!address || !isConnected) {
+      return ValidityCheckAddE.NoAddress;
+    }
+    if (requestSent || !isSDKConnected || !selectedPool?.brokerCollateralLotSize) {
       return ValidityCheckAddE.Empty;
+    }
+    if (!poolTokenBalance) {
+      return ValidityCheckAddE.NoFunds;
     }
     if (!addAmount) {
       return ValidityCheckAddE.NoAmount;
@@ -205,10 +225,22 @@ export const Add = memo(() => {
       return ValidityCheckAddE.AmountBelowMinimum;
     }
     return ValidityCheckAddE.GoodToGo;
-  }, [addAmount, requestSent, isSDKConnected, selectedPool?.brokerCollateralLotSize, poolTokenBalance]);
+  }, [
+    address,
+    isConnected,
+    addAmount,
+    requestSent,
+    isSDKConnected,
+    selectedPool?.brokerCollateralLotSize,
+    poolTokenBalance,
+  ]);
 
   const validityCheckAddText = useMemo(() => {
-    if (validityCheckAddType === ValidityCheckAddE.Empty) {
+    if (validityCheckAddType === ValidityCheckAddE.NoAddress) {
+      return `${t('pages.vault.add.validity-no-address')}`;
+    } else if (validityCheckAddType === ValidityCheckAddE.NoFunds) {
+      return `${t('pages.vault.add.validity-no-funds')}`;
+    } else if (validityCheckAddType === ValidityCheckAddE.Empty) {
       return `${t('pages.vault.add.validity-empty')}`;
     } else if (validityCheckAddType === ValidityCheckAddE.AmountTooBig) {
       return `${t('pages.vault.add.validity-amount-too-big')}`;
@@ -252,6 +284,7 @@ export const Add = memo(() => {
             step="1"
             min={0}
             max={poolTokenBalance || 999999}
+            disabled={loading}
           />
         </div>
         {poolTokenBalance ? (
@@ -292,16 +325,24 @@ export const Add = memo(() => {
           </div>
         </div>
         <div className={styles.buttonHolder}>
-          <GasDepositChecker className={styles.actionButton}>
-            <Button
-              variant="primary"
-              disabled={isButtonDisabled}
-              onClick={handleAddLiquidity}
-              className={styles.actionButton}
-            >
+          {validityCheckAddType === ValidityCheckAddE.NoFunds && (
+            <Button variant={'buy'} onClick={() => setDepositModalOpen(true)} className={styles.actionButton}>
               {validityCheckAddText}
             </Button>
-          </GasDepositChecker>
+          )}
+          {validityCheckAddType !== ValidityCheckAddE.NoFunds && (
+            <GasDepositChecker className={styles.actionButton}>
+              <Button
+                variant="primary"
+                disabled={isButtonDisabled}
+                onClick={handleAddLiquidity}
+                className={styles.actionButton}
+              >
+                {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                {validityCheckAddText}
+              </Button>
+            </GasDepositChecker>
+          )}
         </div>
       </div>
     </div>

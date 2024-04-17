@@ -530,10 +530,12 @@
         },
         "receive": "Vous recevez d{{poolSymbol}}",
         "button": "Ajouter",
-        "validity-empty": "Connectez le portefeuille",
+        "validity-empty": "-",
+        "validity-no-address": "Connectez le portefeuille",
+        "validity-no-amount": "Entrer un montant",
+        "validity-no-funds": "Dépôt",
         "validity-amount-too-big": "Fonds insuffisants",
-        "validity-amount-below-min": "Montant inférieur au minimum",
-        "validity-no-amount": "Entrer un montant"
+        "validity-amount-below-min": "Montant inférieur au minimum"
       },
       "withdraw": {
         "title": "Retirer la Liquidité",
@@ -544,13 +546,13 @@
           "info1": "Indiquez le montant de d{{poolSymbol}} que vous souhaitez échanger contre {{poolSymbol}}.",
           "info2": "Après 48 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool.",
           "button": "Initier le retrait",
-          "validity-no-address": "Connectez le portefeuille",
           "validity-empty": "-",
+          "validity-no-address": "Connectez le portefeuille",
           "validity-no-funds": "Pas de fonds à retirer",
           "validity-no-gas": "Pas de gaz pour continuer",
+          "validity-no-amount": "Entrer un montant",
           "validity-amount-too-big": "Montant trop large",
-          "validity-amount-below-min": "Montant inférieur au minimum",
-          "validity-no-amount": "Entrer un montant"
+          "validity-amount-below-min": "Montant inférieur au minimum"
         },
         "action": {
           "title": "Retirer {{poolSymbol}}",

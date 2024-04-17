@@ -1,16 +1,18 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
 import { initiateLiquidityWithdrawal } from 'blockchain-api/contract-interactions/initiateLiquidityWithdrawal';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
@@ -22,8 +24,6 @@ import {
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './Action.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
-import { Address } from 'viem';
 
 enum ValidityCheckInitiateE {
   Empty = '-',
@@ -37,23 +37,23 @@ enum ValidityCheckInitiateE {
 
 export const Initiate = memo(() => {
   const { t } = useTranslation();
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [liqProvTool] = useAtom(traderAPIAtom);
-  const [userAmount] = useAtom(userAmountAtom);
-  const [withdrawals] = useAtom(withdrawalsAtom);
-  const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
-  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
-  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
   const { address, chain } = useAccount();
-
   const { data: walletClient } = useWalletClient();
+
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const liqProvTool = useAtomValue(traderAPIAtom);
+  const userAmount = useAtomValue(userAmountAtom);
+  const withdrawals = useAtomValue(withdrawalsAtom);
+  const dCurrencyPrice = useAtomValue(dCurrencyPriceAtom);
+  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
+  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address>();
-
   const [inputValue, setInputValue] = useState(`${initiateAmount}`);
+  const [loading, setLoading] = useState(false);
 
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
@@ -87,15 +87,16 @@ export const Initiate = memo(() => {
   });
 
   useEffect(() => {
-    if (!isFetched) {
+    if (!isFetched || !txHash) {
       return;
     }
     setTxHash(undefined);
+    setLoading(false);
     setTriggerUserStatsUpdate((prevValue) => !prevValue);
-  }, [isFetched, setTriggerUserStatsUpdate]);
+  }, [isFetched, txHash, setTriggerUserStatsUpdate]);
 
   useEffect(() => {
-    if (!isError || !reason) {
+    if (!isError || !reason || !txHash) {
       return;
     }
     toast.error(
@@ -104,7 +105,7 @@ export const Initiate = memo(() => {
         bodyLines={[{ label: t('pages.vault.toast.error-initiating.body'), value: reason.message }]}
       />
     );
-  }, [isError, reason, t]);
+  }, [isError, txHash, reason, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -130,6 +131,8 @@ export const Initiate = memo(() => {
         ]}
       />
     );
+    setInitiateAmount(0);
+    setInputValue('0');
   }, [isSuccess, txHash, chain, t]);
 
   const handleInitiateLiquidity = useCallback(() => {
@@ -143,6 +146,7 @@ export const Initiate = memo(() => {
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
 
     initiateLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
       .then((tx) => {
@@ -159,10 +163,9 @@ export const Initiate = memo(() => {
             bodyLines={[{ label: t('pages.vault.toast.error-initiating.body'), value: msg }]}
           />
         );
+        setLoading(false);
       })
       .finally(() => {
-        setInitiateAmount(0);
-        setInputValue('0');
         setTriggerUserStatsUpdate((prevValue) => !prevValue);
         setTriggerWithdrawalsUpdate((prevValue) => !prevValue);
         requestSentRef.current = false;
@@ -246,7 +249,7 @@ export const Initiate = memo(() => {
 
   return (
     <>
-      <Box className={styles.withdrawLabel}>
+      <div className={styles.withdrawLabel}>
         <InfoLabelBlock
           title={t('pages.vault.withdraw.initiate.title', { poolSymbol: selectedPool?.poolSymbol })}
           content={
@@ -260,7 +263,7 @@ export const Initiate = memo(() => {
             </>
           }
         />
-      </Box>
+      </div>
       <ResponsiveInput
         id="initiate-amount-size"
         className={styles.initiateInputHolder}
@@ -269,6 +272,7 @@ export const Initiate = memo(() => {
         currency={`d${selectedPool?.poolSymbol ?? '--'}`}
         step="1"
         min={0}
+        disabled={loading}
       />
       {userAmount ? (
         <Typography className={styles.helperText} variant="bodyTiny">
@@ -284,7 +288,7 @@ export const Initiate = memo(() => {
           </Link>
         </Typography>
       ) : null}
-      <Box className={styles.buttonHolder}>
+      <div className={styles.buttonHolder}>
         <GasDepositChecker className={styles.actionButton}>
           <Button
             variant="primary"
@@ -292,10 +296,11 @@ export const Initiate = memo(() => {
             onClick={handleInitiateLiquidity}
             className={styles.actionButton}
           >
+            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {validityCheckInitiateText}
           </Button>
         </GasDepositChecker>
-      </Box>
+      </div>
     </>
   );
 });

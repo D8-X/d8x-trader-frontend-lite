@@ -2,21 +2,20 @@
 
 .container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: $d8x-spacing * 4;
+
+  button {
+    min-width: 30px;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 500;
+    padding-left: $d8x-spacing * 4;
+    padding-right: $d8x-spacing * 4;
+  }
 }
 
-.inactive,
-.active {
-  padding: $d8x-spacing * 2 $d8x-spacing * 3;
-  border-radius: 8px;
-  font-size: 1rem;
-  line-height: 1.5;
-  cursor: pointer;
-  color: var(--d8x-color-text-main);
-  min-width: 100px;
-}
-
-.active {
-  background-color: var(--d8x-color-action-secondary);
+.selected {
   color: var(--d8x-color-action);
+  background-color: var(--d8x-color-action-secondary);
 }

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { liquidityTypeAtom } from 'store/vault-pools.store';
 import { LiquidityTypeE } from 'types/enums';
@@ -21,7 +21,7 @@ export const LiquidityTypeSelector = memo(() => {
   const [liquidityType, setLiquidityType] = useAtom(liquidityTypeAtom);
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       {Object.values(LiquidityTypeE).map((key) => (
         <Button
           key={key}
@@ -32,6 +32,6 @@ export const LiquidityTypeSelector = memo(() => {
           {t(mapButtonName[LiquidityTypeE[key]])}
         </Button>
       ))}
-    </Box>
+    </div>
   );
 });

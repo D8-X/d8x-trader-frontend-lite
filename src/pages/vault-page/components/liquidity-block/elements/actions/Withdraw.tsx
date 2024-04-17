@@ -1,10 +1,12 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { PROXY_ABI } from '@d8x/perpetuals-sdk';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient, useReadContract } from 'wagmi';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
 import { PERIOD_OF_2_DAYS } from 'appConstants';
 import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
@@ -12,6 +14,7 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { getTxnLink } from 'helpers/getTxnLink';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
@@ -26,9 +29,6 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
-import { getTxnLink } from 'helpers/getTxnLink';
-import { PROXY_ABI } from '@d8x/perpetuals-sdk';
-import { Address } from 'viem';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -43,20 +43,22 @@ enum ValidityCheckWithdrawE {
 
 export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const { t } = useTranslation();
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [liqProvTool] = useAtom(traderAPIAtom);
-  const [dCurrencyPrice] = useAtom(dCurrencyPriceAtom);
-  const [userAmount] = useAtom(userAmountAtom);
-  const [withdrawals] = useAtom(withdrawalsAtom);
-  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
-  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
-  const [hasOpenRequestOnChain, setWithrawalOnChain] = useAtom(withdrawalOnChainAtom);
 
   const { data: walletClient } = useWalletClient();
   const { address, chain } = useAccount();
 
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const liqProvTool = useAtomValue(traderAPIAtom);
+  const dCurrencyPrice = useAtomValue(dCurrencyPriceAtom);
+  const userAmount = useAtomValue(userAmountAtom);
+  const withdrawals = useAtomValue(withdrawalsAtom);
+  const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
+  const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const [hasOpenRequestOnChain, setWithrawalOnChain] = useAtom(withdrawalOnChainAtom);
+
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address>();
+  const [loading, setLoading] = useState(false);
 
   const requestSentRef = useRef(false);
 
@@ -89,16 +91,17 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   });
 
   useEffect(() => {
-    if (!isFetched) {
+    if (!isFetched || !txHash) {
       return;
     }
     setTxHash(undefined);
+    setLoading(false);
     setTriggerUserStatsUpdate((prevValue) => !prevValue);
     refetchOnChainStatus();
-  }, [isFetched, refetchOnChainStatus, setTriggerUserStatsUpdate]);
+  }, [isFetched, txHash, refetchOnChainStatus, setTriggerUserStatsUpdate]);
 
   useEffect(() => {
-    if (!isError || !reason) {
+    if (!isError || !reason || !txHash) {
       return;
     }
     toast.error(
@@ -107,7 +110,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
         bodyLines={[{ label: t('pages.vault.toast.error.body'), value: reason.message }]}
       />
     );
-  }, [isError, reason, t]);
+  }, [isError, txHash, reason, t]);
 
   useEffect(() => {
     if (!isSuccess || !txHash) {
@@ -146,6 +149,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
     requestSentRef.current = true;
     setRequestSent(true);
+    setLoading(true);
 
     executeLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol)
       .then((tx) => {
@@ -162,6 +166,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
             bodyLines={[{ label: t('pages.vault.toast.error-withdrawing.body'), value: msg }]}
           />
         );
+        setLoading(false);
       })
       .finally(() => {
         setTriggerUserStatsUpdate((prevValue) => !prevValue);
@@ -288,6 +293,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
               className={styles.actionButton}
               disabled={isButtonDisabled}
             >
+              {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
               {validityCheckWithdrawText}
             </Button>
           </GasDepositChecker>

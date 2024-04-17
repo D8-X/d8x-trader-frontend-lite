@@ -530,10 +530,12 @@
         },
         "receive": "You receive d{{poolSymbol}}",
         "button": "Add",
-        "validity-empty": "Connect wallet",
+        "validity-empty": "-",
+        "validity-no-address": "Connect wallet",
+        "validity-no-funds": "Deposit",
+        "validity-no-amount": "Enter amount",
         "validity-amount-too-big": "Insufficient funds",
-        "validity-amount-below-min": "Amount below min",
-        "validity-no-amount": "Enter amount"
+        "validity-amount-below-min": "Amount below min"
       },
       "withdraw": {
         "title": "Withdraw Liquidity",
@@ -544,13 +546,13 @@
           "info1": "Specify the amount of d{{poolSymbol}} you want to exchange for {{poolSymbol}}.",
           "info2": "After 48 hours, this amount can be converted to {{poolSymbol}} and can be withdrawn from the pool.",
           "button": "Initiate withdrawal",
-          "validity-no-address": "Connect wallet",
           "validity-empty": "-",
+          "validity-no-address": "Connect wallet",
           "validity-no-funds": "No funds to withdraw",
           "validity-no-gas": "No gas to proceed",
+          "validity-no-amount": "Enter amount",
           "validity-amount-too-big": "Amount too large",
-          "validity-amount-below-min": "Amount below min",
-          "validity-no-amount": "Enter amount"
+          "validity-amount-below-min": "Amount below min"
         },
         "action": {
           "title": "Withdraw {{poolSymbol}}",

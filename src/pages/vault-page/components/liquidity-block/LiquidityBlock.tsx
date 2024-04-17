@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { format } from 'date-fns';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,8 +19,9 @@ import styles from './LiquidityBlock.module.scss';
 
 export const LiquidityBlock = memo(() => {
   const { t } = useTranslation();
-  const [liquidityType] = useAtom(liquidityTypeAtom);
-  const [withdrawals] = useAtom(withdrawalsAtom);
+
+  const liquidityType = useAtomValue(liquidityTypeAtom);
+  const withdrawals = useAtomValue(withdrawalsAtom);
 
   const withdrawOn = useMemo(() => {
     if (!withdrawals || withdrawals.length === 0) {

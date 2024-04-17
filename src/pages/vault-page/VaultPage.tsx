@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 
@@ -23,8 +23,8 @@ export const VaultPage = () => {
   const chainId = useChainId();
   const { address } = useAccount();
 
-  const [selectedPool] = useAtom(selectedPoolAtom);
-  const [triggerWithdrawalsUpdate] = useAtom(triggerWithdrawalsUpdateAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+  const triggerWithdrawalsUpdate = useAtomValue(triggerWithdrawalsUpdateAtom);
   const setWithdrawals = useSetAtom(withdrawalsAtom);
 
   const withdrawalsRequestSentRef = useRef(false);
@@ -42,7 +42,7 @@ export const VaultPage = () => {
     withdrawalsRequestSentRef.current = true;
 
     getOpenWithdrawals(chainId, address, selectedPool.poolSymbol)
-      .then(({ withdrawals }) => setWithdrawals(withdrawals))
+      .then(({ withdrawals }) => setWithdrawals(withdrawals || []))
       .catch(console.error)
       .finally(() => {
         withdrawalsRequestSentRef.current = false;
