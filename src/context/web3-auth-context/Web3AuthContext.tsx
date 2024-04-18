@@ -1,7 +1,7 @@
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
-import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
+import { type OPENLOGIN_NETWORK_TYPE, OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
@@ -35,52 +35,59 @@ interface Web3AuthContextPropsI {
 
 const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefined);
 
-const clientId = web3AuthConfig.web3AuthClientId;
-const verifier = web3AuthConfig.web3AuthVerifier;
-const web3AuthNetwork = web3AuthConfig.web3AuthNetwork;
+let clientId = '';
+let verifier = '';
+let web3AuthNetwork: OPENLOGIN_NETWORK_TYPE;
+let web3AuthInstance: Web3AuthNoModal | null = null;
 
-const chainConfig = {
-  chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: numberToHex(chains[0].id),
-  rpcTarget: chains[0].rpcUrls.default.http[0],
-  displayName: chains[0].name,
-  blockExplorerUrl: chains[0].blockExplorers?.default.url ?? '',
-  ticker: chains[0].nativeCurrency.symbol,
-  tickerName: chains[0].nativeCurrency.name,
-  decimals: chains[0].nativeCurrency.decimals,
-  logo: chains[0].iconUrl as string,
-  isTestnet: chains[0].testnet,
-};
+if (web3AuthConfig.isEnabled) {
+  clientId = web3AuthConfig.web3AuthClientId;
+  verifier = web3AuthConfig.web3AuthVerifier;
+  web3AuthNetwork = web3AuthConfig.web3AuthNetwork;
 
-const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
+  const chainConfig = {
+    chainNamespace: CHAIN_NAMESPACES.EIP155,
+    chainId: numberToHex(chains[0].id),
+    rpcTarget: chains[0].rpcUrls.default.http[0],
+    displayName: chains[0].name,
+    blockExplorerUrl: chains[0].blockExplorers?.default.url ?? '',
+    ticker: chains[0].nativeCurrency.symbol,
+    tickerName: chains[0].nativeCurrency.name,
+    decimals: chains[0].nativeCurrency.decimals,
+    logo: chains[0].iconUrl as string,
+    isTestnet: chains[0].testnet,
+  };
 
-const web3AuthOptions: Web3AuthNoModalOptions = {
-  clientId,
-  chainConfig,
-  web3AuthNetwork,
-  privateKeyProvider,
-};
-const web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);
+  const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });
 
-const openloginAdapter = new OpenloginAdapter({
-  privateKeyProvider,
-  adapterSettings: {
-    uxMode: 'redirect',
-    originData: {
-      ['https://dev.d8x-testnet.pages.dev']:
-        'MEQCIFh3Y9quJU21aHiv7RAq8c2olr4O6XjcigXzlo3PYIfnAiAvAtSfzO0hEQO-WdzIoN87iapBxVY9fFWDD65nmSA0ig',
-    },
-    loginConfig: {
-      jwt: {
-        verifier,
-        typeOfLogin: 'jwt',
-        clientId,
+  const web3AuthOptions: Web3AuthNoModalOptions = {
+    clientId,
+    chainConfig,
+    web3AuthNetwork,
+    privateKeyProvider,
+  };
+  web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);
+
+  const openloginAdapter = new OpenloginAdapter({
+    privateKeyProvider,
+    adapterSettings: {
+      uxMode: 'redirect',
+      originData: {
+        ['https://dev.d8x-testnet.pages.dev']:
+          'MEQCIFh3Y9quJU21aHiv7RAq8c2olr4O6XjcigXzlo3PYIfnAiAvAtSfzO0hEQO-WdzIoN87iapBxVY9fFWDD65nmSA0ig',
+      },
+      loginConfig: {
+        jwt: {
+          verifier,
+          typeOfLogin: 'jwt',
+          clientId,
+        },
       },
     },
-  },
-});
+  });
 
-web3AuthInstance.configureAdapter(openloginAdapter);
+  web3AuthInstance.configureAdapter(openloginAdapter);
+}
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   const chainId = useChainId();
@@ -101,7 +108,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   // const verifyRef = useRef(false);
 
   useEffect(() => {
-    if (isInitializingRef.current || clientId === '') {
+    if (isInitializingRef.current || !web3AuthInstance || clientId === '') {
       return;
     }
 
@@ -152,7 +159,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
    */
 
   const applyUserInfo = useCallback(async () => {
-    if (web3AuthInstance.connected) {
+    if (web3AuthInstance?.connected) {
       const info = await web3AuthInstance.getUserInfo();
       setUserInfo(info);
     } else {
@@ -161,7 +168,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   }, [setUserInfo]);
 
   const applySocialPK = useCallback(async () => {
-    if (web3AuthInstance.connected) {
+    if (web3AuthInstance?.connected) {
       const privateKey = (await web3AuthInstance.provider?.request({
         method: 'eth_private_key',
       })) as string;
@@ -172,7 +179,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   }, [setSocialPK]);
 
   useEffect(() => {
-    if (!loggedIn || web3AuthIdToken === '' || isConnected) {
+    if (!loggedIn || web3AuthIdToken === '' || !web3AuthInstance || isConnected) {
       return;
     }
     /*console.log('connect', {
@@ -211,7 +218,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
   const connectWeb3Auth = useCallback(
     async (idToken: string) => {
-      if (!web3AuthInstance.connected) {
+      if (web3AuthInstance && !web3AuthInstance.connected) {
         await web3AuthInstance
           .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
             loginProvider: 'jwt',
@@ -305,7 +312,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         signInWithGoogle,
         disconnect: handleDisconnect,
         isConnecting: web3AuthSigning,
-        isConnected: web3AuthInstance.connected,
+        isConnected: web3AuthInstance ? web3AuthInstance.connected : false,
       }}
     >
       {children}
