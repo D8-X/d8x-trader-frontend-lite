@@ -92,6 +92,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const exchangeRequestRef = useRef(false);
   const positionsRequestRef = useRef(false);
+  const traderAPIRef = useRef(traderAPI);
 
   const setExchangeInfo = useCallback(
     (data: ExchangeInfoI | null) => {
@@ -165,6 +166,12 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
+    if (traderAPI && traderAPI.chainId === chainId) {
+      traderAPIRef.current = traderAPI;
+    }
+  }, [traderAPI, chainId]);
+
+  useEffect(() => {
     if (exchangeRequestRef.current || !chainId) {
       return;
     }
@@ -177,7 +184,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     const executeQuery = async () => {
       while (retries < MAX_RETRIES) {
         try {
-          const data = await getExchangeInfo(chainId, null);
+          let currentTraderAPI = null;
+          if (retries > 0 && traderAPIRef.current && traderAPIRef.current?.chainId === chainId) {
+            currentTraderAPI = traderAPIRef.current;
+          }
+          const data = await getExchangeInfo(chainId, currentTraderAPI);
           setExchangeInfo(data.data);
           retries = MAX_RETRIES;
         } catch (error) {
