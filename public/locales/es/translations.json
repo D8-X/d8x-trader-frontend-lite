@@ -283,7 +283,8 @@
         "info": {
           "balance": "Balance de tu Cartera",
           "order-size": "Tamaño de tu orden",
-          "fees": "Comisiones",
+          "execution-fees": "Comisiones de ejecución",
+          "fees": "Comisiones de comercio",
           "gas": "Tarifa de Gas",
           "rebate": "Reembolso",
           "approx-deposit": "Aprox. depósito desde tu cartera"

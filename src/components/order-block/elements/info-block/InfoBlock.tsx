@@ -1,15 +1,14 @@
 import { useAtomValue } from 'jotai';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId, useFeeData } from 'wagmi';
+import { useChainId } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
 import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
-import { getSymbolPrice } from 'network/network';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import {
-  gasTokenSymbolAtom,
+  perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
   positionsAtom,
   selectedPerpetualAtom,
@@ -31,16 +30,13 @@ export const InfoBlock = memo(() => {
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
-  const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const leverage = useAtomValue(leverageAtom);
   const orderType = useAtomValue(orderTypeAtom);
   const slippage = useAtomValue(slippageSliderAtom);
   const orderBlock = useAtomValue(orderBlockAtom);
   const positions = useAtomValue(positionsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
 
-  const { data: gasPriceETH } = useFeeData({ formatUnits: 'ether' });
-
-  const [gasPriceUSD, setGasPriceUSD] = useState(0);
   const chainId = useChainId();
 
   const feeInCC = useMemo(() => {
@@ -75,26 +71,12 @@ export const InfoBlock = memo(() => {
     );
   }, [orderSize, orderInfo, selectedPerpetual]);
 
-  const gasFee = useMemo(() => {
-    if (orderInfo && gasPriceUSD) {
-      return (
-        gasPriceUSD * (600_000 + (orderInfo.stopLossPrice ? 400_000 : 0) + (orderInfo.takeProfitPrice ? 400_000 : 0))
-      );
-    }
-  }, [gasPriceUSD, orderInfo]);
-
-  const gasRebate = useMemo(() => {
-    if (gasFee) {
-      return gasFee * 0.77734375;
-    }
-  }, [gasFee]);
-
   const approxDepositFromWallet = useMemo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
       return undefined;
     }
 
-    if (!poolTokenBalance || !selectedPool || !selectedPerpetual) {
+    if (!poolTokenBalance || !selectedPool || !selectedPerpetual || !perpetualStaticInfo) {
       return;
     }
 
@@ -121,7 +103,12 @@ export const InfoBlock = memo(() => {
       selectedPerpetual.markPrice / leverage +
       Math.max(direction * (limitPrice - selectedPerpetual.markPrice), 0);
 
-    return Math.max((orderSizeNet * buffer) / selectedPerpetual.collToQuoteIndexPrice - collateralCC, 0);
+    return Math.max(
+      (orderSizeNet * buffer) / selectedPerpetual.collToQuoteIndexPrice -
+        collateralCC +
+        perpetualStaticInfo.referralRebate,
+      0
+    );
   }, [
     leverage,
     orderInfo,
@@ -129,21 +116,12 @@ export const InfoBlock = memo(() => {
     orderBlock,
     orderType,
     orderSize,
+    perpetualStaticInfo,
     poolTokenBalance,
     positions,
     selectedPerpetual,
     selectedPool,
   ]);
-
-  useEffect(() => {
-    if (gasTokenSymbol && gasPriceETH?.formatted?.gasPrice) {
-      getSymbolPrice(gasTokenSymbol)
-        .then((res) => {
-          setGasPriceUSD(+res[0].price.price * 10 ** res[0].price.expo * +(gasPriceETH.formatted.gasPrice || 0));
-        })
-        .catch(() => {});
-    }
-  }, [gasPriceETH, gasTokenSymbol]);
 
   return (
     <Box className={styles.root}>
@@ -194,17 +172,22 @@ export const InfoBlock = memo(() => {
           )}
         </Typography>
       </Box>
+      <Box className={styles.row}>
+        <Typography variant="bodySmallPopup" className={styles.infoText}>
+          {t('pages.trade.order-block.info.execution-fees')}
+        </Typography>
+        <Typography variant="bodySmallSB" className={styles.infoText}>
+          {formatToCurrency(perpetualStaticInfo?.referralRebate, selectedPool?.poolSymbol)}
+        </Typography>
+      </Box>
       {chainId !== undefined && chainId === 1101 && (
         <Box className={styles.row}>
           <Typography variant="bodySmallPopup" className={styles.infoText}>
             {t('pages.trade.order-block.info.gas')}
           </Typography>
           <Typography variant="bodySmallSB" className={styles.infoText}>
-            {formatToCurrency(gasFee, '$', undefined, 2)} {'('}
+            {'77% '}
             {t('pages.trade.order-block.info.rebate')}
-            {': '}
-            {formatToCurrency(gasRebate, '$', undefined, 2)}
-            {')'}
           </Typography>
         </Box>
       )}

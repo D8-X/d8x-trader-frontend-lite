@@ -283,7 +283,8 @@
         "info": {
           "balance": "Solde du portefeuille",
           "order-size": "Taille de l'ordre",
-          "fees": "Frais",
+          "execution-fees": "Frais d'éxecution",
+          "fees": "Frais d'opérations",
           "gas": "Frais de gaz",
           "rebate": "Rabais",
           "approx-deposit": "Dépôt approximatif depuis le portefeuille"

@@ -283,7 +283,8 @@
         "info": {
           "balance": "Wallet balance",
           "order-size": "Order size",
-          "fees": "Fees",
+          "execution-fees": "Execution fees",
+          "fees": "Trading fees",
           "gas": "Gas fees",
           "rebate": "Rebate",
           "approx-deposit": "Approx. deposit from wallet"

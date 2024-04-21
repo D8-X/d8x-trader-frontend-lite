@@ -283,6 +283,7 @@
         "info": {
           "balance": "钱包余额",
           "order-size": "仓位大小",
+          "execution-fees": "执行费",
           "fees": "手续费",
           "gas": "燃料费",
           "rebate": "返还",

@@ -116,6 +116,7 @@ export interface PerpetualStaticInfoI {
   S2Symbol: string;
   S3Symbol: string;
   lotSizeBC: number;
+  referralRebate: number;
 }
 
 // Taken from `@d8x/perpetuals-sdk/src/nodeSDKTypes.ts`

@@ -283,7 +283,8 @@
         "info": {
           "balance": "Wallet Guthaben",
           "order-size": "Ordergrösse",
-          "fees": "Gebühren",
+          "execution-fees": "Exekutionsgebühr",
+          "fees": "Handelsgebühr",
           "gas": "Gasgebühr",
           "rebate": "Rabatt",
           "approx-deposit": "Einzahlung aus der Wallet (circa)"
