@@ -311,7 +311,11 @@ export const OneClickTradingModal = () => {
         <Box className={styles.dialogContent}>
           <Box className={styles.actionButtonsContainer}>
             {!isLoading && isDelegated === false && (
-              <GasDepositChecker address={walletClient?.account.address} className={styles.actionButton}>
+              <GasDepositChecker
+                address={walletClient?.account.address}
+                multiplier={2n}
+                className={styles.actionButton}
+              >
                 <Button
                   variant="primary"
                   className={styles.actionButton}
