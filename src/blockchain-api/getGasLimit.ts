@@ -20,7 +20,7 @@ const ARBITRUM_LIMITS: GasLimitSettingsT = {
 const gasLimits: GasLimitsT = {
   default: {
     [MethodE.Approve]: 100_000n,
-    [MethodE.Interact]: 800_000n,
+    [MethodE.Interact]: 850_000n,
     [MethodE.Transfer]: 42_000n,
   },
   [421614]: ARBITRUM_LIMITS, // Arbitrum Sepolia

@@ -355,7 +355,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <GasDepositChecker multiplier={3n}>
+        <GasDepositChecker multiplier={4n}>
           <Button
             onClick={handleModifyPositionConfirm}
             variant="primary"

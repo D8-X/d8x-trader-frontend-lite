@@ -301,7 +301,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         <Button onClick={closeModal} variant="secondary" size="small">
           {t('pages.trade.positions-table.modify-modal.cancel')}
         </Button>
-        <GasDepositChecker>
+        <GasDepositChecker multiplier={3n}>
           <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={loading || requestSent}>
             {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t('pages.trade.positions-table.modify-modal.confirm')}
