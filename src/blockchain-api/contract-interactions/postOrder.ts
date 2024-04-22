@@ -37,9 +37,8 @@ export async function postOrder(
     gasPrice: gasPrice,
   };
 
-  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 150n) / 100n)
-    .catch(() => fallbackGasLimit * BigInt(orders.length));
+    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }) * BigInt(orders.length));
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

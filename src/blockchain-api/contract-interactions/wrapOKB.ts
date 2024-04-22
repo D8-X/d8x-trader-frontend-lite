@@ -67,9 +67,8 @@ export async function wrapOKB({
   } else {
     throw new Error('No amount to wrap/unwrap');
   }
-  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
-    .catch(() => fallbackGasLimit);
+    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
   return walletClient.writeContract({ ...params, account, chain: walletClient.chain, gas: gasLimit });
 }

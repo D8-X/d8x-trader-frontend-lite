@@ -27,9 +27,8 @@ export async function cancelOrder(
     account: walletClient.account,
     nonce,
   };
-  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
-    .catch(() => fallbackGasLimit);
+    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

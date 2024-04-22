@@ -45,8 +45,10 @@ export async function approveMarginToken(
       account: account,
     };
 
-    const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve });
-    const gasLimit = await estimateContractGas(walletClient, params).catch(() => fallbackGasLimit);
+    const gasLimit = await estimateContractGas(walletClient, params).catch(() =>
+      getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
+    );
+
     return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
       waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
