@@ -18,15 +18,13 @@ export const OrderSizeSlider = () => {
   const setOrderSize = useSetAtom(setOrderSizeAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
 
-  // TODO: Remove crutch
   useEffect(() => {
     if (maxOrderSize) {
       const percent = sliderPercent > 100 ? 100 : sliderPercent;
       const roundedValueBase = setOrderSize((percent * maxOrderSize) / 100);
       setInputFromOrderSize(roundedValueBase);
     }
-    // eslint-disable-next-line
-  }, [maxOrderSize]);
+  }, [maxOrderSize, sliderPercent, setOrderSize, setInputFromOrderSize]);
 
   return (
     <div className={styles.root}>

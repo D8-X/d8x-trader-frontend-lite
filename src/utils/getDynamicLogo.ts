@@ -23,7 +23,7 @@ export const getDynamicLogo = (symbol: string): LazyExoticComponent<ComponentTyp
     }
 
     try {
-      const localLogo = (await import(`assets/crypto-icons/${symbol}.svg`)).default;
+      const localLogo = (await import(/* @vite-ignore */ `assets/crypto-icons/${symbol}.svg`)).default;
       importedLogos[symbol] = localLogo;
       return {
         default: localLogo,

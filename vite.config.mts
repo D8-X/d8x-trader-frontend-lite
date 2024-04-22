@@ -11,6 +11,7 @@ import { checker } from 'vite-plugin-checker';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import stylelintPlugin from 'vite-plugin-stylelint';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,13 +22,10 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: [
-      {
-        // this is required for the SCSS modules
-        find: /^~(.*)$/,
-        replacement: 'src/$1',
-      },
-    ],
+    alias: {
+      // this is required for the SCSS modules
+      '~styles': path.resolve(__dirname, 'src') + '/styles',
+    },
   },
   plugins: [
     react(),
