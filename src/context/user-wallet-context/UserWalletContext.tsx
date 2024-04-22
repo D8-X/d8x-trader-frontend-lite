@@ -77,10 +77,6 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     (method: MethodE, multiplier: bigint) => {
       if (chain?.id && gasPrice > 0n) {
         const gasLimit = getGasLimit({ chainId: chain.id, method });
-        console.log('gasLimit', gasLimit);
-        console.log('gasPrice', gasPrice);
-        console.log('multiplier', multiplier);
-
         return gasPrice * gasLimit * multiplier;
       }
       return 0n;
@@ -92,7 +88,6 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     (method: MethodE, multiplier: bigint) => {
       const gasForFee = calculateGasForFee(method, multiplier);
       if (gasForFee > 0n && gasTokenBalance && gasTokenBalance.value > 0n) {
-        console.log('gasForFee', gasForFee);
         return gasForFee < gasTokenBalance.value;
       }
       return false;

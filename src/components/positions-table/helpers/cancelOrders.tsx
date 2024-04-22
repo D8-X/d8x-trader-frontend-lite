@@ -10,7 +10,7 @@ import { getCancelOrder } from 'network/network';
 import { OrderWithIdI } from 'types/types';
 
 import styles from '../elements/modals/Modal.module.scss';
-import { getTransactionCount } from 'viem/actions';
+import { getTransactionCount, waitForTransactionReceipt } from 'viem/actions';
 
 interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
@@ -58,6 +58,7 @@ export async function cancelOrders(props: CancelOrdersPropsI) {
                       ]}
                     />
                   );
+                  waitForTransactionReceipt(tradingClient, { hash: tx.hash, timeout: 30_000 }).then();
                 })
                 .catch((error) => {
                   console.error(error);
