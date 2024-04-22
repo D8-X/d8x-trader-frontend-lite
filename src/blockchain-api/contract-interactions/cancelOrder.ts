@@ -3,6 +3,8 @@ import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { type CancelOrderResponseI } from 'types/types';
 import { type Address, type WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { MethodE } from 'types/enums';
 
 export async function cancelOrder(
   walletClient: WalletClient,
@@ -25,8 +27,9 @@ export async function cancelOrder(
     account: walletClient.account,
     nonce,
   };
+  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
-    .catch(() => 5_000_000n);
+    .catch(() => fallbackGasLimit);
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => ({ hash: tx }));
 }

@@ -6,6 +6,8 @@ import { MaxUint256 } from 'appConstants';
 
 import { getGasPrice } from './getGasPrice';
 import { wagmiConfig } from './wagmi/wagmiClient';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { MethodE } from 'types/enums';
 
 export async function approveMarginToken(
   walletClient: WalletClient,
@@ -42,7 +44,9 @@ export async function approveMarginToken(
       gasPrice: gasPrice,
       account: account,
     };
-    const gasLimit = await estimateContractGas(walletClient, params).catch(() => 4_000_000n);
+
+    const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve });
+    const gasLimit = await estimateContractGas(walletClient, params).catch(() => fallbackGasLimit);
     return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
       waitForTransactionReceipt(wagmiConfig, {
         hash: tx,

@@ -4,6 +4,8 @@ import { estimateContractGas } from 'viem/actions';
 
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { WrapOKBConfigI } from 'types/types';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { MethodE } from 'types/enums';
 
 const abi = [
   {
@@ -65,9 +67,9 @@ export async function wrapOKB({
   } else {
     throw new Error('No amount to wrap/unwrap');
   }
-
+  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
-    .catch(() => 4_000_000n);
+    .catch(() => fallbackGasLimit);
   return walletClient.writeContract({ ...params, account, chain: walletClient.chain, gas: gasLimit });
 }

@@ -224,7 +224,7 @@ export const ActionBlock = memo(() => {
     if (poolTokenBalance === 0) {
       return ValidityCheckButtonE.NoFunds;
     }
-    if (!hasEnoughGasForFee(MethodE.Approve, 4n)) {
+    if (!hasEnoughGasForFee(MethodE.Interact, 3n)) {
       return ValidityCheckButtonE.NoEnoughGas;
     }
     if (orderInfo.size === 0) {

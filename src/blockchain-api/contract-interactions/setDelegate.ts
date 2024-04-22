@@ -2,6 +2,8 @@ import { PROXY_ABI } from '@d8x/perpetuals-sdk';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import type { Address, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { MethodE } from 'types/enums';
 
 export async function setDelegate(
   walletClient: WalletClient,
@@ -26,9 +28,10 @@ export async function setDelegate(
     gasPrice: gasPrice,
     account,
   };
+  const fallbackGasLimit = getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact });
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
-    .catch(() => 4_000_000n);
+    .catch(() => fallbackGasLimit);
   await walletClient.writeContract({ ...params, gas: gasLimit });
   return delegateAddr;
 }
