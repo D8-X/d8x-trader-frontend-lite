@@ -15,6 +15,7 @@ export enum DefaultCurrencyE {
 export enum MethodE {
   Approve = 'approve',
   Transfer = 'transfer',
+  Interact = 'interact',
 }
 
 export enum OrderValueTypeE {

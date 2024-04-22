@@ -25,8 +25,8 @@ export const GasDepositChecker = ({ children, multiplier = 1n, address, classNam
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
   const hasGas = gasTokenBalance
-    ? gasTokenBalance.value > calculateGasForFee(MethodE.Approve, multiplier)
-    : hasEnoughGasForFee(MethodE.Approve, multiplier);
+    ? gasTokenBalance.value > calculateGasForFee(MethodE.Interact, multiplier)
+    : hasEnoughGasForFee(MethodE.Interact, multiplier);
 
   if (!isConnected || hasGas) {
     return children;

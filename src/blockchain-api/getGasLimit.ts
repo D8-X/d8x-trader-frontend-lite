@@ -1,11 +1,36 @@
 import { MethodE } from 'types/enums';
 
-const ARBITRUM = [421614, 42161]; // arbitrum sepolia & arbitrum one
+type GasLimitSettingsT = {
+  [key in MethodE]: bigint;
+};
+
+type GasLimitsT = {
+  default: GasLimitSettingsT;
+  [key: number]: GasLimitSettingsT;
+};
+
+// Arbitrum
+const ARBITRUM_LIMITS: GasLimitSettingsT = {
+  [MethodE.Approve]: 1_200_000n,
+  [MethodE.Interact]: 5_000_000n,
+  [MethodE.Transfer]: 915_000n,
+};
+
+// Define gas limits based on chainId and method
+const gasLimits: GasLimitsT = {
+  default: {
+    [MethodE.Approve]: 100_000n,
+    [MethodE.Interact]: 800_000n,
+    [MethodE.Transfer]: 42_000n,
+  },
+  [421614]: ARBITRUM_LIMITS, // Arbitrum Sepolia
+  [42161]: ARBITRUM_LIMITS, // Arbitrum One
+};
 
 export function getGasLimit({ chainId, method }: { chainId?: number; method: MethodE }) {
-  if (ARBITRUM.includes(chainId ?? 0)) {
-    return method === MethodE.Approve ? 1_200_000n : 915_000n; // specific to Arbitrum
+  if (chainId !== undefined && Object.prototype.hasOwnProperty.call(gasLimits, chainId)) {
+    return gasLimits[chainId][method];
   } else {
-    return method === MethodE.Approve ? 50_000n : 21_000n; // known constants on EVM
+    return gasLimits.default[method];
   }
 }
