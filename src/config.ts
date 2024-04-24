@@ -16,7 +16,6 @@ const {
   VITE_ENABLED_CHAINS: enabledChains = '',
   VITE_ENABLED_REFER_PAGE: enabledReferPage = 'true',
   VITE_ENABLED_VAULT_PAGE: enabledVaultPage = 'true',
-  VITE_ENABLED_PUMP_STATION_PAGE: enabledPumpStationPage = 'true',
   VITE_ENABLED_BOOST_STATION_PAGE: enabledBoostStationPage = 'true',
   VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
   VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
@@ -71,8 +70,7 @@ export const config = {
 };
 
 export const pagesConfig = {
-  // TODO: enabledPumpStationPage to be removed soon
-  enabledBoostStationPage: enabledPumpStationPage === 'true' || enabledBoostStationPage === 'true',
+  enabledBoostStationPage: enabledBoostStationPage === 'true',
   enabledReferPage: enabledReferPage === 'true',
   enabledVaultPage: enabledVaultPage === 'true',
   enabledPortfolioPage: enabledPortfolioPage === 'true',
