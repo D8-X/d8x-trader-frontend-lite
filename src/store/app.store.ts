@@ -2,7 +2,8 @@ import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { type WalletClient } from 'viem';
 
-import { DefaultCurrencyE, OrderBlockPositionE } from 'types/enums';
+import { config } from 'config';
+import { DefaultCurrencyE, OrderBlockPositionE, ThemeE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
@@ -17,12 +18,19 @@ export const orderBlockPositionAtom = atomWithStorage<OrderBlockPositionE>(
   OrderBlockPositionE.Right
 );
 
-const enabledDarkModePrimitiveAtom = atomWithStorage<boolean>(
-  ENABLED_DARK_MODE_LS_KEY,
-  window.matchMedia('(prefers-color-scheme: dark)').matches
-);
+const enabledDarkModePrimitiveAtom = atomWithStorage<boolean | null>(ENABLED_DARK_MODE_LS_KEY, null);
 export const enabledDarkModeAtom = atom(
-  (get) => get(enabledDarkModePrimitiveAtom),
+  (get) => {
+    const isDark = get(enabledDarkModePrimitiveAtom);
+    if (isDark === null) {
+      let theme = config.defaultTheme;
+      if (!Object.values(ThemeE).includes(theme)) {
+        theme = ThemeE.Light;
+      }
+      return theme === ThemeE.Dark;
+    }
+    return isDark;
+  },
   (_get, set, value: boolean) => {
     document.documentElement.dataset.theme = value ? 'dark' : 'light';
     set(enabledDarkModePrimitiveAtom, value);

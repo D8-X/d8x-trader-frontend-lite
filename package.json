@@ -50,7 +50,7 @@
     ]
   },
   "dependencies": {
-    "@d8x/perpetuals-sdk": "1.1.21",
+    "@d8x/perpetuals-sdk": "1.1.23",
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@ethersproject/providers": "5.7.2",

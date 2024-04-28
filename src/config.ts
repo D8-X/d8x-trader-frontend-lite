@@ -19,6 +19,7 @@ const {
   VITE_ENABLED_BOOST_STATION_PAGE: enabledBoostStationPage = 'true',
   VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
   VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
+  VITE_DEFAULT_THEME: defaultTheme = 'light',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
   VITE_FIREBASE_APIKEY: firebaseApiKey = '',
@@ -67,6 +68,7 @@ export const config = {
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
   showChallengeModal: showChallengeModal === 'true',
+  defaultTheme,
 };
 
 export const pagesConfig = {

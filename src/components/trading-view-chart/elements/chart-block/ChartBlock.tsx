@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { CandlestickSeries, Chart } from 'lightweight-charts-react-wrapper';
 import { type CandlestickData, CrosshairMode, ISeriesApi } from 'lightweight-charts';
 import { memo, Ref, useMemo } from 'react';
@@ -23,9 +23,9 @@ function timeFormatter(timestamp: number) {
 }
 
 export const ChartBlock = memo(({ width, candles, seriesRef, numberDigits }: CandlesSeriesPropsI) => {
-  const [dimensions] = useAtom(appDimensionsAtom);
+  const dimensions = useAtomValue(appDimensionsAtom);
   // A hack to make it rerender and update chart's layout
-  const [,] = useAtom(enabledDarkModeAtom);
+  useAtomValue(enabledDarkModeAtom);
 
   const theme = useTheme();
 

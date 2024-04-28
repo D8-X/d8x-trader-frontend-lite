@@ -1,9 +1,9 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 
 import { enabledDarkModeAtom } from 'store/app.store';
 
 export const ThemeApplier = () => {
-  const [enabledDarkMode] = useAtom(enabledDarkModeAtom);
+  const enabledDarkMode = useAtomValue(enabledDarkModeAtom);
 
   document.documentElement.dataset.theme = enabledDarkMode ? 'dark' : 'light';
 

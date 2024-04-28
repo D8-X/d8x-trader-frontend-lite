@@ -6,6 +6,11 @@ export enum LanguageE {
   FR = 'fr',
 }
 
+export enum ThemeE {
+  Light = 'light',
+  Dark = 'dark',
+}
+
 export enum DefaultCurrencyE {
   Base = 'base',
   Pool = 'pool',

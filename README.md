@@ -152,6 +152,13 @@ This package is configured entirely via environment variables. You must specify:
   - Enable it as follows:
     `VITE_WELCOME_MODAL=true`
 
+- **VITE_DEFAULT_THEME**: This is an optional variable that allows to define the default color theme. You can 
+  use `light` or `dark`.
+
+  - By default, this variable is set to `light`.
+  - Change to `dark` theme as follows:
+    `VITE_DEFAULT_THEME=dark`
+
 - **VITE_BROKER_URL**: This is an optional variable that explicitly specifies the broker backend.
 
   - This entry should take the form:
