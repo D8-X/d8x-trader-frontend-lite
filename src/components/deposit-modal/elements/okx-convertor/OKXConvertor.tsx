@@ -258,7 +258,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
       <Typography variant="bodyTiny" className={styles.noteText}>
         <Translate
           i18nKey="common.deposit-modal.convert.text"
-          values={{ fromCurrency: currencyConvertMap[selectedCurrency.name], toCurrency: selectedCurrency.name }}
+          values={{ fromCurrency: selectedCurrency.name, toCurrency: currencyConvertMap[selectedCurrency.name] }}
         />
       </Typography>
       <div className={styles.dataLine}>
