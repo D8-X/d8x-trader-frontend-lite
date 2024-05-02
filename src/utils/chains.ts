@@ -2,20 +2,20 @@ import { Chain } from 'wagmi/chains';
 
 export const x1 = {
   id: 195,
-  name: 'X1',
+  name: 'X Layer Testnet',
   // network: 'avalanche',
   nativeCurrency: {
     decimals: 18,
-    name: 'OKX',
-    symbol: 'OKX',
+    name: 'OKB',
+    symbol: 'OKB',
   },
   rpcUrls: {
-    public: { http: ['https://testrpc.x1.tech'] },
-    default: { http: ['https://testrpc.x1.tech'] },
+    public: { http: ['https://testrpc.xlayer.tech'] },
+    default: { http: ['https://testrpc.xlayer.tech'] },
   },
   blockExplorers: {
-    etherscan: { name: 'OKLink', url: 'https://www.oklink.com/x1-test' },
-    default: { name: 'OKLink', url: 'https://www.oklink.com/x1-test' },
+    etherscan: { name: 'OKLink', url: 'https://www.okx.com/explorer/xlayer-test' },
+    default: { name: 'OKLink', url: 'https://www.okx.com/explorer/xlayer-test' },
   },
   contracts: {
     multicall3: {
