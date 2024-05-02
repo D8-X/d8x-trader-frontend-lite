@@ -22,9 +22,12 @@ export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: A
     return;
   }
 
-  const poolUsdPrice = get(poolUsdPriceAtom);
-
   const { data } = await getPositionRisk(chainId, traderAPI, userAddress, Date.now());
+  if (!data) {
+    return;
+  }
+
+  const poolUsdPrice = get(poolUsdPriceAtom);
   const activePositions = data.filter(({ side }) => side !== 'CLOSED');
 
   const unrealizedPnLReduced: Record<string, number> = {};

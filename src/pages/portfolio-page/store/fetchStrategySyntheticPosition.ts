@@ -30,12 +30,15 @@ export const fetchStrategySyntheticPosition = atom(null, async (get, set, userAd
     )?.strategyAddress;
     if (strategyAddress) {
       const { data: strategyData } = await getPositionRisk(chainId, traderAPI, strategyAddress, Date.now());
-      const strategyPosition = strategyData.find(
-        ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
-      );
 
-      if (strategyPosition) {
-        syntheticPositionUSD = strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice;
+      if (strategyData && strategyData.length > 0) {
+        const strategyPosition = strategyData.find(
+          ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
+        );
+
+        if (strategyPosition) {
+          syntheticPositionUSD = strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice;
+        }
       }
     }
   }
