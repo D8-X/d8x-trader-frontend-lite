@@ -28,15 +28,9 @@ export const maxOrderSizeAtom = atom((get) => {
   const orderInfo = get(orderInfoAtom);
   const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0.01;
 
-  console.log('hi');
-  console.log('maxTraderOrderSize', maxTraderOrderSize);
-  console.log('!selectedPool', !selectedPool);
-  console.log('!selectedPerpetual', !selectedPerpetual);
-
   if (!selectedPool || !selectedPerpetual || maxTraderOrderSize === undefined) {
     return;
   }
-  console.log('du');
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
@@ -100,11 +94,9 @@ export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number
 export const setOrderSizeAtom = atom(null, (get, set, value: number) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
-  if (!perpetualStaticInfo) {
-    return 0;
-  }
+  const lotSizeBC = perpetualStaticInfo ? perpetualStaticInfo.lotSizeBC : 0.001; // default only while initializing
 
-  const roundedValueBase = Number(roundToLotString(value, perpetualStaticInfo.lotSizeBC));
+  const roundedValueBase = Number(roundToLotString(value, lotSizeBC));
   set(orderSizeAtom, roundedValueBase);
   return roundedValueBase;
 });
@@ -123,20 +115,14 @@ export const orderSizeSliderAtom = atom(
   (get) => {
     const actualMax = get(maxOrderSizeAtom);
     const max = actualMax || 10000;
-
     const orderSize = get(orderSizeAtom);
-
-    const check = (orderSize * 100) / max;
-    console.log('slider get', check);
     return (orderSize * 100) / max;
   },
   (get, set, percent: number) => {
     const actualMax = get(maxOrderSizeAtom);
     const max = actualMax || 10000;
-
     const orderSize = (max * percent) / 100;
     const roundedValueBase = set(setOrderSizeAtom, orderSize);
-    console.log('roundedValueBase', roundedValueBase);
     set(setInputFromOrderSizeAtom, roundedValueBase);
   }
 );
