@@ -94,7 +94,7 @@ export const setInputFromOrderSizeAtom = atom(null, (get, set, orderSize: number
 export const setOrderSizeAtom = atom(null, (get, set, value: number) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
-  const lotSizeBC = perpetualStaticInfo ? perpetualStaticInfo.lotSizeBC : 0.001; // default only while initializing
+  const lotSizeBC = perpetualStaticInfo ? perpetualStaticInfo.lotSizeBC : 0.000025; // default only while initializing
 
   const roundedValueBase = Number(roundToLotString(value, lotSizeBC));
   set(orderSizeAtom, roundedValueBase);
