@@ -18,6 +18,8 @@ export const OrderSizeSlider = () => {
   const setOrderSize = useSetAtom(setOrderSizeAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
 
+  console.log('maxOrderSize in slider', maxOrderSize);
+  console.log('sliderPercent', sliderPercent);
   useEffect(() => {
     if (maxOrderSize) {
       const percent = sliderPercent > 100 ? 100 : sliderPercent;

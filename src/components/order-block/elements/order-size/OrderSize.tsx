@@ -176,7 +176,7 @@ export const OrderSize = memo(() => {
           orderBlock === OrderBlockE.Long
         )
           .then((result) => {
-            setMaxOrderSize(result !== undefined ? result * 0.995 : 0);
+            setMaxOrderSize(result !== undefined ? result * 0.995 : 10000);
             maxOrderSizeDefinedRef.current = result !== undefined;
           })
           .catch((error) => {

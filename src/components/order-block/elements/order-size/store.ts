@@ -17,7 +17,7 @@ import { leverageAtom } from '../leverage-selector/store';
 const selectedCurrencyPrimitiveAtom = atom('');
 export const orderSizeAtom = atom(0);
 export const inputValueAtom = atom('0');
-export const maxTraderOrderSizeAtom = atom<number | undefined>(undefined);
+export const maxTraderOrderSizeAtom = atom<number | undefined>(10000);
 
 export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
@@ -28,9 +28,15 @@ export const maxOrderSizeAtom = atom((get) => {
   const orderInfo = get(orderInfoAtom);
   const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0.01;
 
-  if (!poolTokenBalance || !selectedPool || !selectedPerpetual || maxTraderOrderSize === undefined) {
+  console.log('hi');
+  console.log('maxTraderOrderSize', maxTraderOrderSize);
+  console.log('!selectedPool', !selectedPool);
+  console.log('!selectedPerpetual', !selectedPerpetual);
+
+  if (!selectedPool || !selectedPerpetual || maxTraderOrderSize === undefined) {
     return;
   }
+  console.log('du');
 
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
@@ -51,7 +57,10 @@ export const maxOrderSizeAtom = atom((get) => {
   const limitPrice = indexPrice * (1 + direction * slippage);
   const buffer =
     indexPrice * (orderFeeBps / 10_000) + markPrice / leverage + Math.max(direction * (limitPrice - markPrice), 0);
-  const personalMax = (((poolTokenBalance + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
+
+  const poolTokenBalanceOrDefault = poolTokenBalance || 1000; // default of 1000 to make initial load faster
+
+  const personalMax = (((poolTokenBalanceOrDefault + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
 });
 
@@ -112,23 +121,22 @@ export const selectedCurrencyAtom = atom(
 
 export const orderSizeSliderAtom = atom(
   (get) => {
-    const max = get(maxOrderSizeAtom);
-    if (!max) {
-      return 0;
-    }
+    const actualMax = get(maxOrderSizeAtom);
+    const max = actualMax || 10000;
 
     const orderSize = get(orderSizeAtom);
+
+    const check = (orderSize * 100) / max;
+    console.log('slider get', check);
     return (orderSize * 100) / max;
   },
   (get, set, percent: number) => {
-    const max = get(maxOrderSizeAtom);
-    if (!max) {
-      return;
-    }
+    const actualMax = get(maxOrderSizeAtom);
+    const max = actualMax || 10000;
 
     const orderSize = (max * percent) / 100;
     const roundedValueBase = set(setOrderSizeAtom, orderSize);
-
+    console.log('roundedValueBase', roundedValueBase);
     set(setInputFromOrderSizeAtom, roundedValueBase);
   }
 );
