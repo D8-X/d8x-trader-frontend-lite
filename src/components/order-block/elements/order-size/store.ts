@@ -17,7 +17,7 @@ import { leverageAtom } from '../leverage-selector/store';
 const selectedCurrencyPrimitiveAtom = atom('');
 export const orderSizeAtom = atom(0);
 export const inputValueAtom = atom('0');
-export const maxTraderOrderSizeAtom = atom<number | undefined>(10000);
+export const maxTraderOrderSizeAtom = atom<number | undefined>(undefined);
 
 export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
@@ -52,7 +52,9 @@ export const maxOrderSizeAtom = atom((get) => {
   const buffer =
     indexPrice * (orderFeeBps / 10_000) + markPrice / leverage + Math.max(direction * (limitPrice - markPrice), 0);
 
-  const poolTokenBalanceOrDefault = poolTokenBalance || 1000; // default of 1000 to make initial load faster
+  const poolTokenBalanceOrDefault =
+    poolTokenBalance !== null && poolTokenBalance !== undefined ? poolTokenBalance : 10000;
+  // default of 1000 to make initial load faster
 
   const personalMax = (((poolTokenBalanceOrDefault + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;
@@ -114,13 +116,17 @@ export const selectedCurrencyAtom = atom(
 export const orderSizeSliderAtom = atom(
   (get) => {
     const actualMax = get(maxOrderSizeAtom);
-    const max = actualMax || 10000;
+    const max = actualMax !== null && actualMax !== undefined ? actualMax : 10000;
     const orderSize = get(orderSizeAtom);
-    return (orderSize * 100) / max;
+    if (max === 0) {
+      return 0;
+    } else {
+      return (orderSize * 100) / max;
+    }
   },
   (get, set, percent: number) => {
     const actualMax = get(maxOrderSizeAtom);
-    const max = actualMax || 10000;
+    const max = actualMax !== null && actualMax !== undefined ? actualMax : 10000;
     const orderSize = (max * percent) / 100;
     const roundedValueBase = set(setOrderSizeAtom, orderSize);
     set(setInputFromOrderSizeAtom, roundedValueBase);
