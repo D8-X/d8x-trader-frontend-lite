@@ -84,7 +84,6 @@ export const OrderSize = memo(() => {
     }
   }, [maxOrderSize, currencyMultiplier]);
 
-  console.log('maxordersizecurrent', maxOrderSizeCurrent);
   const onInputChange = useCallback(
     (value: string) => {
       if (value) {
@@ -192,8 +191,8 @@ export const OrderSize = memo(() => {
           orderBlock === OrderBlockE.Long
         )
           .then((result) => {
-            setMaxOrderSize(result !== undefined ? result * 0.995 : 10000);
-            maxOrderSizeDefinedRef.current = result !== undefined;
+            setMaxOrderSize(result !== undefined && !isNaN(result) ? result * 0.995 : 10_000);
+            maxOrderSizeDefinedRef.current = result !== undefined && !isNaN(result);
           })
           .catch((error) => {
             console.error(error);
