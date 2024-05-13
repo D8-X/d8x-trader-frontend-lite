@@ -8,7 +8,7 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia, arbitrum } from 'wagmi/chains';
+import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia, arbitrum, polygon } from 'wagmi/chains';
 import { createConfig, http } from 'wagmi';
 import { createClient } from 'viem';
 
@@ -23,6 +23,7 @@ const allChains = [
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
   { ...polygonMumbai, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...polygonZkEvmTestnet, iconUrl: polygonIcon, iconBackground: 'transparent' },
+  { ...polygon, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...xlayer, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: polygonIcon, iconBackground: 'transparent' },
