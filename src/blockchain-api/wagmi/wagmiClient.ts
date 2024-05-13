@@ -19,7 +19,7 @@ import berachainIcon from 'assets/networks/berachain.png';
 import { config } from 'config';
 import { x1, cardona, artio, xlayer } from 'utils/chains';
 
-const chains = [
+const allChains = [
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
   { ...polygonMumbai, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...polygonZkEvmTestnet, iconUrl: polygonIcon, iconBackground: 'transparent' },
@@ -49,7 +49,9 @@ const chains = [
       },
     },
   },
-]
+];
+
+const chains = allChains
   .filter(({ id }) => config.enabledChains.includes(id))
   .sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2)) as [
   Chain,
@@ -80,4 +82,12 @@ const wagmiConfig = createConfig({
   },
 });
 
-export { chains, wagmiConfig };
+const wagmiConfigForLifi = createConfig({
+  chains: allChains as [Chain, ...Chain[]],
+  connectors,
+  client({ chain }) {
+    return createClient({ chain, transport: http() });
+  },
+});
+
+export { chains, wagmiConfig, wagmiConfigForLifi };

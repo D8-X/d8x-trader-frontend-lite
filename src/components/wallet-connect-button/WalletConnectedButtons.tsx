@@ -18,9 +18,12 @@ import { LiFiWidgetButton } from './LiFiWidgetButton';
 import { OneClickTradingButton } from './OneClickTradingButton';
 
 import styles from './WalletConnectButton.module.scss';
+import { useChainId } from 'wagmi';
 
 export const WalletConnectedButtons = memo(() => {
   const { t } = useTranslation();
+
+  const chainId = useChainId();
 
   const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
   const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
@@ -29,6 +32,11 @@ export const WalletConnectedButtons = memo(() => {
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
+
+  let isLiFiEnabled = config.activateLiFi;
+  if (config.enabledLiFiByChains.length > 0) {
+    isLiFiEnabled = config.enabledLiFiByChains.includes(chainId);
+  }
 
   return (
     <ConnectButton.Custom>
@@ -46,7 +54,7 @@ export const WalletConnectedButtons = memo(() => {
                 <>
                   <div className={styles.buttonsHolder}>
                     {!isSignedInSocially && <OneClickTradingButton />}
-                    {config.activateLiFi && <LiFiWidgetButton />}
+                    {isLiFiEnabled && <LiFiWidgetButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                     </Button>

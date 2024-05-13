@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useChainId, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient } from '@wagmi/core';
 
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { wagmiConfigForLifi } from 'blockchain-api/wagmi/wagmiClient';
 import { config as appConfig } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
@@ -53,7 +53,7 @@ export const LiFiWidgetHolder = () => {
       walletManagement: {
         signer,
         connect: async () => {
-          const walletClient = await getWalletClient(wagmiConfig, { connector: connectors[0] });
+          const walletClient = await getWalletClient(wagmiConfigForLifi, { connector: connectors[0] });
           if (walletClient) {
             return walletClientToSigner(walletClient);
           } else {
