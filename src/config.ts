@@ -20,7 +20,7 @@ const {
   VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
   VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
   VITE_DEFAULT_THEME: defaultTheme = 'light',
-  VITE_ACTIVATE_LIFI: activateLiFi = 'true',
+  VITE_ENABLED_LIFI_BY_CHAINS: enabledLifiByChains = '',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
   VITE_FIREBASE_APIKEY: firebaseApiKey = '',
   VITE_FIREBASE_AUTHDOMAIN: firebaseAuthDomain = '',
@@ -66,7 +66,7 @@ export const config = {
   priceFeedEndpoint: parseUrls(priceFeedEndpoints),
   httpRPC: parseUrls(httpRPCs),
   enabledChains: splitNumbers(enabledChains),
-  activateLiFi: activateLiFi === 'true',
+  enabledLiFiByChains: splitNumbers(enabledLifiByChains),
   showChallengeModal: showChallengeModal === 'true',
   defaultTheme,
 };

@@ -7,7 +7,7 @@ import { useChainId, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient } from '@wagmi/core';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { config as appConfig } from 'config';
+import { config } from 'config';
 import { useEthersSigner, walletClientToSigner } from 'hooks/useEthersSigner';
 import { enabledDarkModeAtom } from 'store/app.store';
 import { poolsAtom, selectedPoolAtom } from 'store/pools.store';
@@ -48,7 +48,7 @@ export const LiFiWidgetHolder = () => {
   const widgetConfig: WidgetConfig = useMemo(() => {
     const currentLanguage = (modifyLanguage(i18n.resolvedLanguage) as LanguageKey) || LanguageE.EN;
 
-    const config: WidgetConfig = {
+    const lifiConfig: WidgetConfig = {
       integrator: 'li-fi-widget',
       walletManagement: {
         signer,
@@ -80,13 +80,14 @@ export const LiFiWidgetHolder = () => {
           },
         },
       },
+      buildUrl: false,
       sdkConfig: {
         defaultRouteOptions: {
           maxPriceImpact: 0.4, // increases threshold to 40%
         },
       },
       chains: {
-        [triggerSwap ? 'allowFrom' : 'allowTo']: appConfig.enabledChains,
+        [triggerSwap ? 'allowFrom' : 'allowTo']: config.enabledLiFiByChains,
       },
       tokens: {
         [triggerSwap ? 'allowFrom' : 'allowTo']: admissibleTokens,
@@ -99,8 +100,13 @@ export const LiFiWidgetHolder = () => {
         // TODO: Might be change later in this way
         // deny: ['dodo', '0x'],
       },
+      // Styles
+      containerStyle: {
+        backgroundColor: 'transparent',
+        minWidth: 'auto',
+      },
     };
-    return config;
+    return lifiConfig;
   }, [triggerSwap, chainId, selectedPool, signer, connectors, disconnect, t, i18n, enabledDarkMode, admissibleTokens]);
 
   useEffect(() => {
