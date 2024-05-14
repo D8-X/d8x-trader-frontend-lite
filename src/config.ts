@@ -21,7 +21,7 @@ const {
   VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
   VITE_DEFAULT_THEME: defaultTheme = 'light',
   VITE_ACTIVATE_LIFI: activateLiFi = 'true',
-  VITE_ENABLED_LIFI_BY_CHAINS: enabledLifiByChains = '',
+  VITE_DISABLED_LIFI_BY_CHAINS: disabledLifiByChains = '',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
   VITE_FIREBASE_APIKEY: firebaseApiKey = '',
   VITE_FIREBASE_AUTHDOMAIN: firebaseAuthDomain = '',
@@ -68,7 +68,7 @@ export const config = {
   httpRPC: parseUrls(httpRPCs),
   enabledChains: splitNumbers(enabledChains),
   activateLiFi: activateLiFi === 'true',
-  enabledLiFiByChains: splitNumbers(enabledLifiByChains),
+  disabledLiFiByChains: splitNumbers(disabledLifiByChains),
   showChallengeModal: showChallengeModal === 'true',
   defaultTheme,
 };

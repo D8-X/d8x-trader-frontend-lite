@@ -34,8 +34,8 @@ export const WalletConnectedButtons = memo(() => {
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
   let isLiFiEnabled = config.activateLiFi;
-  if (config.enabledLiFiByChains.length > 0) {
-    isLiFiEnabled = config.enabledLiFiByChains.includes(chainId);
+  if (config.disabledLiFiByChains.length > 0) {
+    isLiFiEnabled = !config.disabledLiFiByChains.includes(chainId);
   }
 
   return (

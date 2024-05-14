@@ -24,12 +24,18 @@ This package is configured entirely via environment variables. You must specify:
   - This entry should then take the form:
     `VITE_ENABLED_CHAINS=1101;1442`
 
-- **VITE_ENABLED_LIFI_BY_CHAINS**: This is an optional variable that allow to enable LIFI widget by chains. It could be
-  required when some mainnet is not ready yet. The LIFI widget doesn't work with testnet.
+- **VITE_ACTIVATE_LIFI**: This is an optional variable that allow to disable LIFI widget. The LIFI widget doesn't work
+  with testnet.
 
   - By default, this variable is set to `true`.
   - If it is required to be disabled then it should take the form:
     `VITE_ACTIVATE_LIFI=false`
+
+- **VITE_DISABLED_LIFI_BY_CHAINS**: This is an optional variable that disables LIFI widget by chains. It could be
+  required when some chains are not ready yet.
+
+  - If it is required to be disabled for specific chains then it should take the form:
+    `VITE_DISABLED_LIFI_BY_CHAINS=1101;1442`
 
 - **VITE_ENABLED_REFER_PAGE**: This is an optional variable that allow to disable Refer page.
 
