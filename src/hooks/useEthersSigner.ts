@@ -1,10 +1,10 @@
 import { Web3Provider } from '@ethersproject/providers';
-import { getWalletClient } from '@wagmi/core';
+import { Config, getWalletClient } from '@wagmi/core';
 import { useMemo } from 'react';
 import { type WalletClient } from 'viem';
 import { useWalletClient } from 'wagmi';
 
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { wagmiConfigForLifi } from 'blockchain-api/wagmi/wagmiClient';
 
 export function walletClientToSigner(walletClient?: WalletClient | null) {
   if (walletClient) {
@@ -16,11 +16,11 @@ export function walletClientToSigner(walletClient?: WalletClient | null) {
 }
 
 export async function walletClientToSignerAsync(chainId?: number) {
-  const walletClient = await getWalletClient(wagmiConfig, { chainId });
+  const walletClient = await getWalletClient(wagmiConfigForLifi, { chainId });
   return walletClientToSigner(walletClient);
 }
 
-export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
-  const { data: walletClient } = useWalletClient({ chainId });
+export function useEthersSigner({ config, chainId }: { config?: Config; chainId?: number } = {}) {
+  const { data: walletClient } = useWalletClient({ config, chainId });
   return useMemo(() => (walletClient ? walletClientToSigner(walletClient) : undefined), [walletClient]);
 }

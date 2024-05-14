@@ -26,10 +26,10 @@ function modifyLanguage(languageKey?: string) {
 export const LiFiWidgetHolder = () => {
   const { i18n, t } = useTranslation();
 
-  const chainId = useChainId();
-  const { connectors } = useConnect();
-  const { disconnect } = useDisconnect();
-  const signer = useEthersSigner();
+  const chainId = useChainId({ config: wagmiConfigForLifi });
+  const { connectors } = useConnect({ config: wagmiConfigForLifi });
+  const { disconnect } = useDisconnect({ config: wagmiConfigForLifi });
+  const signer = useEthersSigner({ config: wagmiConfigForLifi });
   const widgetEvents = useWidgetEvents();
 
   const enabledDarkMode = useAtomValue(enabledDarkModeAtom);
