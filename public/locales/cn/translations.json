@@ -810,7 +810,7 @@
         "label2": "流动性池：",
         "headers": {
           "collateral": "抵押品",
-          "num-of-perps": "永续人数"
+          "num-of-perps": "交易对数量"
         }
       },
       "market": {
