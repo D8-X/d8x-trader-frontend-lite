@@ -8,7 +8,7 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia, arbitrum } from 'wagmi/chains';
+import { polygon, polygonMumbai, polygonZkEvm, polygonZkEvmTestnet, arbitrumSepolia, arbitrum } from 'wagmi/chains';
 import { createConfig, http } from 'wagmi';
 import { createClient } from 'viem';
 
@@ -23,6 +23,7 @@ const chains = [
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
   { ...polygonMumbai, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...polygonZkEvmTestnet, iconUrl: polygonIcon, iconBackground: 'transparent' },
+  { ...polygon, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...xlayer, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: polygonIcon, iconBackground: 'transparent' },
@@ -49,9 +50,7 @@ const chains = [
       },
     },
   },
-]
-  .filter(({ id }) => config.enabledChains.includes(id))
-  .sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2)) as [
+].sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2)) as [
   Chain,
   ...Chain[],
 ];

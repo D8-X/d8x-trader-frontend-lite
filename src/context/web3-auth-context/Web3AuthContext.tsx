@@ -19,7 +19,7 @@ import { numberToHex } from 'viem';
 import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
-import { web3AuthConfig } from 'config';
+import { config, web3AuthConfig } from 'config';
 import { auth } from 'FireBaseConfig';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { socialPKAtom, socialUserInfoAtom, web3AuthIdTokenAtom } from 'store/web3-auth.store';
@@ -45,17 +45,20 @@ if (web3AuthConfig.isEnabled) {
   verifier = web3AuthConfig.web3AuthVerifier;
   web3AuthNetwork = web3AuthConfig.web3AuthNetwork;
 
+  const firstVisibleChainId = config.enabledChains[0] || null;
+  const firstChain = chains.find((chain) => chain.id === firstVisibleChainId) || chains[0];
+
   const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
-    chainId: numberToHex(chains[0].id),
-    rpcTarget: chains[0].rpcUrls.default.http[0],
-    displayName: chains[0].name,
-    blockExplorerUrl: chains[0].blockExplorers?.default.url ?? '',
-    ticker: chains[0].nativeCurrency.symbol,
-    tickerName: chains[0].nativeCurrency.name,
-    decimals: chains[0].nativeCurrency.decimals,
-    logo: chains[0].iconUrl as string,
-    isTestnet: chains[0].testnet,
+    chainId: numberToHex(firstChain.id),
+    rpcTarget: firstChain.rpcUrls.default.http[0],
+    displayName: firstChain.name,
+    blockExplorerUrl: firstChain.blockExplorers?.default.url ?? '',
+    ticker: firstChain.nativeCurrency.symbol,
+    tickerName: firstChain.nativeCurrency.name,
+    decimals: firstChain.nativeCurrency.decimals,
+    logo: firstChain.iconUrl as string,
+    isTestnet: firstChain.testnet,
   };
 
   const privateKeyProvider = new EthereumPrivateKeyProvider({ config: { chainConfig } });

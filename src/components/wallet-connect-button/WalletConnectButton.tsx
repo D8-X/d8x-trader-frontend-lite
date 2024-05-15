@@ -8,6 +8,7 @@ import { Button } from '@mui/material';
 import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 
 import styles from './WalletConnectButton.module.scss';
+import { config } from '../../config';
 
 interface WalletConnectButtonPropsI {
   connectButtonLabel?: ReactNode;
@@ -29,6 +30,8 @@ export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
       {({ account, chain, openChainModal, openConnectModal, mounted }) => {
         const connected = mounted && account && chain;
 
+        const isVisibleChain = chain && config.enabledChains.includes(chain.id);
+
         return (
           <div className={classnames(styles.root, { [styles.connected]: !mounted })} aria-hidden={mounted}>
             {(() => {
@@ -45,7 +48,7 @@ export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
                 );
               }
 
-              if (chain.unsupported) {
+              if (chain.unsupported || !isVisibleChain) {
                 return (
                   <Button onClick={openChainModal} variant="warning">
                     {t('error.wrong-network')}

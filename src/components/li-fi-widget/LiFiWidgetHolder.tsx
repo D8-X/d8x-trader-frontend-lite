@@ -86,7 +86,7 @@ export const LiFiWidgetHolder = () => {
         },
       },
       chains: {
-        [triggerSwap ? 'allowFrom' : 'allowTo']: [...appConfig.enabledChains],
+        [triggerSwap ? 'allowFrom' : 'allowTo']: appConfig.enabledChains,
       },
       tokens: {
         [triggerSwap ? 'allowFrom' : 'allowTo']: admissibleTokens,

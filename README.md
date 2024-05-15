@@ -24,8 +24,8 @@ This package is configured entirely via environment variables. You must specify:
   - This entry should then take the form:
     `VITE_ENABLED_CHAINS=1101;1442`
 
-- **VITE_ACTIVATE_LIFI**: This is an optional variable that allow to disable LIFI widget. It could be required when app
-  is tested with testnet. The LIFI widget doesn't work with testnet.
+- **VITE_ACTIVATE_LIFI**: This is an optional variable that allow to disable LIFI widget. The LIFI widget doesn't work
+  with testnet.
 
   - By default, this variable is set to `true`.
   - If it is required to be disabled then it should take the form:
@@ -152,7 +152,7 @@ This package is configured entirely via environment variables. You must specify:
   - Enable it as follows:
     `VITE_WELCOME_MODAL=true`
 
-- **VITE_DEFAULT_THEME**: This is an optional variable that allows to define the default color theme. You can 
+- **VITE_DEFAULT_THEME**: This is an optional variable that allows to define the default color theme. You can
   use `light` or `dark`.
 
   - By default, this variable is set to `light`.

@@ -35,10 +35,12 @@ export const WalletConnectedButtons = memo(() => {
       {({ account, chain, openAccountModal, openChainModal, mounted }) => {
         const connected = mounted && account && chain;
 
+        const isVisibleChain = chain && config.enabledChains.includes(chain.id);
+
         return (
           <div className={classnames(styles.root, { [styles.connected]: !mounted })} aria-hidden={mounted}>
             {(() => {
-              if (!connected || chain.unsupported) {
+              if (!connected || chain.unsupported || !isVisibleChain) {
                 return null;
               }
 
