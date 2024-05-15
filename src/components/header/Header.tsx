@@ -413,6 +413,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               <div className={styles.mobileButtonsBlock}>
                 <Separator />
                 <div className={styles.mobileWalletButtons}>
+                  <WalletConnectButton />
                   <WalletConnectedButtons />
                 </div>
               </div>
