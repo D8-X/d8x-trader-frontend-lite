@@ -1,28 +1,26 @@
-import { useState } from 'react';
+import { useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
-import CurrencyExchangeOutlinedIcon from '@mui/icons-material/CurrencyExchangeOutlined';
+import { CurrencyExchangeOutlined } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import { LiFiWidgetModal } from 'components/li-fi-widget-modal/LiFiWidgetModal';
+
+import { lifiModalOpenAtom } from 'store/global-modals.store';
 
 import styles from './WalletConnectButton.module.scss';
 
 export const LiFiWidgetButton = () => {
   const { t } = useTranslation();
 
-  const [isModalOpen, setModalOpen] = useState(false);
+  const setModalOpen = useSetAtom(lifiModalOpenAtom);
 
   return (
-    <>
-      <Button
-        onClick={() => setModalOpen(true)}
-        className={styles.chainButton}
-        variant="primary"
-        title={t('common.li-fi-widget.button-title')}
-      >
-        <CurrencyExchangeOutlinedIcon />
-      </Button>
-      <LiFiWidgetModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-    </>
+    <Button
+      onClick={() => setModalOpen(true)}
+      className={styles.chainButton}
+      variant="primary"
+      title={t('common.li-fi-widget.button-title')}
+    >
+      <CurrencyExchangeOutlined />
+    </Button>
   );
 };

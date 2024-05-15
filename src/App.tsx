@@ -27,6 +27,7 @@ import 'core-js/es/string';
 
 import styles from './App.module.scss';
 import { useAccount } from 'wagmi';
+import { LiFiWidgetModal } from './components/li-fi-widget-modal/LiFiWidgetModal';
 
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
@@ -62,6 +63,7 @@ export const App = memo(() => {
         <WelcomeModal />
         <ReferralConfirmModal />
         {!isSignedInSocially && isConnected && <OneClickTradingModal />}
+        {isConnected && <LiFiWidgetModal />}
         <ToastContainerWrapper />
       </Box>
     </Box>

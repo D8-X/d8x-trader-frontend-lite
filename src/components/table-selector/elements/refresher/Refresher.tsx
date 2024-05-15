@@ -1,8 +1,8 @@
 import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
+import { AutorenewOutlined } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import AutorenewOutlinedIcon from '@mui/icons-material/AutorenewOutlined';
 
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 
@@ -20,7 +20,7 @@ export const Refresher = ({ activeTableType }: RefresherPropsI) => {
 
   return (
     <Box className={styles.root} onClick={tableRefreshHandlers[activeTableType] ?? undefined}>
-      <AutorenewOutlinedIcon className={styles.actionIcon} />
+      <AutorenewOutlined className={styles.actionIcon} />
       <Typography variant="bodySmall" className={styles.refreshLabel}>
         {t('common.refresh')}
       </Typography>
