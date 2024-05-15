@@ -592,7 +592,7 @@
     },
     "strategies": {
       "connect": {
-        "title": "Connect to Strategy Vault",
+        "title": "Connect to Strategy Earn",
         "connect-button": "Connect"
       },
       "overview": {
@@ -665,7 +665,7 @@
     },
     "portfolio": {
       "perpetuals": "Perpetuals",
-      "vault": "Vault",
+      "vault": "Earn",
       "account-value": {
         "main-title": "Your account",
         "title": "Account Value",
@@ -683,7 +683,7 @@
             "referral": "Referral earnings"
           },
           "vault": {
-            "title": "Vault details",
+            "title": "Earn details",
             "assets": "Assets",
             "assets-pool": "Assets in pools",
             "earnings-pool": "Earnings per pool",
