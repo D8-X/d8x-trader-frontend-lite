@@ -80,7 +80,6 @@ export const LiFiWidgetHolder = () => {
           },
         },
       },
-      buildUrl: false,
       sdkConfig: {
         defaultRouteOptions: {
           maxPriceImpact: 0.4, // increases threshold to 40%
