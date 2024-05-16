@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, Suspense, useEffect } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
+import { useAccount } from 'wagmi';
 
 import { Box, CircularProgress } from '@mui/material';
 
@@ -26,8 +27,6 @@ import 'core-js/es/promise';
 import 'core-js/es/string';
 
 import styles from './App.module.scss';
-import { useAccount } from 'wagmi';
-import { LiFiWidgetModal } from './components/li-fi-widget-modal/LiFiWidgetModal';
 
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
@@ -63,7 +62,6 @@ export const App = memo(() => {
         <WelcomeModal />
         <ReferralConfirmModal />
         {!isSignedInSocially && isConnected && <OneClickTradingModal />}
-        {isConnected && <LiFiWidgetModal />}
         <ToastContainerWrapper />
       </Box>
     </Box>
