@@ -592,7 +592,7 @@
     },
     "strategies": {
       "connect": {
-        "title": "Connect to Strategy Earn",
+        "title": "Connect to Strategy Vault",
         "connect-button": "Connect"
       },
       "overview": {

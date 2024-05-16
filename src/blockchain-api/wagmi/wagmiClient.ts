@@ -12,7 +12,6 @@ import {
   polygon,
   polygonMumbai,
   polygonZkEvm,
-  polygonZkEvmTestnet,
   arbitrumSepolia,
   arbitrum,
   mainnet,
@@ -46,7 +45,6 @@ import { x1, cardona, artio, xlayer } from 'utils/chains';
 const chains = [
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
   { ...polygonMumbai, iconUrl: polygonIcon, iconBackground: 'transparent' },
-  { ...polygonZkEvmTestnet, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...xlayer, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: polygonIcon, iconBackground: 'transparent' },
