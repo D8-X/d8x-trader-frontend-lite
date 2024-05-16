@@ -25,6 +25,7 @@ import './polyfills';
 import '@rainbow-me/rainbowkit/styles.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
+import { LiFiWidgetModal } from './components/li-fi-widget-modal/LiFiWidgetModal';
 
 const container = document.getElementById('root');
 
@@ -50,6 +51,8 @@ if (container) {
                               <StaticBackground />
                               <App />
                             </BrowserRouter>
+
+                            <LiFiWidgetModal />
                           </WebSocketContextProvider>
                         </UserWalletProvider>
                       </Web3AuthProvider>

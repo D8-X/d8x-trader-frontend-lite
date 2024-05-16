@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 import { Box, Button } from '@mui/material';
 
@@ -12,9 +13,15 @@ import styles from './LiFiWidgetModal.module.scss';
 export const LiFiWidgetModal = () => {
   const { t } = useTranslation();
 
+  const { isConnected } = useAccount();
+
   const [isOpen, setOpen] = useAtom(lifiModalOpenAtom);
 
   const onClose = () => setOpen(false);
+
+  if (!isConnected) {
+    return null;
+  }
 
   return (
     <Dialog open={isOpen} onCloseClick={onClose}>

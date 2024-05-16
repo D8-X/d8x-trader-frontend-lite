@@ -36,9 +36,9 @@ export const WalletConnectedButtons = memo(() => {
 
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
-  const isTradePage = useMemo(() => {
-    const subPages = Object.values(RoutesE).filter((page) => page !== RoutesE.Trade);
-    const foundPage = subPages.find((page) => location.pathname.indexOf(page) === 0);
+  const isLiFiShownOnPage = useMemo(() => {
+    const restrictedPages = Object.values(RoutesE).filter((page) => page !== RoutesE.Trade && page !== RoutesE.Vault);
+    const foundPage = restrictedPages.find((page) => location.pathname.indexOf(page) === 0);
     return !foundPage;
   }, [location.pathname]);
 
@@ -65,7 +65,7 @@ export const WalletConnectedButtons = memo(() => {
                 <>
                   <div className={styles.buttonsHolder}>
                     {!isSignedInSocially && <OneClickTradingButton />}
-                    {isLiFiEnabled && isTradePage && <LiFiWidgetButton />}
+                    {isLiFiEnabled && isLiFiShownOnPage && <LiFiWidgetButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                     </Button>
