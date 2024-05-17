@@ -1,25 +1,27 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { useMediaQuery, useTheme } from '@mui/material';
 
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { getWeeklyAPI } from 'network/history';
-import { formatToCurrency } from 'utils/formatToCurrency';
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom, tvlAtom } from 'store/vault-pools.store';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
+import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import styles from './GlobalStats.module.scss';
 
 export const GlobalStats = () => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const { chainId } = useAccount();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -33,7 +35,7 @@ export const GlobalStats = () => {
   const weeklyApiRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol) {
+    if (!chainId || !selectedPool?.poolSymbol || !isEnabledChain(chainId)) {
       setWeeklyAPI(undefined);
       return;
     }

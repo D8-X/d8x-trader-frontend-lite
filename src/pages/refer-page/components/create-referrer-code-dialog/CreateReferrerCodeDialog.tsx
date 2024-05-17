@@ -2,17 +2,18 @@ import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { useAtom } from 'jotai';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
-import { Box, Button, OutlinedInput, Typography } from '@mui/material';
+import { Button, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { postUpsertCode } from 'network/referral';
 import { useCodeInput } from 'pages/refer-page/hooks';
-import { replaceSymbols } from 'utils/replaceInvalidSymbols';
 import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
+import { replaceSymbols } from 'utils/replaceInvalidSymbols';
 
 import { CodeStateE } from '../../enums';
 
@@ -32,8 +33,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   const [commissionRate] = useAtom(commissionRateAtom);
 
   const { data: walletClient } = useWalletClient();
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
   const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
@@ -63,7 +63,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   };
 
   const handleUpsertCode = () => {
-    if (!address || !walletClient) {
+    if (!address || !walletClient || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -85,19 +85,19 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <Box className={styles.dialogRoot}>
+      <div className={styles.dialogRoot}>
         <Typography variant="h5" className={styles.title}>
           {t('pages.refer.manage-code.title-create')}
         </Typography>
-        <Box className={styles.baseRebateContainer}>
+        <div className={styles.baseRebateContainer}>
           <Typography variant="bodySmall" fontWeight={600}>
             {t('pages.refer.manage-code.commission-rate')}
           </Typography>
           <Typography variant="bodySmall" fontWeight={600}>
             {commissionRate}%
           </Typography>
-        </Box>
-        <Box className={styles.paddedContainer}>
+        </div>
+        <div className={styles.paddedContainer}>
           <SidesRow
             leftSide={t('pages.refer.manage-code.you-receive')}
             rightSide={`${sidesRowValues.userRate}%`}
@@ -108,9 +108,9 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
             rightSide={`${sidesRowValues.traderRate}%`}
             rightSideStyles={styles.sidesRowValue}
           />
-        </Box>
+        </div>
         <div className={styles.divider} />
-        <Box className={styles.kickbackRateInputContainer}>
+        <div className={styles.kickbackRateInputContainer}>
           <Typography variant="bodySmall">{t('pages.refer.manage-code.trader-kickback')}</Typography>
           <OutlinedInput
             type="text"
@@ -120,30 +120,30 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
             className={styles.kickbackInput}
             endAdornment="%"
           />
-        </Box>
+        </div>
         <div className={styles.divider} />
-        <Box className={styles.codeInputContainer}>
+        <div className={styles.codeInputContainer}>
           <OutlinedInput
             placeholder={t('pages.refer.trader-tab.enter-a-code')}
             value={codeInputValue}
             onChange={handleCodeChange}
             className={styles.codeInput}
           />
-        </Box>
+        </div>
         <Typography variant="bodyTiny" component="p" className={styles.infoText}>
           {t('pages.refer.manage-code.instructions')}
         </Typography>
-        <Box className={styles.dialogActionsContainer}>
+        <div className={styles.dialogActionsContainer}>
           <Button variant="secondary" onClick={onClose}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
-          <Button variant="primary" disabled={codeInputDisabled} onClick={handleUpsertCode}>
+          <Button variant="primary" disabled={codeInputDisabled || !isEnabledChain(chainId)} onClick={handleUpsertCode}>
             {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
           </Button>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </Dialog>
   );
 };

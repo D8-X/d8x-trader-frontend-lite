@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { getCodeRebate, getMyCodeSelection } from 'network/referral';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 export const useFetchCodeAndRebate = () => {
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const [activeCode, setActiveCode] = useState('');
   const [rebateRate, setRebateRate] = useState(0);
@@ -14,7 +14,7 @@ export const useFetchCodeAndRebate = () => {
   const rebateRateRequestRef = useRef(false);
 
   const fetchMyCodeSelection = useCallback(() => {
-    if (!chainId || !address) {
+    if (!chainId || !address || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -36,7 +36,7 @@ export const useFetchCodeAndRebate = () => {
   }, [fetchMyCodeSelection]);
 
   const fetchCodeRebate = useCallback(() => {
-    if (!chainId || !activeCode) {
+    if (!chainId || !activeCode || !isEnabledChain(chainId)) {
       return;
     }
 

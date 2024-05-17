@@ -3,13 +3,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { Separator } from 'components/separator/Separator';
 import { ReferralCodesTable } from 'components/referral-codes-table/ReferralCodesTable';
 import { useDialog } from 'hooks/useDialog';
 import { commissionRateAtom, isAgencyAtom, referralCodesAtom } from 'store/refer.store';
 import { type ReferralTableDataI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 import { isValidAddress } from 'utils/isValidAddress';
 
 import { AddPartnerDialog } from '../add-partner-dialog/AddPartnerDialog';
@@ -24,7 +25,7 @@ export const ReferralsBlock = () => {
   const commissionRate = useAtomValue(commissionRateAtom);
   const referralCodes = useAtomValue(referralCodesAtom);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const { dialogOpen: createDialogOpen, openDialog: openCreateDialog, closeDialog: closeCreateDialog } = useDialog();
   const { dialogOpen: addDialogOpen, openDialog: openAddDialog, closeDialog: closeAddDialog } = useDialog();
@@ -49,17 +50,17 @@ export const ReferralsBlock = () => {
   );
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.buttonsContainer}>
+    <div className={styles.root}>
+      <div className={styles.buttonsContainer}>
         {isAgency && (
-          <Button onClick={openAddDialog} variant="primary" disabled={!address}>
+          <Button onClick={openAddDialog} variant="primary" disabled={!address || !isEnabledChain(chainId)}>
             {t('pages.refer.referrer-tab.add-partner')}
           </Button>
         )}
-        <Button onClick={openCreateDialog} variant="primary" disabled={!address}>
+        <Button onClick={openCreateDialog} variant="primary" disabled={!address || !isEnabledChain(chainId)}>
           {t('pages.refer.referrer-tab.create-code')}
         </Button>
-      </Box>
+      </div>
       <Separator className={styles.divider} />
       {address && referralCodes.length ? (
         <ReferralCodesTable codes={referralTableRows} />
@@ -73,8 +74,8 @@ export const ReferralsBlock = () => {
           </Typography>
         </>
       )}
-      <CreateReferrerCodeDialog isOpen={createDialogOpen} onClose={closeCreateDialog} />
-      {isAgency && <AddPartnerDialog isOpen={addDialogOpen} onClose={closeAddDialog} />}
-    </Box>
+      <CreateReferrerCodeDialog isOpen={createDialogOpen && isEnabledChain(chainId)} onClose={closeCreateDialog} />
+      {isAgency && <AddPartnerDialog isOpen={addDialogOpen && isEnabledChain(chainId)} onClose={closeAddDialog} />}
+    </div>
   );
 };

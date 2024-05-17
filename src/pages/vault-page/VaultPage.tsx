@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { useMediaQuery, useTheme } from '@mui/material';
 
@@ -13,6 +13,7 @@ import { GlobalStats } from 'pages/vault-page/components/global-stats/GlobalStat
 import { LiquidityBlock } from 'pages/vault-page/components/liquidity-block/LiquidityBlock';
 import { selectedPoolAtom } from 'store/pools.store';
 import { triggerWithdrawalsUpdateAtom, withdrawalsAtom } from 'store/vault-pools.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import styles from './VaultPage.module.scss';
 
@@ -20,8 +21,7 @@ export const VaultPage = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const triggerWithdrawalsUpdate = useAtomValue(triggerWithdrawalsUpdateAtom);
@@ -30,7 +30,7 @@ export const VaultPage = () => {
   const withdrawalsRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!chainId || !selectedPool || !address) {
+    if (!selectedPool || !address || !chainId || !isEnabledChain(chainId)) {
       setWithdrawals([]);
       return;
     }

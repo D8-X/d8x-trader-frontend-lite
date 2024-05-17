@@ -4,6 +4,7 @@ import { useChainId } from 'wagmi';
 
 import { AppReload } from 'components/app-reload/AppReload';
 import { pagesConfig } from 'config';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { PrivateRoutes } from './PrivateRoutes';
 import { RoutesE } from './RoutesE';
@@ -89,7 +90,9 @@ export const AppRoutes = () => {
           {pagesConfig.enabledStrategiesPage && pagesConfig.enabledStrategiesPageByChains.includes(chainId) && (
             <Route path={RoutesE.Strategies} element={<StrategiesPage />} />
           )}
-          {pagesConfig.enabledPortfolioPage && <Route path={RoutesE.Portfolio} element={<PortfolioPage />} />}
+          {pagesConfig.enabledPortfolioPage && isEnabledChain(chainId) && (
+            <Route path={RoutesE.Portfolio} element={<PortfolioPage />} />
+          )}
         </Route>
       )}
       <Route key="trader-page" path="*" element={<TraderPage />} />

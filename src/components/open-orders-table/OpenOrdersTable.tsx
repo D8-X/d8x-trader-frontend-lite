@@ -40,7 +40,8 @@ import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom }
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
-import { type OrderWithIdI, type TableHeaderI, type TemporaryAnyT } from 'types/types';
+import type { OrderWithIdI, TableHeaderI, TemporaryAnyT } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
@@ -79,12 +80,6 @@ export const OpenOrdersTable = memo(() => {
 
   const isAPIBusyRef = useRef(false);
 
-  useEffect(() => {
-    if (isDisconnected || !traderAPI || traderAPI.chainId !== chainId) {
-      clearOpenOrders();
-    }
-  }, [isDisconnected, chainId, clearOpenOrders, traderAPI]);
-
   const handleOrderCancel = useCallback((orderToCancel: OrderWithIdI) => {
     setCancelModalOpen(true);
     setSelectedOrder(orderToCancel);
@@ -96,7 +91,7 @@ export const OpenOrdersTable = memo(() => {
   };
 
   const refreshOpenOrders = useCallback(async () => {
-    if (address && traderAPI && isConnected && chainId && isSDKConnected) {
+    if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
       if (isAPIBusyRef.current || traderAPI.chainId !== chainId) {
         return;
       }

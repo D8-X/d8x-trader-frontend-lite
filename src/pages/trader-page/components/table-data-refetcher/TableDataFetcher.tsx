@@ -1,22 +1,24 @@
+import { OrderStatus } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { useAccount, useChainId } from 'wagmi';
 
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import {
   clearOpenOrdersAtom,
+  clearPositionsAtom,
   executeOrderAtom,
   openOrdersAtom,
   positionsAtom,
   traderAPIAtom,
   triggerBalancesUpdateAtom,
 } from 'store/pools.store';
-import { PerpetualOpenOrdersI } from 'types/types';
-import { OrderStatus } from '@d8x/perpetuals-sdk';
-import { toast } from 'react-toastify';
-import { ToastContent } from 'components/toast-content/ToastContent';
-import { useTranslation } from 'react-i18next';
+import type { PerpetualOpenOrdersI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 const MAX_FETCH_COUNT = 20;
 const MAX_FETCH_TIME = 40_000; // 40 sec
@@ -25,7 +27,8 @@ const INTERVAL_FOR_TICKER_SLOW = 120000;
 
 export const TableDataFetcher = memo(() => {
   const { t } = useTranslation();
-  const { address } = useAccount();
+
+  const { address, isDisconnected } = useAccount();
   const chainId = useChainId();
 
   const latestOrderSentTimestamp = useAtomValue(latestOrderSentTimestampAtom);
@@ -34,6 +37,7 @@ export const TableDataFetcher = memo(() => {
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
+  const clearPositions = useSetAtom(clearPositionsAtom);
   const setPositions = useSetAtom(positionsAtom);
 
   const [fastTicker, setFastTicker] = useState(0);
@@ -58,6 +62,13 @@ export const TableDataFetcher = memo(() => {
       clearInterval(intervalId);
     };
   }, [latestOrderSentTimestamp]);
+
+  useEffect(() => {
+    if (isDisconnected || !traderAPI || traderAPI.chainId !== chainId || !isEnabledChain(chainId)) {
+      clearOpenOrders();
+      clearPositions();
+    }
+  }, [isDisconnected, chainId, clearOpenOrders, clearPositions, traderAPI]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {

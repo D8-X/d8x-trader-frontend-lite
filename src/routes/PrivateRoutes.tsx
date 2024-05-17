@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
-import { RoutesE } from './RoutesE';
+import { RoutesE } from 'routes/RoutesE';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 export function PrivateRoutes() {
-  const { address } = useAccount();
-  return address ? <Outlet /> : <Navigate to={RoutesE.Trade} />;
+  const { address, chainId } = useAccount();
+  return address && isEnabledChain(chainId) ? <Outlet /> : <Navigate to={RoutesE.Trade} />;
 }

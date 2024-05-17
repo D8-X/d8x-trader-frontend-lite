@@ -8,6 +8,7 @@ import { config } from 'config';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 export const SDKLoader = memo(() => {
   const { isConnected } = useAccount();
@@ -34,10 +35,6 @@ export const SDKLoader = memo(() => {
 
   const loadSDK = useCallback(
     async (_publicClient: Client, _chainId: number) => {
-      if (!config.enabledChains.includes(_chainId)) {
-        return;
-      }
-
       setTraderAPI(null);
       setSDKConnected(false);
 
@@ -87,7 +84,7 @@ export const SDKLoader = memo(() => {
 
   // connect SDK on change of provider/chain/wallet
   useEffect(() => {
-    if (loadingAPIRef.current || !publicClient || !chainId) {
+    if (loadingAPIRef.current || !publicClient || !isEnabledChain(chainId)) {
       return;
     }
     unloadSDK();

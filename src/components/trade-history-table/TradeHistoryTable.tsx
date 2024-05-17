@@ -16,6 +16,7 @@ import { openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.s
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { TradeHistoryBlock } from './elements/trade-history-block/TradeHistoryBlock';
 import { TradeHistoryRow } from './elements/TradeHistoryRow';
@@ -45,7 +46,11 @@ export const TradeHistoryTable = memo(() => {
   const [orderBy, setOrderBy] = useState<keyof TradeHistoryWithSymbolDataI>('timestamp');
 
   const refreshTradesHistory = useCallback(() => {
-    if (updateTradesHistoryRef.current || !address || !isConnected) {
+    if (updateTradesHistoryRef.current) {
+      return;
+    }
+    if (!address || !isConnected || !isEnabledChain(chainId)) {
+      setTradesHistory([]);
       return;
     }
 

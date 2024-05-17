@@ -16,6 +16,7 @@ import { getFundingRatePayments } from 'network/history';
 import { fundingListAtom, perpetualsAtom, positionsAtom } from 'store/pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { FundingWithSymbolDataI, TableHeaderI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { FundingBlock } from './elements/funding-block/FundingBlock';
 import { FundingRow } from './elements/FundingRow';
@@ -46,7 +47,11 @@ export const FundingTable = memo(() => {
   const [orderBy, setOrderBy] = useState<keyof FundingWithSymbolDataI>('timestamp');
 
   const refreshFundingList = useCallback(() => {
-    if (updateTradesHistoryRef.current || !address || !isConnected) {
+    if (updateTradesHistoryRef.current) {
+      return;
+    }
+    if (!address || !isConnected || !isEnabledChain(chainId)) {
+      setFundingList([]);
       return;
     }
 

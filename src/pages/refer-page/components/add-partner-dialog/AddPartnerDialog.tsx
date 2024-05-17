@@ -2,17 +2,18 @@ import { useAtom } from 'jotai';
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
-import { Box, Button, OutlinedInput, Typography } from '@mui/material';
+import { Button, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { postRefer } from 'network/referral';
+import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 import { isValidAddress } from 'utils/isValidAddress';
 import { replaceSymbols } from 'utils/replaceInvalidSymbols';
-import { commissionRateAtom, referralCodesRefetchHandlerRefAtom } from 'store/refer.store';
 
 import styles from './AddPartnerDialog.module.scss';
 
@@ -31,8 +32,7 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
   const [commissionRate] = useAtom(commissionRateAtom);
 
   const { data: walletClient } = useWalletClient();
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const partnerAddressInputTouchedRef = useRef(false);
 
@@ -77,7 +77,7 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
   }, [partnerAddressInputValue]);
 
   const handleReferPost = () => {
-    if (!address || !walletClient || !isAddressValid) {
+    if (!address || !walletClient || !isAddressValid || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -98,19 +98,19 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <Box className={styles.dialogRoot}>
+      <div className={styles.dialogRoot}>
         <Typography variant="h5" className={styles.title}>
           {t('pages.refer.manage-code.title-add')}
         </Typography>
-        <Box className={styles.baseRebateContainer}>
+        <div className={styles.baseRebateContainer}>
           <Typography variant="bodySmall" fontWeight={600}>
             {t('pages.refer.manage-code.commission-rate')}
           </Typography>
           <Typography variant="bodySmall" fontWeight={600}>
             {commissionRate}%
           </Typography>
-        </Box>
-        <Box className={styles.paddedContainer}>
+        </div>
+        <div className={styles.paddedContainer}>
           <SidesRow
             leftSide={t('pages.refer.manage-code.you')}
             rightSide={`${sidesRowValues.userRate}%`}
@@ -121,9 +121,9 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
             rightSide={`${sidesRowValues.partnerRate}%`}
             rightSideStyles={styles.sidesRowValue}
           />
-        </Box>
+        </div>
         <div className={styles.divider} />
-        <Box className={styles.referrerKickbackInputContainer}>
+        <div className={styles.referrerKickbackInputContainer}>
           <Typography variant="bodySmall">{t('pages.refer.manage-code.partner-kickback')}</Typography>
           <OutlinedInput
             type="text"
@@ -133,9 +133,9 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
             className={styles.kickbackInput}
             endAdornment="%"
           />
-        </Box>
+        </div>
         <div className={styles.divider} />
-        <Box className={styles.codeInputContainer}>
+        <div className={styles.codeInputContainer}>
           <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
             {t('pages.refer.manage-code.partner-address')}
           </Typography>
@@ -150,16 +150,16 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
               {t('pages.refer.manage-code.error')}
             </Typography>
           )}
-        </Box>
-        <Box className={styles.dialogActionsContainer}>
+        </div>
+        <div className={styles.dialogActionsContainer}>
           <Button variant="secondary" onClick={onClose} className={styles.cancelButton}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
-          <Button variant="primary" disabled={!isAddressValid} onClick={handleReferPost}>
+          <Button variant="primary" disabled={!isAddressValid || !isEnabledChain(chainId)} onClick={handleReferPost}>
             {t('pages.refer.manage-code.add-partner')}
           </Button>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </Dialog>
   );
 };

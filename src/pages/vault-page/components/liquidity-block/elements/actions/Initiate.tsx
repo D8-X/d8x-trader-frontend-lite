@@ -22,6 +22,7 @@ import {
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import styles from './Action.module.scss';
 
@@ -29,6 +30,7 @@ enum ValidityCheckInitiateE {
   Empty = '-',
   NoAmount = 'no-amount',
   NoAddress = 'not-connected',
+  WrongNetwork = 'wrong-network',
   AmountTooBig = 'amount-too-big',
   AmountBelowMinimum = 'amount-below-min',
   GoodToGo = 'good-to-go',
@@ -207,6 +209,9 @@ export const Initiate = memo(() => {
     if (!address) {
       return ValidityCheckInitiateE.NoAddress;
     }
+    if (!isEnabledChain(chain?.id)) {
+      return ValidityCheckInitiateE.WrongNetwork;
+    }
     if (requestSent || !minAmount || !withdrawals || withdrawals.length > 0) {
       return ValidityCheckInitiateE.Empty;
     }
@@ -225,11 +230,13 @@ export const Initiate = memo(() => {
       return ValidityCheckInitiateE.AmountBelowMinimum;
     }
     return ValidityCheckInitiateE.GoodToGo;
-  }, [address, withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
+  }, [address, chain?.id, withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
 
   const validityCheckInitiateText = useMemo(() => {
     if (validityCheckInitiateType === ValidityCheckInitiateE.Empty) {
       return `${t('pages.vault.withdraw.initiate.validity-empty')}`;
+    } else if (validityCheckInitiateType === ValidityCheckInitiateE.WrongNetwork) {
+      return `${t('error.wrong-network')}`;
     } else if (validityCheckInitiateType === ValidityCheckInitiateE.NoAddress) {
       return `${t('pages.vault.withdraw.initiate.validity-no-address')}`;
     } else if (validityCheckInitiateType === ValidityCheckInitiateE.NoFunds) {

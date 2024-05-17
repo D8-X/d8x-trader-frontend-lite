@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-import { Box } from '@mui/material';
 import { poolsAtom } from 'store/pools.store';
 import type { OverviewItemI, OverviewPoolItemI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { Overview } from '../overview/Overview';
@@ -21,7 +21,7 @@ export const TraderTab = () => {
 
   const pools = useAtomValue(poolsAtom);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const disclaimerTextBlocks = useMemo(
     () => [t('pages.refer.trader-tab.disclaimer-text-block1'), t('pages.refer.trader-tab.disclaimer-text-block2')],
@@ -52,17 +52,17 @@ export const TraderTab = () => {
     return [
       {
         title: t('pages.refer.trader-tab.earned-rebates'),
-        poolsItems: address ? earnedRebatesByPools : [],
+        poolsItems: address && isEnabledChain(chainId) ? earnedRebatesByPools : [],
       },
       {
         title: t('pages.refer.trader-tab.open-rewards'),
-        poolsItems: address ? openEarningsByPools : [],
+        poolsItems: address && isEnabledChain(chainId) ? openEarningsByPools : [],
       },
     ];
-  }, [pools, openRewards, earnedRebates, address, t]);
+  }, [pools, openRewards, earnedRebates, address, chainId, t]);
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       <Overview title={t('pages.refer.trader-tab.title1')} items={overviewItems} />
       <Disclaimer title={t('pages.refer.trader-tab.title2')} textBlocks={disclaimerTextBlocks} />
       <div className={styles.divider} />
@@ -71,6 +71,6 @@ export const TraderTab = () => {
         traderRebatePercentage={rebateRate}
         onCodeApplySuccess={fetchCodeAndRebate}
       />
-    </Box>
+    </div>
   );
 };

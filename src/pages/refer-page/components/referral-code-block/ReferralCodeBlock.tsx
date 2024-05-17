@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-import { Box, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { Separator } from 'components/separator/Separator';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { EnterCodeDialog } from '../enter-code-dialog/EnterCodeDialog';
 
@@ -25,25 +26,25 @@ export const ReferralCodeBlock = ({
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.topSection}>
-        <Box>
+    <div className={styles.root}>
+      <div className={styles.topSection}>
+        <div>
           <Typography variant="bodySmall" component="p" className={styles.dataTitle}>
             {t('pages.refer.trader-tab.your-rebate-rate')}
           </Typography>
           <Typography variant="bodyLarge" className={styles.dataValue}>
             {address && traderRebatePercentage ? `${traderRebatePercentage.toFixed(2)}%` : 'N/A'}
           </Typography>
-        </Box>
-        {address && referralCode === '' ? (
+        </div>
+        {address && isEnabledChain(chainId) && referralCode === '' ? (
           <Button variant="primary" onClick={() => setDialogOpen(true)} className={styles.newCodeButton}>
             {t('pages.refer.trader-tab.enter-new-code')}
           </Button>
         ) : null}
-      </Box>
+      </div>
       <Separator className={styles.divider} />
       <Typography variant="bodySmall" component="p" className={styles.dataTitle}>
         {t('pages.refer.trader-tab.your-active-code')}
@@ -52,10 +53,10 @@ export const ReferralCodeBlock = ({
         {address && referralCode ? referralCode : 'N/A'}
       </Typography>
       <EnterCodeDialog
-        isOpen={dialogOpen}
+        isOpen={dialogOpen && isEnabledChain(chainId)}
         onClose={() => setDialogOpen(false)}
         onCodeApplySuccess={onCodeApplySuccess}
       />
-    </Box>
+    </div>
   );
 };

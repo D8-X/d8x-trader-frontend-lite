@@ -7,6 +7,9 @@ import { ArrowForward } from '@mui/icons-material';
 import { Card, CardContent, Link } from '@mui/material';
 import { useAccount } from 'wagmi';
 
+import { depositModalOpenAtom } from 'store/global-modals.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
+
 import { Separator } from '../separator/Separator';
 import { ActionBlock } from './elements/action-block/ActionBlock';
 import { InfoBlock } from './elements/info-block/InfoBlock';
@@ -18,14 +21,14 @@ import { OrderTypeSelector } from './elements/order-type-selector/OrderTypeSelec
 import { StopLossSelector } from './elements/stop-loss-selector/StopLossSelector';
 import { TakeProfitSelector } from './elements/take-profit-selector/TakeProfitSelector';
 import { TriggerPrice } from './elements/trigger-price/TriggerPrice';
-import { depositModalOpenAtom } from 'store/global-modals.store';
 
 import styles from './OrderBlock.module.scss';
 
 export const OrderBlock = memo(() => {
   const { t } = useTranslation();
+
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
-  const { isConnected } = useAccount();
+  const { chainId, isConnected } = useAccount();
 
   return (
     <Card className={styles.root}>
@@ -48,7 +51,7 @@ export const OrderBlock = memo(() => {
       <CardContent className={styles.bottomCard}>
         <InfoBlock />
         <ActionBlock />
-        {isConnected && (
+        {isConnected && isEnabledChain(chainId) && (
           <Link onClick={() => setDepositModalOpen(true)} className={styles.depositLink}>
             <ArrowForward fontSize="small" />
             <span className={styles.textOffset}>{t('common.deposit-modal.title')}</span>
