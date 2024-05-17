@@ -2,7 +2,7 @@ import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { type Client } from 'viem';
-import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
 
 import { config } from 'config';
 import { traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
@@ -11,8 +11,7 @@ import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 export const SDKLoader = memo(() => {
-  const { isConnected } = useAccount();
-  const chainId = useChainId();
+  const { isConnected, chainId } = useAccount();
 
   const publicClient = usePublicClient();
   const { data: walletClient, isSuccess } = useWalletClient();
@@ -84,7 +83,7 @@ export const SDKLoader = memo(() => {
 
   // connect SDK on change of provider/chain/wallet
   useEffect(() => {
-    if (loadingAPIRef.current || !publicClient || !isEnabledChain(chainId)) {
+    if (loadingAPIRef.current || !publicClient || !chainId || !isEnabledChain(chainId)) {
       return;
     }
     unloadSDK();

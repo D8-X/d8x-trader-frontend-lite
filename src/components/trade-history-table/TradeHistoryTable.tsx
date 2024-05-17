@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
@@ -36,8 +36,7 @@ export const TradeHistoryTable = memo(() => {
 
   const updateTradesHistoryRef = useRef(false);
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const [page, setPage] = useState(0);
@@ -49,7 +48,7 @@ export const TradeHistoryTable = memo(() => {
     if (updateTradesHistoryRef.current) {
       return;
     }
-    if (!address || !isConnected || !isEnabledChain(chainId)) {
+    if (!address || !isConnected || !chainId || !isEnabledChain(chainId)) {
       setTradesHistory([]);
       return;
     }

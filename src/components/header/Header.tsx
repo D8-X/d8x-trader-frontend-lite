@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { useAccount, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { Close, Menu } from '@mui/icons-material';
@@ -62,15 +62,14 @@ const DRAWER_WIDTH_FOR_TABLETS = 340;
 const MAX_RETRIES = 3;
 
 export const Header = memo(({ window }: HeaderPropsI) => {
+  const { t } = useTranslation();
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const isTabletScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const { t } = useTranslation();
-
-  const chainId = useChainId();
-  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const { chainId, address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
@@ -155,7 +154,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       return;
     }
 
-    if (chainId && address && isEnabledChain(chainId)) {
+    if (address && chainId && isEnabledChain(chainId)) {
       positionsRequestRef.current = true;
       getPositionRisk(chainId, null, address, Date.now())
         .then(({ data }) => {
@@ -238,7 +237,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       enabled:
         !exchangeRequestRef.current &&
         address &&
-        traderAPI?.chainId === chain?.id &&
+        traderAPI?.chainId === chainId &&
         isEnabledChain(chainId) &&
         !!selectedPool?.marginTokenAddr &&
         isConnected &&
@@ -248,7 +247,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   });
 
   useEffect(() => {
-    if (!address || !chain) {
+    if (!address || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -277,10 +276,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       clearInterval(intervalId);
       poolTokenBalanceRetriesCountRef.current = 0;
     };
-  }, [address, chain, refetch, triggerUserStatsUpdate, triggerBalancesUpdate]);
+  }, [address, chainId, refetch, triggerUserStatsUpdate, triggerBalancesUpdate]);
 
   useEffect(() => {
-    if (poolTokenBalance && selectedPool && chain && !isError) {
+    if (poolTokenBalance && selectedPool && chainId && isEnabledChain(chainId) && !isError) {
       poolTokenBalanceDefinedRef.current = true;
       setPoolTokenBalance(+formatUnits(poolTokenBalance[0], poolTokenBalance[1]));
       setPoolTokenDecimals(poolTokenBalance[1]);
@@ -289,7 +288,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       setPoolTokenBalance(undefined);
       setPoolTokenDecimals(undefined);
     }
-  }, [selectedPool, chain, poolTokenBalance, isError, setPoolTokenBalance, setPoolTokenDecimals, isRefetching]);
+  }, [selectedPool, chainId, poolTokenBalance, isError, setPoolTokenBalance, setPoolTokenDecimals, isRefetching]);
 
   useEffect(() => {
     if (gasTokenBalance && !isGasTokenFetchError) {
@@ -302,11 +301,12 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   };
 
   const availablePages = [...pages.filter((page) => page.enabled)];
-  if (address && isEnabledChain(chainId)) {
+  if (address && chainId && isEnabledChain(chainId)) {
     availablePages.push(
       ...authPages.filter((page) => page.enabled && (!page.enabledByChains || page.enabledByChains.includes(chainId)))
     );
   }
+
   const drawer = (
     <>
       <Typography

@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react';
 import { numberToHex } from 'viem';
-import { useAccount, useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
 import { chains } from 'blockchain-api/wagmi/wagmiClient';
 import { config, web3AuthConfig } from 'config';
@@ -93,10 +93,9 @@ if (web3AuthConfig.isEnabled) {
 }
 
 export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
-  const chainId = useChainId();
   const { connect } = useConnect();
   const { disconnectAsync } = useDisconnect();
-  const { isConnected } = useAccount();
+  const { chainId, isConnected } = useAccount();
 
   const setUserInfo = useSetAtom(socialUserInfoAtom);
   const setSocialPK = useSetAtom(socialPKAtom);
@@ -182,7 +181,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
   }, [setSocialPK]);
 
   useEffect(() => {
-    if (!loggedIn || web3AuthIdToken === '' || !web3AuthInstance || isConnected) {
+    if (!loggedIn || web3AuthIdToken === '' || !web3AuthInstance || isConnected || !chainId) {
       return;
     }
     /*console.log('connect', {

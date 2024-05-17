@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { config } from 'config';
 
@@ -16,7 +16,7 @@ import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
 import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 
 export const CandlesWebSocketListener = memo(() => {
-  const chainId = useChainId();
+  const { chainId } = useAccount();
 
   const [latestMessageTime] = useAtom(candlesLatestMessageTimeAtom);
 

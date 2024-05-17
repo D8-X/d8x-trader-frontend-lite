@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
 import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
-import { useAccount, useChainId, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 
 import {
   Button,
@@ -55,8 +55,7 @@ const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'Executio
 export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { chain, address, isDisconnected, isConnected } = useAccount();
+  const { chain, chainId, address, isDisconnected, isConnected } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
@@ -91,27 +90,33 @@ export const OpenOrdersTable = memo(() => {
   };
 
   const refreshOpenOrders = useCallback(async () => {
-    if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
-      if (isAPIBusyRef.current || traderAPI.chainId !== chainId) {
-        return;
-      }
-
-      setAPIBusy(true);
-      isAPIBusyRef.current = true;
-
-      await getOpenOrders(chainId, traderAPI, address, Date.now())
-        .then(({ data }) => {
-          clearOpenOrders();
-          if (data?.length > 0) {
-            data.map(setOpenOrders);
-          }
-        })
-        .catch(console.error)
-        .finally(() => {
-          isAPIBusyRef.current = false;
-          setAPIBusy(false);
-        });
+    if (
+      isAPIBusyRef.current ||
+      !address ||
+      !traderAPI ||
+      traderAPI.chainId !== chainId ||
+      !isConnected ||
+      !isEnabledChain(chainId) ||
+      !isSDKConnected
+    ) {
+      return;
     }
+
+    setAPIBusy(true);
+    isAPIBusyRef.current = true;
+
+    await getOpenOrders(chainId, traderAPI, address, Date.now())
+      .then(({ data }) => {
+        clearOpenOrders();
+        if (data?.length > 0) {
+          data.map(setOpenOrders);
+        }
+      })
+      .catch(console.error)
+      .finally(() => {
+        isAPIBusyRef.current = false;
+        setAPIBusy(false);
+      });
   }, [chainId, address, isConnected, isSDKConnected, setAPIBusy, setOpenOrders, clearOpenOrders, traderAPI]);
 
   const {
@@ -122,7 +127,7 @@ export const OpenOrdersTable = memo(() => {
     isFetched,
   } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!address && !!txHash },
+    query: { enabled: !!address && isEnabledChain(chainId) && !!txHash },
   });
 
   useEffect(() => {
@@ -208,7 +213,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !tradingClient || !traderAPI) {
+    if (isDisconnected || !tradingClient || !traderAPI || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 

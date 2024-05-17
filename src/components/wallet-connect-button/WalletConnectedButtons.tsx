@@ -4,7 +4,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { AccountBox } from '@mui/icons-material';
 import { Button, useMediaQuery, useTheme } from '@mui/material';
@@ -28,7 +28,7 @@ export const WalletConnectedButtons = memo(() => {
   const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
   const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
 
-  const chainId = useChainId();
+  const { chainId } = useAccount();
   const location = useLocation();
 
   const theme = useTheme();
@@ -43,7 +43,7 @@ export const WalletConnectedButtons = memo(() => {
   }, [location.pathname]);
 
   let isLiFiEnabled = false;
-  if (config.enabledLiFiByChains.length > 0) {
+  if (config.enabledLiFiByChains.length > 0 && chainId) {
     isLiFiEnabled = config.enabledLiFiByChains.includes(chainId);
   }
 

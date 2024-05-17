@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { AppReload } from 'components/app-reload/AppReload';
 import { pagesConfig } from 'config';
@@ -76,7 +76,7 @@ const PortfolioPage = lazy(async () => {
 });
 
 export const AppRoutes = () => {
-  const chainId = useChainId();
+  const { chainId } = useAccount();
 
   return (
     <Routes>
@@ -87,9 +87,11 @@ export const AppRoutes = () => {
       {pagesConfig.enabledReferPage && <Route key="refer-page" path={RoutesE.Refer} element={<ReferPage />} />}
       {(pagesConfig.enabledStrategiesPage || pagesConfig.enabledPortfolioPage) && (
         <Route element={<PrivateRoutes />}>
-          {pagesConfig.enabledStrategiesPage && pagesConfig.enabledStrategiesPageByChains.includes(chainId) && (
-            <Route path={RoutesE.Strategies} element={<StrategiesPage />} />
-          )}
+          {pagesConfig.enabledStrategiesPage &&
+            chainId &&
+            pagesConfig.enabledStrategiesPageByChains.includes(chainId) && (
+              <Route path={RoutesE.Strategies} element={<StrategiesPage />} />
+            )}
           {pagesConfig.enabledPortfolioPage && isEnabledChain(chainId) && (
             <Route path={RoutesE.Portfolio} element={<PortfolioPage />} />
           )}

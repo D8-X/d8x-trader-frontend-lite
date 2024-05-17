@@ -3,10 +3,10 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address } from 'viem';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Box, ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
+import { ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
@@ -23,6 +23,7 @@ import {
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { DefaultCurrencyE, OrderBlockE } from 'types/enums';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { OrderSizeSlider } from './components/OrderSizeSlider';
@@ -50,8 +51,7 @@ const MAX_ORDER_SIZE_RETRIES = 120;
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const [orderSize, setOrderSizeDirect] = useAtom(orderSizeAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
@@ -182,23 +182,25 @@ export const OrderSize = memo(() => {
 
   const refetchMaxOrderSize = useCallback(
     (userAddress: Address) => {
-      if (perpetualStaticInfo && isSDKConnected) {
-        fetchMaxOrderSize(
-          chainId,
-          userAddress,
-          perpetualStaticInfo.lotSizeBC,
-          perpetualStaticInfo.id,
-          orderBlock === OrderBlockE.Long
-        )
-          .then((result) => {
-            setMaxOrderSize(result !== undefined && !isNaN(result) ? result * 0.995 : 10_000);
-            maxOrderSizeDefinedRef.current = result !== undefined && !isNaN(result);
-          })
-          .catch((error) => {
-            console.error(error);
-            maxOrderSizeDefinedRef.current = false;
-          });
+      if (!perpetualStaticInfo || !isSDKConnected || !chainId || !isEnabledChain(chainId)) {
+        return;
       }
+
+      fetchMaxOrderSize(
+        chainId,
+        userAddress,
+        perpetualStaticInfo.lotSizeBC,
+        perpetualStaticInfo.id,
+        orderBlock === OrderBlockE.Long
+      )
+        .then((result) => {
+          setMaxOrderSize(result !== undefined && !isNaN(result) ? result * 0.995 : 10_000);
+          maxOrderSizeDefinedRef.current = result !== undefined && !isNaN(result);
+        })
+        .catch((error) => {
+          console.error(error);
+          maxOrderSizeDefinedRef.current = false;
+        });
     },
     [isSDKConnected, chainId, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]
   );
@@ -257,8 +259,8 @@ export const OrderSize = memo(() => {
 
   return (
     <>
-      <Box className={styles.root}>
-        <Box className={styles.labelHolder}>
+      <div className={styles.root}>
+        <div className={styles.labelHolder}>
           <InfoLabelBlock
             title={t('pages.trade.order-block.order-size.title')}
             content={
@@ -274,7 +276,7 @@ export const OrderSize = memo(() => {
               </>
             }
           />
-        </Box>
+        </div>
         <ResponsiveInput
           id="order-size"
           inputValue={inputValue}
@@ -338,7 +340,7 @@ export const OrderSize = memo(() => {
             </div>
           }
         />
-      </Box>
+      </div>
       <OrderSizeSlider />
     </>
   );

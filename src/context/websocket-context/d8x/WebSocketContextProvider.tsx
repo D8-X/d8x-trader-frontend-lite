@@ -1,6 +1,6 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { config } from 'config';
 import { mainWsLatestMessageTimeAtom, webSocketReadyAtom } from 'store/pools.store';
@@ -16,14 +16,15 @@ import { WebSocketContext, WebSocketContextI } from './WebSocketContext';
 
 export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
-  const [latestMessageTime] = useAtom(mainWsLatestMessageTimeAtom);
-  const chainId = useChainId();
+  const latestMessageTime = useAtomValue(mainWsLatestMessageTimeAtom);
 
-  const wsRef = useRef<WebSocketI>();
-  const waitForPongRef = useRef(false);
+  const { chainId } = useAccount();
 
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+
+  const wsRef = useRef<WebSocketI>();
+  const waitForPongRef = useRef(false);
 
   const handleWsMessage = useWsMessageHandler();
 

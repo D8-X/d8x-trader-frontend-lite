@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { parseSymbol } from 'helpers/parseSymbol';
@@ -25,6 +25,7 @@ import {
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
 import { debounceLeading } from 'utils/debounceLeading';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import {
   CommonWsMessageI,
@@ -85,8 +86,7 @@ const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
 export function useWsMessageHandler() {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
   const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
@@ -196,7 +196,7 @@ export function useWsMessageHandler() {
 
         setTriggerPositionsUpdate((prevValue) => !prevValue);
       } else if (isLimitOrderCreatedMessage(parsedMessage)) {
-        if (!address || address !== parsedMessage.data.obj.traderAddr) {
+        if (!address || address !== parsedMessage.data.obj.traderAddr || !chainId || !isEnabledChain(chainId)) {
           return;
         }
         // refresh open orders

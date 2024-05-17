@@ -2,7 +2,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
 
 import {
@@ -34,6 +34,7 @@ import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
@@ -56,8 +57,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const traderAPI = useAtomValue(traderAPIAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
-  const chainId = useChainId();
-  const { address, chain } = useAccount();
+  const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const { poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
@@ -77,7 +77,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     error: reason,
   } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!address && !!txHash },
+    query: { enabled: !!address && isEnabledChain(chainId) && !!txHash },
   });
 
   useEffect(() => {
@@ -141,6 +141,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     if (
       !selectedPosition ||
       !address ||
+      !chainId ||
+      !isEnabledChain(chainId) ||
       !poolByPosition ||
       !proxyAddr ||
       !walletClient ||

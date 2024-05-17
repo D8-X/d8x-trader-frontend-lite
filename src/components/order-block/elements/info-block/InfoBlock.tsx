@@ -1,9 +1,9 @@
 import { useAtomValue } from 'jotai';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
@@ -25,6 +25,8 @@ import styles from './InfoBlock.module.scss';
 export const InfoBlock = memo(() => {
   const { t } = useTranslation();
 
+  const { chainId } = useAccount();
+
   const orderInfo = useAtomValue(orderInfoAtom);
   const orderSize = useAtomValue(orderSizeAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -36,8 +38,6 @@ export const InfoBlock = memo(() => {
   const orderBlock = useAtomValue(orderBlockAtom);
   const positions = useAtomValue(positionsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
-
-  const chainId = useChainId();
 
   const feeInCC = useMemo(() => {
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
@@ -124,16 +124,16 @@ export const InfoBlock = memo(() => {
   ]);
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.row}>
+    <div className={styles.root}>
+      <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.order-size')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
           {orderSize}
         </Typography>
-      </Box>
-      <Box className={styles.row}>
+      </div>
+      <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.balance')}
         </Typography>
@@ -142,16 +142,16 @@ export const InfoBlock = memo(() => {
             {formatToCurrency(poolTokenBalance, orderInfo?.poolName)}
           </Typography>
         </TooltipMobile>
-      </Box>
-      <Box className={styles.row}>
+      </div>
+      <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.approx-deposit')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
           {formatToCurrency(approxDepositFromWallet, orderInfo?.poolName)}
         </Typography>
-      </Box>
-      <Box className={styles.row}>
+      </div>
+      <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.fees')}
         </Typography>
@@ -171,17 +171,17 @@ export const InfoBlock = memo(() => {
             </>
           )}
         </Typography>
-      </Box>
-      <Box className={styles.row}>
+      </div>
+      <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.execution-fees')}
         </Typography>
         <Typography variant="bodySmallSB" className={styles.infoText}>
           {formatToCurrency(perpetualStaticInfo?.referralRebate, selectedPool?.poolSymbol)}
         </Typography>
-      </Box>
-      {chainId !== undefined && chainId === 1101 && (
-        <Box className={styles.row}>
+      </div>
+      {chainId === 1101 && (
+        <div className={styles.row}>
           <Typography variant="bodySmallPopup" className={styles.infoText}>
             {t('pages.trade.order-block.info.gas')}
           </Typography>
@@ -189,8 +189,8 @@ export const InfoBlock = memo(() => {
             {'77% '}
             {t('pages.trade.order-block.info.rebate')}
           </Typography>
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 });

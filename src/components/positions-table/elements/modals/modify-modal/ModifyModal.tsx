@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
 
 import {
@@ -41,6 +41,7 @@ import { proxyAddrAtom, traderAPIAtom, traderAPIBusyAtom, triggerBalancesUpdateA
 import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
@@ -63,8 +64,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
-  const chainId = useChainId();
-  const { address, chain } = useAccount();
+  const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chainId });
 
   const [requestSent, setRequestSent] = useState(false);
@@ -92,7 +92,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     error: addReason,
   } = useWaitForTransactionReceipt({
     hash: txHashForAdd,
-    query: { enabled: !!address && !!txHashForAdd },
+    query: { enabled: !!address && isEnabledChain(chainId) && !!txHashForAdd },
   });
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     error: removeReason,
   } = useWaitForTransactionReceipt({
     hash: txHashForRemove,
-    query: { enabled: !!address && !!txHashForRemove },
+    query: { enabled: !!address && isEnabledChain(chainId) && !!txHashForRemove },
   });
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const debouncedRemoveCollateral = useDebounce(removeCollateral, 500);
 
   const handleRefreshPositionRisk = useCallback(() => {
-    if (!selectedPosition || !address || isAPIBusyRef.current) {
+    if (isAPIBusyRef.current || !selectedPosition || !address || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -285,7 +285,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   }, [modifyType, addCollateral, removeCollateral]);
 
   useEffect(() => {
-    if (!address || !traderAPI || !selectedPosition?.symbol || !chainId || isAPIBusy) {
+    if (!address || !traderAPI || !selectedPosition?.symbol || !chainId || !isEnabledChain(chainId) || isAPIBusy) {
       return;
     }
 
@@ -388,6 +388,8 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (
       !selectedPosition ||
       !address ||
+      !chainId ||
+      !isEnabledChain(chainId) ||
       !traderAPI ||
       !poolByPosition ||
       !proxyAddr ||

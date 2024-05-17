@@ -2,9 +2,9 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
-import { Box, Button, DialogActions, DialogTitle, Typography } from '@mui/material';
+import { Button, DialogActions, DialogTitle, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -12,6 +12,7 @@ import { useQuery } from 'hooks/useQuery';
 import { getCodeRebate, getMyCodeSelection, postUseReferralCode } from 'network/referral';
 import { QueryParamE, ReferTabIdE } from 'pages/refer-page/constants';
 import { RoutesE } from 'routes/RoutesE';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { WalletConnectButton } from '../wallet-connect-button/WalletConnectButton';
 
@@ -24,8 +25,7 @@ export const ReferralConfirmModal = memo(() => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const [showModal, setShowModal] = useState(true);
@@ -52,7 +52,15 @@ export const ReferralConfirmModal = memo(() => {
   };
 
   const handleReferralCodeConfirm = () => {
-    if (requestSentRef.current || !refId || refIdTraderRebate === null || !address || !walletClient) {
+    if (
+      requestSentRef.current ||
+      !refId ||
+      refIdTraderRebate === null ||
+      !address ||
+      !chainId ||
+      !isEnabledChain(chainId) ||
+      !walletClient
+    ) {
       return;
     }
 
@@ -75,7 +83,7 @@ export const ReferralConfirmModal = memo(() => {
   };
 
   useEffect(() => {
-    if (activeCodeRequestRef.current || !chainId || !address || !refId) {
+    if (activeCodeRequestRef.current || !chainId || !isEnabledChain(chainId) || !address || !refId) {
       return;
     }
 
@@ -90,7 +98,7 @@ export const ReferralConfirmModal = memo(() => {
   }, [refId, chainId, address]);
 
   useEffect(() => {
-    if (codeRebateRequestRef.current || !chainId || !refId) {
+    if (codeRebateRequestRef.current || !chainId || !isEnabledChain(chainId) || !refId) {
       return;
     }
 
@@ -117,16 +125,16 @@ export const ReferralConfirmModal = memo(() => {
   return (
     <Dialog open={showModal} className={styles.dialog}>
       <DialogTitle>{t('pages.refer.use-code.title')}</DialogTitle>
-      <Box className={styles.dialogRoot}>
-        <Box className={styles.codeContainer}>
+      <div className={styles.dialogRoot}>
+        <div className={styles.codeContainer}>
           <Typography variant="bodyMedium" fontWeight={600}>
             {t('pages.refer.use-code.base')}
           </Typography>
           <Typography variant="bodyMedium" fontWeight={600}>
             {refId}
           </Typography>
-        </Box>
-        <Box className={styles.paddedContainer}>
+        </div>
+        <div className={styles.paddedContainer}>
           {/*
           <SidesRow
             leftSide={t('pages.refer.use-code.trader-rebate')}
@@ -134,15 +142,15 @@ export const ReferralConfirmModal = memo(() => {
             rightSideStyles={styles.sidesRowValue}
           />
           */}
-          {!hasAddress && <Box className={styles.warning}>{t('pages.refer.use-code.connect-wallet')}</Box>}
+          {!hasAddress && <div className={styles.warning}>{t('pages.refer.use-code.connect-wallet')}</div>}
           {hasAddress && hasReferralCode && (
-            <Box className={styles.warning}>{t('pages.refer.use-code.already-linked')}</Box>
+            <div className={styles.warning}>{t('pages.refer.use-code.already-linked')}</div>
           )}
           {hasAddress && noReferralCode && !refIdIsValid && (
-            <Box className={styles.warning}>{t('pages.refer.trader-tab.code-not-found')}</Box>
+            <div className={styles.warning}>{t('pages.refer.trader-tab.code-not-found')}</div>
           )}
-        </Box>
-      </Box>
+        </div>
+      </div>
       <DialogActions className={styles.dialogAction}>
         <Button onClick={handleModalClose} variant="secondary" size="small">
           {t('pages.refer.use-code.cancel')}

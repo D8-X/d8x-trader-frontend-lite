@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useSendTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, DialogActions, DialogTitle, Typography } from '@mui/material';
@@ -14,6 +14,7 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { pagesConfig } from 'config';
 import { traderAPIAtom } from 'store/pools.store';
 import { strategyAddressesAtom } from 'store/strategies.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useExitStrategy } from './hooks/useExitStrategy';
 
@@ -27,8 +28,7 @@ interface ExitStrategyPropsI {
 export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI) => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { sendTransactionAsync } = useSendTransaction();
 
@@ -53,6 +53,8 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI)
       requestSentRef.current ||
       !walletClient ||
       !traderAPI ||
+      !chainId ||
+      !isEnabledChain(chainId) ||
       !pagesConfig.enabledStrategiesPageByChains.includes(chainId)
     ) {
       return;
@@ -128,6 +130,8 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder }: ExitStrategyPropsI)
               loading ||
               !walletClient ||
               !traderAPI ||
+              !chainId ||
+              !isEnabledChain(chainId) ||
               !pagesConfig.enabledStrategiesPageByChains.includes(chainId)
             }
           >

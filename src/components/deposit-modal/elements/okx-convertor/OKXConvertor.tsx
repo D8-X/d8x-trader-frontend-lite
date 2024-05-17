@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useReadContracts, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
@@ -45,8 +45,7 @@ interface ActionDataI {
 export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address, chain, isConnected } = useAccount();
+  const { address, chain, chainId, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const { gasTokenBalance, refetchWallet } = useUserWallet();
@@ -85,7 +84,8 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     ],
     query: {
       enabled:
-        address &&
+        !!address &&
+        !!chainId &&
         selectedCurrency?.name === OKX_GAS_TOKEN_NAME &&
         poolByWrappedToken?.marginTokenAddr !== undefined &&
         isConnected,
@@ -109,7 +109,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     error: reason,
   } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!txHash },
+    query: { enabled: !!txHash && !!chainId },
   });
 
   useEffect(() => {

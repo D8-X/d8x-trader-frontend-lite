@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
@@ -21,6 +21,7 @@ import {
 } from 'store/strategies.store';
 import { OrderSideE } from 'types/enums';
 import { type OrderI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
@@ -37,8 +38,7 @@ const MAX_FREQUENT_UPDATES = 15;
 export const StrategyBlock = () => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { sendTransactionAsync } = useSendTransaction();
 
@@ -84,7 +84,12 @@ export const StrategyBlock = () => {
       },
     ],
     query: {
-      enabled: strategyAddress && traderAPI?.chainId === chainId && !!strategyPool?.marginTokenAddr && isConnected,
+      enabled:
+        strategyAddress &&
+        traderAPI?.chainId === chainId &&
+        isEnabledChain(chainId) &&
+        !!strategyPool?.marginTokenAddr &&
+        isConnected,
     },
   });
 
@@ -108,7 +113,14 @@ export const StrategyBlock = () => {
 
   const fetchStrategyPosition = useCallback(
     (frequentUpdatesEnabled: boolean) => {
-      if (strategyPositionRequestSentRef.current || !traderAPI || !strategyAddress || !address) {
+      if (
+        strategyPositionRequestSentRef.current ||
+        !traderAPI ||
+        !strategyAddress ||
+        !address ||
+        !chainId ||
+        !isEnabledChain(chainId)
+      ) {
         return;
       }
 
@@ -136,7 +148,7 @@ export const StrategyBlock = () => {
   );
 
   const fetchStrategyOpenOrders = useCallback(() => {
-    if (openOrdersRequestSentRef.current || !strategyAddress || !address) {
+    if (openOrdersRequestSentRef.current || !strategyAddress || !address || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -218,6 +230,8 @@ export const StrategyBlock = () => {
       !refetchBalanceRequestSent &&
       strategyAddressBalance !== null &&
       strategyAddressBalance > 0 &&
+      chainId &&
+      isEnabledChain(chainId) &&
       traderAPI &&
       walletClient
     ) {
