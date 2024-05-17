@@ -25,6 +25,7 @@ import {
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { Initiate } from './Initiate';
 
@@ -35,6 +36,7 @@ interface WithdrawPropsI {
 }
 
 enum ValidityCheckWithdrawE {
+  WrongNetwork = 'wrong-network',
   NoAddress = 'no-address',
   NoInitiation = 'no-initiation',
   NoFunds = 'no-funds',
@@ -216,6 +218,9 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     if (!address) {
       return ValidityCheckWithdrawE.NoAddress;
     }
+    if (!isEnabledChain(chain?.id)) {
+      return ValidityCheckWithdrawE.WrongNetwork;
+    }
     if (!userAmount || userAmount === 0) {
       return ValidityCheckWithdrawE.NoFunds;
     }
@@ -223,11 +228,13 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
       return ValidityCheckWithdrawE.NoInitiation;
     }
     return ValidityCheckWithdrawE.GoodToGo;
-  }, [address, userAmount, shareAmount]);
+  }, [address, userAmount, shareAmount, chain?.id]);
 
   const validityCheckWithdrawText = useMemo(() => {
     if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoAddress) {
       return `${t('pages.vault.withdraw.action.validity-no-address')}`;
+    } else if (validityCheckWithdrawType === ValidityCheckWithdrawE.WrongNetwork) {
+      return `${t('error.wrong-network')}`;
     } else if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoFunds) {
       return `${t('pages.vault.withdraw.action.validity-no-funds')}`;
     } else if (validityCheckWithdrawType === ValidityCheckWithdrawE.NoInitiation) {

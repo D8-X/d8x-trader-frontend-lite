@@ -25,6 +25,7 @@ import {
 } from 'store/pools.store';
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import styles from './Action.module.scss';
 
@@ -32,6 +33,7 @@ enum ValidityCheckAddE {
   Empty = '-',
   NoFunds = 'no-funds',
   NoAmount = 'no-amount',
+  WrongNetwork = 'wrong-network',
   NoAddress = 'not-connected',
   AmountTooBig = 'amount-too-big',
   AmountBelowMinimum = 'amount-below-min',
@@ -207,6 +209,9 @@ export const Add = memo(() => {
     if (!address || !isConnected) {
       return ValidityCheckAddE.NoAddress;
     }
+    if (!isEnabledChain(chain?.id)) {
+      return ValidityCheckAddE.WrongNetwork;
+    }
     if (requestSent || !isSDKConnected || !selectedPool?.brokerCollateralLotSize) {
       return ValidityCheckAddE.Empty;
     }
@@ -227,6 +232,7 @@ export const Add = memo(() => {
     return ValidityCheckAddE.GoodToGo;
   }, [
     address,
+    chain?.id,
     isConnected,
     addAmount,
     requestSent,
@@ -238,6 +244,8 @@ export const Add = memo(() => {
   const validityCheckAddText = useMemo(() => {
     if (validityCheckAddType === ValidityCheckAddE.NoAddress) {
       return `${t('pages.vault.add.validity-no-address')}`;
+    } else if (validityCheckAddType === ValidityCheckAddE.WrongNetwork) {
+      return `${t('error.wrong-network')}`;
     } else if (validityCheckAddType === ValidityCheckAddE.NoFunds) {
       return `${t('pages.vault.add.validity-no-funds')}`;
     } else if (validityCheckAddType === ValidityCheckAddE.Empty) {

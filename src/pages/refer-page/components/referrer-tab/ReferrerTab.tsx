@@ -3,11 +3,10 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-import { Box } from '@mui/material';
-
 import { poolsAtom } from 'store/pools.store';
 import { commissionRateAtom } from 'store/refer.store';
 import type { OverviewItemI, OverviewPoolItemI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { Disclaimer } from '../disclaimer/Disclaimer';
 import { Overview } from '../overview/Overview';
@@ -22,7 +21,7 @@ export const ReferrerTab = memo(() => {
   const pools = useAtomValue(poolsAtom);
   const commissionRate = useAtomValue(commissionRateAtom);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const disclaimerTextBlocks = useMemo(
     () => [t('pages.refer.referrer-tab.disclaimer-text-block1'), t('pages.refer.referrer-tab.disclaimer-text-block2')],
@@ -45,28 +44,29 @@ export const ReferrerTab = memo(() => {
     return [
       {
         title: t('pages.refer.referrer-tab.total-earned-commission'),
-        poolsItems: address ? totalEarnedCommission : [],
+        poolsItems: address && isEnabledChain(chainId) ? totalEarnedCommission : [],
       },
       {
         title: t('pages.refer.referrer-tab.commission-rate'),
-        poolsItems: address
-          ? [
-              {
-                value: `${commissionRate}%`,
-                symbol: '',
-              },
-            ]
-          : [],
+        poolsItems:
+          address && isEnabledChain(chainId)
+            ? [
+                {
+                  value: `${commissionRate}%`,
+                  symbol: '',
+                },
+              ]
+            : [],
       },
     ];
-  }, [pools, commissionRate, earnedRebates, address, t]);
+  }, [pools, commissionRate, earnedRebates, address, chainId, t]);
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       <Overview title={t('pages.refer.referrer-tab.title1')} items={overviewItems} />
       <Disclaimer title={t('pages.refer.referrer-tab.title2')} textBlocks={disclaimerTextBlocks} />
       <div className={styles.divider} />
       <ReferralsBlock />
-    </Box>
+    </div>
   );
 });

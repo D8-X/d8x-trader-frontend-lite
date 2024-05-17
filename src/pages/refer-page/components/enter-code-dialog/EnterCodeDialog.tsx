@@ -1,13 +1,14 @@
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId, useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 
-import { Box, Button, OutlinedInput, Typography } from '@mui/material';
+import { Button, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { postUseReferralCode } from 'network/referral';
 import { useCodeInput } from 'pages/refer-page/hooks';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { CodeStateE } from '../../enums';
 
@@ -23,17 +24,17 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
   const { t } = useTranslation();
 
   const { data: walletClient } = useWalletClient();
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
 
   const inputDisabled = codeState !== CodeStateE.CODE_TAKEN;
 
   const handleUseCode = () => {
-    if (!address || !walletClient) {
+    if (!address || !walletClient || !chainId || !isEnabledChain(chainId)) {
       return;
     }
+
     postUseReferralCode(chainId, address, codeInputValue, walletClient, onClose)
       .then(() => {
         toast.success(<ToastContent title={t('pages.refer.toast.success-apply')} bodyLines={[]} />);
@@ -48,7 +49,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
 
   return (
     <Dialog open={isOpen} onClose={onClose}>
-      <Box className={styles.dialogRoot}>
+      <div className={styles.dialogRoot}>
         <Typography variant="h5" className={styles.title}>
           {t('pages.refer.trader-tab.title3')}
         </Typography>
@@ -61,17 +62,17 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
         <Typography variant="bodyTiny" className={styles.infoText}>
           {t('pages.refer.trader-tab.instructions')}
         </Typography>
-        <Box className={styles.actionButtonsContainer}>
+        <div className={styles.actionButtonsContainer}>
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
-          <Button variant="primary" disabled={inputDisabled} onClick={handleUseCode}>
+          <Button variant="primary" disabled={inputDisabled || !isEnabledChain(chainId)} onClick={handleUseCode}>
             {codeState === CodeStateE.DEFAULT && t('pages.refer.trader-tab.enter-a-code')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.trader-tab.code-not-found')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.trader-tab.use-code')}
           </Button>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </Dialog>
   );
 };

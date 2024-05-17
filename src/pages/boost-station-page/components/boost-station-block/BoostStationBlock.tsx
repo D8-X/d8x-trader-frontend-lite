@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Bolt, Casino } from '@mui/icons-material';
 import { Typography } from '@mui/material';
@@ -8,8 +8,9 @@ import { Typography } from '@mui/material';
 import D8XLogoWithText from 'assets/logos/d8xLogoWithText.svg?react';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { getBoostStationData, getBoostStationParameters } from 'network/network';
-import { BoostI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
+import type { BoostI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { BoostMeter } from '../boost-meter/BoostMeter';
 
@@ -27,11 +28,10 @@ export const BoostStationBlock = memo(() => {
   const isDataRequestSent = useRef(false);
   const isParamsRequestSent = useRef(false);
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
 
   const fetchData = useCallback(() => {
-    if (!isConnected || !address || isDataRequestSent.current) {
+    if (!isConnected || !address || isDataRequestSent.current || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -45,7 +45,7 @@ export const BoostStationBlock = memo(() => {
       .finally(() => {
         isDataRequestSent.current = false;
       });
-  }, [isConnected, address]);
+  }, [isConnected, address, chainId]);
 
   useEffect(() => {
     setBoostStation(undefined);

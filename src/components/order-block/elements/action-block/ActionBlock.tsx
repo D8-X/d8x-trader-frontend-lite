@@ -2,8 +2,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 
@@ -39,6 +39,7 @@ import { MethodE, OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } 
 import type { OrderI, OrderInfoI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/store';
@@ -103,6 +104,7 @@ enum ValidityCheckE {
 
 enum ValidityCheckButtonE {
   Empty = '-',
+  WrongNetwork = 'wrong-network',
   NoAddress = 'not-connected',
   NoEnoughGas = 'no-enough-gas',
   NoFunds = 'no-funds',
@@ -116,8 +118,7 @@ enum ValidityCheckButtonE {
 export const ActionBlock = memo(() => {
   const { t } = useTranslation();
 
-  const { address, chain } = useAccount();
-  const chainId = useChainId();
+  const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient({
     chainId,
   });
@@ -157,13 +158,15 @@ export const ActionBlock = memo(() => {
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
   const openReviewOrderModal = async () => {
-    if (!orderInfo || !address || !traderAPI || !poolFee) {
+    if (!orderInfo || !address || !traderAPI || !poolFee || !chainId || !isEnabledChain(chainId)) {
       return;
     }
+
     validityCheckRef.current = true;
     setShowReviewOrderModal(true);
     setNewPositionRisk(null);
     setMaxOrderSize(undefined);
+
     const mainOrder = createMainOrder(orderInfo);
     await positionRiskOnTrade(
       chainId,
@@ -218,6 +221,9 @@ export const ActionBlock = memo(() => {
   }, [orderInfo, address, selectedPerpetualStaticInfo?.lotSizeBC]);
 
   const validityCheckButtonType = useMemo(() => {
+    if (!isEnabledChain(chainId)) {
+      return ValidityCheckButtonE.WrongNetwork;
+    }
     if (!address || !orderInfo) {
       return ValidityCheckButtonE.NoAddress;
     }
@@ -237,11 +243,13 @@ export const ActionBlock = memo(() => {
       return ValidityCheckButtonE.NoTriggerPrice;
     }
     return ValidityCheckButtonE.GoodToGo;
-  }, [orderInfo, address, poolTokenBalance, hasEnoughGasForFee]);
+  }, [orderInfo, address, chainId, poolTokenBalance, hasEnoughGasForFee]);
 
   const validityCheckButtonText = useMemo(() => {
     if (validityCheckButtonType === ValidityCheckButtonE.NoAddress) {
       return `${t('pages.trade.action-block.validity.button-no-address')}`;
+    } else if (validityCheckButtonType === ValidityCheckButtonE.WrongNetwork) {
+      return `${t('error.wrong-network')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoFunds) {
       return `${t('pages.trade.action-block.validity.button-no-funds')}`;
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoEnoughGas) {
@@ -371,13 +379,17 @@ export const ActionBlock = memo(() => {
       !parsedOrders ||
       !selectedPool ||
       !proxyAddr ||
-      !poolTokenDecimals
+      !poolTokenDecimals ||
+      !isEnabledChain(chainId) ||
+      !chainId
     ) {
       return;
     }
+
     setRequestSent(true);
     setIsValidityCheckDone(false);
     requestSentRef.current = true;
+
     orderDigest(chainId, parsedOrders, address)
       .then((data) => {
         if (data.data.digests.length > 0) {
@@ -603,7 +615,7 @@ export const ActionBlock = memo(() => {
           {validityCheckButtonText}
         </Button>
       )}
-      {orderInfo && (
+      {orderInfo && isEnabledChain(chainId) && (
         <Dialog open={showReviewOrderModal} className={styles.dialog}>
           <DialogTitle className={styles.dialogTitle}> {t('pages.trade.action-block.review.title')} </DialogTitle>
           <div className={styles.emphasis}>

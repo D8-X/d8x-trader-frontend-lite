@@ -38,6 +38,7 @@ import {
 } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { ConnectModal } from './elements/connect-modal/ConnectModal';
 import { collateralsAtom } from './elements/market-select/collaterals.store';
@@ -154,7 +155,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       return;
     }
 
-    if (chainId && address) {
+    if (chainId && address && isEnabledChain(chainId)) {
       positionsRequestRef.current = true;
       getPositionRisk(chainId, null, address, Date.now())
         .then(({ data }) => {
@@ -170,13 +171,13 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    if (traderAPI && traderAPI.chainId === chainId) {
+    if (traderAPI && traderAPI.chainId === chainId && isEnabledChain(chainId)) {
       traderAPIRef.current = traderAPI;
     }
   }, [traderAPI, chainId]);
 
   useEffect(() => {
-    if (exchangeRequestRef.current || !chainId) {
+    if (exchangeRequestRef.current || !chainId || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -238,6 +239,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         !exchangeRequestRef.current &&
         address &&
         traderAPI?.chainId === chain?.id &&
+        isEnabledChain(chainId) &&
         !!selectedPool?.marginTokenAddr &&
         isConnected &&
         !isReconnecting &&
@@ -300,7 +302,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   };
 
   const availablePages = [...pages.filter((page) => page.enabled)];
-  if (address) {
+  if (address && isEnabledChain(chainId)) {
     availablePages.push(
       ...authPages.filter((page) => page.enabled && (!page.enabledByChains || page.enabledByChains.includes(chainId)))
     );

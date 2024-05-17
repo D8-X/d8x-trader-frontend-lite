@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { getEarnedRebate } from 'network/referral';
 import type { EarnedRebateI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 export const useFetchEarnedRebate = () => {
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const [earnedRebates, setEarnedRebates] = useState<EarnedRebateI[]>([]);
 
   const earnedRebateRequestRef = useRef(false);
 
   useEffect(() => {
-    if (address && chainId) {
+    if (address && chainId && isEnabledChain(chainId)) {
       if (earnedRebateRequestRef.current) {
         return;
       }

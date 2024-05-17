@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import styles from './Disclaimer.module.scss';
 
@@ -9,7 +9,7 @@ interface DisclaimerPropsI {
 
 export const Disclaimer = ({ title, textBlocks }: DisclaimerPropsI) => {
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       <Typography variant="bodyLarge" className={styles.title}>
         {title}
       </Typography>
@@ -18,6 +18,6 @@ export const Disclaimer = ({ title, textBlocks }: DisclaimerPropsI) => {
           {textBlock}
         </Typography>
       ))}
-    </Box>
+    </div>
   );
 };

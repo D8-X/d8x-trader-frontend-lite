@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { ReferTabIdE } from 'pages/refer-page/constants';
 
@@ -36,9 +36,9 @@ export const TabSelector = ({ activeTab, onTabChange }: TabSelectorPropsI) => {
   );
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       {tabItems.map((tab) => (
-        <Box
+        <div
           key={tab.tabId}
           onClick={() => onTabChange(tab.tabId)}
           className={classnames(styles.tab, {
@@ -47,8 +47,8 @@ export const TabSelector = ({ activeTab, onTabChange }: TabSelectorPropsI) => {
           })}
         >
           <Typography variant="bodyMedium">{tab.label}</Typography>
-        </Box>
+        </div>
       ))}
-    </Box>
+    </div>
   );
 };

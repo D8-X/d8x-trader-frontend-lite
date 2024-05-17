@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Box, Typography } from '@mui/material';
 
@@ -16,6 +16,7 @@ import {
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import styles from './PersonalStats.module.scss';
 
@@ -26,8 +27,7 @@ interface PersonalStatsPropsI {
 export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const withdrawals = useAtomValue(withdrawalsAtom);
@@ -43,15 +43,15 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
 
   useEffect(() => {
     setUserAmount(null);
-    if (selectedPool?.poolSymbol && traderAPI && isSDKConnected && address) {
+    if (selectedPool?.poolSymbol && traderAPI && isSDKConnected && address && isEnabledChain(chainId)) {
       traderAPI.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
         setUserAmount(amount);
       });
     }
-  }, [selectedPool?.poolSymbol, traderAPI, isSDKConnected, address, triggerUserStatsUpdate, setUserAmount]);
+  }, [selectedPool?.poolSymbol, traderAPI, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
 
   useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol || !address) {
+    if (!chainId || !selectedPool?.poolSymbol || !address || !isEnabledChain(chainId)) {
       setEstimatedEarnings(undefined);
       return;
     }
@@ -81,8 +81,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             title={t('pages.vault.personal-stats.amount.title')}
             content={
               <Typography>
-                {' '}
-                {t('pages.vault.personal-stats.amount.info', { poolSymbol: selectedPool?.poolSymbol })}{' '}
+                {t('pages.vault.personal-stats.amount.info', { poolSymbol: selectedPool?.poolSymbol })}
               </Typography>
             }
           />
@@ -97,7 +96,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             title={t('pages.vault.personal-stats.earnings.title')}
             content={
               <>
-                <Typography> {t('pages.vault.personal-stats.earnings.info1')} </Typography>
+                <Typography>{t('pages.vault.personal-stats.earnings.info1')}</Typography>
                 <Typography>
                   {t('pages.vault.personal-stats.earnings.info2', { poolSymbol: selectedPool?.poolSymbol })}
                 </Typography>
@@ -122,7 +121,6 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             title={t('pages.vault.personal-stats.initiated.title')}
             content={
               <Typography>
-                {' '}
                 {t('pages.vault.personal-stats.initiated.info1', { poolSymbol: selectedPool?.poolSymbol })}
               </Typography>
             }
@@ -139,10 +137,9 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             content={
               <>
                 <Typography>
-                  {' '}
                   {t('pages.vault.personal-stats.withdrawal-amount.info1', {
                     poolSymbol: selectedPool?.poolSymbol,
-                  })}{' '}
+                  })}
                 </Typography>
                 <Typography>
                   {t('pages.vault.personal-stats.withdrawal-amount.info2', { poolSymbol: selectedPool?.poolSymbol })}
@@ -163,7 +160,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             title={t('pages.vault.personal-stats.date.title')}
             content={
               <>
-                <Typography> {t('pages.vault.personal-stats.date.info1')} </Typography>
+                <Typography>{t('pages.vault.personal-stats.date.info1')}</Typography>
                 <Typography>{t('pages.vault.personal-stats.date.info2')}</Typography>
               </>
             }
