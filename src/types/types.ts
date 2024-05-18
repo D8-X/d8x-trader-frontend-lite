@@ -244,22 +244,6 @@ export interface MaxOrderSizeResponseI {
   sell: number;
 }
 
-export interface PriceFeedResponseI {
-  id: string;
-  price: {
-    price: string;
-    conf: string;
-    expo: number;
-    publish_time: number;
-  };
-  ema_price: {
-    price: string;
-    conf: string;
-    expo: number;
-    publish_time: number;
-  };
-}
-
 export interface BoostI {
   chainId: number;
   nxtBoost: number;

@@ -12,16 +12,18 @@ import type {
   OrderI,
   PerpetualOpenOrdersI,
   PerpetualStaticInfoI,
-  PriceFeedResponseI,
   ValidatedResponseI,
 } from 'types/types';
 import { MaintenanceStatusI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
 
-function getApiUrlByChainId(chainId: number) {
+function getApiUrlByChainId(chainId: number | undefined) {
+  if (chainId === undefined) {
+    return config.apiUrl.default;
+  }
   return config.apiUrl[chainId] || config.apiUrl.default;
 }
 
-const fetchUrl = async (url: string, chainId: number) => {
+const fetchUrl = async (url: string, chainId: number | undefined) => {
   const data = await fetch(`${getApiUrlByChainId(chainId)}/${url}`, getRequestOptions());
   if (!data.ok) {
     console.error({ data });
@@ -41,7 +43,7 @@ export async function getMaintenanceStatus(): Promise<MaintenanceStatusI[]> {
 }
 
 export async function getExchangeInfo(
-  chainId: number,
+  chainId: number | undefined,
   traderAPI: TraderInterface | null
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
@@ -182,7 +184,7 @@ export async function getOpenOrders(
 
 // needs broker input, should go through backend
 export async function getTradingFee(
-  chainId: number,
+  chainId: number | undefined,
   poolSymbol: string,
   traderAddr?: string
 ): Promise<ValidatedResponseI<number>> {
@@ -394,22 +396,6 @@ export async function getRemoveCollateral(
 export async function getPythID(symbol: string): Promise<{ id: string }[]> {
   const data = await fetch(
     `https://benchmarks.pyth.network/v1/price_feeds/?query=crypto.${symbol}/usd&asset_type=crypto`,
-    getRequestOptions()
-  );
-  if (!data.ok) {
-    console.error({ data });
-    throw new Error(data.statusText);
-  }
-  return data.json();
-}
-
-export async function getSymbolPrice(symbol: string): Promise<PriceFeedResponseI[]> {
-  const res = await getPythID(symbol);
-  if (res.length < 1) {
-    throw new Error(`Pyth Id not found for symbol ${symbol}`);
-  }
-  const data = await fetch(
-    `https://hermes.pyth.network/api/latest_price_feeds?ids[]=${res[0].id}`,
     getRequestOptions()
   );
   if (!data.ok) {
