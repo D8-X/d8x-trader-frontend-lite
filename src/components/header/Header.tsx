@@ -177,7 +177,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [traderAPI, chainId]);
 
   useEffect(() => {
-    if (exchangeRequestRef.current || !chainId || !isEnabledChain(chainId)) {
+    if (exchangeRequestRef.current) {
       return;
     }
 
