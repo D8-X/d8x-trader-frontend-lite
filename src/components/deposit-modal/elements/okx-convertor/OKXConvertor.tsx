@@ -21,6 +21,7 @@ import { xlayer } from 'utils/chains';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from '../../DepositModal.module.scss';
+import { activatedOneClickTradingAtom } from '../../../../store/app.store';
 
 const OKX_LAYER_CHAIN_ID = 196;
 const OKX_GAS_TOKEN_NAME = xlayer.nativeCurrency.name;
@@ -52,6 +53,7 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
   const { gasTokenBalance, refetchWallet } = useUserWallet();
 
   const pools = useAtomValue(poolsAtom);
+  const oneClickTradingActivated = useAtomValue(activatedOneClickTradingAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
   const [amountValue, setAmountValue] = useState('0');
@@ -249,7 +251,12 @@ export const OKXConvertor = ({ selectedCurrency }: OKXConvertorPropsI) => {
     setAmountValue('0');
   }, [chainId, selectedCurrency]);
 
-  if (chainId !== OKX_LAYER_CHAIN_ID || !selectedCurrency || !OKB_WARP_CURRENCIES.includes(selectedCurrency.name)) {
+  if (
+    oneClickTradingActivated ||
+    chainId !== OKX_LAYER_CHAIN_ID ||
+    !selectedCurrency ||
+    !OKB_WARP_CURRENCIES.includes(selectedCurrency.name)
+  ) {
     return null;
   }
 
