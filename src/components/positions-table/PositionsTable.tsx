@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { Table as MuiTable, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
@@ -46,8 +46,7 @@ const MIN_WIDTH_FOR_TABLE = 788;
 export const PositionsTable = () => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const selectedPool = useAtomValue(selectedPoolAtom);

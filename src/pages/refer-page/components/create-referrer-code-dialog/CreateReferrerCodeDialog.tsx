@@ -36,7 +36,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   const { address, chainId } = useAccount();
 
   const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
-  const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE;
+  const codeInputDisabled = codeState !== CodeStateE.CODE_AVAILABLE || !isEnabledChain(chainId);
 
   useEffect(() => {
     const kickbackRate = 0.25 * commissionRate;
@@ -137,7 +137,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
           <Button variant="secondary" onClick={onClose}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
-          <Button variant="primary" disabled={codeInputDisabled || !isEnabledChain(chainId)} onClick={handleUpsertCode}>
+          <Button variant="primary" disabled={codeInputDisabled} onClick={handleUpsertCode}>
             {codeState === CodeStateE.DEFAULT && t('pages.refer.manage-code.enter-code')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}

@@ -3,7 +3,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getOpenOrders, getPositionRisk } from 'network/network';
@@ -28,8 +28,7 @@ const INTERVAL_FOR_TICKER_SLOW = 120000;
 export const TableDataFetcher = memo(() => {
   const { t } = useTranslation();
 
-  const { address, isDisconnected } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId, isDisconnected } = useAccount();
 
   const latestOrderSentTimestamp = useAtomValue(latestOrderSentTimestampAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -114,7 +113,7 @@ export const TableDataFetcher = memo(() => {
     if (Date.now() - lastFetch < INTERVAL_FOR_TICKER_FAST) {
       return;
     }
-    if ((fastTicker > 0 || slowTicker > 0) && traderAPI && chainId && address) {
+    if ((fastTicker > 0 || slowTicker > 0) && traderAPI && chainId && isEnabledChain(chainId) && address) {
       setLastFetch(Date.now());
       setTriggerBalancesUpdate((prevValue) => !prevValue);
       getOpenOrders(chainId, traderAPI, address)

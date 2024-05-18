@@ -28,7 +28,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
 
   const { codeInputValue, setCodeInputValue, handleCodeChange, codeState } = useCodeInput(chainId);
 
-  const inputDisabled = codeState !== CodeStateE.CODE_TAKEN;
+  const inputDisabled = codeState !== CodeStateE.CODE_TAKEN || !isEnabledChain(chainId);
 
   const handleUseCode = () => {
     if (!address || !walletClient || !chainId || !isEnabledChain(chainId)) {
@@ -66,7 +66,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
-          <Button variant="primary" disabled={inputDisabled || !isEnabledChain(chainId)} onClick={handleUseCode}>
+          <Button variant="primary" disabled={inputDisabled} onClick={handleUseCode}>
             {codeState === CodeStateE.DEFAULT && t('pages.refer.trader-tab.enter-a-code')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.trader-tab.code-not-found')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.trader-tab.use-code')}

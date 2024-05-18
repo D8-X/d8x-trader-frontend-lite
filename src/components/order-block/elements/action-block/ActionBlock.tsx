@@ -221,11 +221,11 @@ export const ActionBlock = memo(() => {
   }, [orderInfo, address, selectedPerpetualStaticInfo?.lotSizeBC]);
 
   const validityCheckButtonType = useMemo(() => {
-    if (!isEnabledChain(chainId)) {
-      return ValidityCheckButtonE.WrongNetwork;
-    }
     if (!address || !orderInfo) {
       return ValidityCheckButtonE.NoAddress;
+    }
+    if (!isEnabledChain(chainId)) {
+      return ValidityCheckButtonE.WrongNetwork;
     }
     if (poolTokenBalance === 0) {
       return ValidityCheckButtonE.NoFunds;

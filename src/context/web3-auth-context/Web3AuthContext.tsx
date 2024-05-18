@@ -266,6 +266,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       await connectWeb3Auth(idToken);
     } catch (error) {
       console.error(error);
+      setWeb3AuthSigning(false);
     } finally {
       signInRef.current = false;
     }
@@ -291,6 +292,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       await connectWeb3Auth(idToken);
     } catch (error) {
       console.error(error);
+      setWeb3AuthSigning(false);
     } finally {
       signInRef.current = false;
     }

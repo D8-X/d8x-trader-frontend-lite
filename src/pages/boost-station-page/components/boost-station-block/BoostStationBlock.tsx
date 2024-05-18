@@ -31,7 +31,7 @@ export const BoostStationBlock = memo(() => {
   const { address, chainId, isConnected } = useAccount();
 
   const fetchData = useCallback(() => {
-    if (!isConnected || !address || isDataRequestSent.current || !isEnabledChain(chainId)) {
+    if (isDataRequestSent.current || !isConnected || !address || !isEnabledChain(chainId)) {
       return;
     }
 
