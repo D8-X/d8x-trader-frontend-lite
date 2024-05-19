@@ -90,10 +90,26 @@ const chains = [
   { ...metis },
   { ...mode },
   { ...scroll },
-].sort(({ id: id1 }, { id: id2 }) => config.enabledChains.indexOf(id1) - config.enabledChains.indexOf(id2)) as [
-  Chain,
-  ...Chain[],
-];
+].sort(({ id: id1 }, { id: id2 }) => {
+  const index1 = config.enabledChains.indexOf(id1);
+  const index2 = config.enabledChains.indexOf(id2);
+
+  if (index1 !== -1 && index2 !== -1) {
+    // Both ids are in enabledChains, sort by their order in enabledChains
+    return index1 - index2;
+  } else if (index1 !== -1) {
+    // Only id1 is in enabledChains, it should come first
+    return -1;
+  } else if (index2 !== -1) {
+    // Only id2 is in enabledChains, it should come first
+    return 1;
+  } else {
+    // Neither id is in enabledChains, maintain original order
+    return 0;
+  }
+}) as [Chain, ...Chain[]];
+
+console.log('chains', chains);
 
 const projectId = config.projectId;
 
