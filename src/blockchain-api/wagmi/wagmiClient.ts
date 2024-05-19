@@ -109,8 +109,6 @@ const chains = [
   }
 }) as [Chain, ...Chain[]];
 
-console.log('chains', chains);
-
 const projectId = config.projectId;
 
 const connectors = connectorsForWallets(
