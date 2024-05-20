@@ -127,11 +127,10 @@ export const ActionBlock = memo(() => {
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const proxyAddr = useAtomValue(proxyAddrAtom);
-  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const selectedCurrency = useAtomValue(selectedCurrencyAtom);
-  const selectedPerpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const positions = useAtomValue(positionsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
@@ -180,10 +179,7 @@ export const ActionBlock = memo(() => {
         setNewPositionRisk(data.data.newPositionRisk);
         setCollateralDeposit(data.data.orderCost);
         let [maxLong, maxShort] = [data.data.maxLongTrade, data.data.maxShortTrade];
-        if (
-          selectedPerpetualStaticInfo &&
-          data.data.newPositionRisk.leverage > 1 / selectedPerpetualStaticInfo.initialMarginRate
-        ) {
+        if (perpetualStaticInfo && data.data.newPositionRisk.leverage > 1 / perpetualStaticInfo.initialMarginRate) {
           if (orderInfo.orderBlock === OrderBlockE.Long) {
             maxLong = 0;
           } else {
@@ -207,18 +203,14 @@ export const ActionBlock = memo(() => {
     if (!orderInfo || !address) {
       return false;
     }
-    if (
-      !orderInfo.size ||
-      !selectedPerpetualStaticInfo?.lotSizeBC ||
-      orderInfo.size < selectedPerpetualStaticInfo.lotSizeBC
-    ) {
+    if (!orderInfo.size || !perpetualStaticInfo?.lotSizeBC || orderInfo.size < perpetualStaticInfo.lotSizeBC) {
       return false;
     }
     if (orderInfo.orderType === OrderTypeE.Limit && (orderInfo.limitPrice === null || orderInfo.limitPrice <= 0)) {
       return false;
     }
     return !(orderInfo.orderType === OrderTypeE.Stop && (!orderInfo.triggerPrice || orderInfo.triggerPrice <= 0));
-  }, [orderInfo, address, selectedPerpetualStaticInfo?.lotSizeBC]);
+  }, [orderInfo, address, perpetualStaticInfo?.lotSizeBC]);
 
   const validityCheckButtonType = useMemo(() => {
     if (!address || !orderInfo) {
@@ -483,7 +475,7 @@ export const ActionBlock = memo(() => {
       validityCheckRef.current ||
       !maxOrderSize ||
       !orderInfo?.orderBlock ||
-      !selectedPerpetualStaticInfo?.lotSizeBC
+      !perpetualStaticInfo?.lotSizeBC
     ) {
       return ValidityCheckE.Empty;
     }
@@ -496,19 +488,16 @@ export const ActionBlock = memo(() => {
     if (isTooLarge) {
       return ValidityCheckE.OrderTooLarge;
     }
-    const isOrderTooSmall = orderInfo.size > 0 && orderInfo.size < selectedPerpetualStaticInfo.lotSizeBC;
+    const isOrderTooSmall = orderInfo.size > 0 && orderInfo.size < perpetualStaticInfo.lotSizeBC;
     if (isOrderTooSmall) {
       return ValidityCheckE.OrderTooSmall;
     }
     const isPositionTooSmall =
       (!positionToModify || positionToModify.positionNotionalBaseCCY === 0) &&
-      orderInfo.size < 10 * selectedPerpetualStaticInfo.lotSizeBC;
+      orderInfo.size < 10 * perpetualStaticInfo.lotSizeBC;
     if (isPositionTooSmall && orderInfo.orderType === OrderTypeE.Market) {
       return ValidityCheckE.PositionTooSmall;
-    } else if (
-      orderInfo.size < 10 * selectedPerpetualStaticInfo.lotSizeBC &&
-      orderInfo.orderType !== OrderTypeE.Market
-    ) {
+    } else if (orderInfo.size < 10 * perpetualStaticInfo.lotSizeBC && orderInfo.orderType !== OrderTypeE.Market) {
       return ValidityCheckE.BelowMinPosition;
     }
     if (poolTokenBalance === undefined || poolTokenBalance < collateralDeposit) {
@@ -544,7 +533,7 @@ export const ActionBlock = memo(() => {
     orderInfo?.takeProfitPrice,
     orderInfo?.maxMinEntryPrice,
     selectedPerpetual,
-    selectedPerpetualStaticInfo?.lotSizeBC,
+    perpetualStaticInfo?.lotSizeBC,
     poolTokenBalance,
     isMarketClosed,
     collateralDeposit,

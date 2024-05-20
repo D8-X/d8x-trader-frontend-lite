@@ -15,12 +15,14 @@ import type {
   ValidatedResponseI,
 } from 'types/types';
 import { MaintenanceStatusI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 function getApiUrlByChainId(chainId: number | undefined) {
-  if (chainId === undefined) {
-    return config.apiUrl.default;
+  const urlByFirstEnabledChainId = config.apiUrl[config.enabledChains[0]];
+  if (chainId === undefined || !isEnabledChain(chainId)) {
+    return urlByFirstEnabledChainId || config.apiUrl.default;
   }
-  return config.apiUrl[chainId] || config.apiUrl.default;
+  return config.apiUrl[chainId] || urlByFirstEnabledChainId || config.apiUrl.default;
 }
 
 const fetchUrl = async (url: string, chainId: number | undefined) => {

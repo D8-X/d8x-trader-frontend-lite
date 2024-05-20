@@ -1,9 +1,14 @@
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { EarningsI, FundingI, OpenWithdrawalsI, TradeHistoryI, WeeklyApiI } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 function getHistoryUrlByChainId(chainId: number) {
-  return config.historyUrl[`${chainId}`] || config.historyUrl.default;
+  const urlByFirstEnabledChainId = config.historyUrl[config.enabledChains[0]];
+  if (!isEnabledChain(chainId)) {
+    return urlByFirstEnabledChainId || config.historyUrl.default;
+  }
+  return config.historyUrl[`${chainId}`] || urlByFirstEnabledChainId || config.historyUrl.default;
 }
 
 const fetchUrl = async (url: string, chainId: number) => {

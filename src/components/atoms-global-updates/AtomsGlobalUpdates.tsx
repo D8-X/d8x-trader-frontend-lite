@@ -1,16 +1,16 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef } from 'react';
 import { type Address } from 'viem';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { getTradingFee } from 'network/network';
 import { activatedOneClickTradingAtom } from 'store/app.store';
 import { storageKeyAtom } from 'store/order-block.store';
 import { addr0FeeAtom, poolFeeAtom, selectedPoolAtom } from 'store/pools.store';
+import { isEnabledChain } from '../../utils/isEnabledChain';
 
 export const AtomsGlobalUpdates = () => {
-  const chainId = useChainId();
-  const { address, isDisconnected } = useAccount();
+  const { address, chainId, isDisconnected } = useAccount();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const setActivatedOneClickTrading = useSetAtom(activatedOneClickTradingAtom);
@@ -65,12 +65,14 @@ export const AtomsGlobalUpdates = () => {
   }, [isDisconnected, setActivatedOneClickTrading, setStorageKey]);
 
   useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol || !address) {
+    if (!chainId || !isEnabledChain(chainId) || !selectedPool?.poolSymbol || !address) {
+      setPoolFee(undefined);
+      setAddr0Fee(undefined);
       return;
     }
     fetchFee(chainId, selectedPool.poolSymbol, address).then();
     fetchAddr0Fee(chainId, selectedPool.poolSymbol).then();
-  }, [chainId, selectedPool?.poolSymbol, address, fetchFee, fetchAddr0Fee]);
+  }, [chainId, selectedPool?.poolSymbol, address, fetchFee, fetchAddr0Fee, setPoolFee, setAddr0Fee]);
 
   return null;
 };

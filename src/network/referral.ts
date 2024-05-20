@@ -13,8 +13,13 @@ import type {
   ReferralResponseI,
   TokenInfoI,
 } from 'types/types';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 function getReferralUrlByChainId(chainId: number) {
+  const urlByFirstEnabledChainId = config.referralUrl[config.enabledChains[0]];
+  if (!isEnabledChain(chainId)) {
+    return urlByFirstEnabledChainId || config.referralUrl.default;
+  }
   return config.referralUrl[`${chainId}`] || config.referralUrl.default;
 }
 
