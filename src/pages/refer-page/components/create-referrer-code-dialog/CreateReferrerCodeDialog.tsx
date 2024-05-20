@@ -63,7 +63,7 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   };
 
   const handleUpsertCode = () => {
-    if (!address || !walletClient || !chainId || !isEnabledChain(chainId)) {
+    if (!address || !walletClient || !isEnabledChain(chainId)) {
       return;
     }
 

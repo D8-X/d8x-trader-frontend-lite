@@ -19,7 +19,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 
 function getApiUrlByChainId(chainId: number | undefined) {
   const urlByFirstEnabledChainId = config.apiUrl[config.enabledChains[0]];
-  if (chainId === undefined || !isEnabledChain(chainId)) {
+  if (!isEnabledChain(chainId)) {
     return urlByFirstEnabledChainId || config.apiUrl.default;
   }
   return config.apiUrl[chainId] || urlByFirstEnabledChainId || config.apiUrl.default;

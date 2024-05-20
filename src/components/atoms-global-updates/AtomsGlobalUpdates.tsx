@@ -65,7 +65,7 @@ export const AtomsGlobalUpdates = () => {
   }, [isDisconnected, setActivatedOneClickTrading, setStorageKey]);
 
   useEffect(() => {
-    if (!chainId || !isEnabledChain(chainId) || !selectedPool?.poolSymbol || !address) {
+    if (!isEnabledChain(chainId) || !selectedPool?.poolSymbol || !address) {
       setPoolFee(undefined);
       setAddr0Fee(undefined);
       return;

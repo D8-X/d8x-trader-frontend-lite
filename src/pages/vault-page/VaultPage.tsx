@@ -30,7 +30,7 @@ export const VaultPage = () => {
   const withdrawalsRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!selectedPool || !address || !chainId || !isEnabledChain(chainId)) {
+    if (!selectedPool || !address || !isEnabledChain(chainId)) {
       setWithdrawals([]);
       return;
     }

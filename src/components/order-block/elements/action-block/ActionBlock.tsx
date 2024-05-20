@@ -157,7 +157,7 @@ export const ActionBlock = memo(() => {
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
   const openReviewOrderModal = async () => {
-    if (!orderInfo || !address || !traderAPI || !poolFee || !chainId || !isEnabledChain(chainId)) {
+    if (!orderInfo || !address || !traderAPI || !poolFee || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -372,8 +372,7 @@ export const ActionBlock = memo(() => {
       !selectedPool ||
       !proxyAddr ||
       !poolTokenDecimals ||
-      !isEnabledChain(chainId) ||
-      !chainId
+      !isEnabledChain(chainId)
     ) {
       return;
     }

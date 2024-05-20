@@ -33,7 +33,7 @@ export const PerpetualInfoFetcher = () => {
       return;
     }
 
-    if (!symbol || !chainId || !isEnabledChain(chainId) || !traderAPI || chainId !== traderAPI.chainId) {
+    if (!symbol || !isEnabledChain(chainId) || !traderAPI || chainId !== traderAPI.chainId) {
       setPerpetualStaticInfo(null);
       return;
     }

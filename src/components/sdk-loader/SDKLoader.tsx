@@ -83,7 +83,7 @@ export const SDKLoader = memo(() => {
 
   // connect SDK on change of provider/chain/wallet
   useEffect(() => {
-    if (loadingAPIRef.current || !publicClient || !chainId || !isEnabledChain(chainId)) {
+    if (loadingAPIRef.current || !publicClient || !isEnabledChain(chainId)) {
       return;
     }
     unloadSDK();

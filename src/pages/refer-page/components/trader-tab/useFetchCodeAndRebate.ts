@@ -14,7 +14,7 @@ export const useFetchCodeAndRebate = () => {
   const rebateRateRequestRef = useRef(false);
 
   const fetchMyCodeSelection = useCallback(() => {
-    if (!chainId || !address || !isEnabledChain(chainId)) {
+    if (!address || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -36,7 +36,7 @@ export const useFetchCodeAndRebate = () => {
   }, [fetchMyCodeSelection]);
 
   const fetchCodeRebate = useCallback(() => {
-    if (!chainId || !activeCode || !isEnabledChain(chainId)) {
+    if (!activeCode || !isEnabledChain(chainId)) {
       return;
     }
 

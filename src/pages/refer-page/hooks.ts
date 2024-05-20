@@ -11,7 +11,7 @@ export const useCodeInput = (chainId: number | undefined) => {
 
   const handleCodeChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      if (!chainId || !isEnabledChain(chainId)) {
+      if (!isEnabledChain(chainId)) {
         return;
       }
 

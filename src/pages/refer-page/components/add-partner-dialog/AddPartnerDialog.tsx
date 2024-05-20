@@ -77,7 +77,7 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
   }, [partnerAddressInputValue]);
 
   const handleReferPost = () => {
-    if (!address || !walletClient || !isAddressValid || !chainId || !isEnabledChain(chainId)) {
+    if (!address || !walletClient || !isAddressValid || !isEnabledChain(chainId)) {
       return;
     }
 

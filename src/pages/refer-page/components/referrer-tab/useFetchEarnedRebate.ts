@@ -13,7 +13,7 @@ export const useFetchEarnedRebate = () => {
   const earnedRebateRequestRef = useRef(false);
 
   useEffect(() => {
-    if (address && chainId && isEnabledChain(chainId)) {
+    if (address && isEnabledChain(chainId)) {
       if (earnedRebateRequestRef.current) {
         return;
       }

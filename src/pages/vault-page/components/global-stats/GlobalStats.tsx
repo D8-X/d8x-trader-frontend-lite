@@ -35,7 +35,7 @@ export const GlobalStats = () => {
   const weeklyApiRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol || !isEnabledChain(chainId)) {
+    if (!selectedPool?.poolSymbol || !isEnabledChain(chainId)) {
       setWeeklyAPI(undefined);
       return;
     }

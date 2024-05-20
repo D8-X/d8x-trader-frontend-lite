@@ -13,7 +13,7 @@ export const useFetchOpenRewards = () => {
   const openRewardsRequestRef = useRef(false);
 
   useEffect(() => {
-    if (!address || !chainId || !isEnabledChain(chainId)) {
+    if (!address || !isEnabledChain(chainId)) {
       setOpenRewards([]);
       return;
     }

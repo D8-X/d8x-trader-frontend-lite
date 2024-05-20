@@ -51,7 +51,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   }, [selectedPool?.poolSymbol, traderAPI, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
 
   useEffect(() => {
-    if (!chainId || !selectedPool?.poolSymbol || !address || !isEnabledChain(chainId)) {
+    if (!selectedPool?.poolSymbol || !address || !isEnabledChain(chainId)) {
       setEstimatedEarnings(undefined);
       return;
     }

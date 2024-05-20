@@ -155,7 +155,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       return;
     }
 
-    if (chainId && address && isEnabledChain(chainId)) {
+    if (address && isEnabledChain(chainId)) {
       positionsRequestRef.current = true;
       getPositionRisk(chainId, null, address, Date.now())
         .then(({ data }) => {

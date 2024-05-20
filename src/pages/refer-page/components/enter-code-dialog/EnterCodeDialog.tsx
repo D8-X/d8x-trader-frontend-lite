@@ -31,7 +31,7 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
   const inputDisabled = codeState !== CodeStateE.CODE_TAKEN || !isEnabledChain(chainId);
 
   const handleUseCode = () => {
-    if (!address || !walletClient || !chainId || !isEnabledChain(chainId)) {
+    if (!address || !walletClient || !isEnabledChain(chainId)) {
       return;
     }
 
