@@ -12,9 +12,11 @@ import {
   clearOpenOrdersAtom,
   clearPositionsAtom,
   executeOrderAtom,
+  fundingListAtom,
   openOrdersAtom,
   positionsAtom,
   traderAPIAtom,
+  tradesHistoryAtom,
   triggerBalancesUpdateAtom,
 } from 'store/pools.store';
 import type { PerpetualOpenOrdersI } from 'types/types';
@@ -38,6 +40,8 @@ export const TableDataFetcher = memo(() => {
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const clearPositions = useSetAtom(clearPositionsAtom);
   const setPositions = useSetAtom(positionsAtom);
+  const setFundingList = useSetAtom(fundingListAtom);
+  const setTradesHistory = useSetAtom(tradesHistoryAtom);
 
   const [fastTicker, setFastTicker] = useState(0);
   const [slowTicker, setSlowTicker] = useState(0);
@@ -63,11 +67,13 @@ export const TableDataFetcher = memo(() => {
   }, [latestOrderSentTimestamp]);
 
   useEffect(() => {
-    if (isDisconnected || !traderAPI || traderAPI.chainId !== chainId || !isEnabledChain(chainId)) {
+    if (isDisconnected || !isEnabledChain(chainId)) {
       clearOpenOrders();
       clearPositions();
+      setFundingList([]);
+      setTradesHistory([]);
     }
-  }, [isDisconnected, chainId, clearOpenOrders, clearPositions, traderAPI]);
+  }, [isDisconnected, chainId, clearOpenOrders, clearPositions, setFundingList, setTradesHistory, traderAPI]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
