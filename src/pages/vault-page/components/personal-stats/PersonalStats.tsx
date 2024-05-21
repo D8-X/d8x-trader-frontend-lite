@@ -37,7 +37,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
   const hasOpenRequestOnChain = useAtomValue(withdrawalOnChainAtom);
   const [userAmount, setUserAmount] = useAtom(userAmountAtom);
 
-  const [estimatedEarnings, setEstimatedEarnings] = useState<number>();
+  const [estimatedEarnings, setEstimatedEarnings] = useState<number | null>(null);
 
   const earningsRequestSentRef = useRef(false);
 
@@ -52,7 +52,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
 
   useEffect(() => {
     if (!selectedPool?.poolSymbol || !address || !isEnabledChain(chainId)) {
-      setEstimatedEarnings(undefined);
+      setEstimatedEarnings(null);
       return;
     }
 
@@ -64,7 +64,10 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
 
     getEarnings(chainId, address, selectedPool.poolSymbol)
       .then(({ earnings }) => setEstimatedEarnings(earnings))
-      .catch(console.error)
+      .catch((error) => {
+        console.error(error);
+        setEstimatedEarnings(null);
+      })
       .finally(() => {
         earningsRequestSentRef.current = false;
       });
@@ -87,7 +90,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
-          {userAmount !== undefined ? formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`, true) : '--'}
+          {userAmount !== null ? formatToCurrency(userAmount, `d${selectedPool?.poolSymbol}`, true) : '--'}
         </Typography>
       </Box>
       <Box key="estimatedEarnings" className={styles.statContainer}>
@@ -105,7 +108,7 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
-          {estimatedEarnings !== undefined
+          {estimatedEarnings !== null
             ? formatToCurrency(
                 estimatedEarnings < -0.0000000001 ? estimatedEarnings : Math.max(estimatedEarnings, 0),
                 selectedPool?.poolSymbol,

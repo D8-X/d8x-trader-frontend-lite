@@ -38,6 +38,7 @@ import {
 } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { ConnectModal } from './elements/connect-modal/ConnectModal';
@@ -47,7 +48,6 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { getEnabledChainId } from '../../utils/getEnabledChainId';
 
 interface HeaderPropsI {
   /**

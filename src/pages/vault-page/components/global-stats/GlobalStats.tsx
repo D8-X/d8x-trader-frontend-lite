@@ -11,7 +11,7 @@ import { getWeeklyAPI } from 'network/history';
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom, tvlAtom } from 'store/vault-pools.store';
 import { selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { isEnabledChain } from 'utils/isEnabledChain';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import styles from './GlobalStats.module.scss';
 
@@ -35,7 +35,7 @@ export const GlobalStats = () => {
   const weeklyApiRequestSentRef = useRef(false);
 
   useEffect(() => {
-    if (!selectedPool?.poolSymbol || !isEnabledChain(chainId)) {
+    if (!selectedPool?.poolSymbol) {
       setWeeklyAPI(undefined);
       return;
     }
@@ -45,11 +45,14 @@ export const GlobalStats = () => {
     }
 
     weeklyApiRequestSentRef.current = true;
-    getWeeklyAPI(chainId, selectedPool.poolSymbol)
+    getWeeklyAPI(getEnabledChainId(chainId), selectedPool.poolSymbol)
       .then((data) => {
         setWeeklyAPI(data.allTimeAPY * 100);
       })
-      .catch(console.error)
+      .catch((error) => {
+        console.error(error);
+        setWeeklyAPI(undefined);
+      })
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
       });
@@ -58,7 +61,7 @@ export const GlobalStats = () => {
   useEffect(() => {
     setDCurrencyPrice(null);
     if (traderAPI && isSDKConnected && selectedPool?.poolSymbol) {
-      traderAPI.getShareTokenPrice(selectedPool.poolSymbol).then((price) => setDCurrencyPrice(price));
+      traderAPI.getShareTokenPrice(selectedPool.poolSymbol).then(setDCurrencyPrice);
     }
   }, [traderAPI, selectedPool?.poolSymbol, triggerUserStatsUpdate, isSDKConnected, setDCurrencyPrice]);
 

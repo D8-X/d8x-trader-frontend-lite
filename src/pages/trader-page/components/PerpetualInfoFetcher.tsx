@@ -43,13 +43,15 @@ export const PerpetualInfoFetcher = () => {
     getPerpetualStaticInfo(getEnabledChainId(chainId), traderAPI, symbol)
       .then(({ data }) => {
         if (data.error) {
-          console.error(data.error);
-          setPerpetualStaticInfo(null);
+          throw new Error(data.error);
         } else {
           setPerpetualStaticInfo(data);
         }
       })
-      .catch(console.error)
+      .catch((error) => {
+        console.error(error);
+        setPerpetualStaticInfo(null);
+      })
       .finally(() => {
         requestSentRef.current = false;
       });
