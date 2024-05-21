@@ -200,7 +200,7 @@ export const ActionBlock = memo(() => {
   };
 
   const isBuySellButtonActive = useMemo(() => {
-    if (!orderInfo || !address) {
+    if (!orderInfo || !address || !isEnabledChain(chainId)) {
       return false;
     }
     if (!orderInfo.size || !perpetualStaticInfo?.lotSizeBC || orderInfo.size < perpetualStaticInfo.lotSizeBC) {
@@ -210,7 +210,7 @@ export const ActionBlock = memo(() => {
       return false;
     }
     return !(orderInfo.orderType === OrderTypeE.Stop && (!orderInfo.triggerPrice || orderInfo.triggerPrice <= 0));
-  }, [orderInfo, address, perpetualStaticInfo?.lotSizeBC]);
+  }, [orderInfo, address, chainId, perpetualStaticInfo?.lotSizeBC]);
 
   const validityCheckButtonType = useMemo(() => {
     if (!address || !orderInfo) {
@@ -577,6 +577,10 @@ export const ActionBlock = memo(() => {
     setIsValidityCheckDone(true);
     return;
   }, [validityCheckType]);
+
+  useEffect(() => {
+    clearInputsData();
+  }, [clearInputsData, chainId]);
 
   const feePct = useMemo(() => {
     if (orderInfo?.tradingFee) {

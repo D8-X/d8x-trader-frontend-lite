@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 import { createSymbol } from 'helpers/createSymbol';
 import { getPerpetualStaticInfo } from 'network/network';
 import { perpetualStaticInfoAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
-import { isEnabledChain } from 'utils/isEnabledChain';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 export const PerpetualInfoFetcher = () => {
   const { chainId } = useAccount();
@@ -33,16 +33,21 @@ export const PerpetualInfoFetcher = () => {
       return;
     }
 
-    if (!symbol || !isEnabledChain(chainId) || !traderAPI || chainId !== traderAPI.chainId) {
+    if (!symbol) {
       setPerpetualStaticInfo(null);
       return;
     }
 
     requestSentRef.current = true;
 
-    getPerpetualStaticInfo(chainId, traderAPI, symbol)
+    getPerpetualStaticInfo(getEnabledChainId(chainId), traderAPI, symbol)
       .then(({ data }) => {
-        setPerpetualStaticInfo(data);
+        if (data.error) {
+          console.error(data.error);
+          setPerpetualStaticInfo(null);
+        } else {
+          setPerpetualStaticInfo(data);
+        }
       })
       .catch(console.error)
       .finally(() => {

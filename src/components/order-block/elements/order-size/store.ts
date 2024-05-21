@@ -53,8 +53,8 @@ export const maxOrderSizeAtom = atom((get) => {
     indexPrice * (orderFeeBps / 10_000) + markPrice / leverage + Math.max(direction * (limitPrice - markPrice), 0);
 
   const poolTokenBalanceOrDefault =
-    poolTokenBalance !== null && poolTokenBalance !== undefined ? poolTokenBalance : 10000;
-  // default of 1000 to make initial load faster
+    poolTokenBalance !== null && poolTokenBalance !== undefined ? poolTokenBalance : 10_000;
+  // default of 10_000 to make initial load faster
 
   const personalMax = (((poolTokenBalanceOrDefault + collateralCC) * collToQuoteIndexPrice) / buffer) * 0.99;
   return personalMax > maxTraderOrderSize ? maxTraderOrderSize : personalMax;

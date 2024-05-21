@@ -2,7 +2,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Slider, Typography } from '@mui/material';
+import { Slider, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
@@ -10,8 +10,9 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { perpetualStaticInfoAtom } from 'store/pools.store';
 import { type MarkI } from 'types/types';
 
-import styles from './LeverageSelector.module.scss';
 import { inputValueAtom, leverageAtom, setLeverageAtom } from './store';
+
+import styles from './LeverageSelector.module.scss';
 
 const multipliers = [0.25, 0.5, 0.75, 1];
 
@@ -28,11 +29,11 @@ export const LeverageSelector = memo(() => {
   const setLeverage = useSetAtom(setLeverageAtom);
 
   const maxLeverage = useMemo(() => {
-    if (perpetualStaticInfo) {
+    if (perpetualStaticInfo?.initialMarginRate) {
       return Math.round(1 / perpetualStaticInfo.initialMarginRate);
     }
     return 10;
-  }, [perpetualStaticInfo]);
+  }, [perpetualStaticInfo?.initialMarginRate]);
 
   const marks = useMemo(() => {
     const newMarks: MarkI[] = [{ value: 1, label: '1x' }];
@@ -56,8 +57,8 @@ export const LeverageSelector = memo(() => {
   const leverageStep = (maxLeverage / 2) % 10 ? 0.5 : 1;
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.rowOne}>
+    <div className={styles.root}>
+      <div className={styles.rowOne}>
         <InfoLabelBlock
           title={t('pages.trade.order-block.leverage.title')}
           content={
@@ -68,9 +69,9 @@ export const LeverageSelector = memo(() => {
           }
         />
         <OrderSettings />
-      </Box>
-      <Box className={styles.rowTwo}>
-        <Box className={styles.sliderHolder}>
+      </div>
+      <div className={styles.rowTwo}>
+        <div className={styles.sliderHolder}>
           <Slider
             aria-label="Leverage values"
             value={leverage}
@@ -87,7 +88,7 @@ export const LeverageSelector = memo(() => {
               }
             }}
           />
-        </Box>
+        </div>
         <ResponsiveInput
           id="leverage"
           className={styles.inputHolder}
@@ -99,7 +100,7 @@ export const LeverageSelector = memo(() => {
           min={0}
           max={maxLeverage}
         />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 });

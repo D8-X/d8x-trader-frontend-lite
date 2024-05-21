@@ -47,6 +47,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { getEnabledChainId } from '../../utils/getEnabledChainId';
 
 interface HeaderPropsI {
   /**
@@ -190,10 +191,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       while (retries < MAX_RETRIES) {
         try {
           let currentTraderAPI = null;
-          if (retries > 0 && traderAPIRef.current && traderAPIRef.current?.chainId === chainId) {
+          const enabledChainId = getEnabledChainId(chainId);
+          if (retries > 0 && traderAPIRef.current && traderAPIRef.current?.chainId === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
-          const data = await getExchangeInfo(chainId, currentTraderAPI);
+          const data = await getExchangeInfo(enabledChainId, currentTraderAPI);
           setExchangeInfo(data.data);
           retries = MAX_RETRIES;
         } catch (error) {

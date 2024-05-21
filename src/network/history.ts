@@ -8,7 +8,7 @@ function getHistoryUrlByChainId(chainId: number) {
   if (!isEnabledChain(chainId)) {
     return urlByFirstEnabledChainId || config.historyUrl.default;
   }
-  return config.historyUrl[`${chainId}`] || urlByFirstEnabledChainId || config.historyUrl.default;
+  return config.historyUrl[chainId] || urlByFirstEnabledChainId || config.historyUrl.default;
 }
 
 const fetchUrl = async (url: string, chainId: number) => {

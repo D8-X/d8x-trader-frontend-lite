@@ -74,16 +74,9 @@ export const SDKLoader = memo(() => {
     setTraderAPI(null);
   }, [setTraderAPI, setSDKConnected, setAPIBusy]);
 
-  // disconnect SDK on wallet disconnected or not supported chain
-  useEffect(() => {
-    if (!isConnected || !isEnabledChain(chainId)) {
-      unloadSDK();
-    }
-  }, [isConnected, unloadSDK, chainId]);
-
   // connect SDK on change of provider/chain/wallet
   useEffect(() => {
-    if (loadingAPIRef.current || !publicClient || !isEnabledChain(chainId)) {
+    if (loadingAPIRef.current || !publicClient) {
       return;
     }
     unloadSDK();
@@ -91,7 +84,14 @@ export const SDKLoader = memo(() => {
     setAPIBusy(true);
     loadingAPIRef.current = true;
 
-    loadSDK(publicClient, chainId)
+    let chainIdForSDK: number;
+    if (!isEnabledChain(chainId)) {
+      chainIdForSDK = config.enabledChains[0];
+    } else {
+      chainIdForSDK = chainId;
+    }
+
+    loadSDK(publicClient, chainIdForSDK)
       .then()
       .catch(console.error)
       .finally(() => {

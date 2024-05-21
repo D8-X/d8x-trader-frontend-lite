@@ -3,9 +3,12 @@ import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
 import type {
+  BoostStationResponseI,
+  BoostStationParamResponseI,
   CancelOrderResponseI,
   CollateralChangeResponseI,
   ExchangeInfoI,
+  MaintenanceStatusI,
   MarginAccountI,
   MaxOrderSizeResponseI,
   OrderDigestI,
@@ -14,10 +17,9 @@ import type {
   PerpetualStaticInfoI,
   ValidatedResponseI,
 } from 'types/types';
-import { MaintenanceStatusI, BoostStationResponseI, BoostStationParamResponseI } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-function getApiUrlByChainId(chainId: number | undefined) {
+function getApiUrlByChainId(chainId: number) {
   const urlByFirstEnabledChainId = config.apiUrl[config.enabledChains[0]];
   if (!isEnabledChain(chainId)) {
     return urlByFirstEnabledChainId || config.apiUrl.default;
@@ -25,7 +27,7 @@ function getApiUrlByChainId(chainId: number | undefined) {
   return config.apiUrl[chainId] || urlByFirstEnabledChainId || config.apiUrl.default;
 }
 
-const fetchUrl = async (url: string, chainId: number | undefined) => {
+const fetchUrl = async (url: string, chainId: number) => {
   const data = await fetch(`${getApiUrlByChainId(chainId)}/${url}`, getRequestOptions());
   if (!data.ok) {
     console.error({ data });
@@ -45,7 +47,7 @@ export async function getMaintenanceStatus(): Promise<MaintenanceStatusI[]> {
 }
 
 export async function getExchangeInfo(
-  chainId: number | undefined,
+  chainId: number,
   traderAPI: TraderInterface | null
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
   if (traderAPI && traderAPI.chainId === chainId) {
@@ -186,7 +188,7 @@ export async function getOpenOrders(
 
 // needs broker input, should go through backend
 export async function getTradingFee(
-  chainId: number | undefined,
+  chainId: number,
   poolSymbol: string,
   traderAddr?: string
 ): Promise<ValidatedResponseI<number>> {

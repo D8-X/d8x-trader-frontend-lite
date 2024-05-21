@@ -7,7 +7,7 @@ import { getTradingFee } from 'network/network';
 import { activatedOneClickTradingAtom } from 'store/app.store';
 import { storageKeyAtom } from 'store/order-block.store';
 import { addr0FeeAtom, poolFeeAtom, selectedPoolAtom } from 'store/pools.store';
-import { isEnabledChain } from '../../utils/isEnabledChain';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 export const AtomsGlobalUpdates = () => {
   const { address, chainId, isDisconnected } = useAccount();

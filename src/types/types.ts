@@ -88,6 +88,11 @@ export interface ReferralResponseI<T> {
   data: T;
 }
 
+export interface ErrorResponseI {
+  error?: string;
+  usage?: string;
+}
+
 export interface ValidatedResponseI<T> extends ReferralResponseI<T> {
   msg: string;
 }
@@ -108,7 +113,7 @@ export interface GeoLocationDataI {
   countryCode: string;
 }
 
-export interface PerpetualStaticInfoI {
+export interface PerpetualStaticInfoI extends ErrorResponseI {
   id: number;
   limitOrderBookAddr: string;
   initialMarginRate: number;

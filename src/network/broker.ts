@@ -8,7 +8,7 @@ function getApiUrlByChainId(chainId: number) {
   if (!isEnabledChain(chainId)) {
     return urlByFirstEnabledChainId || config.brokerUrl.default;
   }
-  return config.brokerUrl[chainId] || config.brokerUrl.default;
+  return config.brokerUrl[chainId] || urlByFirstEnabledChainId || config.brokerUrl.default;
 }
 
 export function orderSubmitted(chainId: number, orderIds: string[]) {

@@ -20,7 +20,7 @@ function getReferralUrlByChainId(chainId: number) {
   if (!isEnabledChain(chainId)) {
     return urlByFirstEnabledChainId || config.referralUrl.default;
   }
-  return config.referralUrl[`${chainId}`] || config.referralUrl.default;
+  return config.referralUrl[chainId] || urlByFirstEnabledChainId || config.referralUrl.default;
 }
 
 const fetchUrl = async (url: string, chainId: number) => {
