@@ -7,7 +7,7 @@ import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
-export const useTransferGasToken = (amount: string, currency: string | undefined) => {
+export const useTransferGasToken = (amount: string, currency: string | undefined, successCallback?: () => void) => {
   const { t } = useTranslation();
 
   const { address } = useAccount();
@@ -70,8 +70,9 @@ export const useTransferGasToken = (amount: string, currency: string | undefined
     );
     setSavedAmount('');
     setSavedCurrency('');
+    successCallback && successCallback();
     setTxHash(undefined);
-  }, [isSuccess, txHash, savedAmount, savedCurrency, t]);
+  }, [isSuccess, txHash, savedAmount, savedCurrency, successCallback, t]);
 
   return {
     setTxHash,

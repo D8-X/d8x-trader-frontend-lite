@@ -26,7 +26,9 @@ import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { withdrawModalOpenAtom } from 'store/global-modals.store';
+import { MethodE } from 'types/enums';
 import { isValidAddress } from 'utils/isValidAddress';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -47,16 +49,22 @@ export const WithdrawModal = () => {
 
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useAtom(withdrawModalOpenAtom);
 
-  const { setTxHash: setTxHashForTokensTransfer } = useTransferTokens(amountValue, selectedCurrency?.name);
-  const { setTxHash: setTxHashForGasTransfer } = useTransferGasToken(amountValue, selectedCurrency?.name);
+  const { gasTokenBalance, calculateGasForFee, refetchWallet } = useUserWallet();
 
-  useEffect(() => {
-    setAmountValue('');
-  }, [selectedCurrency]);
+  const { setTxHash: setTxHashForTokensTransfer } = useTransferTokens(amountValue, selectedCurrency?.name);
+  const { setTxHash: setTxHashForGasTransfer } = useTransferGasToken(
+    amountValue,
+    selectedCurrency?.name,
+    refetchWallet
+  );
 
   const { data: walletClient } = useWalletClient();
   const { address, isConnected } = useAccount();
   const { data: sendHash, error: sendError, isPending, sendTransaction } = useSendTransaction();
+
+  useEffect(() => {
+    setAmountValue('');
+  }, [selectedCurrency]);
 
   useEffect(() => {
     setTxHashForGasTransfer(sendHash);
@@ -112,6 +120,19 @@ export const WithdrawModal = () => {
   const handleInputBlur = useCallback(() => {}, []);
 
   const handleOnClose = () => setWithdrawModalOpen(false);
+
+  const maxTokenValue = useMemo(() => {
+    if (!selectedCurrency) {
+      return undefined;
+    }
+    if (selectedCurrency.isGasToken) {
+      const gasFee = calculateGasForFee(MethodE.Transfer, 1n);
+      return gasTokenBalance && gasTokenBalance.value > gasFee
+        ? +formatUnits(gasTokenBalance.value - gasFee, gasTokenBalance.decimals)
+        : 0;
+    }
+    return selectedTokenBalanceData ? +formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1]) : 0;
+  }, [selectedCurrency, selectedTokenBalanceData, gasTokenBalance, calculateGasForFee]);
 
   const handleWithdraw = useCallback(() => {
     if (selectedCurrency && walletClient && isAddressValid && amountValue) {
@@ -174,26 +195,19 @@ export const WithdrawModal = () => {
               setInputValue={setAmountValue}
               currency={selectedCurrency?.name}
               min={0}
-              max={
-                selectedTokenBalanceData && selectedTokenBalanceData[0] > 0
-                  ? +formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1])
-                  : undefined
-              }
+              max={maxTokenValue}
             />
-            {selectedTokenBalanceData && selectedTokenBalanceData[0] > 0 ? (
+            {maxTokenValue && maxTokenValue > 0 ? (
               <Typography className={styles.helperText} variant="bodyTiny">
                 {t('common.max')}{' '}
                 <Link
                   onClick={() => {
-                    if (selectedTokenBalanceData[0] > 0) {
-                      setAmountValue(formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1]));
+                    if (maxTokenValue && maxTokenValue > 0) {
+                      setAmountValue(`${maxTokenValue}`);
                     }
                   }}
                 >
-                  {formatToCurrency(
-                    +formatUnits(selectedTokenBalanceData[0], selectedTokenBalanceData[1]),
-                    selectedCurrency?.name
-                  )}
+                  {formatToCurrency(maxTokenValue, selectedCurrency?.name)}
                 </Link>
               </Typography>
             ) : null}
