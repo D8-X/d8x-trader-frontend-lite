@@ -1,66 +1,31 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import classnames from 'classnames';
-import { memo, type ReactNode } from 'react';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mui/material';
 
-import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
-
 import styles from './WalletConnectButton.module.scss';
-import { config } from '../../config';
 
 interface WalletConnectButtonPropsI {
-  connectButtonLabel?: ReactNode;
-  buttonClassName?: string;
+  label?: ReactNode;
+  className?: string;
+  disabled?: boolean;
 }
 
-export const WalletConnectButton = memo((props: WalletConnectButtonPropsI) => {
+export const WalletConnectButton = (props: WalletConnectButtonPropsI) => {
   const { t } = useTranslation();
 
-  const { isConnecting } = useWeb3Auth();
-
   const {
-    connectButtonLabel = <span className={styles.cutAddressName}>{t('common.wallet-connect')}</span>,
-    buttonClassName,
+    label = <span className={styles.connectLabel}>{t('common.wallet-connect')}</span>,
+    className,
+    disabled,
   } = props;
 
+  const { openConnectModal } = useConnectModal();
+
   return (
-    <ConnectButton.Custom>
-      {({ account, chain, openChainModal, openConnectModal, mounted }) => {
-        const connected = mounted && account && chain;
-
-        const isVisibleChain = chain && config.enabledChains.includes(chain.id);
-
-        return (
-          <div className={classnames(styles.root, { [styles.connected]: !mounted })} aria-hidden={mounted}>
-            {(() => {
-              if (!connected) {
-                return (
-                  <Button
-                    onClick={openConnectModal}
-                    variant="primary"
-                    className={classnames(styles.connectWalletButton, buttonClassName)}
-                    disabled={isConnecting}
-                  >
-                    {connectButtonLabel}
-                  </Button>
-                );
-              }
-
-              if (chain.unsupported || !isVisibleChain) {
-                return (
-                  <Button onClick={openChainModal} variant="warning">
-                    {t('error.wrong-network')}
-                  </Button>
-                );
-              }
-
-              return null;
-            })()}
-          </div>
-        );
-      }}
-    </ConnectButton.Custom>
+    <Button onClick={openConnectModal} variant="primary" className={className} disabled={disabled}>
+      {label}
+    </Button>
   );
-});
+};

@@ -3,10 +3,11 @@ import { memo, Suspense, useEffect } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount } from 'wagmi';
 
-import { Box, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 import { AtomsGlobalUpdates } from 'components/atoms-global-updates/AtomsGlobalUpdates';
 import { Footer } from 'components/footer/Footer';
+import { ConnectModal } from 'components/connect-modal/ConnectModal';
 import { Header } from 'components/header/Header';
 import { ReferralConfirmModal } from 'components/referral-confirm-modal/ReferralConfirmModal';
 import { SDKLoader } from 'components/sdk-loader/SDKLoader';
@@ -43,8 +44,8 @@ export const App = memo(() => {
   }, [width, height, setDimensions]);
 
   return (
-    <Box className={styles.root} ref={ref}>
-      <Box className={styles.content}>
+    <div className={styles.root} ref={ref}>
+      <div className={styles.content}>
         <Header />
         <Suspense
           fallback={
@@ -62,8 +63,9 @@ export const App = memo(() => {
         <WelcomeModal />
         <ReferralConfirmModal />
         {!isSignedInSocially && isConnected && <OneClickTradingModal />}
+        {web3AuthConfig.isEnabled && !isConnected && <ConnectModal />}
         <ToastContainerWrapper />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 });

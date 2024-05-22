@@ -14,7 +14,7 @@ import { Container } from 'components/container/Container';
 import { DepositModal } from 'components/deposit-modal/DepositModal';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
 import { Separator } from 'components/separator/Separator';
-import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
+import { WalletConnectButtonHolder } from 'components/wallet-connect-button/WalletConnectButtonHolder';
 import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
 import { web3AuthConfig } from 'config';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
@@ -41,13 +41,13 @@ import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-import { ConnectModal } from './elements/connect-modal/ConnectModal';
 import { collateralsAtom } from './elements/market-select/collaterals.store';
 import { SettingsBlock } from './elements/settings-block/SettingsBlock';
 import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { connectModalOpenAtom } from '../../store/global-modals.store';
 
 interface HeaderPropsI {
   /**
@@ -84,6 +84,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const setPoolTokenBalance = useSetAtom(poolTokenBalanceAtom);
   const setGasTokenSymbol = useSetAtom(gasTokenSymbolAtom);
   const setPoolTokenDecimals = useSetAtom(poolTokenDecimalsAtom);
+  const setConnectModalOpen = useSetAtom(connectModalOpenAtom);
   const triggerBalancesUpdate = useAtomValue(triggerBalancesUpdateAtom);
   const triggerPositionsUpdate = useAtomValue(triggerPositionsUpdateAtom);
   const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
@@ -92,7 +93,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const [hideBetaText, setHideBetaText] = useAtom(hideBetaTextAtom);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isConnectModalOpen, setConnectModalOpen] = useState(false);
 
   const exchangeRequestRef = useRef(false);
   const positionsRequestRef = useRef(false);
@@ -397,14 +397,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   )}
                   {(!web3AuthConfig.isEnabled || isConnected) && (
                     <>
-                      <WalletConnectButton />
+                      <WalletConnectButtonHolder />
                       <WalletConnectedButtons />
                     </>
                   )}
                 </Typography>
-              )}
-              {web3AuthConfig.isEnabled && (
-                <ConnectModal isOpen={isConnectModalOpen} onClose={() => setConnectModalOpen(false)} />
               )}
               {!isTabletScreen && <SettingsButton />}
               {isSmallScreen && (
@@ -417,7 +414,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               <div className={styles.mobileButtonsBlock}>
                 <Separator />
                 <div className={styles.mobileWalletButtons}>
-                  <WalletConnectButton />
+                  <WalletConnectButtonHolder />
                   <WalletConnectedButtons />
                 </div>
               </div>

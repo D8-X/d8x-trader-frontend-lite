@@ -1,4 +1,6 @@
 import classnames from 'classnames';
+import { useAtom } from 'jotai';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -6,23 +8,23 @@ import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
 import { Button, DialogTitle, Typography } from '@mui/material';
 
 import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
-import { WalletConnectButton } from 'components/wallet-connect-button/WalletConnectButton';
+import { WalletConnectButtonHolder } from 'components/wallet-connect-button/WalletConnectButtonHolder';
 import { Dialog } from 'components/dialog/Dialog';
 import { OrSeparator } from 'components/separator/OrSeparator';
 import { Separator } from 'components/separator/Separator';
+import { connectModalOpenAtom } from 'store/global-modals.store';
 import { Web3SignInMethodE } from 'types/enums';
 
 import styles from './ConnectModal.module.scss';
 
-interface ConnectModalPropsI {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
+export const ConnectModal = () => {
   const { t } = useTranslation();
 
+  const [isOpen, setOpen] = useAtom(connectModalOpenAtom);
+
   const { isConnected } = useAccount();
+
+  const onClose = useCallback(() => setOpen(false), [setOpen]);
 
   return (
     <Dialog open={isOpen} onClose={onClose} className={styles.dialog}>
@@ -38,7 +40,7 @@ export const ConnectModal = ({ isOpen, onClose }: ConnectModalPropsI) => {
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
               <OrSeparator />
-              <WalletConnectButton
+              <WalletConnectButtonHolder
                 connectButtonLabel={
                   <>
                     <AccountBalanceWallet />
