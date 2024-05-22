@@ -232,6 +232,10 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     setCloseOpenOrders(true);
   }, [selectedPosition]);
 
+  if (!selectedPosition) {
+    return null;
+  }
+
   const hasTpSl =
     selectedPosition && (selectedPosition.stopLoss.orders.length > 0 || selectedPosition.takeProfit.orders.length > 0);
 

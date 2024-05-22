@@ -500,6 +500,10 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     }
   };
 
+  if (!selectedPosition) {
+    return null;
+  }
+
   const unroundedMaxAddValue = poolTokenBalance ? poolTokenBalance : 1;
   const unroundedMaxRemoveValue = maxCollateral ? maxCollateral : 1;
   const digitsForMaxAdd = valueToFractionDigits(unroundedMaxAddValue);

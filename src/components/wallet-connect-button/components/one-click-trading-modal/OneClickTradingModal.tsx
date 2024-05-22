@@ -22,6 +22,7 @@ import { activatedOneClickTradingAtom, delegateAddressAtom, tradingClientAtom } 
 import { oneClickModalOpenAtom } from 'store/global-modals.store';
 import { storageKeyAtom } from 'store/order-block.store';
 import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { FundingModal } from '../funding-modal/FundingModal';
 
@@ -34,7 +35,7 @@ export const OneClickTradingModal = () => {
 
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { sendTransactionAsync } = useSendTransaction();
 
   const [activatedOneClickTrading, setActivatedOneClickTrading] = useAtom(activatedOneClickTradingAtom);
@@ -248,6 +249,10 @@ export const OneClickTradingModal = () => {
   }, [address, walletClient, storageKey, activatedOneClickTrading, setTradingClient]);
 
   const handleClose = () => setOneClickModalOpen(false);
+
+  if (!isEnabledChain(chainId)) {
+    return null;
+  }
 
   return (
     <>

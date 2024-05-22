@@ -17,6 +17,7 @@ import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 
@@ -25,7 +26,7 @@ import styles from './DepositModal.module.scss';
 export const DepositModal = () => {
   const { t } = useTranslation();
 
-  const { address, chain } = useAccount();
+  const { address, chain, chainId } = useAccount();
 
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyItemI>();
 
@@ -46,6 +47,10 @@ export const DepositModal = () => {
   }, [setDepositModalOpen]);
 
   const poolAddress = selectedCurrency?.contractAddress || '';
+
+  if (!isEnabledChain(chainId)) {
+    return null;
+  }
 
   return (
     <Dialog open={isDepositModalOpen} onClose={handleOnClose} className={styles.dialog}>

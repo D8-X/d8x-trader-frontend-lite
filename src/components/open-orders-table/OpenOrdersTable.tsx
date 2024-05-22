@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { toast } from 'react-toastify';
 import { type Address, decodeEventLog, encodeEventTopics } from 'viem';
-import { useAccount, useChainId, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 
 import {
   Button,
@@ -55,8 +55,7 @@ const TOPIC_CANCEL_FAIL = encodeEventTopics({ abi: LOB_ABI, eventName: 'Executio
 export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { chain, address, isDisconnected, isConnected } = useAccount();
+  const { chain, chainId, address, isDisconnected, isConnected } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
@@ -208,7 +207,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !tradingClient || !traderAPI) {
+    if (isDisconnected || !tradingClient || !traderAPI || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -406,23 +405,30 @@ export const OpenOrdersTable = memo(() => {
       <div className={classnames(styles.footer, { [styles.withBackground]: width && width >= MIN_WIDTH_FOR_TABLE })} />
 
       <FilterModal headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
-      <Dialog open={isCancelModalOpen} className={styles.dialog}>
-        <DialogTitle>{t('pages.trade.orders-table.cancel-modal.title')}</DialogTitle>
-        <DialogContent className={styles.dialogContent}>
-          {t('pages.trade.orders-table.cancel-modal.content')}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeCancelModal} variant="secondary" size="small">
-            {t('pages.trade.orders-table.cancel-modal.back')}
-          </Button>
-          <GasDepositChecker>
-            <Button onClick={handleCancelOrderConfirm} variant="primary" size="small" disabled={loading || requestSent}>
-              {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-              {t('pages.trade.orders-table.cancel-modal.confirm')}
+      {isEnabledChain(chainId) && (
+        <Dialog open={isCancelModalOpen} className={styles.dialog}>
+          <DialogTitle>{t('pages.trade.orders-table.cancel-modal.title')}</DialogTitle>
+          <DialogContent className={styles.dialogContent}>
+            {t('pages.trade.orders-table.cancel-modal.content')}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeCancelModal} variant="secondary" size="small">
+              {t('pages.trade.orders-table.cancel-modal.back')}
             </Button>
-          </GasDepositChecker>
-        </DialogActions>
-      </Dialog>
+            <GasDepositChecker>
+              <Button
+                onClick={handleCancelOrderConfirm}
+                variant="primary"
+                size="small"
+                disabled={loading || requestSent}
+              >
+                {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                {t('pages.trade.orders-table.cancel-modal.confirm')}
+              </Button>
+            </GasDepositChecker>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 });
