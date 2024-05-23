@@ -2,8 +2,8 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import {
   Button,
@@ -41,6 +41,7 @@ import { proxyAddrAtom, traderAPIAtom, traderAPIBusyAtom, triggerBalancesUpdateA
 import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
@@ -63,9 +64,8 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
-  const chainId = useChainId();
-  const { address, chain } = useAccount();
-  const { data: walletClient } = useWalletClient({ chainId: chainId });
+  const { address, chain, chainId } = useAccount();
+  const { data: walletClient } = useWalletClient({ chainId });
 
   const [requestSent, setRequestSent] = useState(false);
   const [modifyType, setModifyType] = useState(ModifyTypeE.Add);
@@ -226,7 +226,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const debouncedRemoveCollateral = useDebounce(removeCollateral, 500);
 
   const handleRefreshPositionRisk = useCallback(() => {
-    if (!selectedPosition || !address || isAPIBusyRef.current) {
+    if (isAPIBusyRef.current || !selectedPosition || !address || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -285,7 +285,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   }, [modifyType, addCollateral, removeCollateral]);
 
   useEffect(() => {
-    if (!address || !traderAPI || !selectedPosition?.symbol || !chainId || isAPIBusy) {
+    if (!address || !traderAPI || !selectedPosition?.symbol || !isEnabledChain(chainId) || isAPIBusy) {
       return;
     }
 
@@ -393,7 +393,8 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       !proxyAddr ||
       !walletClient ||
       !tradingClient ||
-      !poolTokenDecimals
+      !poolTokenDecimals ||
+      !isEnabledChain(chainId)
     ) {
       return;
     }

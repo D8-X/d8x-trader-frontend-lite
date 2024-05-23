@@ -1,9 +1,10 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { config } from 'config';
 import { mainWsLatestMessageTimeAtom, webSocketReadyAtom } from 'store/pools.store';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
 import { useHandleMessage } from '../hooks/useHandleMessage';
@@ -15,15 +16,16 @@ import { useWsMessageHandler } from './useWsMessageHandler';
 import { WebSocketContext, WebSocketContextI } from './WebSocketContext';
 
 export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
-  const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
-  const [latestMessageTime] = useAtom(mainWsLatestMessageTimeAtom);
-  const chainId = useChainId();
+  const { chainId } = useAccount();
 
-  const wsRef = useRef<WebSocketI>();
-  const waitForPongRef = useRef(false);
+  const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
+  const latestMessageTime = useAtomValue(mainWsLatestMessageTimeAtom);
 
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+
+  const wsRef = useRef<WebSocketI>();
+  const waitForPongRef = useRef(false);
 
   const handleWsMessage = useWsMessageHandler();
 
@@ -55,7 +57,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     wsRef.current?.close();
 
-    const wsUrl = config.wsUrl[`${chainId}`] || config.wsUrl.default;
+    const wsUrl = config.wsUrl[getEnabledChainId(chainId)] || config.wsUrl.default;
     wsRef.current = createWebSocketWithReconnect(wsUrl);
     wsRef.current.onStateChange(setIsConnected);
 

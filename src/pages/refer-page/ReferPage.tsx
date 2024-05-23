@@ -1,8 +1,8 @@
 import { useAtom, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi } from 'viem';
+import { useAccount, useReadContracts } from 'wagmi';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
@@ -16,6 +16,7 @@ import {
   referralCodesRefetchHandlerRefAtom,
   tokenInfoAtom,
 } from 'store/refer.store';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { ReferrerTab } from './components/referrer-tab/ReferrerTab';
 import { TabSelector } from './components/tab-selector/TabSelector';
@@ -49,8 +50,7 @@ export const ReferPage = () => {
   const setReferralCodes = useSetAtom(referralCodesAtom);
   const setReferralCodesRefetchHandler = useSetAtom(referralCodesRefetchHandlerRefAtom);
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -75,7 +75,7 @@ export const ReferPage = () => {
         functionName: 'decimals',
       },
     ],
-    query: { enabled: address && !!chainId && !!tokenInfo?.tokenAddr && isConnected },
+    query: { enabled: address && isEnabledChain(chainId) && !!tokenInfo?.tokenAddr && isConnected },
   });
 
   const handleTabChange = useCallback(
@@ -93,7 +93,7 @@ export const ReferPage = () => {
   );
 
   const refreshReferralCodes = useCallback(() => {
-    if (referralCodesRequestRef.current || !chainId || !address) {
+    if (referralCodesRequestRef.current || !isEnabledChain(chainId) || !address) {
       return;
     }
 
@@ -118,7 +118,7 @@ export const ReferPage = () => {
   }, [refreshReferralCodes]);
 
   useEffect(() => {
-    if (tokenInfoRequestRef.current || !chainId) {
+    if (tokenInfoRequestRef.current || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -133,7 +133,7 @@ export const ReferPage = () => {
   }, [chainId, setTokenInfo]);
 
   useEffect(() => {
-    if (isAgencyRequestRef.current || !chainId || !address || tokenBalance === undefined) {
+    if (isAgencyRequestRef.current || !isEnabledChain(chainId) || !address || tokenBalance === undefined) {
       return;
     }
 

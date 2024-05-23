@@ -3,7 +3,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { useAccount, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 
 import { useMediaQuery, useTheme } from '@mui/material';
@@ -36,6 +36,7 @@ import {
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { PerpetualInfoFetcher } from './components/PerpetualInfoFetcher';
 import { PoolSubscription } from './components/PoolSubscription';
@@ -70,8 +71,7 @@ export const TraderPage = () => {
   const [positions, setPositions] = useAtom(positionsAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -127,9 +127,10 @@ export const TraderPage = () => {
 
   const fetchPositions = useCallback(
     async (_chainId: number, _address: Address) => {
-      if (!traderAPI || traderAPI.chainId !== _chainId || !isSDKConnected || fetchPositionsRef.current) {
+      if (fetchPositionsRef.current || !isSDKConnected || !traderAPI || traderAPI.chainId !== _chainId) {
         return;
       }
+
       fetchPositionsRef.current = true;
       try {
         const { data } = await getPositionRisk(_chainId, traderAPI, _address);
@@ -147,9 +148,10 @@ export const TraderPage = () => {
 
   const fetchOrders = useCallback(
     async (_chainId: number, _address: Address) => {
-      if (!traderAPI || traderAPI.chainId !== _chainId || !isSDKConnected || fetchOrdersRef.current) {
+      if (fetchOrdersRef.current || !isSDKConnected || !traderAPI || traderAPI.chainId !== _chainId) {
         return;
       }
+
       fetchOrdersRef.current = true;
       try {
         const { data } = await getOpenOrders(_chainId, traderAPI, _address);
@@ -175,7 +177,7 @@ export const TraderPage = () => {
   }, [selectedPool, location.hash, location.pathname, location.search, navigate]);
 
   useEffect(() => {
-    if (!chainId || !address) {
+    if (!address || !isEnabledChain(chainId)) {
       return;
     }
     fetchPositions(chainId, address).then();

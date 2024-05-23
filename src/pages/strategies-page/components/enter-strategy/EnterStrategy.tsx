@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useChainId, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
 import { EmojiFoodBeverageOutlined } from '@mui/icons-material';
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
@@ -18,6 +18,7 @@ import { pagesConfig } from 'config';
 import { poolFeeAtom, traderAPIAtom } from 'store/pools.store';
 import { strategyAddressesAtom, strategyPerpetualStatsAtom, strategyPoolAtom } from 'store/strategies.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useEnterStrategy } from './hooks/useEnterStrategy';
 
@@ -30,8 +31,7 @@ interface EnterStrategyPropsI {
 export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { address, isConnected } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const { sendTransactionAsync } = useSendTransaction();
 
@@ -158,6 +158,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
       !walletClient ||
       !traderAPI ||
       feeRate === undefined ||
+      !isEnabledChain(chainId) ||
       !pagesConfig.enabledStrategiesPageByChains.includes(chainId) ||
       !strategyPerpetualStats ||
       addAmount === 0

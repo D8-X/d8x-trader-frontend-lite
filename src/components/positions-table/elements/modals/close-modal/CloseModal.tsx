@@ -2,11 +2,10 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { type Address } from 'viem';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import {
-  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -34,6 +33,7 @@ import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
@@ -56,9 +56,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const traderAPI = useAtomValue(traderAPIAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
-  const chainId = useChainId();
   const { address, chain } = useAccount();
-  const { data: walletClient } = useWalletClient({ chainId: chainId });
+  const { data: walletClient } = useWalletClient({ chainId: chain?.id });
 
   const { poolTokenDecimals } = usePoolTokenBalance({ poolByPosition });
 
@@ -145,7 +144,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       !proxyAddr ||
       !walletClient ||
       !tradingClient ||
-      !poolTokenDecimals
+      !poolTokenDecimals ||
+      !chain ||
+      !isEnabledChain(chain?.id)
     ) {
       return;
     }
@@ -164,7 +165,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       leverage: selectedPosition.leverage,
     };
 
-    orderDigest(chainId, [closeOrder], address)
+    orderDigest(chain.id, [closeOrder], address)
       .then((data) => {
         if (data.data.digests.length > 0) {
           approveMarginToken(walletClient, poolByPosition.marginTokenAddr, proxyAddr, 0, poolTokenDecimals).then(() => {
@@ -215,7 +216,6 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
 
       await cancelOrders({
         ordersToCancel,
-        chainId,
         chain,
         traderAPI,
         tradingClient,
@@ -246,12 +246,12 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       <DialogTitle>{t('pages.trade.positions-table.modify-modal.close')}</DialogTitle>
       <Separator />
       <DialogContent>
-        <Box className={modalStyles.newPositionHeader}>
+        <div className={modalStyles.newPositionHeader}>
           <Typography variant="bodyMedium" className={modalStyles.centered}>
             {t('pages.trade.positions-table.modify-modal.pos-details.title-existing')}
           </Typography>
-        </Box>
-        <Box className={modalStyles.newPositionDetails}>
+        </div>
+        <div className={modalStyles.newPositionDetails}>
           <SidesRow
             leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')}
             rightSide={formatToCurrency(selectedPosition?.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
@@ -285,18 +285,18 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
               selectedPosition && selectedPosition.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative
             }
           />
-        </Box>
+        </div>
       </DialogContent>
       {hasTpSl && (
         <>
           <Separator />
           <DialogContent>
-            <Box className={modalStyles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
+            <div className={modalStyles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
               <SidesRow
                 leftSide={t('pages.trade.positions-table.modify-modal.pos-details.close-tp-sl')}
                 rightSide={<Checkbox checked={closeOpenOrders} className={modalStyles.checkbox} />}
               />
-            </Box>
+            </div>
           </DialogContent>
         </>
       )}

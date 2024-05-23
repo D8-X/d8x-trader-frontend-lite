@@ -1,6 +1,6 @@
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
-import { useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { config } from 'config';
 
@@ -11,14 +11,15 @@ import { usePingPong } from 'context/websocket-context/hooks/usePingPong';
 import { useSend } from 'context/websocket-context/hooks/useSend';
 import { WebSocketI } from 'context/websocket-context/types';
 import { candlesLatestMessageTimeAtom } from 'store/tv-chart.store';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
 import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 
 export const CandlesWebSocketListener = memo(() => {
-  const chainId = useChainId();
+  const { chainId } = useAccount();
 
-  const [latestMessageTime] = useAtom(candlesLatestMessageTimeAtom);
+  const latestMessageTime = useAtomValue(candlesLatestMessageTimeAtom);
 
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -56,7 +57,7 @@ export const CandlesWebSocketListener = memo(() => {
   useEffect(() => {
     wsRef.current?.close();
 
-    const candlesWsUrl = config.candlesWsUrl[`${chainId}`] || config.candlesWsUrl.default;
+    const candlesWsUrl = config.candlesWsUrl[getEnabledChainId(chainId)] || config.candlesWsUrl.default;
     wsRef.current = createWebSocketWithReconnect(candlesWsUrl);
     wsRef.current.onStateChange(setIsConnected);
 

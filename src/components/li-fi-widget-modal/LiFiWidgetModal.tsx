@@ -17,11 +17,11 @@ export const LiFiWidgetModal = () => {
 
   const [isOpen, setOpen] = useAtom(lifiModalOpenAtom);
 
-  const onClose = () => setOpen(false);
-
   if (!isConnected) {
     return null;
   }
+
+  const onClose = () => setOpen(false);
 
   return (
     <Dialog open={isOpen} onCloseClick={onClose}>

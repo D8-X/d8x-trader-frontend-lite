@@ -3,7 +3,7 @@ import { LanguageKey } from '@lifi/widget/providers';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient } from '@wagmi/core';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
@@ -26,7 +26,7 @@ function modifyLanguage(languageKey?: string) {
 export const LiFiWidgetHolder = () => {
   const { i18n, t } = useTranslation();
 
-  const chainId = useChainId();
+  const { chainId } = useAccount();
   const { connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const signer = useEthersSigner();
@@ -40,7 +40,7 @@ export const LiFiWidgetHolder = () => {
 
   const admissibleTokens = useMemo(() => {
     return pools.map(({ marginTokenAddr }) => ({
-      chainId: chainId,
+      chainId,
       address: marginTokenAddr,
     }));
   }, [pools, chainId]);

@@ -3,11 +3,11 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
+import { useAccount, useReadContracts } from 'wagmi';
 
 import { Close, Menu } from '@mui/icons-material';
-import { Box, Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
@@ -22,6 +22,7 @@ import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo, getPositionRisk } from 'network/network';
 import { authPages, pages } from 'routes/pages';
 import { hideBetaTextAtom } from 'store/app.store';
+import { connectModalOpenAtom } from 'store/global-modals.store';
 import {
   gasTokenSymbolAtom,
   oracleFactoryAddrAtom,
@@ -47,7 +48,6 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { connectModalOpenAtom } from '../../store/global-modals.store';
 
 interface HeaderPropsI {
   /**
@@ -70,8 +70,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const { t } = useTranslation();
 
-  const chainId = useChainId();
-  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const { chain, chainId, address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
@@ -172,7 +171,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    if (traderAPI && traderAPI.chainId === chainId && isEnabledChain(chainId)) {
+    if (traderAPI && traderAPI.chainId === getEnabledChainId(chainId)) {
       traderAPIRef.current = traderAPI;
     }
   }, [traderAPI, chainId]);
@@ -240,7 +239,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       enabled:
         !exchangeRequestRef.current &&
         address &&
-        traderAPI?.chainId === chain?.id &&
+        traderAPI?.chainId === chainId &&
         isEnabledChain(chainId) &&
         !!selectedPool?.marginTokenAddr &&
         isConnected &&
@@ -309,6 +308,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       ...authPages.filter((page) => page.enabled && (!page.enabledByChains || page.enabledByChains.includes(chainId)))
     );
   }
+
   const drawer = (
     <>
       <Typography
@@ -336,19 +336,19 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       {isTabletScreen && (
         <>
           <Divider />
-          <Box className={styles.settings}>
+          <div className={styles.settings}>
             <SettingsBlock />
-          </Box>
-          <Box className={styles.languageSwitcher}>
+          </div>
+          <div className={styles.languageSwitcher}>
             <LanguageSwitcher />
-          </Box>
+          </div>
         </>
       )}
-      <Box className={styles.closeAction}>
+      <div className={styles.closeAction}>
         <Button onClick={handleDrawerToggle} variant="secondary" size="small">
           {t('common.info-modal.close')}
         </Button>
-      </Box>
+      </div>
     </>
   );
 
@@ -366,7 +366,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         <div className={styles.headerHolder}>
           <PageAppBar position="static">
             <Toolbar className={styles.toolbar}>
-              <Box className={styles.leftSide}>
+              <div className={styles.leftSide}>
                 <Typography variant="h6" component="div" className={styles.mainLogoHolder}>
                   <a href="/" className={styles.logoLink}>
                     <LogoWithText width={86} height={20} />
@@ -387,7 +387,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                     ))}
                   </nav>
                 )}
-              </Box>
+              </div>
               {(!isMobileScreen || !isConnected) && (
                 <Typography variant="h6" component="div" className={styles.walletConnect}>
                   {web3AuthConfig.isEnabled && !isConnected && (
@@ -421,7 +421,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             )}
             {isConnected && <DepositModal />}
           </PageAppBar>
-          <Box component="nav">
+          <nav>
             <Drawer
               anchor="right"
               container={container}
@@ -442,7 +442,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             >
               {drawer}
             </Drawer>
-          </Box>
+          </nav>
         </div>
       </Container>
     </>

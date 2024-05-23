@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
-import { useAccount, useChainId, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
@@ -24,6 +24,7 @@ import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { cancelOrders } from '../../../helpers/cancelOrders';
 import { usePoolTokenBalance } from '../../../hooks/usePoolTokenBalance';
@@ -60,11 +61,8 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition, closeModal }: ModifyModalPropsI) => {
   const { t } = useTranslation();
 
-  const { address, chain } = useAccount();
-  const chainId = useChainId();
-  const { data: walletClient } = useWalletClient({
-    chainId,
-  });
+  const { address, chain, chainId } = useAccount();
+  const { data: walletClient } = useWalletClient({ chainId });
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -90,7 +88,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       return;
     }
 
-    if (!selectedPosition || !address || !traderAPI || !poolFee) {
+    if (!selectedPosition || !address || !traderAPI || !poolFee || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -125,7 +123,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   }, []);
 
   useEffect(() => {
-    if (!chainId || !poolByPosition?.poolSymbol || !address) {
+    if (!isEnabledChain(chainId) || !poolByPosition?.poolSymbol || !address) {
       return;
     }
     fetchPoolFee(chainId, poolByPosition.poolSymbol, address);
@@ -199,7 +197,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       !proxyAddr ||
       !walletClient ||
       collateralDeposit === null ||
-      !poolTokenDecimals
+      !poolTokenDecimals ||
+      !chain ||
+      !isEnabledChain(chainId)
     ) {
       return;
     }
@@ -218,7 +218,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
 
     await cancelOrders({
       ordersToCancel,
-      chainId,
       chain,
       traderAPI,
       tradingClient,
@@ -269,7 +268,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
     if (parsedOrders.length > 0) {
       // Execute orderDigest with delay to minimize RPC errors
       setTimeout(() => {
-        orderDigest(chainId, parsedOrders, address)
+        orderDigest(chain.id, parsedOrders, address)
           .then((data) => {
             if (data.data.digests.length > 0) {
               // hide modal now that metamask popup shows up

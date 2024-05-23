@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useAccount, useChainId } from 'wagmi';
+import { useAccount } from 'wagmi';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { parseSymbol } from 'helpers/parseSymbol';
@@ -38,6 +38,7 @@ import {
   OnUpdateMarkPriceWsMessageI,
   SubscriptionWsMessageI,
 } from './types';
+import { getEnabledChainId } from '../../../utils/getEnabledChainId';
 
 function isConnectMessage(message: CommonWsMessageI): message is ConnectWsMessageI {
   return message.type === MessageTypeE.Connect;
@@ -85,8 +86,7 @@ const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
 export function useWsMessageHandler() {
   const { t } = useTranslation();
 
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
 
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
   const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
@@ -200,7 +200,7 @@ export function useWsMessageHandler() {
           return;
         }
         // refresh open orders
-        getOpenOrders(chainId, traderAPI, address)
+        getOpenOrders(getEnabledChainId(chainId), traderAPI, address)
           .then(({ data }) => {
             if (data?.length > 0) {
               data.map(setOpenOrders);
@@ -272,8 +272,8 @@ export function useWsMessageHandler() {
       failedOrderIds,
       chainId,
       address,
-      t,
       traderAPI,
+      t,
     ]
   );
 }

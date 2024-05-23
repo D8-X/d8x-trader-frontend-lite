@@ -1,6 +1,7 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
 import type { Address, Chain, WalletClient } from 'viem';
+import { getTransactionCount, waitForTransactionReceipt } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { cancelOrder } from 'blockchain-api/contract-interactions/cancelOrder';
@@ -10,12 +11,10 @@ import { getCancelOrder } from 'network/network';
 import { OrderWithIdI } from 'types/types';
 
 import styles from '../elements/modals/Modal.module.scss';
-import { getTransactionCount, waitForTransactionReceipt } from 'viem/actions';
 
 interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
-  chainId: number;
-  chain: (Chain & { unsupported?: boolean | undefined }) | undefined;
+  chain: Chain;
   traderAPI: TraderInterface | null;
   tradingClient: WalletClient;
   toastTitle: string;
@@ -24,7 +23,7 @@ interface CancelOrdersPropsI {
 }
 
 export async function cancelOrders(props: CancelOrdersPropsI) {
-  const { ordersToCancel, chainId, chain, traderAPI, tradingClient, toastTitle, nonceShift, callback } = props;
+  const { ordersToCancel, chain, traderAPI, tradingClient, toastTitle, nonceShift, callback } = props;
 
   if (ordersToCancel.length) {
     const cancelOrdersPromises: Promise<void>[] = [];
@@ -33,7 +32,7 @@ export async function cancelOrders(props: CancelOrdersPropsI) {
     for (let idx = 0; idx < ordersToCancel.length; idx++) {
       const orderToCancel = ordersToCancel[idx];
       cancelOrdersPromises.push(
-        getCancelOrder(chainId, traderAPI, orderToCancel.symbol, orderToCancel.id)
+        getCancelOrder(chain.id, traderAPI, orderToCancel.symbol, orderToCancel.id)
           .then((data) => {
             if (data.data.digest) {
               cancelOrder(tradingClient, HashZero, data.data, orderToCancel.id, nonce + idx)
@@ -46,7 +45,7 @@ export async function cancelOrders(props: CancelOrdersPropsI) {
                           label: '',
                           value: (
                             <a
-                              href={getTxnLink(chain?.blockExplorers?.default?.url, tx.hash)}
+                              href={getTxnLink(chain.blockExplorers?.default?.url, tx.hash)}
                               target="_blank"
                               rel="noreferrer"
                               className={styles.shareLink}
