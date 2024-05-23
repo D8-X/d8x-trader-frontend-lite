@@ -25,6 +25,7 @@ import {
 } from 'store/pools.store';
 import { PerpetualStatisticsI } from 'types/types';
 import { debounceLeading } from 'utils/debounceLeading';
+import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import {
   CommonWsMessageI,
@@ -38,7 +39,6 @@ import {
   OnUpdateMarkPriceWsMessageI,
   SubscriptionWsMessageI,
 } from './types';
-import { getEnabledChainId } from '../../../utils/getEnabledChainId';
 
 function isConnectMessage(message: CommonWsMessageI): message is ConnectWsMessageI {
   return message.type === MessageTypeE.Connect;
