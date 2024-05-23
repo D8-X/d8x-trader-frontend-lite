@@ -274,7 +274,7 @@ export const OrderSize = memo(() => {
                   {formatToCurrency(maxOrderSizeCurrent, selectedCurrency)}.{' '}
                   {t('pages.trade.order-block.order-size.body3')} {minPositionString} {selectedCurrency}.{' '}
                   {t('pages.trade.order-block.order-size.body4')}{' '}
-                  {formatToCurrency(+orderSizeStep, selectedCurrency, false, 4)}.
+                  {formatToCurrency(+orderSizeStep, selectedCurrency, false, valueToFractionDigits(+orderSizeStep))}.
                 </Typography>
               </>
             }
