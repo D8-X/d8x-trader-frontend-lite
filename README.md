@@ -30,6 +30,14 @@ This package is configured entirely via environment variables. You must specify:
   - If it is required to be enabled for specific chains then it should take the form:
     `VITE_ENABLED_LIFI_BY_CHAINS=1101;1442`
 
+- **VITE_ENABLED_OWLTO_BY_CHAINS**: This is an optional variable that enables the OWLTO bridge by chains.
+
+  - By default, the OWLTO button is not shown.
+  - If it is enabled by chain and same chain is inside `VITE_ENABLED_LIFI_BY_CHAINS`, OWLTO will be shown instead of
+    LiFi.
+  - If it is required to be enabled for specific chains then it should take the form:
+    `VITE_ENABLED_OWLTO_BY_CHAINS=196`
+
 - **VITE_ENABLED_REFER_PAGE**: This is an optional variable that allow to disable Refer page.
 
   - By default, this variable is set to `true`.

@@ -734,6 +734,7 @@
       "header-to": "Bridge in",
       "header-from": "Bridge out"
     },
+    "owlto-bridge": "OWLTO bridge",
     "pagination": {
       "per-page": "Per page"
     },

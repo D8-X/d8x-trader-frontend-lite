@@ -19,6 +19,7 @@ import { cutAddress } from 'utils/cutAddress';
 
 import { LiFiWidgetButton } from './LiFiWidgetButton';
 import { OneClickTradingButton } from './OneClickTradingButton';
+import { OwltoButton } from './OwltoButton';
 
 import styles from './WalletConnectButton.module.scss';
 
@@ -36,7 +37,7 @@ export const WalletConnectedButtons = memo(() => {
 
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
-  const isLiFiShownOnPage = useMemo(() => {
+  const isBridgeShownOnPage = useMemo(() => {
     const restrictedPages = Object.values(RoutesE).filter((page) => page !== RoutesE.Trade && page !== RoutesE.Vault);
     const foundPage = restrictedPages.find((page) => location.pathname.indexOf(page) === 0);
     return !foundPage;
@@ -45,6 +46,15 @@ export const WalletConnectedButtons = memo(() => {
   let isLiFiEnabled = false;
   if (chainId && config.enabledLiFiByChains.length > 0) {
     isLiFiEnabled = config.enabledLiFiByChains.includes(chainId);
+  }
+
+  let isOwltoEnabled = false;
+  if (chainId && config.enabledOwltoByChains.length > 0) {
+    isOwltoEnabled = config.enabledOwltoByChains.includes(chainId);
+    if (isOwltoEnabled) {
+      // disabled LiFi widget, in case OWLTO is enabled on same chain
+      isLiFiEnabled = false;
+    }
   }
 
   return (
@@ -65,7 +75,8 @@ export const WalletConnectedButtons = memo(() => {
                 <>
                   <div className={styles.buttonsHolder}>
                     {!isSignedInSocially && <OneClickTradingButton />}
-                    {isLiFiEnabled && isLiFiShownOnPage && <LiFiWidgetButton />}
+                    {isLiFiEnabled && isBridgeShownOnPage && <LiFiWidgetButton />}
+                    {isOwltoEnabled && isBridgeShownOnPage && <OwltoButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                     </Button>
