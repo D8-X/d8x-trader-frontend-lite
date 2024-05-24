@@ -6,7 +6,7 @@ import { type Address } from 'viem';
 import { useAccount } from 'wagmi';
 
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { Box, ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
+import { ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
@@ -262,8 +262,8 @@ export const OrderSize = memo(() => {
 
   return (
     <>
-      <Box className={styles.root}>
-        <Box className={styles.labelHolder}>
+      <div className={styles.root}>
+        <div className={styles.labelHolder}>
           <InfoLabelBlock
             title={t('pages.trade.order-block.order-size.title')}
             content={
@@ -279,7 +279,7 @@ export const OrderSize = memo(() => {
               </>
             }
           />
-        </Box>
+        </div>
         <ResponsiveInput
           id="order-size"
           inputValue={inputValue}
@@ -343,7 +343,7 @@ export const OrderSize = memo(() => {
             </div>
           }
         />
-      </Box>
+      </div>
       <OrderSizeSlider />
     </>
   );
