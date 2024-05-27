@@ -21,7 +21,7 @@ import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount'
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
-import { HedgeConfigI, OrderI } from 'types/types';
+import type { HedgeConfigI, OrderI } from 'types/types';
 
 import { postOrder } from './postOrder';
 import { setDelegate } from './setDelegate';
@@ -29,6 +29,7 @@ import { setDelegate } from './setDelegate';
 const DEADLINE = 60 * 60; // 1 hour from posting time
 const DELEGATE_INDEX = 2; // to be emitted
 const GAS_TARGET = 4_000_000n; // good for arbitrum
+const PAGE_REFRESH_DELAY = 3_000; // Let's wait 3 sec before refresh
 
 export async function enterStrategy(
   { chainId, walletClient, symbol, traderAPI, amount, feeRate, indexPrice, limitPrice, strategyAddress }: HedgeConfigI,
@@ -118,7 +119,10 @@ export async function enterStrategy(
 
   if (!data.digests || data.digests.length === 0) {
     console.error('orderDigest error:', data.error);
-    throw new Error('An error appeared to enter a strategy');
+    setTimeout(() => {
+      window.location.reload();
+    }, PAGE_REFRESH_DELAY);
+    throw new Error('An error appeared to enter a strategy. Please wait for page refresh.');
   }
   const gasPrice = await getGasPrice(walletClient.chain?.id);
 
