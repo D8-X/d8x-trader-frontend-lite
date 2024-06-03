@@ -54,6 +54,7 @@ export async function approveMarginToken(
       return waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
         timeout: 30_000,
+        confirmations: 5,
       }).then(() => ({ hash: tx, nonce: nonce + 1 }));
     });
   }
