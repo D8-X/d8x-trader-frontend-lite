@@ -159,8 +159,8 @@ export const Add = memo(() => {
     setRequestSent(true);
     setLoading(true);
     approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
-      .then(() => {
-        return addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount);
+      .then(({ nonce }) => {
+        return addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount, { nonce });
       })
       .then((tx) => {
         setTxHash(tx.hash);

@@ -3,15 +3,14 @@ import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { type Address, type WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { MethodE } from 'types/enums';
-import { getTransactionCount } from '@wagmi/core';
 
 export async function addLiquidity(
   walletClient: WalletClient,
   traderAPI: TraderInterface,
   symbol: string,
-  amount: number
+  amount: number,
+  options?: { nonce?: number }
 ): Promise<{ hash: Address }> {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
@@ -23,7 +22,7 @@ export async function addLiquidity(
     throw new Error('undefined call parameters');
   }
   const amountParsed = BigInt(floatToDecN(amount, decimals).toString());
-  const nonce = await getTransactionCount(wagmiConfig, { address: walletClient.account.address });
+
   const gasPrice = await getGasPrice(walletClient.chain?.id);
   const params = {
     chain: walletClient.chain,
@@ -37,5 +36,5 @@ export async function addLiquidity(
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  return walletClient.writeContract({ ...params, gas: gasLimit, nonce: nonce + 1 }).then((tx) => ({ hash: tx }));
+  return walletClient.writeContract({ ...params, gas: gasLimit, nonce: options?.nonce }).then((tx) => ({ hash: tx }));
 }

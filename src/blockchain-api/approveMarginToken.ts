@@ -1,4 +1,4 @@
-import { readContract, waitForTransactionReceipt } from '@wagmi/core';
+import { getTransactionCount, readContract, waitForTransactionReceipt } from '@wagmi/core';
 import { type Address, erc20Abi, parseUnits, type WalletClient, type WriteContractParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
@@ -28,12 +28,13 @@ export async function approveMarginToken(
   });
 
   if (allowance > minAmountBN) {
-    return null;
+    return { nonce: undefined };
   } else {
     const account = walletClient.account;
     if (!account) {
       throw new Error('account not connected');
     }
+    const nonce = await getTransactionCount(wagmiConfig, { address: walletClient.account.address });
     const gasPrice = await getGasPrice(walletClient.chain?.id);
     const params: WriteContractParameters = {
       chain: walletClient.chain,
@@ -49,11 +50,11 @@ export async function approveMarginToken(
       getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
     );
 
-    return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
+    return walletClient.writeContract({ ...params, gas: gasLimit, nonce }).then((tx) => {
       return waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
         timeout: 30_000,
-      }).then(() => ({ hash: tx }));
+      }).then(() => ({ hash: tx, nonce: nonce + 1 }));
     });
   }
 }
