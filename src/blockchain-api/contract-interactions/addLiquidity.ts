@@ -37,5 +37,5 @@ export async function addLiquidity(
   const gasLimit = await estimateContractGas(walletClient, params)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  return walletClient.writeContract({ ...params, gas: gasLimit, nonce }).then((tx) => ({ hash: tx }));
+  return walletClient.writeContract({ ...params, gas: gasLimit, nonce: nonce + 1 }).then((tx) => ({ hash: tx }));
 }
