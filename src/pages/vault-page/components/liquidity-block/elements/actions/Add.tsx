@@ -26,6 +26,7 @@ import {
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 
 import styles from './Action.module.scss';
 
@@ -61,6 +62,8 @@ export const Add = memo(() => {
   const [inputValue, setInputValue] = useState(`${addAmount}`);
   const [txHash, setTxHash] = useState<Address>();
   const [loading, setLoading] = useState(false);
+  const [approvalCompleted, setApprovalCompleted] = useState(false);
+  const { isMultisigAddress } = useUserWallet();
 
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
@@ -142,7 +145,7 @@ export const Add = memo(() => {
     setInputValue('0');
   }, [isSuccess, txHash, chain, t]);
 
-  const handleAddLiquidity = () => {
+  const handleApprove = () => {
     if (requestSentRef.current) {
       return;
     }
@@ -158,8 +161,59 @@ export const Add = memo(() => {
     requestSentRef.current = true;
     setRequestSent(true);
     setLoading(true);
-    approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount, poolTokenDecimals)
+    approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount / 1.05, poolTokenDecimals)
       .then(() => {
+        setApprovalCompleted(true);
+        setLoading(false);
+        toast.success(<ToastContent title={t('pages.vault.toast.approved')} bodyLines={[]} />);
+      })
+      .catch((err) => {
+        console.error(err);
+        let msg = (err?.message ?? err) as string;
+        msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+        toast.error(
+          <ToastContent
+            title={t('pages.vault.toast.error.title')}
+            bodyLines={[{ label: t('pages.vault.toast.error.body'), value: msg }]}
+          />
+        );
+        setLoading(false);
+      })
+      .finally(() => {
+        requestSentRef.current = false;
+        setRequestSent(false);
+      });
+  };
+
+  const handleAddLiquidity = () => {
+    if (requestSentRef.current) {
+      return;
+    }
+
+    if (!liqProvTool || !isSDKConnected || !selectedPool || !addAmount || addAmount < 0 || !poolTokenDecimals) {
+      return;
+    }
+
+    if (!address || !walletClient || !proxyAddr) {
+      return;
+    }
+
+    if (isMultisigAddress && !approvalCompleted) {
+      toast.error(
+        <ToastContent
+          title={t('pages.vault.toast.error.title')}
+          bodyLines={[{ label: t('pages.vault.toast.error.body'), value: t('pages.vault.toast.approval-required') }]}
+        />
+      );
+      return;
+    }
+
+    requestSentRef.current = true;
+    setRequestSent(true);
+    setLoading(true);
+    approveMarginToken(walletClient, selectedPool.marginTokenAddr, proxyAddr, addAmount / 1.05, poolTokenDecimals)
+      .then(() => {
+        setApprovalCompleted(false);
         return addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount);
       })
       .then((tx) => {
@@ -259,9 +313,27 @@ export const Add = memo(() => {
     } else if (validityCheckAddType === ValidityCheckAddE.NoAmount) {
       return `${t('pages.vault.add.validity-no-amount')}`;
     }
+    if (isMultisigAddress && !approvalCompleted) {
+      return t('pages.vault.add.approve-button');
+    }
     return t('pages.vault.add.button');
-  }, [t, validityCheckAddType, selectedPool?.brokerCollateralLotSize, selectedPool?.poolSymbol]);
+  }, [
+    t,
+    isMultisigAddress,
+    validityCheckAddType,
+    selectedPool?.brokerCollateralLotSize,
+    selectedPool?.poolSymbol,
+    approvalCompleted,
+  ]);
 
+  const handleButtonClick = () => {
+    if (isMultisigAddress && !approvalCompleted) {
+      handleApprove();
+    } else {
+      handleAddLiquidity();
+    }
+  };
+  console.log(isMultisigAddress);
   return (
     <div className={styles.root}>
       <div className={styles.infoBlock}>
@@ -343,7 +415,7 @@ export const Add = memo(() => {
               <Button
                 variant="primary"
                 disabled={isButtonDisabled}
-                onClick={handleAddLiquidity}
+                onClick={handleButtonClick}
                 className={styles.actionButton}
               >
                 {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}

@@ -26,8 +26,9 @@ export async function approveMarginToken(
     functionName: 'allowance',
     args: [walletClient.account.address, proxyAddr as Address],
   });
-
-  if (allowance > minAmountBN) {
+  console.log('allowance', allowance);
+  console.log('minAmountBN', minAmountBN);
+  if (allowance >= minAmountBN) {
     return null;
   } else {
     const account = walletClient.account;
