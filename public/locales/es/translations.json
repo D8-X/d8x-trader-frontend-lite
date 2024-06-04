@@ -532,6 +532,7 @@
         },
         "receive": "d{{poolSymbol}} que recibes",
         "button": "Añadir",
+        "approve-button": "Aprobarse",
         "validity-empty": "-",
         "validity-no-address": "Conectar cartera",
         "validity-no-amount": "Ingresar cantidad",
@@ -573,6 +574,7 @@
       "toast": {
         "adding": "Proveer Liquidez",
         "added": "Liquidez Añadida",
+        "approved": "Liquidez Aprobación",
         "error": {
           "title": "Error Añadiendo Liquidez",
           "body": "Razón"

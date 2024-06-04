@@ -532,6 +532,7 @@
         },
         "receive": "Vous recevez d{{poolSymbol}}",
         "button": "Ajouter",
+        "approve-button": "Apprécier",
         "validity-empty": "-",
         "validity-no-address": "Connectez le portefeuille",
         "validity-no-amount": "Entrer un montant",
@@ -573,6 +574,7 @@
       "toast": {
         "adding": "Ajout de Liquidité",
         "added": "Liquidité ajoutée",
+        "approved": "Liquidité approuvées",
         "error": {
           "title": "Erreur lors de l'ajout de liquidité",
           "body": "Raison"

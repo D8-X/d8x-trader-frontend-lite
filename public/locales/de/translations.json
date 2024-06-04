@@ -532,6 +532,7 @@
         },
         "receive": "Sie erhalten d{{poolSymbol}}",
         "button": "Hinzufügen",
+        "approve-button": "Genehmigen",
         "validity-empty": "-",
         "validity-no-address": "Brieftasche verbinden",
         "validity-no-funds": "Ablagerung",
@@ -573,6 +574,7 @@
       "toast": {
         "adding": "Liquidität wird hinzugefügt",
         "added": "Liquidität hinzugefügt",
+        "approved": "Liquidität genehmigt",
         "error": {
           "title": "Fehler beim Liquidität hinzufügen",
           "body": "Grund"

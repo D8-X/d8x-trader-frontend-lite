@@ -532,6 +532,7 @@
         },
         "receive": "您会收到d{{poolSymbol}}",
         "button": "添加",
+        "approve-button": "批准",
         "validity-empty": "-",
         "validity-no-address": "连接钱包",
         "validity-no-funds": "存款",
@@ -573,6 +574,7 @@
       "toast": {
         "adding": "增加流动性",
         "added": "流动性已增加",
+        "approved": "流动性已批准的",
         "error": {
           "title": "增加流动性时发生错误",
           "body": "原因"

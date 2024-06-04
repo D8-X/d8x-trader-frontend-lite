@@ -14,6 +14,7 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import {
@@ -26,7 +27,6 @@ import {
 import { dCurrencyPriceAtom, sdkConnectedAtom, triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 
 import styles from './Action.module.scss';
 
@@ -47,6 +47,8 @@ export const Add = memo(() => {
   const { address, chain, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
 
+  const { isMultisigAddress } = useUserWallet();
+
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const liqProvTool = useAtomValue(traderAPIAtom);
@@ -63,7 +65,6 @@ export const Add = memo(() => {
   const [txHash, setTxHash] = useState<Address>();
   const [loading, setLoading] = useState(false);
   const [approvalCompleted, setApprovalCompleted] = useState(false);
-  const { isMultisigAddress } = useUserWallet();
 
   const requestSentRef = useRef(false);
   const inputValueChangedRef = useRef(false);
@@ -150,7 +151,7 @@ export const Add = memo(() => {
       return;
     }
 
-    if (!liqProvTool || !isSDKConnected || !selectedPool || !addAmount || addAmount < 0 || !poolTokenDecimals) {
+    if (!isSDKConnected || !selectedPool || !addAmount || addAmount < 0 || !poolTokenDecimals) {
       return;
     }
 
@@ -333,7 +334,9 @@ export const Add = memo(() => {
       handleAddLiquidity();
     }
   };
-  console.log(isMultisigAddress);
+
+  console.log({ isMultisigAddress, approvalCompleted });
+
   return (
     <div className={styles.root}>
       <div className={styles.infoBlock}>
