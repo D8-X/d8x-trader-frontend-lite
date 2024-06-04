@@ -199,16 +199,6 @@ export const Add = memo(() => {
       return;
     }
 
-    if (isMultisigAddress && !approvalCompleted) {
-      toast.error(
-        <ToastContent
-          title={t('pages.vault.toast.error.title')}
-          bodyLines={[{ label: t('pages.vault.toast.error.body'), value: t('pages.vault.toast.approval-required') }]}
-        />
-      );
-      return;
-    }
-
     requestSentRef.current = true;
     setRequestSent(true);
     setLoading(true);
@@ -334,8 +324,6 @@ export const Add = memo(() => {
       handleAddLiquidity();
     }
   };
-
-  console.log({ isMultisigAddress, approvalCompleted });
 
   return (
     <div className={styles.root}>

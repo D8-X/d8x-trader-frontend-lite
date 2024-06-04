@@ -574,7 +574,7 @@
       "toast": {
         "adding": "Liquidität wird hinzugefügt",
         "added": "Liquidität hinzugefügt",
-        "approved": "Liquidität genehmigt",
+        "approved": "Genehmigt",
         "error": {
           "title": "Fehler beim Liquidität hinzufügen",
           "body": "Grund"

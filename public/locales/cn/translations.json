@@ -574,7 +574,7 @@
       "toast": {
         "adding": "增加流动性",
         "added": "流动性已增加",
-        "approved": "流动性已批准的",
+        "approved": "已批准的",
         "error": {
           "title": "增加流动性时发生错误",
           "body": "原因"
