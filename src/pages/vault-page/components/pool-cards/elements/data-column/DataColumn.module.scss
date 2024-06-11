@@ -24,11 +24,27 @@
   }
 
   .itemLine {
+    display: flex;
+    align-items: center;
+    gap: 2 * $d8x-spacing;
     font-size: 20px;
     font-weight: 600;
     line-height: 30px;
     color: var(--d8x-color-text-highlight);
     margin-bottom: 2 * $d8x-spacing;
+  }
+
+  .itemLogoHolder {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+
+    &.rounded {
+      font-size: 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      padding: 2px;
+    }
   }
 }
 

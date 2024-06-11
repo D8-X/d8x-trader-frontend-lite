@@ -16,7 +16,10 @@ import type { PoolWithIdI, TemporaryAnyT } from 'types/types';
 import { LiquidityTypeE } from 'types/enums';
 
 import { DataColumn } from '../data-column/DataColumn';
+import type { DataItemI } from '../data-column/types';
 
+import D8XLogo from '../../assets/d8xLogo.svg?react';
+import D8XExchangeTurtleLogo from '../../assets/d8xExchangeTurtleLogo.svg?react';
 import { boostsPerSymbol } from '../../data/boostsPerSymbol';
 import { yieldsPerSymbol } from '../../data/yieldsPerSymbol';
 
@@ -61,30 +64,50 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
       });
   }, [chainId, pool.poolSymbol, triggerUserStatsUpdate]);
 
-  const yieldData: string[] = useMemo(() => {
-    const yields: string[] = [];
-    yields.push(
-      t('pages.vault.pool-card.yields.trading-api', {
+  const yieldData = useMemo(() => {
+    const yields: DataItemI[] = [];
+    yields.push({
+      title: t('pages.vault.pool-card.yields.trading-api', {
         percent: weeklyAPI !== undefined ? formatToCurrency(weeklyAPI, '', true, 2) : '-',
-      })
-    );
+      }),
+      logo: <D8XLogo />,
+      logoBackground: 'transparent',
+    });
     if (yieldsPerSymbol[pool.poolSymbol] && yieldsPerSymbol[pool.poolSymbol].length > 0) {
       yieldsPerSymbol[pool.poolSymbol].map((dataItem) => {
-        yields.push(t(`pages.vault.pool-card.yields.${dataItem.translationKey}`, dataItem.label));
+        yields.push({
+          title: t(`pages.vault.pool-card.yields.${dataItem.translationKey}`, dataItem.label),
+          logo: dataItem.logo,
+          isRounded: dataItem.isRounded,
+          logoBackground: dataItem.logoBackground,
+        });
       });
     }
-    yields.push(t('pages.vault.pool-card.yields.d8x-points'));
+    yields.push({
+      title: t('pages.vault.pool-card.yields.d8x-points'),
+      logo: <D8XLogo />,
+      logoBackground: 'transparent',
+    });
     return yields;
   }, [t, weeklyAPI, pool.poolSymbol]);
 
-  const boostsData: string[] = useMemo(() => {
-    const boosts: string[] = [];
+  const boostsData = useMemo(() => {
+    const boosts: DataItemI[] = [];
     if (boostsPerSymbol[pool.poolSymbol] && boostsPerSymbol[pool.poolSymbol].length > 0) {
       boostsPerSymbol[pool.poolSymbol].map((dataItem) => {
-        boosts.push(t(`pages.vault.pool-card.boosts.${dataItem.translationKey}`, dataItem.label));
+        boosts.push({
+          title: t(`pages.vault.pool-card.boosts.${dataItem.translationKey}`, dataItem.label),
+          logo: dataItem.logo,
+          isRounded: dataItem.isRounded,
+          logoBackground: dataItem.logoBackground,
+        });
       });
     }
-    boosts.push(t('pages.vault.pool-card.boosts.turtle-d8x-points'));
+    boosts.push({
+      title: t('pages.vault.pool-card.boosts.turtle-d8x-points'),
+      logo: <D8XExchangeTurtleLogo />,
+      logoBackground: 'transparent',
+    });
     return boosts;
   }, [t, pool.poolSymbol]);
 

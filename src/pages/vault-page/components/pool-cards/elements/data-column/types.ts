@@ -1,9 +1,8 @@
-import { type ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export interface DataItemI {
-  label: string;
+  title: string;
   logo: ReactNode;
   logoBackground?: string;
   isRounded?: boolean;
-  translationKey?: string;
 }
