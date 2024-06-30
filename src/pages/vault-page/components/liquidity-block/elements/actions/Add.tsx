@@ -394,7 +394,7 @@ export const Add = memo(() => {
             currency={selectedPool?.settleSymbol}
             step="1"
             min={0}
-            max={poolTokenBalance ? Number((poolTokenBalance * 0.99).toFixed(5)) : 999999}
+            max={poolTokenBalance || 999999}
             disabled={loading}
           />
         </div>
@@ -404,11 +404,11 @@ export const Add = memo(() => {
             <Link
               onClick={() => {
                 if (poolTokenBalance) {
-                  handleInputCapture(`${Number((poolTokenBalance * 0.99).toFixed(5))}`);
+                  handleInputCapture(`${poolTokenBalance}`);
                 }
               }}
             >
-              {formatToCurrency(0.99 * poolTokenBalance, selectedPool?.settleSymbol)}
+              {formatToCurrency(poolTokenBalance, selectedPool?.settleSymbol)}
             </Link>
           </Typography>
         ) : null}
