@@ -13,6 +13,8 @@ import {
   polygonMumbai,
   polygonZkEvm,
   arbitrumSepolia,
+  skaleEuropa,
+  skaleEuropaTestnet,
   arbitrum,
   mainnet,
   optimism,
@@ -39,6 +41,7 @@ import polygonIcon from 'assets/networks/polygon.webp';
 import arbitrumIcon from 'assets/networks/arbitrum.png';
 import x1Icon from 'assets/networks/x1.png';
 import berachainIcon from 'assets/networks/berachain.png';
+import europaIcon from 'assets/networks/europa.png';
 import { config } from 'config';
 import { x1, cardona, bartio, xlayer } from 'utils/chains';
 
@@ -49,6 +52,7 @@ const chains = [
   { ...xlayer, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...cardona, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...bartio, iconUrl: berachainIcon, iconBackground: 'transparent' },
+  { ...skaleEuropaTestnet, iconUrl: europaIcon, iconBackground: 'transparent' },
   {
     ...arbitrumSepolia,
     iconUrl: arbitrumIcon,
@@ -90,6 +94,7 @@ const chains = [
   { ...metis },
   { ...mode },
   { ...scroll },
+  { ...skaleEuropa },
 ].sort(({ id: id1 }, { id: id2 }) => {
   const index1 = config.enabledChains.indexOf(id1);
   const index2 = config.enabledChains.indexOf(id2);
