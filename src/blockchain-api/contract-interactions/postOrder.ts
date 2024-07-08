@@ -1,5 +1,5 @@
-import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, WalletClient } from 'viem';
+import { type ClientOrder, LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { type Address, type WalletClient } from 'viem';
 import { type OrderDigestI } from 'types/types';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { estimateContractGas } from 'viem/actions';
@@ -14,16 +14,16 @@ export async function postOrder(
   data: OrderDigestI,
   doChain = true
 ): Promise<{ hash: Address }> {
-  let orders: never[];
+  let clientOrders: ClientOrder[];
   if (doChain) {
-    orders = TraderInterface.chainOrders(data.SCOrders, data.orderIds).map(
-      TraderInterface.fromClientOrderToTypeSafeOrder
-    ) as never[];
+    clientOrders = TraderInterface.chainOrders(data.SCOrders, data.orderIds);
   } else {
-    orders = data.SCOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o)).map(
-      TraderInterface.fromClientOrderToTypeSafeOrder
-    ) as never[];
+    clientOrders = data.SCOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
   }
+  const orders = clientOrders.map((o) => {
+    o.brokerSignature = o.brokerSignature || [];
+    return TraderInterface.fromClientOrderToTypeSafeOrder(o);
+  });
   if (!walletClient.account || walletClient?.chain === undefined) {
     throw new Error('account not connected');
   }
@@ -34,7 +34,7 @@ export async function postOrder(
     address: data.OrderBookAddr as Address,
     abi: LOB_ABI,
     functionName: 'postOrders',
-    args: [orders, signatures],
+    args: [orders as never[], signatures],
     account: walletClient.account,
     gasPrice: gasPrice,
   };
