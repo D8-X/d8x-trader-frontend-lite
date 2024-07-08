@@ -53,6 +53,7 @@ const chains = [
   { ...cardona, iconUrl: polygonIcon, iconBackground: 'transparent' },
   { ...bartio, iconUrl: berachainIcon, iconBackground: 'transparent' },
   { ...skaleEuropaTestnet, iconUrl: europaIcon, iconBackground: 'transparent' },
+  // { ...skaleEuropa, iconUrl: europaIcon, iconBackground: 'transparent' }, // TODO: uncomment when deployed
   {
     ...arbitrumSepolia,
     iconUrl: arbitrumIcon,
