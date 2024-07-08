@@ -118,7 +118,6 @@ export const SDKLoader = memo(() => {
             )
             .catch((error) => {
               console.error(error);
-              console.log({ pool });
             });
         } else {
           setCollToSettleConversion({

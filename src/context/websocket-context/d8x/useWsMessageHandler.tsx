@@ -115,7 +115,6 @@ export function useWsMessageHandler() {
             // update does not contain funding rate/open interest - keep current values
             stats.currentFundingRateBps = selectedPerpetual.currentFundingRateBps;
             stats.openInterestBC = selectedPerpetual.openInterestBC;
-            console.log('zero fr received', stats);
           }
           setPerpetualStatistics((prevState) => {
             const previousMidPrice = prevState?.midPrice || 0;
