@@ -91,7 +91,7 @@ export const OpenOrdersTable = memo(() => {
 
   const refreshOpenOrders = useCallback(async () => {
     if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
-      if (isAPIBusyRef.current || traderAPI.chainId !== chainId) {
+      if (isAPIBusyRef.current || Number(traderAPI.chainId) !== chainId) {
         return;
       }
 

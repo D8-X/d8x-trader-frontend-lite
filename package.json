@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@cedelabs/widgets-universal": "1.4.0",
-    "@d8x/perpetuals-sdk": "1.3.3",
+    "@d8x/perpetuals-sdk": "https://github.com/D8-X/d8x-futures-node-sdk#feature/v6",
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@ethersproject/providers": "5.7.2",

@@ -127,7 +127,7 @@ export const TraderPage = () => {
 
   const fetchPositions = useCallback(
     async (_chainId: number, _address: Address) => {
-      if (fetchPositionsRef.current || !isSDKConnected || !traderAPI || traderAPI.chainId !== _chainId) {
+      if (fetchPositionsRef.current || !isSDKConnected || !traderAPI || Number(traderAPI.chainId) !== _chainId) {
         return;
       }
 
@@ -148,7 +148,7 @@ export const TraderPage = () => {
 
   const fetchOrders = useCallback(
     async (_chainId: number, _address: Address) => {
-      if (fetchOrdersRef.current || !isSDKConnected || !traderAPI || traderAPI.chainId !== _chainId) {
+      if (fetchOrdersRef.current || !isSDKConnected || !traderAPI || Number(traderAPI.chainId) !== _chainId) {
         return;
       }
 

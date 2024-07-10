@@ -170,7 +170,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    if (traderAPI && traderAPI.chainId === getEnabledChainId(chainId)) {
+    if (traderAPI && Number(traderAPI.chainId) === getEnabledChainId(chainId)) {
       traderAPIRef.current = traderAPI;
     }
   }, [traderAPI, chainId]);
@@ -190,7 +190,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         try {
           let currentTraderAPI = null;
           const enabledChainId = getEnabledChainId(chainId);
-          if (retries > 0 && traderAPIRef.current && traderAPIRef.current?.chainId === enabledChainId) {
+          if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId ?? 0) === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
           const data = await getExchangeInfo(enabledChainId, currentTraderAPI);

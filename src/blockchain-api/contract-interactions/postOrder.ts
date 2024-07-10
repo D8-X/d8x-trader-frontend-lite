@@ -21,7 +21,7 @@ export async function postOrder(
     clientOrders = data.SCOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
   }
   const orders = clientOrders.map((o) => {
-    o.brokerSignature = o.brokerSignature || [];
+    o.brokerSignature = o.brokerSignature || '0x';
     return TraderInterface.fromClientOrderToTypeSafeOrder(o);
   });
   if (!walletClient.account || walletClient?.chain === undefined) {

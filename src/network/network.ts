@@ -21,6 +21,7 @@ import type {
   ValidatedResponseI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { toHex } from 'viem';
 
 function getApiUrlByChainId(chainId: number) {
   const urlByFirstEnabledChainId = config.apiUrl[config.enabledChains[0]];
@@ -72,7 +73,7 @@ export async function getExchangeInfo(
   chainId: number,
   traderAPI: TraderInterface | null
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('exchangeInfo via SDK');
     const info = await traderAPI.exchangeInfo();
     return { type: 'exchange-info', msg: '', data: info };
@@ -87,7 +88,7 @@ export async function getPerpetualStaticInfo(
   traderAPI: TraderInterface | null,
   symbol: string
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('perpStaticInfo via SDK');
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
@@ -110,7 +111,7 @@ export async function getPositionRisk(
     params.append('t', '' + timestamp);
   }
 
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log(`positionRisk via SDK`);
     const data = await traderAPI.positionRisk(traderAddr);
     return { type: 'position-risk', msg: '', data };
@@ -154,7 +155,7 @@ export function positionRiskOnCollateralAction(
   amount: number,
   positionRisk: MarginAccountI
 ): Promise<ValidatedResponseI<{ newPositionRisk: MarginAccountI; availableMargin: number }>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('positionRiskOnCollateral via SDK');
     return traderAPI.positionRiskOnCollateralAction(amount, positionRisk).then((data) => {
       return traderAPI.getAvailableMargin(traderAddr, positionRisk.symbol).then((margin) => {
@@ -191,7 +192,7 @@ export async function getOpenOrders(
   traderAddr: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<PerpetualOpenOrdersI[]>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log(`openOrders via SDK`);
     const data = await traderAPI.openOrders(traderAddr);
     return { type: 'open-orders', msg: '', data };
@@ -224,7 +225,7 @@ export function getMaxOrderSizeForTrader(
   symbol: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<MaxOrderSizeResponseI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     return traderAPI
       .maxOrderSizeForTrader(traderAddr, symbol)
       .then(({ buy, sell }) => {
@@ -279,7 +280,7 @@ export function getCancelOrder(
   symbol: string,
   orderId: string
 ): Promise<ValidatedResponseI<CancelOrderResponseI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
     return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
       return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
@@ -332,7 +333,7 @@ export function getAddCollateral(
           perpId: perpId,
           proxyAddr: proxyAddr,
           abi: proxyABI,
-          amountHex: amountHex.toHexString(),
+          amountHex: toHex(amountHex),
           priceUpdate: {
             updateData: submission.priceFeedVaas,
             publishTimes: submission.timestamps,
