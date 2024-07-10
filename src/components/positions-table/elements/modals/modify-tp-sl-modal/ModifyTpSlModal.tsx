@@ -201,6 +201,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       collateralDeposit === null ||
       !settleTokenDecimals ||
       !chain ||
+      !traderAPI ||
       !isEnabledChain(chainId)
     ) {
       return;
@@ -286,7 +287,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                  postOrder(tradingClient, signatures, data.data, false)
+                  postOrder(tradingClient, traderAPI, {
+                    orders: parsedOrders,
+                    signatures,
+                    data: data.data,
+                    doChain: false,
+                  })
                     .then(({ hash }) => {
                       // success submitting order to the node
                       // order was sent

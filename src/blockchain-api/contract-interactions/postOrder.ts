@@ -1,6 +1,6 @@
-import { type ClientOrder, LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 import { type Address, type WalletClient } from 'viem';
-import { type OrderDigestI } from 'types/types';
+import { OrderI, type OrderDigestI } from 'types/types';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { estimateContractGas } from 'viem/actions';
 
@@ -10,31 +10,37 @@ import { orderSubmitted } from 'network/broker';
 
 export async function postOrder(
   walletClient: WalletClient,
-  signatures: string[],
-  data: OrderDigestI,
-  doChain = true
+  traderAPI: TraderInterface,
+  {
+    orders,
+    signatures,
+    data,
+    doChain,
+  }: { orders: OrderI[]; signatures: string[]; data: OrderDigestI; doChain?: boolean }
 ): Promise<{ hash: Address }> {
-  let clientOrders: ClientOrder[];
-  if (doChain) {
-    clientOrders = TraderInterface.chainOrders(data.SCOrders, data.orderIds);
-  } else {
-    clientOrders = data.SCOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
-  }
-  const orders = clientOrders.map((o) => {
-    o.brokerSignature = o.brokerSignature || '0x';
-    return TraderInterface.fromClientOrderToTypeSafeOrder(o);
-  });
   if (!walletClient.account || walletClient?.chain === undefined) {
     throw new Error('account not connected');
   }
+  const traderAddr = data.SCOrders[0].traderAddr;
+  const scOrders = orders.map((order, idx) => {
+    const scOrder = traderAPI.createSmartContractOrder(order, traderAddr);
+    scOrder.brokerAddr = data.SCOrders[idx].brokerAddr;
+    scOrder.brokerFeeTbps = data.SCOrders[idx].brokerFeeTbps;
+    scOrder.brokerSignature = data.SCOrders[idx].brokerSignature ?? '0x';
+    return scOrder;
+  });
+  const clientOrders = doChain
+    ? TraderInterface.chainOrders(scOrders, data.orderIds)
+    : scOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
+
   const chain = walletClient.chain;
   const gasPrice = await getGasPrice(chain.id);
   const params = {
     chain,
-    address: data.OrderBookAddr as Address,
+    address: data.OrderBookAddr as Address, // TODO: keep getting "wrong order book" ?
     abi: LOB_ABI,
     functionName: 'postOrders',
-    args: [orders as never[], signatures],
+    args: [clientOrders as never[], signatures],
     account: walletClient.account,
     gasPrice: gasPrice,
   };

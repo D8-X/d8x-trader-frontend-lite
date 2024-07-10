@@ -162,5 +162,9 @@ export async function enterStrategy(
 
   // post order
   setCurrentPhaseKey('pages.strategies.enter.phases.posting');
-  return postOrder(hedgeClient ? hedgeClient : walletClient, [HashZero], data);
+  return postOrder(hedgeClient ? hedgeClient : walletClient, traderAPI, {
+    orders: [order],
+    signatures: [HashZero],
+    data,
+  });
 }
