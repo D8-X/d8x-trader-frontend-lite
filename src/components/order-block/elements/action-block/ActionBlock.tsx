@@ -398,7 +398,12 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(tradingClient, traderAPI, { orders: parsedOrders, signatures, data: data.data })
+              postOrder(tradingClient, traderAPI, {
+                traderAddr: address,
+                orders: parsedOrders,
+                signatures,
+                brokerData: data.data,
+              })
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // order was sent

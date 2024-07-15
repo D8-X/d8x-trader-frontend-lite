@@ -64,7 +64,12 @@ export async function exitStrategy(
   if (isDelegated) {
     //console.log('exit: post via user wallet');
     setCurrentPhaseKey('pages.strategies.exit.phases.posting');
-    return postOrder(walletClient, traderAPI, { orders: [order], signatures: [HashZero], data });
+    return postOrder(walletClient, traderAPI, {
+      traderAddr: strategyAddr,
+      orders: [order],
+      signatures: [HashZero],
+      brokerData: data,
+    });
   } else {
     await fundStrategyGas(
       { walletClient, strategyAddress: strategyAddr, isMultisigAddress },
@@ -73,6 +78,11 @@ export async function exitStrategy(
     );
     //console.log('exit: post via strat wallet');
     setCurrentPhaseKey('pages.strategies.exit.phases.posting');
-    return postOrder(hedgeClient, traderAPI, { orders: [order], signatures: [HashZero], data });
+    return postOrder(hedgeClient, traderAPI, {
+      traderAddr: strategyAddr,
+      orders: [order],
+      signatures: [HashZero],
+      brokerData: data,
+    });
   }
 }

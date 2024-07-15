@@ -1,4 +1,4 @@
-import { TraderInterface, type SmartContractOrder } from '@d8x/perpetuals-sdk';
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -230,8 +230,9 @@ export interface OrderDigestI {
   digests: string[];
   orderIds: string[];
   OrderBookAddr: string;
-  abi: string | string[];
-  SCOrders: SmartContractOrder[];
+  brokerAddr: string;
+  brokerFeeTbps: number;
+  brokerSignatures: string[];
   error?: string;
   usage?: string;
 }
@@ -243,12 +244,10 @@ export interface CancelOrderResponseI {
   priceUpdate: PriceUpdatesI;
 }
 
-export interface CollateralChangeResponseI {
-  perpId: number;
-  proxyAddr: string;
-  abi: string;
-  amountHex: string;
-  priceUpdate: PriceUpdatesI;
+export interface CollateralChangePropsI {
+  amount: number;
+  traderAddr: Address;
+  symbol: string;
 }
 
 export interface PriceUpdatesI {

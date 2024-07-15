@@ -1,4 +1,4 @@
-import { floatToABK64x64, type TraderInterface } from '@d8x/perpetuals-sdk';
+import { type TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
@@ -8,7 +8,6 @@ import type {
   BoostStationResponseI,
   BoostStationParamResponseI,
   CancelOrderResponseI,
-  CollateralChangeResponseI,
   EtherFiApyI,
   ExchangeInfoI,
   MaintenanceStatusI,
@@ -21,7 +20,6 @@ import type {
   ValidatedResponseI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
-import { toHex } from 'viem';
 
 function getApiUrlByChainId(chainId: number) {
   const urlByFirstEnabledChainId = config.apiUrl[config.enabledChains[0]];
@@ -314,48 +312,6 @@ export function getCancelOrder(
   }
 }
 
-export function getAddCollateral(
-  chainId: number,
-  traderAPI: TraderInterface | null,
-  symbol: string,
-  amount: number
-): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
-  if (traderAPI) {
-    const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
-    const proxyAddr = traderAPI.getProxyAddress();
-    const proxyABI = traderAPI.getProxyABI('deposit');
-    const amountHex = floatToABK64x64(amount);
-    return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-      return {
-        type: 'add-collateral',
-        msg: '',
-        data: {
-          perpId: perpId,
-          proxyAddr: proxyAddr,
-          abi: proxyABI,
-          amountHex: toHex(amountHex),
-          priceUpdate: {
-            updateData: submission.priceFeedVaas,
-            publishTimes: submission.timestamps,
-            updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
-          },
-        },
-      };
-    });
-  } else {
-    return fetch(
-      `${getApiUrlByChainId(chainId)}/add-collateral?symbol=${symbol}&amount=${amount}`,
-      getRequestOptions()
-    ).then((data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    });
-  }
-}
-
 export function getAvailableMargin(
   chainId: number,
   traderAPI: TraderInterface | null,
@@ -377,46 +333,6 @@ export function getAvailableMargin(
       }
       return data.json();
     });
-  }
-}
-
-export async function getRemoveCollateral(
-  chainId: number,
-  traderAPI: TraderInterface | null,
-  symbol: string,
-  amount: number
-): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
-  if (traderAPI) {
-    const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
-    const proxyAddr = traderAPI.getProxyAddress();
-    const proxyABI = traderAPI.getProxyABI('withdraw');
-    const amountHex = floatToABK64x64(amount);
-    const submission = await traderAPI.fetchLatestFeedPriceInfo(symbol);
-    return {
-      type: 'remove-collateral',
-      msg: '',
-      data: {
-        perpId: perpId,
-        proxyAddr: proxyAddr,
-        abi: proxyABI,
-        amountHex: amountHex.toString(),
-        priceUpdate: {
-          updateData: submission.priceFeedVaas,
-          publishTimes: submission.timestamps,
-          updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
-        },
-      },
-    };
-  } else {
-    const data = await fetch(
-      `${getApiUrlByChainId(chainId)}/remove-collateral?symbol=${symbol}&amount=${amount}`,
-      getRequestOptions()
-    );
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
   }
 }
 

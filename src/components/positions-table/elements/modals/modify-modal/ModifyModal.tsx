@@ -31,12 +31,7 @@ import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { useDebounce } from 'helpers/useDebounce';
 import { useDebouncedEffect } from 'helpers/useDebouncedEffect';
-import {
-  getAddCollateral,
-  getAvailableMargin,
-  getRemoveCollateral,
-  positionRiskOnCollateralAction,
-} from 'network/network';
+import { getAvailableMargin, positionRiskOnCollateralAction } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import {
   collateralToSettleConversionAtom,
@@ -429,82 +424,27 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       requestSentRef.current = true;
       setRequestSent(true);
       setLoading(true);
-      getAddCollateral(chainId, traderAPI, selectedPosition.symbol, +addCollateral / px)
-        .then(({ data }) => {
-          approveMarginToken({
-            walletClient,
-            settleTokenAddr: poolByPosition.settleTokenAddr,
-            isMultisigAddress,
-            proxyAddr,
-            minAmount: +addCollateral,
-            decimals: settleTokenDecimals,
+      approveMarginToken({
+        walletClient,
+        settleTokenAddr: poolByPosition.settleTokenAddr,
+        isMultisigAddress,
+        proxyAddr,
+        minAmount: +addCollateral / px,
+        decimals: settleTokenDecimals,
+      })
+        .then(() => {
+          deposit(tradingClient, traderAPI, {
+            traderAddr: address,
+            amount: +addCollateral / px,
+            symbol: selectedPosition.symbol,
           })
-            .then(() => {
-              deposit(tradingClient, address, data)
-                .then((tx) => {
-                  setTxHashForAdd(tx.hash);
-                  setAmountForAdd(+addCollateral);
-                  setSymbolForTx(selectedPosition.symbol);
-                  setTriggerBalancesUpdate((prevValue) => !prevValue);
-                  toast.success(
-                    <ToastContent
-                      title={t('pages.trade.positions-table.toasts.adding-collateral.title')}
-                      bodyLines={[]}
-                    />
-                  );
-                })
-                .catch((error) => {
-                  let msg = (error?.message ?? error) as string;
-                  msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
-                  toast.error(
-                    <ToastContent
-                      title={t('pages.trade.positions-table.toasts.error-processing.title')}
-                      bodyLines={[{ label: t('pages.trade.positions-table.toasts.error-processing.body'), value: msg }]}
-                    />
-                  );
-                  console.error(error);
-                  setLoading(false);
-                })
-                .finally(() => {
-                  requestSentRef.current = false;
-                  setRequestSent(false);
-                  closeModal();
-                });
-            })
-            .catch((error) => {
-              console.error(error);
-              setLoading(false);
-              requestSentRef.current = false;
-              setRequestSent(false);
-            });
-        })
-        .catch((error) => {
-          console.error(error);
-          setRequestSent(false);
-          requestSentRef.current = false;
-          setLoading(false);
-        });
-    } else if (modifyType === ModifyTypeE.Remove) {
-      if (!maxCollateral || maxCollateral < +removeCollateral) {
-        return;
-      }
-
-      requestSentRef.current = true;
-      setRequestSent(true);
-      setLoading(true);
-      getRemoveCollateral(chainId, traderAPI, selectedPosition.symbol, +removeCollateral / px)
-        .then(({ data }) => {
-          withdraw(tradingClient, address, data)
-            .then(({ hash }) => {
-              setTxHashForRemove(hash);
-              setAmountForRemove(+removeCollateral);
+            .then((tx) => {
+              setTxHashForAdd(tx.hash);
+              setAmountForAdd(+addCollateral);
               setSymbolForTx(selectedPosition.symbol);
               setTriggerBalancesUpdate((prevValue) => !prevValue);
               toast.success(
-                <ToastContent
-                  title={t('pages.trade.positions-table.toasts.removing-collateral.title')}
-                  bodyLines={[]}
-                />
+                <ToastContent title={t('pages.trade.positions-table.toasts.adding-collateral.title')} bodyLines={[]} />
               );
             })
             .catch((error) => {
@@ -520,16 +460,55 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
               setLoading(false);
             })
             .finally(() => {
-              setRequestSent(false);
               requestSentRef.current = false;
+              setRequestSent(false);
               closeModal();
             });
         })
         .catch((error) => {
           console.error(error);
+          setLoading(false);
           requestSentRef.current = false;
           setRequestSent(false);
+        });
+    } else if (modifyType === ModifyTypeE.Remove) {
+      if (!maxCollateral || maxCollateral < +removeCollateral) {
+        return;
+      }
+
+      requestSentRef.current = true;
+      setRequestSent(true);
+      setLoading(true);
+      withdraw(tradingClient, traderAPI, {
+        traderAddr: address,
+        amount: +removeCollateral,
+        symbol: selectedPosition.symbol,
+      })
+        .then(({ hash }) => {
+          setTxHashForRemove(hash);
+          setAmountForRemove(+removeCollateral);
+          setSymbolForTx(selectedPosition.symbol);
+          setTriggerBalancesUpdate((prevValue) => !prevValue);
+          toast.success(
+            <ToastContent title={t('pages.trade.positions-table.toasts.removing-collateral.title')} bodyLines={[]} />
+          );
+        })
+        .catch((error) => {
+          let msg = (error?.message ?? error) as string;
+          msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
+          toast.error(
+            <ToastContent
+              title={t('pages.trade.positions-table.toasts.error-processing.title')}
+              bodyLines={[{ label: t('pages.trade.positions-table.toasts.error-processing.body'), value: msg }]}
+            />
+          );
+          console.error(error);
           setLoading(false);
+        })
+        .finally(() => {
+          setRequestSent(false);
+          requestSentRef.current = false;
+          closeModal();
         });
     }
   };

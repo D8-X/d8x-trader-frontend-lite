@@ -288,9 +288,10 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
                   postOrder(tradingClient, traderAPI, {
+                    traderAddr: address,
                     orders: parsedOrders,
                     signatures,
-                    data: data.data,
+                    brokerData: data.data,
                     doChain: false,
                   })
                     .then(({ hash }) => {
