@@ -1,4 +1,4 @@
-import { type TraderInterface } from '@d8x/perpetuals-sdk';
+import { SmartContractOrder, type TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
@@ -250,6 +250,17 @@ export function getMaxOrderSizeForTrader(
   }
 }
 
+// TODO: remove legacy interface
+interface OrderDigestLegacyI {
+  digests: string[];
+  orderIds: string[];
+  OrderBookAddr: string;
+  abi: string | string[];
+  SCOrders: SmartContractOrder[];
+  error?: string;
+  usage?: string;
+}
+
 // needs broker input
 export function orderDigest(
   chainId: number,
@@ -268,7 +279,21 @@ export function orderDigest(
       console.error({ data });
       throw new Error(data.statusText);
     }
-    return data.json();
+
+    // return data.json();
+    // TODO: remove legacy code below:
+    return data.json().then((resp: ValidatedResponseI<OrderDigestLegacyI | OrderDigestI>) => ({
+      ...resp,
+      data:
+        'SCOrders' in resp.data
+          ? {
+              ...resp.data,
+              brokerAddr: resp.data.SCOrders[0].brokerAddr,
+              brokerFeeTbps: Number(resp.data.SCOrders[0].brokerFeeTbps),
+              brokerSignatures: resp.data.SCOrders.map(({ brokerSignature }) => (brokerSignature ?? '0x').toString()),
+            }
+          : resp.data,
+    }));
   });
 }
 
