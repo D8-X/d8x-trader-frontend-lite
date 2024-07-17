@@ -95,7 +95,7 @@ export async function getPerpetualStaticInfo(
     return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId).then(
       (data: ValidatedResponseI<PerpetualStaticInfoI>) => {
         if (data.data) {
-          data.data.perpFlags = Number(data.data.perpFlags.toString());
+          data.data.perpFlags = BigInt(data.data.perpFlags.toString());
         }
         return data;
       }
