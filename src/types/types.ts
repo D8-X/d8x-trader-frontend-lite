@@ -201,6 +201,7 @@ export interface OrderInfoI {
   stopLossPrice: number | null;
   takeProfit: TakeProfitE | null;
   takeProfitPrice: number | null;
+  isPredictiveMarket: boolean;
 }
 
 export interface OrderI {

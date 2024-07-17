@@ -64,12 +64,19 @@ function createMainOrder(orderInfo: OrderInfoI) {
     deadlineMultiplier = 24 * Number(orderInfo.expireDays);
   }
 
+  let triggerPrice = orderInfo.triggerPrice;
+  if (orderInfo.isPredictiveMarket) {
+    // fix units
+    limitPrice = limitPrice != null ? limitPrice / 100 : limitPrice;
+    triggerPrice = triggerPrice != null ? triggerPrice / 100 : triggerPrice;
+  }
+
   return {
     symbol: orderInfo.symbol,
     side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell,
     type: orderType,
     limitPrice: limitPrice !== null && limitPrice > -1 ? limitPrice : undefined,
-    stopPrice: orderInfo.triggerPrice !== null ? orderInfo.triggerPrice : undefined,
+    stopPrice: triggerPrice !== null ? triggerPrice : undefined,
     quantity: orderInfo.size,
     leverage: orderInfo.leverage,
     reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
@@ -523,11 +530,15 @@ export const ActionBlock = memo(() => {
       orderInfo.maxMinEntryPrice !== null &&
       selectedPerpetual?.midPrice !== undefined
     ) {
+      const midPrice =
+        perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          ? priceToProb(selectedPerpetual?.midPrice)
+          : selectedPerpetual?.midPrice;
       let isSlippageTooLarge;
       if (orderInfo.orderBlock === OrderBlockE.Long) {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice < selectedPerpetual?.midPrice;
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice < midPrice;
       } else {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice > selectedPerpetual?.midPrice;
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice > midPrice;
       }
       if (isSlippageTooLarge) {
         return ValidityCheckE.SlippageTooLarge;
@@ -542,7 +553,7 @@ export const ActionBlock = memo(() => {
     orderInfo?.takeProfitPrice,
     orderInfo?.maxMinEntryPrice,
     selectedPerpetual,
-    perpetualStaticInfo?.lotSizeBC,
+    perpetualStaticInfo,
     poolTokenBalance,
     isMarketClosed,
     collateralDeposit,

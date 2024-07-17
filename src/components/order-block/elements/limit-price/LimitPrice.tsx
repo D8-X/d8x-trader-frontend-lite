@@ -14,8 +14,6 @@ import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
 
-// TODO: can't get the multiplier right??, want: limit px = 0.521 <--> user enters 52.1 %
-
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
 
@@ -26,7 +24,7 @@ export const LimitPrice = memo(() => {
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
 
-  const [inputValue, setInputValue] = useState(limitPrice != null ? `${100 * limitPrice}` : '');
+  const [inputValue, setInputValue] = useState(limitPrice != null ? `${limitPrice}` : '');
 
   const inputValueChangedRef = useRef(false);
   const orderBlockChangedRef = useRef(true);
@@ -39,14 +37,14 @@ export const LimitPrice = memo(() => {
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
       if (targetValue) {
-        setLimitPrice(`${+targetValue / 100}`);
+        setLimitPrice(`${+targetValue}`);
         setInputValue(`${+targetValue}`);
       } else {
         if (orderType === OrderTypeE.Limit) {
           const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
           const userLimit =
             perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-              ? priceToProb(initialLimit)
+              ? 100 * priceToProb(initialLimit)
               : initialLimit;
           setLimitPrice(`${userLimit}`);
           setInputValue('');
@@ -62,7 +60,7 @@ export const LimitPrice = memo(() => {
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
-      setInputValue(limitPrice != null ? `${limitPrice * 100}` : '');
+      setInputValue(limitPrice != null ? `${limitPrice}` : '');
     }
     inputValueChangedRef.current = false;
   }, [limitPrice]);
@@ -78,7 +76,7 @@ export const LimitPrice = memo(() => {
       const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
       const userLimit =
         perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-          ? priceToProb(initialLimit)
+          ? 100 * priceToProb(initialLimit)
           : initialLimit;
       setLimitPrice(`${userLimit}`);
       setInputValue('');
@@ -87,7 +85,7 @@ export const LimitPrice = memo(() => {
   }, [setLimitPrice, perpetualStaticInfo, perpetualStatistics?.midPrice, orderType, stepSize, orderBlock]);
 
   const handleInputBlur = useCallback(() => {
-    setInputValue(limitPrice != null ? `${100 * limitPrice}` : '');
+    setInputValue(limitPrice != null ? `${limitPrice}` : '');
   }, [limitPrice]);
 
   if (orderType === OrderTypeE.Market) {
