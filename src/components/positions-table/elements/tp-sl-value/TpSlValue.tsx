@@ -68,7 +68,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       } else {
         ordersData.takeProfit.value = formatToCurrency(
           TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.takeProfit.fullValue !== undefined
-            ? priceToProb(position.takeProfit.fullValue)
+            ? 100 * priceToProb(position.takeProfit.fullValue)
             : position.takeProfit.fullValue,
           TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
           true
@@ -83,7 +83,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       } else {
         ordersData.stopLoss.value = formatToCurrency(
           TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.stopLoss.fullValue !== undefined
-            ? priceToProb(position.stopLoss.fullValue)
+            ? 100 * priceToProb(position.stopLoss.fullValue)
             : position.takeProfit.fullValue,
           TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
           true
