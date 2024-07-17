@@ -91,15 +91,10 @@ export async function getPerpetualStaticInfo(
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
-    console.log('perpStaticInfo via BE');
-    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId).then(
-      (data: ValidatedResponseI<PerpetualStaticInfoI>) => {
-        if (data.data) {
-          data.data.perpFlags = BigInt(data.data.perpFlags.toString());
-        }
-        return data;
-      }
-    );
+    throw new Error(`Unable to fetch perpetual static info for symbol ${symbol}`);
+    // TODO: uncomment below
+    // // console.log('perpStaticInfo via BE');
+    // return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
   }
 }
 
