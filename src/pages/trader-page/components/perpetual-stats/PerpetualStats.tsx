@@ -37,26 +37,13 @@ export const PerpetualStats = () => {
       perpetualStatistics?.midPriceDiff >= 0 ? styles.statMainValuePositive : styles.statMainValueNegative;
   }
 
-  const [displayMidPrice, displayIndexPrice, displayMarkPrice, displayCcy] = useMemo(() => {
+  const [[displayMidPrice, displayIndexPrice, displayMarkPrice], displayCcy] = useMemo(() => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
-      console.log('info', perpetualStaticInfo);
       const isPred = TraderInterface.isPredictiveMarket(perpetualStaticInfo);
-      console.log('isPred', isPred, perpetualStaticInfo);
-      return isPred
-        ? [
-            100 * priceToProb(perpetualStatistics.midPrice),
-            100 * priceToProb(perpetualStatistics.indexPrice),
-            100 * priceToProb(perpetualStatistics.markPrice),
-            '%',
-          ]
-        : [
-            perpetualStatistics.midPrice,
-            perpetualStatistics.indexPrice,
-            perpetualStatistics.markPrice,
-            perpetualStatistics.quoteCurrency,
-          ];
+      const px = [perpetualStatistics.midPrice, perpetualStatistics.indexPrice, perpetualStatistics.markPrice];
+      return isPred ? [px.map((x) => 100 * priceToProb(x)), '%'] : [px, perpetualStatistics.quoteCurrency];
     }
-    return [undefined, undefined];
+    return [[undefined, undefined, undefined], undefined];
   }, [perpetualStatistics, perpetualStaticInfo]);
 
   const midPrice: StatDataI = useMemo(

@@ -8,10 +8,11 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
-import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import { perpetualStaticInfoAtom, perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 
 import styles from './TriggerPrice.module.scss';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 export const TriggerPrice = memo(() => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const TriggerPrice = memo(() => {
   const orderType = useAtomValue(orderTypeAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [triggerPrice, setTriggerPrice] = useAtom(triggerPriceAtom);
 
   const [inputValue, setInputValue] = useState(`${triggerPrice}`);
@@ -37,12 +39,16 @@ export const TriggerPrice = memo(() => {
         setInputValue(targetValue);
       } else {
         const initialTrigger = perpetualStatistics?.markPrice === undefined ? -1 : perpetualStatistics?.markPrice;
-        setTriggerPrice(`${initialTrigger}`);
+        const userTrigger =
+          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+            ? priceToProb(initialTrigger)
+            : initialTrigger;
+        setTriggerPrice(`${userTrigger}`);
         setInputValue('');
       }
       inputValueChangedRef.current = true;
     },
-    [setTriggerPrice, perpetualStatistics]
+    [setTriggerPrice, perpetualStatistics, perpetualStaticInfo]
   );
 
   useEffect(() => {
@@ -79,7 +85,11 @@ export const TriggerPrice = memo(() => {
         inputValue={inputValue}
         setInputValue={handleTriggerPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={selectedPerpetual?.quoteCurrency}
+        currency={
+          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+            ? '%'
+            : selectedPerpetual?.quoteCurrency
+        }
         step={stepSize}
         min={0}
       />

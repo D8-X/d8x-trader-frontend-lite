@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { priceToProb, probToPrice, TraderInterface } from '@d8x/perpetuals-sdk';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 import { Box, Typography } from '@mui/material';
 
@@ -14,6 +14,8 @@ import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
 
+// TODO: can't get the multiplier right??, want: limit px = 0.521 <--> user enters 52.1 %
+
 export const LimitPrice = memo(() => {
   const { t } = useTranslation();
 
@@ -24,7 +26,7 @@ export const LimitPrice = memo(() => {
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
 
-  const [inputValue, setInputValue] = useState(limitPrice != null ? `${limitPrice}` : '');
+  const [inputValue, setInputValue] = useState(limitPrice != null ? `${100 * limitPrice}` : '');
 
   const inputValueChangedRef = useRef(false);
   const orderBlockChangedRef = useRef(true);
@@ -37,16 +39,16 @@ export const LimitPrice = memo(() => {
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
       if (targetValue) {
-        const internalLimit =
-          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-            ? `${probToPrice(+targetValue)}`
-            : targetValue;
-        setLimitPrice(internalLimit);
-        setInputValue(targetValue);
+        setLimitPrice(`${+targetValue / 100}`);
+        setInputValue(`${+targetValue}`);
       } else {
         if (orderType === OrderTypeE.Limit) {
           const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
-          setLimitPrice(`${initialLimit}`);
+          const userLimit =
+            perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+              ? priceToProb(initialLimit)
+              : initialLimit;
+          setLimitPrice(`${userLimit}`);
           setInputValue('');
         } else if (orderType === OrderTypeE.Stop) {
           setLimitPrice(`-1`);
@@ -60,14 +62,10 @@ export const LimitPrice = memo(() => {
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
-      const displayLimit =
-        perpetualStaticInfo && limitPrice != null && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-          ? priceToProb(limitPrice)
-          : limitPrice;
-      setInputValue(displayLimit != null ? `${displayLimit}` : '');
+      setInputValue(limitPrice != null ? `${limitPrice * 100}` : '');
     }
     inputValueChangedRef.current = false;
-  }, [limitPrice, perpetualStaticInfo]);
+  }, [limitPrice]);
 
   useEffect(() => {
     orderBlockChangedRef.current = true;
@@ -78,19 +76,19 @@ export const LimitPrice = memo(() => {
       const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
       const step = +stepSize;
       const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
-      setLimitPrice(`${initialLimit}`);
+      const userLimit =
+        perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          ? priceToProb(initialLimit)
+          : initialLimit;
+      setLimitPrice(`${userLimit}`);
       setInputValue('');
     }
     orderBlockChangedRef.current = false;
-  }, [setLimitPrice, perpetualStatistics?.midPrice, orderType, stepSize, orderBlock]);
+  }, [setLimitPrice, perpetualStaticInfo, perpetualStatistics?.midPrice, orderType, stepSize, orderBlock]);
 
   const handleInputBlur = useCallback(() => {
-    const displayLimit =
-      perpetualStaticInfo && limitPrice != null && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-        ? priceToProb(limitPrice)
-        : limitPrice;
-    setInputValue(displayLimit != null ? `${displayLimit}` : '');
-  }, [limitPrice, perpetualStaticInfo]);
+    setInputValue(limitPrice != null ? `${100 * limitPrice}` : '');
+  }, [limitPrice]);
 
   if (orderType === OrderTypeE.Market) {
     return null;

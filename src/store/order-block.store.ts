@@ -15,7 +15,9 @@ import {
   perpetualStatisticsAtom,
   poolFeeAtom,
   addr0FeeAtom,
+  perpetualStaticInfoAtom,
 } from './pools.store';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
 export const slippageSliderAtom = atom(2);
@@ -42,12 +44,16 @@ export const orderTypeAtom = atom(
   (get, set, newType: OrderTypeE) => {
     if (newType === OrderTypeE.Limit) {
       const perpetualStatistics = get(perpetualStatisticsAtom);
+      const perpetualStaticInfo = get(perpetualStaticInfoAtom);
       const orderBlock = get(orderBlockAtom);
       let initialLimit: number;
-      if (perpetualStatistics?.midPrice) {
+      if (perpetualStatistics?.midPrice && perpetualStaticInfo) {
         const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
+        if (TraderInterface.isPredictiveMarket(perpetualStaticInfo)) {
+          initialLimit = Math.round(priceToProb(initialLimit) * 10) / 10;
+        }
       } else {
         initialLimit = -1;
       }
@@ -55,10 +61,14 @@ export const orderTypeAtom = atom(
       set(triggerPriceValueAtom, -1);
     } else if (newType === OrderTypeE.Stop) {
       const perpetualStatistics = get(perpetualStatisticsAtom);
+      const perpetualStaticInfo = get(perpetualStaticInfoAtom);
       let initialTrigger: number;
-      if (perpetualStatistics?.markPrice) {
+      if (perpetualStatistics?.markPrice && perpetualStaticInfo) {
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
+        if (TraderInterface.isPredictiveMarket(perpetualStaticInfo)) {
+          initialTrigger = Math.round(priceToProb(initialTrigger) * 10) / 10;
+        }
       } else {
         initialTrigger = -1;
       }
@@ -166,11 +176,22 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     }
   }
 
+  const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+
+  const quoteCurrency =
+    perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+      ? '%'
+      : perpetualStatistics.quoteCurrency;
+
   let maxMinEntryPrice = null;
   if (orderType === OrderTypeE.Market) {
     maxMinEntryPrice =
       perpetualStatistics.indexPrice *
       (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
+    maxMinEntryPrice =
+      perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+        ? priceToProb(maxMinEntryPrice)
+        : maxMinEntryPrice;
   }
 
   let stopLossPrice = null;
@@ -180,6 +201,10 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       stopLossPrice = perpetualStatistics.markPrice * stopLossMultiplier;
+      stopLossPrice =
+        perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          ? priceToProb(stopLossPrice)
+          : stopLossPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       stopLossPrice = limitPrice * stopLossMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
@@ -201,6 +226,10 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       takeProfitPrice = perpetualStatistics.markPrice * takeProfitMultiplier;
+      takeProfitPrice =
+        perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          ? priceToProb(takeProfitPrice)
+          : takeProfitPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       takeProfitPrice = limitPrice * takeProfitMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
@@ -218,7 +247,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     symbol,
     poolName: perpetualStatistics.poolName,
     baseCurrency: perpetualStatistics.baseCurrency,
-    quoteCurrency: perpetualStatistics.quoteCurrency,
+    quoteCurrency,
     orderBlock,
     orderType,
     leverage,

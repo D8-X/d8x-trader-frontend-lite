@@ -46,6 +46,7 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -455,10 +456,13 @@ export const ActionBlock = memo(() => {
       } else if (orderInfo.orderType === OrderTypeE.Stop && orderInfo.triggerPrice) {
         price = orderInfo.triggerPrice;
       }
+      if (perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)) {
+        price = 100 * priceToProb(price);
+      }
       return formatToCurrency(price, orderInfo.quoteCurrency);
     }
     return '-';
-  }, [orderInfo]);
+  }, [orderInfo, perpetualStaticInfo]);
 
   const isMarketClosed = useDebounce(
     useMemo(() => {
@@ -595,6 +599,13 @@ export const ActionBlock = memo(() => {
       );
     }
   }, [orderInfo]);
+
+  const liqPrice =
+    perpetualStaticInfo &&
+    newPositionRisk?.liquidationPrice?.[0] &&
+    TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+      ? 100 * priceToProb(newPositionRisk?.liquidationPrice?.[0])
+      : 0;
 
   return (
     <div className={styles.root}>
@@ -807,11 +818,8 @@ export const ActionBlock = memo(() => {
                   </Typography>
                 }
                 rightSide={
-                  isOrderValid &&
-                  newPositionRisk &&
-                  newPositionRisk.liquidationPrice[0] > 0 &&
-                  newPositionRisk.liquidationPrice[0] < Infinity
-                    ? formatToCurrency(newPositionRisk.liquidationPrice[0] ?? 0, orderInfo.quoteCurrency)
+                  isOrderValid && newPositionRisk && liqPrice > 0 && liqPrice < Infinity
+                    ? formatToCurrency(liqPrice ?? 0, orderInfo.quoteCurrency)
                     : '-'
                 }
                 rightSideStyles={styles.rightSide}
