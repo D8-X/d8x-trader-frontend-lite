@@ -37,31 +37,37 @@ export const PerpetualStats = () => {
       perpetualStatistics?.midPriceDiff >= 0 ? styles.statMainValuePositive : styles.statMainValueNegative;
   }
 
+  const [displayMidPrice, displayIndexPrice, displayMarkPrice, displayCcy] = useMemo(() => {
+    if (!!perpetualStatistics && !!perpetualStaticInfo) {
+      return TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+        ? [
+            100 * priceToProb(perpetualStatistics.midPrice),
+            100 * priceToProb(perpetualStatistics.indexPrice),
+            100 * priceToProb(perpetualStatistics.markPrice),
+            '%',
+          ]
+        : [
+            perpetualStatistics.midPrice,
+            perpetualStatistics.indexPrice,
+            perpetualStatistics.markPrice,
+            perpetualStatistics.quoteCurrency,
+          ];
+    }
+    return [undefined, undefined];
+  }, [perpetualStatistics, perpetualStaticInfo]);
+
   const midPrice: StatDataI = useMemo(
     () => ({
       id: 'midPrice',
       label: t('pages.trade.stats.mid-price'),
       tooltip: t('pages.trade.stats.mid-price-tooltip'),
-      value: perpetualStatistics
-        ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true)
-        : '--',
-      numberOnly: perpetualStatistics
-        ? formatToCurrency(perpetualStatistics.midPrice, '', true, undefined, true)
-        : '--',
+      value: displayCcy ? formatToCurrency(displayMidPrice, displayCcy, true) : '--',
+      numberOnly: displayCcy ? formatToCurrency(displayMidPrice, '', true, undefined, true) : '--',
       className: midPriceClass, // Add the custom class here
       // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
     }),
-    [midPriceClass, t, perpetualStatistics]
+    [midPriceClass, t, displayMidPrice, displayCcy]
   );
-
-  const [displayIndexPrice, displayMarkPrice, displayCcy] = useMemo(() => {
-    if (!!perpetualStatistics && !!perpetualStaticInfo) {
-      return TraderInterface.isPredictiveMarket(perpetualStaticInfo)
-        ? [100 * priceToProb(perpetualStatistics.indexPrice), 100 * priceToProb(perpetualStatistics.markPrice), '%']
-        : [perpetualStatistics.indexPrice, perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency];
-    }
-    return [undefined, undefined];
-  }, [perpetualStatistics, perpetualStaticInfo]);
 
   const items: StatDataI[] = useMemo(
     () => [
