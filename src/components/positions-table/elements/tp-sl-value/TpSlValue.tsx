@@ -11,6 +11,9 @@ import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TpSlValue.module.scss';
+import { useAtomValue } from 'jotai';
+import { perpetualStaticInfoAtom } from 'store/pools.store';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 interface TpSlValuePropsI {
   position: MarginAccountWithAdditionalDataI;
@@ -44,6 +47,8 @@ const TEXTUAL_VALUE_TYPES = [OrderValueTypeE.Multiple, OrderValueTypeE.Partial, 
 export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) => {
   const { t } = useTranslation();
 
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+
   const parsedSymbol = parseSymbol(position.symbol);
 
   const openOrdersData: OpenOrdersDataI = useMemo(() => {
@@ -56,30 +61,38 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       },
     };
 
-    if (position.takeProfit.valueType !== OrderValueTypeE.None) {
+    if (position.takeProfit.valueType !== OrderValueTypeE.None && !!perpetualStaticInfo) {
       ordersData.takeProfit.className = styles.tpValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.takeProfit.valueType)) {
         ordersData.takeProfit.value = t(`pages.trade.positions-table.table-content.${position.takeProfit.valueType}`);
       } else {
         ordersData.takeProfit.value = formatToCurrency(
-          position.takeProfit.fullValue,
-          parsedSymbol?.quoteCurrency,
+          TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.takeProfit.fullValue !== undefined
+            ? priceToProb(position.takeProfit.fullValue)
+            : position.takeProfit.fullValue,
+          TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
       }
     }
 
-    if (position.stopLoss.valueType !== OrderValueTypeE.None) {
+    if (position.stopLoss.valueType !== OrderValueTypeE.None && !!perpetualStaticInfo) {
       ordersData.stopLoss.className = styles.slValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.stopLoss.valueType)) {
         ordersData.stopLoss.value = t(`pages.trade.positions-table.table-content.${position.stopLoss.valueType}`);
       } else {
-        ordersData.stopLoss.value = formatToCurrency(position.stopLoss.fullValue, parsedSymbol?.quoteCurrency, true);
+        ordersData.stopLoss.value = formatToCurrency(
+          TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.stopLoss.fullValue !== undefined
+            ? priceToProb(position.stopLoss.fullValue)
+            : position.takeProfit.fullValue,
+          TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
+          true
+        );
       }
     }
 
     return ordersData;
-  }, [t, position, parsedSymbol]);
+  }, [t, position, parsedSymbol, perpetualStaticInfo]);
 
   return (
     <Box className={styles.root}>
