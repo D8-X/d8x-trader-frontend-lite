@@ -8,6 +8,7 @@ import { DATETIME_FORMAT } from 'appConstants';
 import { collateralToSettleConversionAtom } from 'store/pools.store';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { priceToProb } from '@d8x/perpetuals-sdk';
 
 interface TradeHistoryRowPropsI {
   headers: TableHeaderI<TradeHistoryWithSymbolDataI>[];
@@ -22,6 +23,9 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   const perpetual = tradeHistory.perpetual;
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? 'var(--d8x-color-buy-rgba)' : 'var(--d8x-color-sell-rgba)';
+
+  const displayPrice = perpetual?.isPredictiveMarket ? 100 * priceToProb(tradeHistory.price) : tradeHistory.price;
+  const displayCcy = perpetual?.isPredictiveMarket ? '%' : perpetual?.quoteCurrency;
 
   return (
     <TableRow key={tradeHistory.transactionHash}>
@@ -42,9 +46,7 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
         <Typography variant="cellSmall">TYPE</Typography>
       </TableCell>*/}
       <TableCell align={headers[3].align}>
-        <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
-        </Typography>
+        <Typography variant="cellSmall">{perpetual ? formatToCurrency(displayPrice, displayCcy, true) : ''}</Typography>
       </TableCell>
       <TableCell align={headers[4].align}>
         <Typography variant="cellSmall">

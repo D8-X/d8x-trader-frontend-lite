@@ -11,6 +11,7 @@ import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TradeHistoryBlock.module.scss';
+import { priceToProb } from '@d8x/perpetuals-sdk';
 
 interface TradeHistoryRowPropsI {
   headers: TableHeaderI<TradeHistoryWithSymbolDataI>[];
@@ -25,6 +26,9 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
   const perpetual = tradeHistory.perpetual;
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? styles.green : styles.red;
+
+  const displayPrice = perpetual?.isPredictiveMarket ? 100 * priceToProb(tradeHistory.price) : tradeHistory.price;
+  const displayCcy = perpetual?.isPredictiveMarket ? '%' : perpetual?.quoteCurrency;
 
   return (
     <Box className={styles.root}>
@@ -60,7 +64,7 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
         <SidesRow
           leftSide={headers[3].label}
           leftSideTooltip={headers[3].tooltip}
-          rightSide={perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
+          rightSide={displayPrice ? formatToCurrency(displayPrice, displayCcy, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />

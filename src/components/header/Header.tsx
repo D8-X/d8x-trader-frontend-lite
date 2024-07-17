@@ -46,6 +46,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 
 interface HeaderPropsI {
   /**
@@ -129,17 +130,23 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       const perpetuals: PerpetualDataI[] = [];
       data.pools.forEach((pool) => {
         perpetuals.push(
-          ...pool.perpetuals.map((perpetual) => ({
-            id: perpetual.id,
-            poolName: pool.poolSymbol,
-            baseCurrency: perpetual.baseCurrency,
-            quoteCurrency: perpetual.quoteCurrency,
-            symbol: createSymbol({
+          ...pool.perpetuals.map((perpetual) => {
+            const symbol = createSymbol({
               poolSymbol: pool.poolSymbol,
               baseCurrency: perpetual.baseCurrency,
               quoteCurrency: perpetual.quoteCurrency,
-            }),
-          }))
+            });
+            const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
+            const isPredictiveMarket = sInfo !== undefined && TraderInterface.isPredictiveMarket(sInfo);
+            return {
+              id: perpetual.id,
+              poolName: pool.poolSymbol,
+              baseCurrency: perpetual.baseCurrency,
+              quoteCurrency: perpetual.quoteCurrency,
+              symbol,
+              isPredictiveMarket,
+            };
+          })
         );
       });
       setPerpetuals(perpetuals);
