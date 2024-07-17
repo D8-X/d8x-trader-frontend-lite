@@ -87,12 +87,19 @@ export async function getPerpetualStaticInfo(
   symbol: string
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
   if (traderAPI && Number(traderAPI.chainId) === chainId) {
-    // console.log('perpStaticInfo via SDK');
+    console.log('perpStaticInfo via SDK');
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
-    // console.log('perpStaticInfo via BE');
-    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
+    console.log('perpStaticInfo via BE');
+    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId).then(
+      (data: ValidatedResponseI<PerpetualStaticInfoI>) => {
+        if (data.data) {
+          data.data.perpFlags = Number(data.data.perpFlags.toString());
+        }
+        return data;
+      }
+    );
   }
 }
 

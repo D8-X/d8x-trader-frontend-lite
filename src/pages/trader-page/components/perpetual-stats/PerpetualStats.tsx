@@ -39,7 +39,10 @@ export const PerpetualStats = () => {
 
   const [displayMidPrice, displayIndexPrice, displayMarkPrice, displayCcy] = useMemo(() => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
-      return TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+      console.log('info', perpetualStaticInfo);
+      const isPred = TraderInterface.isPredictiveMarket(perpetualStaticInfo);
+      console.log('isPred', isPred, perpetualStaticInfo);
+      return isPred
         ? [
             100 * priceToProb(perpetualStatistics.midPrice),
             100 * priceToProb(perpetualStatistics.indexPrice),

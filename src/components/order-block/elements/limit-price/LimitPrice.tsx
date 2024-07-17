@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { priceToProb, probToPrice, TraderInterface } from '@d8x/perpetuals-sdk';
 
 import { Box, Typography } from '@mui/material';
 
@@ -8,7 +9,7 @@ import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
-import { perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import { perpetualStaticInfoAtom, perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
 import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './LimitPrice.module.scss';
@@ -20,6 +21,7 @@ export const LimitPrice = memo(() => {
   const orderBlock = useAtomValue(orderBlockAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [limitPrice, setLimitPrice] = useAtom(limitPriceAtom);
 
   const [inputValue, setInputValue] = useState(limitPrice != null ? `${limitPrice}` : '');
@@ -35,7 +37,11 @@ export const LimitPrice = memo(() => {
   const handleLimitPriceChange = useCallback(
     (targetValue: string) => {
       if (targetValue) {
-        setLimitPrice(targetValue);
+        const internalLimit =
+          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+            ? `${probToPrice(+targetValue)}`
+            : targetValue;
+        setLimitPrice(internalLimit);
         setInputValue(targetValue);
       } else {
         if (orderType === OrderTypeE.Limit) {
@@ -49,15 +55,19 @@ export const LimitPrice = memo(() => {
       }
       inputValueChangedRef.current = true;
     },
-    [setLimitPrice, perpetualStatistics, orderType]
+    [setLimitPrice, perpetualStatistics, perpetualStaticInfo, orderType]
   );
 
   useEffect(() => {
     if (!inputValueChangedRef.current) {
-      setInputValue(limitPrice != null ? `${limitPrice}` : '');
+      const displayLimit =
+        perpetualStaticInfo && limitPrice != null && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          ? priceToProb(limitPrice)
+          : limitPrice;
+      setInputValue(displayLimit != null ? `${displayLimit}` : '');
     }
     inputValueChangedRef.current = false;
-  }, [limitPrice]);
+  }, [limitPrice, perpetualStaticInfo]);
 
   useEffect(() => {
     orderBlockChangedRef.current = true;
@@ -75,8 +85,12 @@ export const LimitPrice = memo(() => {
   }, [setLimitPrice, perpetualStatistics?.midPrice, orderType, stepSize, orderBlock]);
 
   const handleInputBlur = useCallback(() => {
-    setInputValue(limitPrice != null ? `${limitPrice}` : '');
-  }, [limitPrice]);
+    const displayLimit =
+      perpetualStaticInfo && limitPrice != null && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+        ? priceToProb(limitPrice)
+        : limitPrice;
+    setInputValue(displayLimit != null ? `${displayLimit}` : '');
+  }, [limitPrice, perpetualStaticInfo]);
 
   if (orderType === OrderTypeE.Market) {
     return null;
@@ -100,7 +114,11 @@ export const LimitPrice = memo(() => {
         inputValue={inputValue}
         setInputValue={handleLimitPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={selectedPerpetual?.quoteCurrency}
+        currency={
+          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+            ? '%'
+            : selectedPerpetual?.quoteCurrency
+        }
         placeholder="-"
         step={stepSize}
         min={-1}
