@@ -1,4 +1,4 @@
-import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { PerpetualStaticInfo, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,15 +126,15 @@ export interface GeoLocationDataI {
   countryCode: string;
 }
 
-export interface PerpetualStaticInfoI extends ErrorResponseI {
-  id: number;
-  limitOrderBookAddr: string;
-  initialMarginRate: number;
-  maintenanceMarginRate: number;
-  S2Symbol: string;
-  S3Symbol: string;
-  lotSizeBC: number;
-  referralRebate: number;
+export interface PerpetualStaticInfoI extends ErrorResponseI, PerpetualStaticInfo {
+  // id: number;
+  // limitOrderBookAddr: string;
+  // initialMarginRate: number;
+  // maintenanceMarginRate: number;
+  // S2Symbol: string;
+  // S3Symbol: string;
+  // lotSizeBC: number;
+  // referralRebate: number;
 }
 
 // Taken from `@d8x/perpetuals-sdk/src/nodeSDKTypes.ts`
