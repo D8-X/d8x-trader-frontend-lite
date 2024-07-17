@@ -28,13 +28,19 @@ import {
   reduceOnlyAtom,
   slippageSliderAtom,
 } from 'store/order-block.store';
-import { perpetualStatisticsAtom, positionsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import {
+  perpetualStaticInfoAtom,
+  perpetualStatisticsAtom,
+  positionsAtom,
+  selectedPerpetualAtom,
+} from 'store/pools.store';
 import { OrderBlockE, OrderSideE, OrderTypeE } from 'types/enums';
 import { type MarkI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapSlippageToNumber } from 'utils/mapSlippageToNumber';
 
 import styles from './OrderSettings.module.scss';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 const marks: MarkI[] = [
   { value: 0.5, label: '0.5%' },
@@ -65,6 +71,7 @@ export const OrderSettings = memo(() => {
   const orderType = useAtomValue(orderTypeAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [slippage, setSlippage] = useAtom(slippageSliderAtom);
   // const [keepPositionLeverage, setKeepPositionLeverage] = useAtom(keepPositionLeverageAtom);
   const [reduceOnly, setReduceOnly] = useAtom(reduceOnlyAtom);
@@ -118,6 +125,16 @@ export const OrderSettings = memo(() => {
     }
     return 0;
   }, [orderBlock, updatedSlippage, perpetualStatistics]);
+
+  const formattedEntryPrice = useMemo(() => {
+    if (!!selectedPerpetual && selectedPerpetual?.id === perpetualStaticInfo?.id) {
+      if (TraderInterface.isPredictiveMarket(perpetualStaticInfo)) {
+        return formatToCurrency(100 * priceToProb(entryPrice), '%');
+      } else {
+        return formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency);
+      }
+    }
+  }, [entryPrice, selectedPerpetual, perpetualStaticInfo]);
 
   const isReduceOnlyEnabled = useMemo(() => {
     if (perpetualStatistics && orderInfo) {
@@ -235,7 +252,7 @@ export const OrderSettings = memo(() => {
             {orderBlock === OrderBlockE.Long
               ? t('pages.trade.order-block.slippage.max')
               : t('pages.trade.order-block.slippage.min')}{' '}
-            {formatToCurrency(entryPrice, selectedPerpetual?.quoteCurrency)}
+            {formattedEntryPrice}
           </Typography>
         </DialogContent>
         <Separator />
