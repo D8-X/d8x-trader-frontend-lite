@@ -28,6 +28,7 @@ import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/Per
 import { orderBlockPositionAtom } from 'store/app.store';
 import {
   openOrdersAtom,
+  perpetualStaticInfoAtom,
   perpetualStatisticsAtom,
   positionsAtom,
   selectedPoolAtom,
@@ -44,6 +45,7 @@ import { CandlesWebSocketListener } from './components/candles-webSocket-listene
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
 import styles from './TraderPage.module.scss';
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 const MIN_REQUIRED_USDC = 20;
 
@@ -65,6 +67,7 @@ export const TraderPage = () => {
 
   const orderBlockPosition = useAtomValue(orderBlockPositionAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
@@ -242,13 +245,15 @@ export const TraderPage = () => {
     setActiveHistoryIndex(index);
   };
 
+  const isPredictiveMarket = perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo);
+
   return (
     <>
       <Helmet
         title={`${
           perpetualStatistics
             ? formatToCurrency(
-                perpetualStatistics.midPrice,
+                isPredictiveMarket ? 100 * priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
                 `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
                 true
               )
