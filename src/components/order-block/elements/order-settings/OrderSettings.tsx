@@ -129,7 +129,7 @@ export const OrderSettings = memo(() => {
   const formattedEntryPrice = useMemo(() => {
     if (!!selectedPerpetual && selectedPerpetual?.id === perpetualStaticInfo?.id) {
       if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-        return formatToCurrency(priceToProb(entryPrice), '%');
+        return formatToCurrency(priceToProb(entryPrice), selectedPerpetual.quoteCurrency);
       } else {
         return formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency);
       }

@@ -24,8 +24,8 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? 'var(--d8x-color-buy-rgba)' : 'var(--d8x-color-sell-rgba)';
 
-  const displayPrice = perpetual?.isPredictionMarket ? 100 * priceToProb(tradeHistory.price) : tradeHistory.price;
-  const displayCcy = perpetual?.isPredictionMarket ? '%' : perpetual?.quoteCurrency;
+  const displayPrice = perpetual?.isPredictionMarket ? priceToProb(tradeHistory.price) : tradeHistory.price;
+  const displayCcy = perpetual?.isPredictionMarket ? perpetual?.quoteCurrency : perpetual?.quoteCurrency;
 
   return (
     <TableRow key={tradeHistory.transactionHash}>

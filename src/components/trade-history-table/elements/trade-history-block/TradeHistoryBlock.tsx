@@ -27,8 +27,8 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? styles.green : styles.red;
 
-  const displayPrice = perpetual?.isPredictionMarket ? 100 * priceToProb(tradeHistory.price) : tradeHistory.price;
-  const displayCcy = perpetual?.isPredictionMarket ? '%' : perpetual?.quoteCurrency;
+  const displayPrice = perpetual?.isPredictionMarket ? priceToProb(tradeHistory.price) : tradeHistory.price;
+  const displayCcy = perpetual?.isPredictionMarket ? perpetual?.quoteCurrency : perpetual?.quoteCurrency;
 
   return (
     <Box className={styles.root}>

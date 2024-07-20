@@ -464,7 +464,7 @@ export const ActionBlock = memo(() => {
         price = orderInfo.triggerPrice;
       }
       if (perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-        price = 100 * priceToProb(price);
+        price = priceToProb(price);
       }
       return formatToCurrency(price, orderInfo.quoteCurrency);
     }
@@ -615,7 +615,7 @@ export const ActionBlock = memo(() => {
     perpetualStaticInfo &&
     newPositionRisk?.liquidationPrice?.[0] &&
     TraderInterface.isPredictionMarket(perpetualStaticInfo)
-      ? 100 * priceToProb(newPositionRisk?.liquidationPrice?.[0])
+      ? priceToProb(newPositionRisk?.liquidationPrice?.[0])
       : 0;
 
   return (

@@ -41,7 +41,9 @@ export const PerpetualStats = () => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
       const isPred = TraderInterface.isPredictionMarket(perpetualStaticInfo);
       const px = [perpetualStatistics.midPrice, perpetualStatistics.indexPrice, perpetualStatistics.markPrice];
-      return isPred ? [px.map((x) => 100 * priceToProb(x)), '%'] : [px, perpetualStatistics.quoteCurrency];
+      return isPred
+        ? [px.map((x) => priceToProb(x)), perpetualStatistics.quoteCurrency]
+        : [px, perpetualStatistics.quoteCurrency];
     }
     return [[undefined, undefined, undefined], undefined];
   }, [perpetualStatistics, perpetualStaticInfo]);

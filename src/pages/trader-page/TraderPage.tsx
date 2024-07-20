@@ -253,7 +253,7 @@ export const TraderPage = () => {
         title={`${
           perpetualStatistics
             ? formatToCurrency(
-                isPredictionMarket ? 100 * priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
+                isPredictionMarket ? priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
                 `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
                 true
               )

@@ -52,7 +52,7 @@ export const orderTypeAtom = atom(
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
         if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-          initialLimit = Math.round(priceToProb(initialLimit) * 100);
+          initialLimit = Math.round(priceToProb(initialLimit));
         }
       } else {
         initialLimit = -1;
@@ -67,7 +67,7 @@ export const orderTypeAtom = atom(
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
         if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-          initialTrigger = Math.round(priceToProb(initialTrigger) * 100);
+          initialTrigger = Math.round(priceToProb(initialTrigger));
         }
       } else {
         initialTrigger = -1;
@@ -186,7 +186,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     maxMinEntryPrice =
       perpetualStatistics.indexPrice *
       (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
-    maxMinEntryPrice = isPredictionMarket ? 100 * priceToProb(maxMinEntryPrice) : maxMinEntryPrice;
+    maxMinEntryPrice = isPredictionMarket ? priceToProb(maxMinEntryPrice) : maxMinEntryPrice;
   }
 
   let stopLossPrice = null;
@@ -196,7 +196,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       stopLossPrice = perpetualStatistics.markPrice * stopLossMultiplier;
-      stopLossPrice = isPredictionMarket ? 100 * priceToProb(stopLossPrice) : stopLossPrice;
+      stopLossPrice = isPredictionMarket ? priceToProb(stopLossPrice) : stopLossPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       stopLossPrice = limitPrice * stopLossMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
@@ -218,7 +218,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       takeProfitPrice = perpetualStatistics.markPrice * takeProfitMultiplier;
-      takeProfitPrice = isPredictionMarket ? 100 * priceToProb(takeProfitPrice) : takeProfitPrice;
+      takeProfitPrice = isPredictionMarket ? priceToProb(takeProfitPrice) : takeProfitPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       takeProfitPrice = limitPrice * takeProfitMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
