@@ -64,19 +64,12 @@ function createMainOrder(orderInfo: OrderInfoI) {
     deadlineMultiplier = 24 * Number(orderInfo.expireDays);
   }
 
-  let triggerPrice = orderInfo.triggerPrice;
-  if (orderInfo.isPredictionMarket) {
-    // fix units
-    limitPrice = limitPrice != null ? limitPrice / 100 : limitPrice;
-    triggerPrice = triggerPrice != null ? triggerPrice / 100 : triggerPrice;
-  }
-
   return {
     symbol: orderInfo.symbol,
     side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell,
     type: orderType,
     limitPrice: limitPrice !== null && limitPrice > -1 ? limitPrice : undefined,
-    stopPrice: triggerPrice !== null ? triggerPrice : undefined,
+    stopPrice: orderInfo.triggerPrice !== null ? orderInfo.triggerPrice : undefined,
     quantity: orderInfo.size,
     leverage: orderInfo.leverage,
     reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
@@ -616,7 +609,7 @@ export const ActionBlock = memo(() => {
     newPositionRisk?.liquidationPrice?.[0] &&
     TraderInterface.isPredictionMarket(perpetualStaticInfo)
       ? priceToProb(newPositionRisk?.liquidationPrice?.[0])
-      : 0;
+      : newPositionRisk?.liquidationPrice?.[0] ?? 0;
 
   return (
     <div className={styles.root}>

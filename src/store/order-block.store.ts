@@ -52,7 +52,7 @@ export const orderTypeAtom = atom(
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
         if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-          initialLimit = Math.round(priceToProb(initialLimit));
+          initialLimit = Math.round(priceToProb(perpetualStatistics.midPrice) * (1 + 0.01 * direction) * step) / step;
         }
       } else {
         initialLimit = -1;
@@ -67,7 +67,7 @@ export const orderTypeAtom = atom(
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
         if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-          initialTrigger = Math.round(priceToProb(initialTrigger));
+          initialTrigger = Math.round(priceToProb(perpetualStatistics.markPrice) * step) / step;
         }
       } else {
         initialTrigger = -1;
@@ -179,8 +179,6 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
   const isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
 
-  const quoteCurrency = isPredictionMarket ? '%' : perpetualStatistics.quoteCurrency;
-
   let maxMinEntryPrice = null;
   if (orderType === OrderTypeE.Market) {
     maxMinEntryPrice =
@@ -236,7 +234,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     symbol,
     poolName: perpetualStatistics.poolName,
     baseCurrency: perpetualStatistics.baseCurrency,
-    quoteCurrency,
+    quoteCurrency: perpetualStatistics.quoteCurrency,
     orderBlock,
     orderType,
     leverage,

@@ -85,11 +85,7 @@ export const TriggerPrice = memo(() => {
         inputValue={inputValue}
         setInputValue={handleTriggerPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={
-          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-            ? '%'
-            : selectedPerpetual?.quoteCurrency
-        }
+        currency={selectedPerpetual?.quoteCurrency}
         step={stepSize}
         min={0}
       />

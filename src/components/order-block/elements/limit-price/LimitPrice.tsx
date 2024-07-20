@@ -43,7 +43,7 @@ export const LimitPrice = memo(() => {
         if (orderType === OrderTypeE.Limit) {
           const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
           const userLimit =
-            perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
+            perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo) && initialLimit > 0
               ? priceToProb(initialLimit)
               : initialLimit;
           setLimitPrice(`${userLimit}`);
@@ -73,10 +73,11 @@ export const LimitPrice = memo(() => {
     if (orderBlockChangedRef.current && orderType === OrderTypeE.Limit && !!perpetualStatistics?.midPrice) {
       const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
       const step = +stepSize;
-      const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
+      const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * (1 / step)) / (1 / step);
+
       const userLimit =
-        perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-          ? priceToProb(initialLimit)
+        perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo) && initialLimit > 0
+          ? Math.round(priceToProb(perpetualStatistics.midPrice * (1 + 0.01 * direction)) * (1 / step)) / (1 / step)
           : initialLimit;
       setLimitPrice(`${userLimit}`);
       setInputValue('');
@@ -110,11 +111,7 @@ export const LimitPrice = memo(() => {
         inputValue={inputValue}
         setInputValue={handleLimitPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={
-          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-            ? '%'
-            : selectedPerpetual?.quoteCurrency
-        }
+        currency={selectedPerpetual?.quoteCurrency}
         placeholder="-"
         step={stepSize}
         min={-1}
