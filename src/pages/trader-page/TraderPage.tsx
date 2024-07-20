@@ -245,7 +245,12 @@ export const TraderPage = () => {
     setActiveHistoryIndex(index);
   };
 
-  const isPredictionMarket = perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  let isPredictionMarket = false;
+  try {
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  } catch {
+    // skip
+  }
 
   return (
     <>

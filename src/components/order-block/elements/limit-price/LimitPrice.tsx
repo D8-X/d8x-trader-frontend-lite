@@ -75,8 +75,15 @@ export const LimitPrice = memo(() => {
       const step = +stepSize;
       const initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * (1 / step)) / (1 / step);
 
+      let isPredictionMarket = false;
+      try {
+        isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+      } catch {
+        // skip
+      }
+
       const userLimit =
-        perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo) && initialLimit > 0
+        isPredictionMarket && initialLimit > 0
           ? Math.round(priceToProb(perpetualStatistics.midPrice * (1 + 0.01 * direction)) * (1 / step)) / (1 / step)
           : initialLimit;
       setLimitPrice(`${userLimit}`);

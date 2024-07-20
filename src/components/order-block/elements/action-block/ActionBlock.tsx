@@ -604,10 +604,15 @@ export const ActionBlock = memo(() => {
     }
   }, [orderInfo]);
 
+  let isPredictionMarket = false;
+  try {
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  } catch {
+    // skip
+  }
+
   const liqPrice =
-    perpetualStaticInfo &&
-    newPositionRisk?.liquidationPrice?.[0] &&
-    TraderInterface.isPredictionMarket(perpetualStaticInfo)
+    newPositionRisk?.liquidationPrice?.[0] && isPredictionMarket
       ? priceToProb(newPositionRisk?.liquidationPrice?.[0])
       : newPositionRisk?.liquidationPrice?.[0] ?? 0;
 

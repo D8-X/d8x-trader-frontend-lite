@@ -36,9 +36,13 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
 
   const [displayLimitPrice, displayTriggerPrice] = useMemo(() => {
     if (!!order.limitPrice && !!order.limitPrice) {
-      return traderAPI?.isPredictionMarket(order.symbol)
-        ? [priceToProb(order.limitPrice), priceToProb(order.limitPrice)]
-        : [order.limitPrice, order.stopPrice];
+      try {
+        return traderAPI?.isPredictionMarket(order.symbol)
+          ? [priceToProb(order.limitPrice), priceToProb(order.limitPrice)]
+          : [order.limitPrice, order.stopPrice];
+      } catch (error) {
+        // skip
+      }
     }
     return [order.limitPrice, order.stopPrice];
   }, [order, traderAPI]);

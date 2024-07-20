@@ -61,31 +61,38 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       },
     };
 
-    if (position.takeProfit.valueType !== OrderValueTypeE.None && !!perpetualStaticInfo) {
+    let isPredictionMarket = false;
+    try {
+      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+    } catch {
+      // skip
+    }
+
+    if (position.takeProfit.valueType !== OrderValueTypeE.None) {
       ordersData.takeProfit.className = styles.tpValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.takeProfit.valueType)) {
         ordersData.takeProfit.value = t(`pages.trade.positions-table.table-content.${position.takeProfit.valueType}`);
       } else {
         ordersData.takeProfit.value = formatToCurrency(
-          TraderInterface.isPredictionMarket(perpetualStaticInfo) && position.takeProfit.fullValue !== undefined
+          isPredictionMarket && position.takeProfit.fullValue !== undefined
             ? priceToProb(position.takeProfit.fullValue)
             : position.takeProfit.fullValue,
-          TraderInterface.isPredictionMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
+          isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
       }
     }
 
-    if (position.stopLoss.valueType !== OrderValueTypeE.None && !!perpetualStaticInfo) {
+    if (position.stopLoss.valueType !== OrderValueTypeE.None) {
       ordersData.stopLoss.className = styles.slValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.stopLoss.valueType)) {
         ordersData.stopLoss.value = t(`pages.trade.positions-table.table-content.${position.stopLoss.valueType}`);
       } else {
         ordersData.stopLoss.value = formatToCurrency(
-          TraderInterface.isPredictionMarket(perpetualStaticInfo) && position.stopLoss.fullValue !== undefined
+          isPredictionMarket && position.stopLoss.fullValue !== undefined
             ? priceToProb(position.stopLoss.fullValue)
             : position.takeProfit.fullValue,
-          TraderInterface.isPredictionMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
+          isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
       }

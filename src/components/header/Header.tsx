@@ -136,8 +136,13 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               baseCurrency: perpetual.baseCurrency,
               quoteCurrency: perpetual.quoteCurrency,
             });
-            const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
-            const isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarket(sInfo);
+            let isPredictionMarket = false;
+            try {
+              const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
+              isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarket(sInfo);
+            } catch {
+              // skip
+            }
             return {
               id: perpetual.id,
               poolName: pool.poolSymbol,

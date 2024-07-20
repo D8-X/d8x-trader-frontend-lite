@@ -42,16 +42,24 @@ export const orderTypeAtom = atom(
     return get(orderTypeValueAtom);
   },
   (get, set, newType: OrderTypeE) => {
+    const perpetualStatistics = get(perpetualStatisticsAtom);
+    const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+
+    let isPredictionMarket = false;
+    try {
+      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+    } catch {
+      // skip
+    }
+
     if (newType === OrderTypeE.Limit) {
-      const perpetualStatistics = get(perpetualStatisticsAtom);
-      const perpetualStaticInfo = get(perpetualStaticInfoAtom);
       const orderBlock = get(orderBlockAtom);
       let initialLimit: number;
-      if (perpetualStatistics?.midPrice && perpetualStaticInfo) {
+      if (perpetualStatistics?.midPrice) {
         const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
-        if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
+        if (isPredictionMarket) {
           initialLimit = Math.round(priceToProb(perpetualStatistics.midPrice) * (1 + 0.01 * direction) * step) / step;
         }
       } else {
@@ -60,13 +68,11 @@ export const orderTypeAtom = atom(
       set(limitPriceValueAtom, initialLimit);
       set(triggerPriceValueAtom, -1);
     } else if (newType === OrderTypeE.Stop) {
-      const perpetualStatistics = get(perpetualStatisticsAtom);
-      const perpetualStaticInfo = get(perpetualStaticInfoAtom);
       let initialTrigger: number;
-      if (perpetualStatistics?.markPrice && perpetualStaticInfo) {
+      if (perpetualStatistics?.markPrice) {
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
-        if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
+        if (isPredictionMarket) {
           initialTrigger = Math.round(priceToProb(perpetualStatistics.markPrice) * step) / step;
         }
       } else {
@@ -177,7 +183,13 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   }
 
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
-  const isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+
+  let isPredictionMarket = false;
+  try {
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  } catch {
+    // skip
+  }
 
   let maxMinEntryPrice = null;
   if (orderType === OrderTypeE.Market) {

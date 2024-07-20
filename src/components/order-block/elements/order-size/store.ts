@@ -75,21 +75,20 @@ export const currencyMultiplierAtom = atom((get) => {
 
   const selectedCurrency = get(selectedCurrencyPrimitiveAtom);
 
+  let isPredictionMarket = false;
+  try {
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  } catch {
+    // skip
+  }
+
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
-  if (selectedCurrency === selectedPerpetual.quoteCurrency && indexPrice > 0 && !!perpetualStaticInfo) {
-    TraderInterface.isPredictionMarket(perpetualStaticInfo)
-      ? (currencyMultiplier = priceToProb(indexPrice))
-      : (currencyMultiplier = indexPrice);
-  } else if (
-    selectedCurrency === selectedPool.settleSymbol &&
-    collToQuoteIndexPrice > 0 &&
-    indexPrice > 0 &&
-    !!perpetualStaticInfo
-  ) {
-    TraderInterface.isPredictionMarket(perpetualStaticInfo)
-      ? (currencyMultiplier =
-          (priceToProb(indexPrice) / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1))
-      : (currencyMultiplier = (indexPrice / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1));
+  if (selectedCurrency === selectedPerpetual.quoteCurrency && indexPrice > 0) {
+    currencyMultiplier = isPredictionMarket ? priceToProb(indexPrice) : indexPrice;
+  } else if (selectedCurrency === selectedPool.settleSymbol && collToQuoteIndexPrice > 0 && indexPrice > 0) {
+    currencyMultiplier = isPredictionMarket
+      ? (priceToProb(indexPrice) / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1)
+      : (indexPrice / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1);
   }
   return currencyMultiplier;
 });
