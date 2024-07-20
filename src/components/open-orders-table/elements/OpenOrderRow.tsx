@@ -1,12 +1,14 @@
 import { format } from 'date-fns';
 import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { priceToProb } from '@d8x/perpetuals-sdk';
 
 import { DeleteForeverOutlined } from '@mui/icons-material';
 import { IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
-import { collateralToSettleConversionAtom } from 'store/pools.store';
+import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
 import type { OrderWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -28,6 +30,16 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
   const deadlineDate = order.deadline ? format(new Date(order.deadline * 1000), 'yyyy-MM-dd') : '';
   const leverage = order.leverage === undefined ? order.leverage : Math.round(100 * order.leverage) / 100;
   const collToSettleInfo = parsedSymbol?.poolSymbol ? c2s.get(parsedSymbol.poolSymbol) : undefined;
+  const traderAPI = useAtomValue(traderAPIAtom);
+
+  const [displayLimitPrice, displayTriggerPrice] = useMemo(() => {
+    if (!!order.limitPrice && !!order.limitPrice) {
+      return traderAPI?.isPredictionMarket(order.symbol)
+        ? [priceToProb(order.limitPrice), priceToProb(order.limitPrice)]
+        : [order.limitPrice, order.stopPrice];
+    }
+    return [order.limitPrice, order.stopPrice];
+  }, [order, traderAPI]);
 
   return (
     <TableRow>
@@ -54,15 +66,15 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {order.limitPrice && order.limitPrice < Infinity
-            ? formatToCurrency(order.limitPrice, parsedSymbol?.quoteCurrency, true)
+          {displayLimitPrice && displayLimitPrice < Infinity
+            ? formatToCurrency(displayLimitPrice, parsedSymbol?.quoteCurrency, true)
             : t('pages.trade.orders-table.table-content.na')}
         </Typography>
       </TableCell>
       <TableCell align="right">
         <Typography variant="cellSmall">
-          {order.stopPrice
-            ? formatToCurrency(order.stopPrice, parsedSymbol?.quoteCurrency, true)
+          {displayTriggerPrice
+            ? formatToCurrency(displayTriggerPrice, parsedSymbol?.quoteCurrency, true)
             : t('pages.trade.orders-table.table-content.na')}
         </Typography>
       </TableCell>
