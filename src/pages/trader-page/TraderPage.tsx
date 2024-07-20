@@ -245,7 +245,7 @@ export const TraderPage = () => {
     setActiveHistoryIndex(index);
   };
 
-  const isPredictiveMarket = perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo);
+  const isPredictionMarket = perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
 
   return (
     <>
@@ -253,7 +253,7 @@ export const TraderPage = () => {
         title={`${
           perpetualStatistics
             ? formatToCurrency(
-                isPredictiveMarket ? 100 * priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
+                isPredictionMarket ? 100 * priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
                 `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
                 true
               )

@@ -67,10 +67,10 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
         ordersData.takeProfit.value = t(`pages.trade.positions-table.table-content.${position.takeProfit.valueType}`);
       } else {
         ordersData.takeProfit.value = formatToCurrency(
-          TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.takeProfit.fullValue !== undefined
+          TraderInterface.isPredictionMarket(perpetualStaticInfo) && position.takeProfit.fullValue !== undefined
             ? 100 * priceToProb(position.takeProfit.fullValue)
             : position.takeProfit.fullValue,
-          TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
+          TraderInterface.isPredictionMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
       }
@@ -82,10 +82,10 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
         ordersData.stopLoss.value = t(`pages.trade.positions-table.table-content.${position.stopLoss.valueType}`);
       } else {
         ordersData.stopLoss.value = formatToCurrency(
-          TraderInterface.isPredictiveMarket(perpetualStaticInfo) && position.stopLoss.fullValue !== undefined
+          TraderInterface.isPredictionMarket(perpetualStaticInfo) && position.stopLoss.fullValue !== undefined
             ? 100 * priceToProb(position.stopLoss.fullValue)
             : position.takeProfit.fullValue,
-          TraderInterface.isPredictiveMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
+          TraderInterface.isPredictionMarket(perpetualStaticInfo) ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
       }

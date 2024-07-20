@@ -40,7 +40,7 @@ export const TriggerPrice = memo(() => {
       } else {
         const initialTrigger = perpetualStatistics?.markPrice === undefined ? -1 : perpetualStatistics?.markPrice;
         const userTrigger =
-          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
             ? priceToProb(initialTrigger)
             : initialTrigger;
         setTriggerPrice(`${userTrigger}`);
@@ -86,7 +86,7 @@ export const TriggerPrice = memo(() => {
         setInputValue={handleTriggerPriceChange}
         handleInputBlur={handleInputBlur}
         currency={
-          perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
             ? '%'
             : selectedPerpetual?.quoteCurrency
         }

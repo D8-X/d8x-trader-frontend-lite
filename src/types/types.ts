@@ -48,7 +48,7 @@ export interface PerpetualDataI {
   baseCurrency: string;
   quoteCurrency: string;
   symbol: string;
-  isPredictiveMarket: boolean;
+  isPredictionMarket: boolean;
 }
 
 export interface SymbolDataI {
@@ -193,7 +193,7 @@ export interface OrderInfoI {
   stopLossPrice: number | null;
   takeProfit: TakeProfitE | null;
   takeProfitPrice: number | null;
-  isPredictiveMarket: boolean;
+  isPredictionMarket: boolean;
 }
 
 export interface OrderI {

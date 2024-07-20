@@ -65,7 +65,7 @@ function createMainOrder(orderInfo: OrderInfoI) {
   }
 
   let triggerPrice = orderInfo.triggerPrice;
-  if (orderInfo.isPredictiveMarket) {
+  if (orderInfo.isPredictionMarket) {
     // fix units
     limitPrice = limitPrice != null ? limitPrice / 100 : limitPrice;
     triggerPrice = triggerPrice != null ? triggerPrice / 100 : triggerPrice;
@@ -463,7 +463,7 @@ export const ActionBlock = memo(() => {
       } else if (orderInfo.orderType === OrderTypeE.Stop && orderInfo.triggerPrice) {
         price = orderInfo.triggerPrice;
       }
-      if (perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)) {
+      if (perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
         price = 100 * priceToProb(price);
       }
       return formatToCurrency(price, orderInfo.quoteCurrency);
@@ -531,7 +531,7 @@ export const ActionBlock = memo(() => {
       selectedPerpetual?.midPrice !== undefined
     ) {
       const midPrice =
-        perpetualStaticInfo && TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+        perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
           ? priceToProb(selectedPerpetual?.midPrice)
           : selectedPerpetual?.midPrice;
       let isSlippageTooLarge;
@@ -614,7 +614,7 @@ export const ActionBlock = memo(() => {
   const liqPrice =
     perpetualStaticInfo &&
     newPositionRisk?.liquidationPrice?.[0] &&
-    TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+    TraderInterface.isPredictionMarket(perpetualStaticInfo)
       ? 100 * priceToProb(newPositionRisk?.liquidationPrice?.[0])
       : 0;
 

@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@cedelabs/widgets-universal": "1.4.0",
-    "@d8x/perpetuals-sdk": "2.0.1-alpha",
+    "@d8x/perpetuals-sdk": "2.0.6-alpha",
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@ethersproject/providers": "5.7.2",

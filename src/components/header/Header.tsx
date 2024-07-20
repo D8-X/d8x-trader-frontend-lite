@@ -137,14 +137,14 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               quoteCurrency: perpetual.quoteCurrency,
             });
             const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
-            const isPredictiveMarket = sInfo !== undefined && TraderInterface.isPredictiveMarket(sInfo);
+            const isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarket(sInfo);
             return {
               id: perpetual.id,
               poolName: pool.poolSymbol,
               baseCurrency: perpetual.baseCurrency,
               quoteCurrency: perpetual.quoteCurrency,
               symbol,
-              isPredictiveMarket,
+              isPredictionMarket,
             };
           })
         );

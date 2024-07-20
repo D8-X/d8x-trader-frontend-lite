@@ -41,7 +41,7 @@ export const PositionRow = memo(
 
     const [displayEntryPrice, displayLiqPrice, displayCcy] = useMemo(() => {
       if (!!perpetualStaticInfo && !!parsedSymbol) {
-        return TraderInterface.isPredictiveMarket(perpetualStaticInfo)
+        return TraderInterface.isPredictionMarket(perpetualStaticInfo)
           ? [100 * priceToProb(position.entryPrice), 100 * priceToProb(position.liqPrice), '%']
           : [position.entryPrice, position.liqPrice, parsedSymbol.quoteCurrency];
       }
