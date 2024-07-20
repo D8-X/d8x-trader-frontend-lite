@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { priceToProb } from '@d8x/perpetuals-sdk';
 
 import { Typography } from '@mui/material';
 
@@ -8,12 +9,13 @@ import { CustomPriceSelector } from 'components/custom-price-selector/CustomPric
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom } from 'store/pools.store';
+import { selectedPerpetualAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderBlockE, OrderTypeE, StopLossE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const StopLossSelector = memo(() => {
   const { t } = useTranslation();
+  const traderAPI = useAtomValue(traderAPIAtom);
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -42,22 +44,36 @@ export const StopLossSelector = memo(() => {
     setStopLoss(stopLossValue);
   };
 
-  const minStopLossPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Short) {
-      return orderInfo.midPrice;
-    } else if (orderInfo?.midPrice && orderInfo?.leverage) {
-      return Math.max(0.000000001, orderInfo.midPrice - orderInfo.midPrice / orderInfo.leverage);
+  const midPrice = useMemo(() => {
+    if (!!traderAPI && !!orderInfo) {
+      try {
+        return traderAPI?.isPredictionMarket(orderInfo.symbol) ? priceToProb(orderInfo.midPrice) : orderInfo.midPrice;
+      } catch (error) {
+        // skip
+      }
+    }
+    return [orderInfo?.midPrice];
+  }, [orderInfo, traderAPI]);
+
+  const minStopLossPrice: number = useMemo(() => {
+    if (typeof midPrice !== 'number') {
+      return 0.000000001;
+    }
+    if (midPrice && orderInfo?.orderBlock === OrderBlockE.Short) {
+      return midPrice;
+    } else if (orderInfo?.leverage) {
+      return Math.max(0.000000001, midPrice - midPrice / orderInfo.leverage);
     }
     return 0.000000001;
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice]);
 
   const maxStopLossPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Long) {
-      return orderInfo.midPrice;
-    } else if (orderInfo?.midPrice && orderInfo?.leverage) {
-      return orderInfo.midPrice + orderInfo.midPrice / orderInfo.leverage;
+    if (typeof midPrice === 'number' && orderInfo?.orderBlock === OrderBlockE.Long) {
+      return midPrice;
+    } else if (typeof midPrice === 'number' && orderInfo?.leverage) {
+      return midPrice + midPrice / orderInfo.leverage;
     }
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice]);
 
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
