@@ -225,6 +225,10 @@
           "long": "Long",
           "short": "Short"
         },
+        "prediction": {
+          "yes": "OUI",
+          "no": "NON"
+        },
         "order-type": {
           "market": "Marché",
           "limit": "Limite",

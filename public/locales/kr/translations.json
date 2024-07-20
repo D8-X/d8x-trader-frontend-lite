@@ -221,6 +221,10 @@
           "long": "Long",
           "short": "Short"
         },
+        "prediction": {
+          "yes": "YES",
+          "no": "NO"
+        },
         "order-type": {
           "market": "시장",
           "limit": "한도",

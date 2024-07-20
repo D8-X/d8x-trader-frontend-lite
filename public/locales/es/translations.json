@@ -225,6 +225,10 @@
           "long": "Compra",
           "short": "Venta"
         },
+        "prediction": {
+          "yes": "SI",
+          "no": "NO"
+        },
         "order-type": {
           "market": "Mercado",
           "limit": "Límite",

@@ -225,6 +225,10 @@
           "long": "开多",
           "short": "开空"
         },
+        "prediction": {
+          "yes": "是的",
+          "no": "不"
+        },
         "order-type": {
           "market": "市价单",
           "limit": "限价单",

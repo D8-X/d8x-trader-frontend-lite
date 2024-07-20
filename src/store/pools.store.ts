@@ -113,6 +113,21 @@ export const selectedPerpetualAtom = atom(
   }
 );
 
+export const selectedPerpetualDataAtom = atom((get) => {
+  const perpetuals = get(perpetualsAtom);
+  if (perpetuals.length === 0) {
+    return null;
+  }
+
+  const savedPerpetualId = get(selectedPerpetualIdAtom);
+  const foundPerpetual = perpetuals.find((perpetual) => perpetual.id === +savedPerpetualId);
+  if (foundPerpetual) {
+    return foundPerpetual;
+  }
+
+  return perpetuals[0];
+});
+
 export const positionsAtom = atom(
   (get) => {
     const perpetualsStats = get(perpetualsStatsAtom);

@@ -32,6 +32,7 @@ import {
   positionsAtom,
   proxyAddrAtom,
   selectedPerpetualAtom,
+  selectedPerpetualDataAtom,
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
@@ -82,6 +83,11 @@ function createMainOrder(orderInfo: OrderInfoI) {
 const orderBlockMap: Record<OrderBlockE, string> = {
   [OrderBlockE.Long]: 'pages.trade.action-block.order-action.long',
   [OrderBlockE.Short]: 'pages.trade.action-block.order-action.short',
+};
+
+const predictionOrderBlockMap: Record<OrderBlockE, string> = {
+  [OrderBlockE.Long]: 'pages.trade.order-block.prediction.yes',
+  [OrderBlockE.Short]: 'pages.trade.order-block.prediction.no',
 };
 
 const orderTypeMap: Record<OrderTypeE, string> = {
@@ -146,6 +152,7 @@ export const ActionBlock = memo(() => {
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
   const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
+  const selectedPerpetualData = useAtomValue(selectedPerpetualDataAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -157,6 +164,8 @@ export const ActionBlock = memo(() => {
   const validityCheckRef = useRef(false);
 
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
+
+  const isPredictionMarket = selectedPerpetualData?.isPredictionMarket ?? false;
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI || !poolFee || !isEnabledChain(chainId)) {
@@ -255,9 +264,17 @@ export const ActionBlock = memo(() => {
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoTriggerPrice) {
       return `${t('pages.trade.action-block.validity.button-no-trigger')}`;
     }
-    return `${t(orderBlockMap[orderInfo?.orderBlock ?? OrderBlockE.Long])} ${` `} 
-            ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}`;
-  }, [t, validityCheckButtonType, orderInfo?.orderBlock, orderInfo?.orderType]);
+
+    const orderBlock = orderInfo?.orderBlock ?? OrderBlockE.Long;
+    if (isPredictionMarket) {
+      return `
+        ${t(orderBlockMap[OrderBlockE.Long])}
+        ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}
+        ${t(predictionOrderBlockMap[orderBlock])}
+      `;
+    }
+    return `${t(orderBlockMap[orderBlock])} ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}`;
+  }, [t, validityCheckButtonType, orderInfo?.orderBlock, orderInfo?.orderType, isPredictionMarket]);
 
   const parsedOrders = useMemo(() => {
     if (requestSentRef.current || requestSent) {
@@ -604,13 +621,6 @@ export const ActionBlock = memo(() => {
     }
   }, [orderInfo]);
 
-  let isPredictionMarket = false;
-  try {
-    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
-  } catch {
-    // skip
-  }
-
   const liqPrice =
     newPositionRisk?.liquidationPrice?.[0] && isPredictionMarket
       ? priceToProb(newPositionRisk?.liquidationPrice?.[0])
@@ -625,7 +635,7 @@ export const ActionBlock = memo(() => {
       )}
       {![ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
         <Button
-          variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
+          variant={orderInfo?.orderBlock === OrderBlockE.Short && !isPredictionMarket ? 'sell' : 'buy'}
           disabled={!isBuySellButtonActive}
           onClick={openReviewOrderModal}
           className={styles.buyButton}
@@ -641,7 +651,9 @@ export const ActionBlock = memo(() => {
               leftSide={
                 <Typography variant="bodyLargePopup" className={styles.semibold}>
                   {orderInfo.leverage > 0 ? `${formatNumber(orderInfo.leverage)}x` : ''}{' '}
-                  {t(orderTypeMap[orderInfo.orderType])} {t(orderBlockMap[orderInfo.orderBlock])}
+                  {!isPredictionMarket && t(orderTypeMap[orderInfo.orderType])}{' '}
+                  {t(orderBlockMap[isPredictionMarket ? OrderBlockE.Long : orderInfo.orderBlock])}{' '}
+                  {isPredictionMarket && t(predictionOrderBlockMap[orderInfo.orderBlock])}
                 </Typography>
               }
               rightSide={
