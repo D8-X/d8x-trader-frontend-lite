@@ -1,3 +1,5 @@
+import { priceToProb } from '@d8x/perpetuals-sdk';
+import { useAtomValue } from 'jotai';
 import {
   type ChangeEvent,
   type Dispatch,
@@ -20,6 +22,7 @@ import { OrderSideE, OrderValueTypeE, StopLossE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
+import { traderAPIAtom } from 'store/pools.store';
 
 interface StopLossSelectorPropsI {
   setStopLossPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -34,6 +37,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null | undefined>(undefined);
 
   const parsedSymbol = parseSymbol(position.symbol);
+  const traderAPI = useAtomValue(traderAPIAtom);
 
   const handleStopLossPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const stopLossPriceValue = event.target.value;
@@ -51,22 +55,35 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
     setStopLoss(stopLossValue);
   };
 
+  const [entryPrice, liqPrice] = useMemo(() => {
+    if (!!traderAPI && !!position) {
+      try {
+        return traderAPI?.isPredictionMarket(position.symbol)
+          ? [priceToProb(position.entryPrice), priceToProb(position.liqPrice)]
+          : [position.entryPrice, position.liqPrice];
+      } catch (error) {
+        // skip
+      }
+    }
+    return [position.entryPrice, position.liqPrice];
+  }, [position, traderAPI]);
+
   const minStopLossPrice = useMemo(() => {
-    if (position.entryPrice && position.side === OrderSideE.Sell) {
-      return position.entryPrice;
+    if (entryPrice && position.side === OrderSideE.Sell) {
+      return entryPrice;
     } else if (position.side === OrderSideE.Buy) {
-      return Math.max(0.000000001, position.liqPrice);
+      return Math.max(0.000000001, liqPrice);
     }
     return 0.000000001;
-  }, [position]);
+  }, [position, entryPrice, liqPrice]);
 
   const maxStopLossPrice = useMemo(() => {
-    if (position.entryPrice && position.side === OrderSideE.Buy) {
-      return position.entryPrice;
+    if (entryPrice && position.side === OrderSideE.Buy) {
+      return entryPrice;
     } else if (position.side === OrderSideE.Sell) {
-      return position.liqPrice;
+      return liqPrice;
     }
-  }, [position]);
+  }, [position, entryPrice, liqPrice]);
 
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
@@ -102,19 +119,13 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
     if (stopLoss && stopLoss !== StopLossE.None) {
       let stopPrice;
       if (position.side === OrderSideE.Buy) {
-        stopPrice = Math.max(
-          position.liqPrice,
-          position.entryPrice * (1 - Math.abs(mapStopLossToNumber(stopLoss) / position.leverage))
-        );
+        stopPrice = Math.max(liqPrice, entryPrice * (1 - Math.abs(mapStopLossToNumber(stopLoss) / position.leverage)));
       } else {
-        stopPrice = Math.min(
-          position.liqPrice,
-          position.entryPrice * (1 + Math.abs(mapStopLossToNumber(stopLoss) / position.leverage))
-        );
+        stopPrice = Math.min(liqPrice, entryPrice * (1 + Math.abs(mapStopLossToNumber(stopLoss) / position.leverage)));
       }
       setStopLossInputPrice(Math.max(0.000000001, +stopPrice.toFixed(valueToFractionDigits(+stopPrice))));
     }
-  }, [stopLoss, position]);
+  }, [stopLoss, position, entryPrice, liqPrice]);
 
   useEffect(() => {
     setStopLossPrice(stopLossInputPrice);

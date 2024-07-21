@@ -1,7 +1,7 @@
+import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 import { Box, Typography } from '@mui/material';
 
