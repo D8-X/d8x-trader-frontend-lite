@@ -1,4 +1,4 @@
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { Box, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { limitPriceAtom, orderBlockAtom, orderTypeAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
@@ -44,7 +45,7 @@ export const LimitPrice = memo(() => {
           const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
           const userLimit =
             perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo) && initialLimit > 0
-              ? priceToProb(initialLimit)
+              ? calculateProbability(initialLimit, orderBlock === OrderBlockE.Short)
               : initialLimit;
           setLimitPrice(`${userLimit}`);
           setInputValue('');
@@ -55,7 +56,7 @@ export const LimitPrice = memo(() => {
       }
       inputValueChangedRef.current = true;
     },
-    [setLimitPrice, perpetualStatistics, perpetualStaticInfo, orderType]
+    [setLimitPrice, perpetualStatistics, perpetualStaticInfo, orderType, orderBlock]
   );
 
   useEffect(() => {
@@ -84,7 +85,14 @@ export const LimitPrice = memo(() => {
 
       const userLimit =
         isPredictionMarket && initialLimit > 0
-          ? Math.round(priceToProb(perpetualStatistics.midPrice * (1 + 0.01 * direction)) * (1 / step)) / (1 / step)
+          ? Math.round(
+              calculateProbability(
+                perpetualStatistics.midPrice * (1 + 0.01 * direction),
+                orderBlock === OrderBlockE.Short
+              ) *
+                (1 / step)
+            ) /
+            (1 / step)
           : initialLimit;
       setLimitPrice(`${userLimit}`);
       setInputValue('');

@@ -1,4 +1,3 @@
-import { probToPrice } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -17,6 +16,7 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { calculatePrice } from 'helpers/calculatePrice';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { getTradingFee, orderDigest, positionRiskOnTrade } from 'network/network';
@@ -246,7 +246,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.Limit,
-        limitPrice: isPredictionMarket ? probToPrice(takeProfitPrice) : takeProfitPrice,
+        limitPrice: isPredictionMarket
+          ? calculatePrice(takeProfitPrice, selectedPosition.side === OrderSideE.Sell)
+          : takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -264,7 +266,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.StopMarket,
-        stopPrice: isPredictionMarket ? probToPrice(stopLossPrice) : stopLossPrice,
+        stopPrice: isPredictionMarket
+          ? calculatePrice(stopLossPrice, selectedPosition.side === OrderSideE.Sell)
+          : stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order

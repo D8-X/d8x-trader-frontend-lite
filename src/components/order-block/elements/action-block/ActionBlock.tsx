@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { calculatePrice } from 'helpers/calculatePrice';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
 import { orderDigest, positionRiskOnTrade } from 'network/network';
@@ -47,7 +50,6 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
-import { priceToProb, probToPrice, TraderInterface } from '@d8x/perpetuals-sdk';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
@@ -57,19 +59,23 @@ function createMainOrder(orderInfo: OrderInfoI) {
     orderType = orderInfo.limitPrice !== null && orderInfo.limitPrice > -1 ? 'STOP_LIMIT' : 'STOP_MARKET';
   }
 
+  const isNoVote = orderInfo.orderBlock === OrderBlockE.Short;
+
   let limitPrice =
-    isPredictionMarket && orderInfo.limitPrice !== null ? probToPrice(orderInfo.limitPrice) : orderInfo.limitPrice;
+    isPredictionMarket && orderInfo.limitPrice !== null
+      ? calculatePrice(orderInfo.limitPrice, isNoVote)
+      : orderInfo.limitPrice;
 
   if (orderInfo.orderType === OrderTypeE.Market) {
     limitPrice =
       isPredictionMarket && orderInfo.maxMinEntryPrice !== null
-        ? probToPrice(orderInfo.maxMinEntryPrice)
+        ? calculatePrice(orderInfo.maxMinEntryPrice, isNoVote)
         : orderInfo.maxMinEntryPrice;
   }
 
   const stopPrice =
     isPredictionMarket && orderInfo.triggerPrice !== null
-      ? probToPrice(orderInfo.triggerPrice)
+      ? calculatePrice(orderInfo.triggerPrice, isNoVote)
       : orderInfo.triggerPrice;
 
   let deadlineMultiplier = 200; // By default, is it set to 200 hours
@@ -311,7 +317,9 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: 'STOP_MARKET',
-        stopPrice: orderInfo.isPredictionMarket ? probToPrice(orderInfo.stopLossPrice) : orderInfo.stopLossPrice,
+        stopPrice: orderInfo.isPredictionMarket
+          ? calculatePrice(orderInfo.stopLossPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : orderInfo.stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -329,7 +337,9 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: OrderTypeE.Limit.toUpperCase(),
-        limitPrice: orderInfo.isPredictionMarket ? probToPrice(orderInfo.takeProfitPrice) : orderInfo.takeProfitPrice,
+        limitPrice: orderInfo.isPredictionMarket
+          ? calculatePrice(orderInfo.takeProfitPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : orderInfo.takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -487,7 +497,7 @@ export const ActionBlock = memo(() => {
         price = orderInfo.triggerPrice;
       }
       if (perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-        price = priceToProb(price);
+        price = calculateProbability(price, orderInfo.orderBlock === OrderBlockE.Short);
       }
       return formatToCurrency(price, orderInfo.quoteCurrency);
     }
@@ -555,8 +565,8 @@ export const ActionBlock = memo(() => {
     ) {
       const midPrice =
         perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-          ? priceToProb(selectedPerpetual?.midPrice)
-          : selectedPerpetual?.midPrice;
+          ? calculateProbability(selectedPerpetual.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : selectedPerpetual.midPrice;
       let isSlippageTooLarge;
       if (orderInfo.orderBlock === OrderBlockE.Long) {
         isSlippageTooLarge = orderInfo.maxMinEntryPrice < midPrice;
@@ -636,7 +646,7 @@ export const ActionBlock = memo(() => {
 
   const liqPrice =
     newPositionRisk?.liquidationPrice?.[0] && isPredictionMarket
-      ? priceToProb(newPositionRisk?.liquidationPrice?.[0])
+      ? calculateProbability(newPositionRisk.liquidationPrice[0], orderInfo?.orderBlock === OrderBlockE.Short)
       : newPositionRisk?.liquidationPrice?.[0] ?? 0;
 
   return (

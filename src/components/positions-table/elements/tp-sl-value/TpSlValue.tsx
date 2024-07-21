@@ -1,19 +1,19 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { useAtomValue } from 'jotai';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import { IconButton, Typography } from '@mui/material';
 import { ModeEditOutlineOutlined } from '@mui/icons-material';
 
 import { parseSymbol } from 'helpers/parseSymbol';
-import { OrderValueTypeE } from 'types/enums';
+import { perpetualStaticInfoAtom } from 'store/pools.store';
+import { OrderSideE, OrderValueTypeE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './TpSlValue.module.scss';
-import { useAtomValue } from 'jotai';
-import { perpetualStaticInfoAtom } from 'store/pools.store';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
+import { calculateProbability } from '../../../../helpers/calculateProbability';
 
 interface TpSlValuePropsI {
   position: MarginAccountWithAdditionalDataI;
@@ -75,7 +75,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       } else {
         ordersData.takeProfit.value = formatToCurrency(
           isPredictionMarket && position.takeProfit.fullValue !== undefined
-            ? priceToProb(position.takeProfit.fullValue)
+            ? calculateProbability(position.takeProfit.fullValue, position.side === OrderSideE.Sell)
             : position.takeProfit.fullValue,
           isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
@@ -90,7 +90,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
       } else {
         ordersData.stopLoss.value = formatToCurrency(
           isPredictionMarket && position.stopLoss.fullValue !== undefined
-            ? priceToProb(position.stopLoss.fullValue)
+            ? calculateProbability(position.stopLoss.fullValue, position.side === OrderSideE.Sell)
             : position.takeProfit.fullValue,
           isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
@@ -102,7 +102,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
   }, [t, position, parsedSymbol, perpetualStaticInfo]);
 
   return (
-    <Box className={styles.root}>
+    <div className={styles.root}>
       <div>
         <Typography variant="cellSmall" component="div" className={openOrdersData.takeProfit.className}>
           {openOrdersData.takeProfit.value}
@@ -121,6 +121,6 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
           <ModeEditOutlineOutlined className={styles.actionIcon} />
         </IconButton>
       </div>
-    </Box>
+    </div>
   );
 });

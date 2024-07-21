@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { DATETIME_FORMAT } from 'appConstants';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { collateralToSettleConversionAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
-import { priceToProb } from '@d8x/perpetuals-sdk';
 
 interface TradeHistoryRowPropsI {
   headers: TableHeaderI<TradeHistoryWithSymbolDataI>[];
@@ -24,7 +25,9 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? 'var(--d8x-color-buy-rgba)' : 'var(--d8x-color-sell-rgba)';
 
-  const displayPrice = perpetual?.isPredictionMarket ? priceToProb(tradeHistory.price) : tradeHistory.price;
+  const displayPrice = perpetual?.isPredictionMarket
+    ? calculateProbability(tradeHistory.price, tradeHistory.side === OrderSideE.Sell)
+    : tradeHistory.price;
   const displayCcy = perpetual?.isPredictionMarket ? perpetual?.quoteCurrency : perpetual?.quoteCurrency;
 
   return (

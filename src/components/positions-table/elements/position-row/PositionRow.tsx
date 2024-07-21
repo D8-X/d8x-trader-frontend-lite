@@ -1,13 +1,14 @@
 import { useAtomValue } from 'jotai';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { priceToProb } from '@d8x/perpetuals-sdk';
 
 import { DeleteForeverOutlined, ModeEditOutlineOutlined, ShareOutlined } from '@mui/icons-material';
 import { IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
+import { calculateProbability } from 'helpers/calculateProbability';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -34,16 +35,20 @@ export const PositionRow = memo(
     const { t } = useTranslation();
 
     const c2s = useAtomValue(collateralToSettleConversionAtom);
+    const traderAPI = useAtomValue(traderAPIAtom);
 
     const parsedSymbol = parseSymbol(position.symbol);
     const collToSettleInfo = parsedSymbol?.poolSymbol ? c2s.get(parsedSymbol.poolSymbol) : undefined;
-    const traderAPI = useAtomValue(traderAPIAtom);
 
     const [displayEntryPrice, displayLiqPrice, displayCcy] = useMemo(() => {
       if (!!traderAPI && !!parsedSymbol) {
         try {
           return traderAPI?.isPredictionMarket(position.symbol)
-            ? [priceToProb(position.entryPrice), priceToProb(position.liqPrice), parsedSymbol.quoteCurrency]
+            ? [
+                calculateProbability(position.entryPrice, position.side === OrderSideE.Sell),
+                calculateProbability(position.liqPrice, position.side === OrderSideE.Sell),
+                parsedSymbol.quoteCurrency,
+              ]
             : [position.entryPrice, position.liqPrice, parsedSymbol.quoteCurrency];
         } catch (error) {
           // skip

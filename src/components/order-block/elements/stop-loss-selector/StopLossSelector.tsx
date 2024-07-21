@@ -1,12 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { priceToProb } from '@d8x/perpetuals-sdk';
 
 import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom, traderAPIAtom } from 'store/pools.store';
@@ -15,8 +15,8 @@ import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const StopLossSelector = memo(() => {
   const { t } = useTranslation();
-  const traderAPI = useAtomValue(traderAPIAtom);
 
+  const traderAPI = useAtomValue(traderAPIAtom);
   const orderInfo = useAtomValue(orderInfoAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const setStopLossPrice = useSetAtom(stopLossPriceAtom);
@@ -47,7 +47,9 @@ export const StopLossSelector = memo(() => {
   const midPrice = useMemo(() => {
     if (!!traderAPI && !!orderInfo) {
       try {
-        return traderAPI?.isPredictionMarket(orderInfo.symbol) ? priceToProb(orderInfo.midPrice) : orderInfo.midPrice;
+        return traderAPI?.isPredictionMarket(orderInfo.symbol)
+          ? calculateProbability(orderInfo.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : orderInfo.midPrice;
       } catch (error) {
         // skip
       }

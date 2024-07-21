@@ -2,13 +2,14 @@ import { format } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { priceToProb } from '@d8x/perpetuals-sdk';
 
 import { DeleteForeverOutlined } from '@mui/icons-material';
 import { IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
+import { calculateProbability } from 'helpers/calculateProbability';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { OrderWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -36,7 +37,10 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
     if (!!order.limitPrice && !!order.limitPrice) {
       try {
         return traderAPI?.isPredictionMarket(order.symbol)
-          ? [priceToProb(order.limitPrice), priceToProb(order.limitPrice)]
+          ? [
+              calculateProbability(order.limitPrice, order.side === OrderSideE.Sell),
+              calculateProbability(order.limitPrice, order.side === OrderSideE.Sell),
+            ]
           : [order.limitPrice, order.stopPrice];
       } catch (error) {
         // skip

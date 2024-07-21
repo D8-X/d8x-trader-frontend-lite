@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,18 +7,19 @@ import { Box, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderTypeAtom, triggerPriceAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, perpetualStatisticsAtom, selectedPerpetualAtom } from 'store/pools.store';
-import { OrderTypeE } from 'types/enums';
+import { OrderBlockE, OrderTypeE } from 'types/enums';
 
 import styles from './TriggerPrice.module.scss';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 export const TriggerPrice = memo(() => {
   const { t } = useTranslation();
 
   const orderType = useAtomValue(orderTypeAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
@@ -41,14 +43,14 @@ export const TriggerPrice = memo(() => {
         const initialTrigger = perpetualStatistics?.markPrice === undefined ? -1 : perpetualStatistics?.markPrice;
         const userTrigger =
           perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-            ? priceToProb(initialTrigger)
+            ? calculateProbability(initialTrigger, orderBlock === OrderBlockE.Short)
             : initialTrigger;
         setTriggerPrice(`${userTrigger}`);
         setInputValue('');
       }
       inputValueChangedRef.current = true;
     },
-    [setTriggerPrice, perpetualStatistics, perpetualStaticInfo]
+    [setTriggerPrice, perpetualStatistics, perpetualStaticInfo, orderBlock]
   );
 
   useEffect(() => {

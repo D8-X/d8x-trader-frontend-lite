@@ -1,6 +1,7 @@
-import { roundToLotString, priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
+import { roundToLotString, TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
+import { calculateProbability } from 'helpers/calculateProbability';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import {
   collateralToSettleConversionAtom,
@@ -64,6 +65,7 @@ export const maxOrderSizeAtom = atom((get) => {
 export const currencyMultiplierAtom = atom((get) => {
   let currencyMultiplier = 1;
 
+  const orderBlock = get(orderBlockAtom);
   const selectedPool = get(selectedPoolAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
   const c2s = get(collateralToSettleConversionAtom);
@@ -84,10 +86,13 @@ export const currencyMultiplierAtom = atom((get) => {
 
   const { collToQuoteIndexPrice, indexPrice } = selectedPerpetual;
   if (selectedCurrency === selectedPerpetual.quoteCurrency && indexPrice > 0) {
-    currencyMultiplier = isPredictionMarket ? priceToProb(indexPrice) : indexPrice;
+    currencyMultiplier = isPredictionMarket
+      ? calculateProbability(indexPrice, orderBlock === OrderBlockE.Short)
+      : indexPrice;
   } else if (selectedCurrency === selectedPool.settleSymbol && collToQuoteIndexPrice > 0 && indexPrice > 0) {
     currencyMultiplier = isPredictionMarket
-      ? (priceToProb(indexPrice) / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1)
+      ? (calculateProbability(indexPrice, orderBlock === OrderBlockE.Short) / collToQuoteIndexPrice) *
+        (c2s.get(selectedPool.poolSymbol)?.value ?? 1)
       : (indexPrice / collToQuoteIndexPrice) * (c2s.get(selectedPool.poolSymbol)?.value ?? 1);
   }
   return currencyMultiplier;

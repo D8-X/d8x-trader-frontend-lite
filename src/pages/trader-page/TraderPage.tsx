@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -21,11 +22,13 @@ import { type SelectorItemI, TableSelector } from 'components/table-selector/Tab
 import { TradeHistoryTable } from 'components/trade-history-table/TradeHistoryTable';
 import { UsdcSwapModal } from 'components/usdc-swap-modal/UsdcSwapModal';
 import { NEW_USDC_ADDRESS, OLD_USDC_ADDRESS } from 'components/usdc-swap-widget/constants';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { useDialog } from 'hooks/useDialog';
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { ChartHolder } from 'pages/trader-page/components/chart-holder/ChartHolder';
 import { PerpetualStats } from 'pages/trader-page/components/perpetual-stats/PerpetualStats';
 import { orderBlockPositionAtom } from 'store/app.store';
+import { orderBlockAtom } from 'store/order-block.store';
 import {
   openOrdersAtom,
   perpetualStaticInfoAtom,
@@ -35,7 +38,7 @@ import {
   traderAPIAtom,
 } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { OrderBlockPositionE, TableTypeE } from 'types/enums';
+import { OrderBlockE, OrderBlockPositionE, TableTypeE } from 'types/enums';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
@@ -45,7 +48,6 @@ import { CandlesWebSocketListener } from './components/candles-webSocket-listene
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
 import styles from './TraderPage.module.scss';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 const MIN_REQUIRED_USDC = 20;
 
@@ -65,6 +67,7 @@ export const TraderPage = () => {
 
   const { dialogOpen, openDialog, closeDialog } = useDialog();
 
+  const orderBlock = useAtomValue(orderBlockAtom);
   const orderBlockPosition = useAtomValue(orderBlockPositionAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
@@ -258,7 +261,9 @@ export const TraderPage = () => {
         title={`${
           perpetualStatistics
             ? formatToCurrency(
-                isPredictionMarket ? priceToProb(perpetualStatistics.midPrice) : perpetualStatistics.midPrice,
+                isPredictionMarket
+                  ? calculateProbability(perpetualStatistics.midPrice, orderBlock === OrderBlockE.Short)
+                  : perpetualStatistics.midPrice,
                 `${perpetualStatistics.baseCurrency}-${perpetualStatistics.quoteCurrency}`,
                 true
               )

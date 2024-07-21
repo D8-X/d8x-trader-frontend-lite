@@ -1,4 +1,3 @@
-import { priceToProb } from '@d8x/perpetuals-sdk';
 import { useAtomValue } from 'jotai';
 import {
   type ChangeEvent,
@@ -16,6 +15,7 @@ import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, StopLossE } from 'types/enums';
@@ -33,11 +33,12 @@ interface StopLossSelectorPropsI {
 export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: StopLossSelectorPropsI) => {
   const { t } = useTranslation();
 
+  const traderAPI = useAtomValue(traderAPIAtom);
+
   const [stopLoss, setStopLoss] = useState<StopLossE | null>(null);
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null | undefined>(undefined);
 
   const parsedSymbol = parseSymbol(position.symbol);
-  const traderAPI = useAtomValue(traderAPIAtom);
 
   const handleStopLossPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const stopLossPriceValue = event.target.value;
@@ -59,7 +60,10 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
     if (!!traderAPI && !!position) {
       try {
         return traderAPI?.isPredictionMarket(position.symbol)
-          ? [priceToProb(position.entryPrice), priceToProb(position.liqPrice)]
+          ? [
+              calculateProbability(position.entryPrice, position.side === OrderSideE.Sell),
+              calculateProbability(position.liqPrice, position.side === OrderSideE.Sell),
+            ]
           : [position.entryPrice, position.liqPrice];
       } catch (error) {
         // skip

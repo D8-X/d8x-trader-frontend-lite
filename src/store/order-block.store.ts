@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
@@ -10,14 +11,14 @@ import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 
 import {
+  addr0FeeAtom,
   collateralDepositAtom,
   newPositionRiskAtom,
+  perpetualStaticInfoAtom,
   perpetualStatisticsAtom,
   poolFeeAtom,
-  addr0FeeAtom,
-  perpetualStaticInfoAtom,
 } from './pools.store';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
+import { calculateProbability } from '../helpers/calculateProbability';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
 export const slippageSliderAtom = atom(2);
@@ -42,6 +43,7 @@ export const orderTypeAtom = atom(
     return get(orderTypeValueAtom);
   },
   (get, set, newType: OrderTypeE) => {
+    const orderBlock = get(orderBlockAtom);
     const perpetualStatistics = get(perpetualStatisticsAtom);
     const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
@@ -53,14 +55,18 @@ export const orderTypeAtom = atom(
     }
 
     if (newType === OrderTypeE.Limit) {
-      const orderBlock = get(orderBlockAtom);
       let initialLimit: number;
       if (perpetualStatistics?.midPrice) {
         const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
         if (isPredictionMarket) {
-          initialLimit = Math.round(priceToProb(perpetualStatistics.midPrice) * (1 + 0.01 * direction) * step) / step;
+          initialLimit =
+            Math.round(
+              calculateProbability(perpetualStatistics.midPrice, orderBlock === OrderBlockE.Short) *
+                (1 + 0.01 * direction) *
+                step
+            ) / step;
         }
       } else {
         initialLimit = -1;
@@ -73,7 +79,9 @@ export const orderTypeAtom = atom(
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
         if (isPredictionMarket) {
-          initialTrigger = Math.round(priceToProb(perpetualStatistics.markPrice) * step) / step;
+          initialTrigger =
+            Math.round(calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * step) /
+            step;
         }
       } else {
         initialTrigger = -1;
@@ -196,7 +204,9 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     maxMinEntryPrice =
       perpetualStatistics.indexPrice *
       (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
-    maxMinEntryPrice = isPredictionMarket ? priceToProb(maxMinEntryPrice) : maxMinEntryPrice;
+    maxMinEntryPrice = isPredictionMarket
+      ? calculateProbability(maxMinEntryPrice, orderBlock === OrderBlockE.Short)
+      : maxMinEntryPrice;
   }
   let stopLossPrice = null; // in probability if prediction market
   if (stopLoss !== StopLossE.None && stopLoss !== null) {
@@ -206,7 +216,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       stopLossPrice = perpetualStatistics.markPrice * stopLossMultiplier;
       stopLossPrice = isPredictionMarket
-        ? priceToProb(perpetualStatistics.markPrice) * stopLossMultiplier
+        ? calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * stopLossMultiplier
         : stopLossPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       stopLossPrice = limitPrice * stopLossMultiplier;
@@ -230,7 +240,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       takeProfitPrice = perpetualStatistics.markPrice * takeProfitMultiplier;
       takeProfitPrice = isPredictionMarket
-        ? priceToProb(perpetualStatistics.markPrice) * takeProfitMultiplier
+        ? calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * takeProfitMultiplier
         : takeProfitPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       takeProfitPrice = limitPrice * takeProfitMultiplier;

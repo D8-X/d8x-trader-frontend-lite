@@ -1,4 +1,3 @@
-import { priceToProb } from '@d8x/perpetuals-sdk';
 import { useAtomValue } from 'jotai';
 import {
   type ChangeEvent,
@@ -16,6 +15,7 @@ import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
@@ -33,11 +33,12 @@ interface TakeProfitSelectorPropsI {
 export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled }: TakeProfitSelectorPropsI) => {
   const { t } = useTranslation();
 
+  const traderAPI = useAtomValue(traderAPIAtom);
+
   const [takeProfit, setTakeProfit] = useState<TakeProfitE | null>(null);
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null | undefined>(undefined);
 
   const parsedSymbol = parseSymbol(position.symbol);
-  const traderAPI = useAtomValue(traderAPIAtom);
 
   const handleTakeProfitPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const takeProfitPriceValue = event.target.value;
@@ -58,7 +59,9 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
   const entryPrice = useMemo(() => {
     if (!!traderAPI && !!position) {
       try {
-        return traderAPI?.isPredictionMarket(position.symbol) ? priceToProb(position.entryPrice) : position.entryPrice;
+        return traderAPI?.isPredictionMarket(position.symbol)
+          ? calculateProbability(position.entryPrice, position.side === OrderSideE.Sell)
+          : position.entryPrice;
       } catch (error) {
         // skip
       }

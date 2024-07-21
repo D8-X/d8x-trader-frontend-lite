@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +21,12 @@ import SettingsIcon from 'assets/icons/settingsIcon.svg?react';
 import { Dialog } from 'components/dialog/Dialog';
 import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 import { Separator } from 'components/separator/Separator';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { createSymbol } from 'helpers/createSymbol';
 import {
   orderBlockAtom,
-  orderTypeAtom,
   orderInfoAtom,
+  orderTypeAtom,
   reduceOnlyAtom,
   slippageSliderAtom,
 } from 'store/order-block.store';
@@ -40,7 +42,6 @@ import { formatToCurrency } from 'utils/formatToCurrency';
 import { mapSlippageToNumber } from 'utils/mapSlippageToNumber';
 
 import styles from './OrderSettings.module.scss';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 const marks: MarkI[] = [
   { value: 0.5, label: '0.5%' },
@@ -129,12 +130,15 @@ export const OrderSettings = memo(() => {
   const formattedEntryPrice = useMemo(() => {
     if (!!selectedPerpetual && selectedPerpetual?.id === perpetualStaticInfo?.id) {
       if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-        return formatToCurrency(priceToProb(entryPrice), selectedPerpetual.quoteCurrency);
+        return formatToCurrency(
+          calculateProbability(entryPrice, orderBlock === OrderBlockE.Short),
+          selectedPerpetual.quoteCurrency
+        );
       } else {
         return formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency);
       }
     }
-  }, [entryPrice, selectedPerpetual, perpetualStaticInfo]);
+  }, [entryPrice, selectedPerpetual, perpetualStaticInfo, orderBlock]);
 
   const isReduceOnlyEnabled = useMemo(() => {
     if (perpetualStatistics && orderInfo) {

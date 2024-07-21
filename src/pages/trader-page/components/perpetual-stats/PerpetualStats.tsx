@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import classNames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -10,12 +11,14 @@ import ViewChartIcon from 'assets/icons/viewChart.svg?react';
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
+import { calculateProbability } from 'helpers/calculateProbability';
+import { orderBlockAtom } from 'store/order-block.store';
 import { perpetualStaticInfoAtom, perpetualStatisticsAtom, showChartForMobileAtom } from 'store/pools.store';
+import { OrderBlockE } from 'types/enums';
 import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
 import styles from './PerpetualStats.module.scss';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
 
 export const PerpetualStats = () => {
   const { t } = useTranslation();
@@ -26,6 +29,7 @@ export const PerpetualStats = () => {
   const isMiddleScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const orderBlock = useAtomValue(orderBlockAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
 
@@ -47,11 +51,11 @@ export const PerpetualStats = () => {
       }
       const px = [perpetualStatistics.midPrice, perpetualStatistics.indexPrice, perpetualStatistics.markPrice];
       return isPredictionMarket
-        ? [px.map((x) => priceToProb(x)), perpetualStatistics.quoteCurrency]
+        ? [px.map((x) => calculateProbability(x, orderBlock === OrderBlockE.Short)), perpetualStatistics.quoteCurrency]
         : [px, perpetualStatistics.quoteCurrency];
     }
     return [[undefined, undefined, undefined], undefined];
-  }, [perpetualStatistics, perpetualStaticInfo]);
+  }, [perpetualStatistics, perpetualStaticInfo, orderBlock]);
 
   const midPrice: StatDataI = useMemo(
     () => ({
