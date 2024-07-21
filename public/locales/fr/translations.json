@@ -365,7 +365,8 @@
           "liq-price": "Prix de liquidation",
           "validity-checks": "Vérifications",
           "cancel": "Annuler",
-          "confirm": "Confirmer"
+          "confirm": "Confirmer",
+          "estimated-price": "Prix d'entrée éstimé"
         }
       },
       "filter": {

@@ -365,7 +365,8 @@
           "liq-price": "Liq. Preis",
           "validity-checks": "Gültigkeitsprüfungen",
           "cancel": "Stornieren",
-          "confirm": "Bestätigen"
+          "confirm": "Bestätigen",
+          "estimated-price": "Geschätzer Einstiegspreis"
         }
       },
       "filter": {

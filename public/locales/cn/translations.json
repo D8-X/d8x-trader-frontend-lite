@@ -365,7 +365,8 @@
           "liq-price": "强平价",
           "validity-checks": "有效性检查",
           "cancel": "取消",
-          "confirm": "确认"
+          "confirm": "确认",
+          "estimated-price": "预计开盘价"
         }
       },
       "filter": {

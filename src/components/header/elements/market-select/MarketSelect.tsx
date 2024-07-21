@@ -1,9 +1,9 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { AccountBalanceOutlined, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Button, DialogActions, DialogContent, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
@@ -22,6 +22,8 @@ import { MarketOption } from './components/market-option/MarketOption';
 import { SearchInput } from './components/search-input/SearchInput';
 import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
+import { getDynamicLogo } from 'utils/getDynamicLogo';
+import type { TemporaryAnyT } from 'types/types';
 
 import styles from './MarketSelect.module.scss';
 
@@ -149,10 +151,16 @@ export const MarketSelect = memo(() => {
 
   const filteredMarkets = useMarketsFilter(markets);
 
+  const IconComponent = useMemo(() => {
+    return getDynamicLogo(selectedPerpetual?.baseCurrency.toLowerCase() ?? '') as TemporaryAnyT;
+  }, [selectedPerpetual?.baseCurrency]);
+
   return (
     <div className={styles.holderRoot}>
       <div className={styles.iconWrapper}>
-        <AccountBalanceOutlined />
+        <Suspense fallback={null}>
+          <IconComponent />
+        </Suspense>
       </div>
       <Button onClick={() => setModalOpen(true)} className={styles.marketSelectButton} variant="outlined">
         <div className={styles.selectedMarketBlock}>

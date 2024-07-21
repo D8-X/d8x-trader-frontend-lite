@@ -129,6 +129,10 @@ export interface GeoLocationDataI {
 
 export interface PerpetualStaticInfoI extends ErrorResponseI, PerpetualStaticInfo {}
 
+export interface PerpetualPriceI {
+  price: number;
+}
+
 // Taken from `@d8x/perpetuals-sdk/src/nodeSDKTypes.ts`
 export interface MarginAccountI {
   symbol: string;
