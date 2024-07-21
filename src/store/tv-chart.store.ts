@@ -7,8 +7,6 @@ import { TvChartCandleI } from 'types/types';
 import { orderBlockAtom } from './order-block.store';
 
 export const originalCandlesAtom = atom<TvChartCandleI[]>([]);
-// This atom is required for new candles collect when isPredictionMarket selected
-export const newOriginalCandlesAtom = atom<TvChartCandleI[]>([]);
 const newOriginalCandleAtom = atom<TvChartCandleI | null>(null);
 
 export const marketsDataAtom = atom<MarketDataI[]>([]);
@@ -52,11 +50,7 @@ export const newCandleAtom = atom(
     }
     return newOriginalCandle;
   },
-  (get, set, newCandle: TvChartCandleI | null) => {
-    const selectedPerpetualData = get(selectedPerpetualDataAtom);
+  (_get, set, newCandle: TvChartCandleI | null) => {
     set(newOriginalCandleAtom, newCandle);
-    if (selectedPerpetualData && selectedPerpetualData.isPredictionMarket && newCandle) {
-      set(newOriginalCandlesAtom, (prev) => [...prev, newCandle]);
-    }
   }
 );
