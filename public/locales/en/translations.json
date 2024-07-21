@@ -858,6 +858,7 @@
         "crypto": "Crypto",
         "fx": "FX",
         "all": "All",
+        "prediction": "Prediction",
         "commodity": "Commodity",
         "closed": "Closed"
       },

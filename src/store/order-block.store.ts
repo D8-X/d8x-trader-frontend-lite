@@ -3,6 +3,7 @@ import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
 import { inputValueAtom, orderSizeAtom } from 'components/order-block/elements/order-size/store';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { createSymbol } from 'helpers/createSymbol';
 import { ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import { OrderInfoI } from 'types/types';
@@ -18,7 +19,6 @@ import {
   perpetualStatisticsAtom,
   poolFeeAtom,
 } from './pools.store';
-import { calculateProbability } from '../helpers/calculateProbability';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
 export const slippageSliderAtom = atom(2);

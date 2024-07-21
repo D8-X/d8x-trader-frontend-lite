@@ -10,10 +10,20 @@ import { Dialog } from 'components/dialog/Dialog';
 import { Separator } from 'components/separator/Separator';
 import { createSymbol } from 'helpers/createSymbol';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { clearInputsDataAtom } from 'store/order-block.store';
-import { perpetualStatisticsAtom, poolsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
+import { calculateProbability } from 'helpers/calculateProbability';
+import { clearInputsDataAtom, orderBlockAtom } from 'store/order-block.store';
+import {
+  perpetualStatisticsAtom,
+  poolsAtom,
+  selectedPerpetualAtom,
+  selectedPoolAtom,
+  traderAPIAtom,
+} from 'store/pools.store';
 import { marketsDataAtom } from 'store/tv-chart.store';
+import { AssetTypeE, OrderBlockE } from 'types/enums';
+import type { TemporaryAnyT } from 'types/types';
 import { cutBaseCurrency } from 'utils/cutBaseCurrency';
+import { getDynamicLogo } from 'utils/getDynamicLogo';
 
 import type { SelectItemI } from '../header-select/types';
 import { CollateralFilter } from './components/collateral-filter/CollateralFilter';
@@ -22,8 +32,6 @@ import { MarketOption } from './components/market-option/MarketOption';
 import { SearchInput } from './components/search-input/SearchInput';
 import { PerpetualWithPoolAndMarketI } from './types';
 import { useMarketsFilter } from './useMarketsFilter';
-import { getDynamicLogo } from 'utils/getDynamicLogo';
-import type { TemporaryAnyT } from 'types/types';
 
 import styles from './MarketSelect.module.scss';
 
@@ -52,7 +60,9 @@ export const MarketSelect = memo(() => {
   const location = useLocation();
 
   const pools = useAtomValue(poolsAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
   const marketsData = useAtomValue(marketsDataAtom);
+  const traderAPI = useAtomValue(traderAPIAtom);
   const [selectedPerpetual, setSelectedPerpetual] = useAtom(selectedPerpetualAtom);
   const [selectedPool, setSelectedPool] = useAtom(selectedPoolAtom);
   const setPerpetualStatistics = useSetAtom(perpetualStatisticsAtom);
@@ -127,7 +137,34 @@ export const MarketSelect = memo(() => {
             .filter((perpetual) => perpetual.state === 'NORMAL')
             .map((perpetual) => {
               const pairId = `${perpetual.baseCurrency}-${perpetual.quoteCurrency}`.toLowerCase();
-              const marketData = marketsData.find((market) => market.symbol === pairId);
+              let marketData = marketsData.find((market) => market.symbol === pairId);
+
+              const symbol = createSymbol({
+                poolSymbol: pool.poolSymbol,
+                baseCurrency: perpetual.baseCurrency,
+                quoteCurrency: perpetual.quoteCurrency,
+              });
+
+              let isPredictionMarket = false;
+              try {
+                isPredictionMarket = traderAPI?.isPredictionMarket(symbol) || false;
+              } catch (error) {
+                // skip
+              }
+
+              if (!marketData && isPredictionMarket) {
+                const currentPx = calculateProbability(perpetual.midPrice, orderBlock === OrderBlockE.Short);
+
+                marketData = {
+                  isOpen: !perpetual.isMarketClosed,
+                  symbol: pairId,
+                  assetType: AssetTypeE.Prediction,
+                  ret24hPerc: 0,
+                  currentPx,
+                  nextOpen: 0,
+                  nextClose: 0,
+                };
+              }
 
               return {
                 value: perpetual.id.toString(),
@@ -135,11 +172,7 @@ export const MarketSelect = memo(() => {
                   ...perpetual,
                   poolSymbol: pool.poolSymbol,
                   settleSymbol: pool.settleSymbol,
-                  symbol: createSymbol({
-                    poolSymbol: pool.poolSymbol,
-                    baseCurrency: perpetual.baseCurrency,
-                    quoteCurrency: perpetual.quoteCurrency,
-                  }),
+                  symbol,
                   marketData: marketData ?? null,
                 },
               };
@@ -147,7 +180,7 @@ export const MarketSelect = memo(() => {
         )
       );
     return marketsList;
-  }, [pools, marketsData]);
+  }, [pools, marketsData, orderBlock, traderAPI]);
 
   const filteredMarkets = useMarketsFilter(markets);
 

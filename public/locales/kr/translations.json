@@ -839,6 +839,7 @@
         "header": "Choose Market",
         "crypto": "Crypto",
         "fx": "FX",
+        "prediction": "예측",
         "commodity": "Commodity",
         "closed": "Closed"
       },

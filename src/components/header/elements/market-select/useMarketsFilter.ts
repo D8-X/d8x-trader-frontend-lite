@@ -37,10 +37,18 @@ export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolAndMarket
       .sort((a, b) => {
         const bIndex = b.item.baseCurrency.toLowerCase().indexOf(checkStr);
         const aIndex = a.item.baseCurrency.toLowerCase().indexOf(checkStr);
-        if (aIndex === -1) return 1;
-        if (bIndex === -1) return -1;
-        if (aIndex < bIndex) return -1;
-        if (bIndex < aIndex) return 1;
+        if (aIndex === -1) {
+          return 1;
+        }
+        if (bIndex === -1) {
+          return -1;
+        }
+        if (aIndex < bIndex) {
+          return -1;
+        }
+        if (bIndex < aIndex) {
+          return 1;
+        }
         return 0;
       });
   }, [filteredMarkets, searchFilter]);

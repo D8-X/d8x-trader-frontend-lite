@@ -858,6 +858,7 @@
         "crypto": "Crypto",
         "fx": "Devises",
         "all": "Tout",
+        "prediction": "prédiction",
         "commodity": "Matières premières",
         "closed": "Fermé"
       },
