@@ -1,3 +1,4 @@
+import { probToPrice } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -232,13 +233,20 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       },
     });
 
+    let isPredictionMarket = false;
+    try {
+      isPredictionMarket = traderAPI.isPredictionMarket(selectedPosition.symbol);
+    } catch (error) {
+      // skip
+    }
+
     const parsedOrders: OrderI[] = [];
     if (takeProfitPrice != null && takeProfitPrice !== selectedPosition.takeProfit.fullValue) {
       parsedOrders.push({
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.Limit,
-        limitPrice: takeProfitPrice,
+        limitPrice: isPredictionMarket ? probToPrice(takeProfitPrice) : takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -256,7 +264,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.StopMarket,
-        stopPrice: stopLossPrice,
+        stopPrice: isPredictionMarket ? probToPrice(stopLossPrice) : stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order

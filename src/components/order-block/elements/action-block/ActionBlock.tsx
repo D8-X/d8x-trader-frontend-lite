@@ -47,18 +47,30 @@ import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/stor
 import { hasTpSlOrdersAtom } from './store';
 
 import styles from './ActionBlock.module.scss';
-import { priceToProb, TraderInterface } from '@d8x/perpetuals-sdk';
+import { priceToProb, probToPrice, TraderInterface } from '@d8x/perpetuals-sdk';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
+  const isPredictionMarket = orderInfo.isPredictionMarket;
+
   if (orderInfo.orderType === OrderTypeE.Stop) {
     orderType = orderInfo.limitPrice !== null && orderInfo.limitPrice > -1 ? 'STOP_LIMIT' : 'STOP_MARKET';
   }
 
-  let limitPrice = orderInfo.limitPrice;
+  let limitPrice =
+    isPredictionMarket && orderInfo.limitPrice !== null ? probToPrice(orderInfo.limitPrice) : orderInfo.limitPrice;
+
   if (orderInfo.orderType === OrderTypeE.Market) {
-    limitPrice = orderInfo.maxMinEntryPrice;
+    limitPrice =
+      isPredictionMarket && orderInfo.maxMinEntryPrice !== null
+        ? probToPrice(orderInfo.maxMinEntryPrice)
+        : orderInfo.maxMinEntryPrice;
   }
+
+  const stopPrice =
+    isPredictionMarket && orderInfo.triggerPrice !== null
+      ? probToPrice(orderInfo.triggerPrice)
+      : orderInfo.triggerPrice;
 
   let deadlineMultiplier = 200; // By default, is it set to 200 hours
   if (orderInfo.orderType !== OrderTypeE.Market && orderInfo.expireDays) {
@@ -70,7 +82,7 @@ function createMainOrder(orderInfo: OrderInfoI) {
     side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell,
     type: orderType,
     limitPrice: limitPrice !== null && limitPrice > -1 ? limitPrice : undefined,
-    stopPrice: orderInfo.triggerPrice !== null ? orderInfo.triggerPrice : undefined,
+    stopPrice: stopPrice !== null ? stopPrice : undefined,
     quantity: orderInfo.size,
     leverage: orderInfo.leverage,
     reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
@@ -133,6 +145,7 @@ export const ActionBlock = memo(() => {
   const { hasEnoughGasForFee, isMultisigAddress } = useUserWallet();
 
   const orderInfo = useAtomValue(orderInfoAtom);
+  console.log(orderInfo);
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -298,7 +311,7 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: 'STOP_MARKET',
-        stopPrice: orderInfo.stopLossPrice,
+        stopPrice: orderInfo.isPredictionMarket ? probToPrice(orderInfo.stopLossPrice) : orderInfo.stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -316,7 +329,7 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: OrderTypeE.Limit.toUpperCase(),
-        limitPrice: orderInfo.takeProfitPrice,
+        limitPrice: orderInfo.isPredictionMarket ? probToPrice(orderInfo.takeProfitPrice) : orderInfo.takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
