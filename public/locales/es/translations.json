@@ -226,8 +226,9 @@
           "short": "Venta"
         },
         "prediction": {
-          "yes": "SI",
-          "no": "NO"
+          "yes": "Si",
+          "no": "No",
+          "bet": "Apuesta"
         },
         "order-type": {
           "market": "Mercado",

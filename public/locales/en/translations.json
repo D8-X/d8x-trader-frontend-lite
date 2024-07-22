@@ -226,8 +226,9 @@
           "short": "Short"
         },
         "prediction": {
-          "yes": "YES",
-          "no": "NO"
+          "yes": "Yes",
+          "no": "No",
+          "bet": "Bet"
         },
         "order-type": {
           "market": "Market",
