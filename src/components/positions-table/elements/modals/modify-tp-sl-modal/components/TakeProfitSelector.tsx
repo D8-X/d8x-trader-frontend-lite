@@ -56,32 +56,39 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
     setTakeProfit(takeProfitValue);
   };
 
-  const entryPrice = useMemo(() => {
+  const [entryPrice, isPredictionMarket] = useMemo(() => {
     if (!!traderAPI && !!position) {
       try {
-        return traderAPI?.isPredictionMarket(position.symbol)
-          ? calculateProbability(position.entryPrice, position.side === OrderSideE.Sell)
-          : position.entryPrice;
+        const predMarket = traderAPI?.isPredictionMarket(position.symbol);
+
+        return [
+          predMarket
+            ? calculateProbability(position.entryPrice, position.side === OrderSideE.Sell)
+            : position.entryPrice,
+          predMarket,
+        ];
       } catch (error) {
         // skip
       }
     }
-    return position.entryPrice;
+    return [position.entryPrice, false];
   }, [position, traderAPI]);
 
   const minTakeProfitPrice = useMemo(() => {
     if (entryPrice && position.side === OrderSideE.Buy) {
       return entryPrice;
+    } else if (entryPrice) {
+      return isPredictionMarket ? entryPrice : 0.000000001;
     }
     return 0.000000001;
-  }, [position, entryPrice]);
+  }, [position, entryPrice, isPredictionMarket]);
 
   const maxTakeProfitPrice = useMemo(() => {
     if (entryPrice && position.side === OrderSideE.Sell) {
-      return entryPrice;
+      return isPredictionMarket ? undefined : entryPrice;
     }
     return undefined;
-  }, [position, entryPrice]);
+  }, [position, entryPrice, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
@@ -116,14 +123,14 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None) {
       let limitPrice;
-      if (position.side === OrderSideE.Buy) {
+      if (position.side === OrderSideE.Buy || (position.side === OrderSideE.Sell && isPredictionMarket)) {
         limitPrice = entryPrice * (1 + mapTakeProfitToNumber(takeProfit) / position.leverage);
       } else {
         limitPrice = entryPrice * (1 - mapTakeProfitToNumber(takeProfit) / position.leverage);
       }
       setTakeProfitInputPrice(Math.max(0.000000001, +limitPrice.toFixed(valueToFractionDigits(+limitPrice))));
     }
-  }, [takeProfit, position, entryPrice]);
+  }, [takeProfit, position, entryPrice, isPredictionMarket]);
 
   useEffect(() => {
     setTakeProfitPrice(takeProfitInputPrice);

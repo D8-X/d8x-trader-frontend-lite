@@ -56,15 +56,16 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
     setStopLoss(stopLossValue);
   };
 
-  const [entryPrice, liqPrice] = useMemo(() => {
+  const [entryPrice, liqPrice, isPredictionMarket] = useMemo(() => {
     if (!!traderAPI && !!position) {
       try {
         return traderAPI?.isPredictionMarket(position.symbol)
           ? [
               calculateProbability(position.entryPrice, position.side === OrderSideE.Sell),
               calculateProbability(position.liqPrice, position.side === OrderSideE.Sell),
+              true,
             ]
-          : [position.entryPrice, position.liqPrice];
+          : [position.entryPrice, position.liqPrice, false];
       } catch (error) {
         // skip
       }
@@ -74,20 +75,20 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
 
   const minStopLossPrice = useMemo(() => {
     if (entryPrice && position.side === OrderSideE.Sell) {
-      return entryPrice;
+      return isPredictionMarket ? Math.max(0.000000001, liqPrice) : entryPrice;
     } else if (position.side === OrderSideE.Buy) {
       return Math.max(0.000000001, liqPrice);
     }
     return 0.000000001;
-  }, [position, entryPrice, liqPrice]);
+  }, [position, entryPrice, liqPrice, isPredictionMarket]);
 
   const maxStopLossPrice = useMemo(() => {
     if (entryPrice && position.side === OrderSideE.Buy) {
       return entryPrice;
     } else if (position.side === OrderSideE.Sell) {
-      return liqPrice;
+      return isPredictionMarket ? entryPrice : liqPrice;
     }
-  }, [position, entryPrice, liqPrice]);
+  }, [position, entryPrice, liqPrice, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
@@ -122,14 +123,14 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   useEffect(() => {
     if (stopLoss && stopLoss !== StopLossE.None) {
       let stopPrice;
-      if (position.side === OrderSideE.Buy) {
+      if (position.side === OrderSideE.Buy || (position.side === OrderSideE.Sell && isPredictionMarket)) {
         stopPrice = Math.max(liqPrice, entryPrice * (1 - Math.abs(mapStopLossToNumber(stopLoss) / position.leverage)));
       } else {
         stopPrice = Math.min(liqPrice, entryPrice * (1 + Math.abs(mapStopLossToNumber(stopLoss) / position.leverage)));
       }
       setStopLossInputPrice(Math.max(0.000000001, +stopPrice.toFixed(valueToFractionDigits(+stopPrice))));
     }
-  }, [stopLoss, position, entryPrice, liqPrice]);
+  }, [stopLoss, position, entryPrice, liqPrice, isPredictionMarket]);
 
   useEffect(() => {
     setStopLossPrice(stopLossInputPrice);

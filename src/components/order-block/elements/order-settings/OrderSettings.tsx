@@ -127,17 +127,21 @@ export const OrderSettings = memo(() => {
     return 0;
   }, [orderBlock, updatedSlippage, perpetualStatistics]);
 
-  const formattedEntryPrice = useMemo(() => {
-    if (!!selectedPerpetual && selectedPerpetual?.id === perpetualStaticInfo?.id) {
+  const [formattedEntryPrice, isPredictionMarket] = useMemo(() => {
+    if (selectedPerpetual && selectedPerpetual.id === perpetualStaticInfo?.id) {
       if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
-        return formatToCurrency(
-          calculateProbability(entryPrice, orderBlock === OrderBlockE.Short),
-          selectedPerpetual.quoteCurrency
-        );
+        return [
+          formatToCurrency(
+            calculateProbability(entryPrice, orderBlock === OrderBlockE.Short),
+            selectedPerpetual.quoteCurrency
+          ),
+          true,
+        ];
       } else {
-        return formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency);
+        return [formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency), false];
       }
     }
+    return [null, false];
   }, [entryPrice, selectedPerpetual, perpetualStaticInfo, orderBlock]);
 
   const isReduceOnlyEnabled = useMemo(() => {
@@ -253,7 +257,7 @@ export const OrderSettings = memo(() => {
             />
           </Box>
           <Typography variant="body2" className={styles.maxEntryPrice}>
-            {orderBlock === OrderBlockE.Long
+            {isPredictionMarket || orderBlock === OrderBlockE.Long
               ? t('pages.trade.order-block.slippage.max')
               : t('pages.trade.order-block.slippage.min')}{' '}
             {formattedEntryPrice}

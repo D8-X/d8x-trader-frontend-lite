@@ -211,7 +211,9 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   let stopLossPrice = null; // in probability if prediction market
   if (stopLoss !== StopLossE.None && stopLoss !== null) {
     const stopLossMultiplier =
-      1 - ((orderBlock === OrderBlockE.Long ? 1 : -1) * Math.abs(mapStopLossToNumber(stopLoss))) / leverage;
+      1 -
+      ((orderBlock === OrderBlockE.Long || isPredictionMarket ? 1 : -1) * Math.abs(mapStopLossToNumber(stopLoss))) /
+        leverage;
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       stopLossPrice = perpetualStatistics.markPrice * stopLossMultiplier;
@@ -235,7 +237,8 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   if (takeProfit !== TakeProfitE.None && takeProfit !== null) {
     const takeProfitMultiplier =
       // (1 + mapTakeProfitToNumber(takeProfit) * (orderBlock === OrderBlockE.Long ? 1 : -1)) / leverage;
-      1 + ((orderBlock === OrderBlockE.Long ? 1 : -1) * mapTakeProfitToNumber(takeProfit)) / leverage;
+      1 +
+      ((orderBlock === OrderBlockE.Long || isPredictionMarket ? 1 : -1) * mapTakeProfitToNumber(takeProfit)) / leverage;
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       takeProfitPrice = perpetualStatistics.markPrice * takeProfitMultiplier;

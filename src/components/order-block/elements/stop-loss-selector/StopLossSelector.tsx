@@ -44,38 +44,42 @@ export const StopLossSelector = memo(() => {
     setStopLoss(stopLossValue);
   };
 
-  const midPrice = useMemo(() => {
+  const [midPrice, isPredictionMarket] = useMemo(() => {
     if (!!traderAPI && !!orderInfo) {
       try {
-        return traderAPI?.isPredictionMarket(orderInfo.symbol)
-          ? calculateProbability(orderInfo.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
-          : orderInfo.midPrice;
+        const predMarket = traderAPI?.isPredictionMarket(orderInfo.symbol);
+        return [
+          predMarket
+            ? calculateProbability(orderInfo.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
+            : orderInfo.midPrice,
+          predMarket,
+        ];
       } catch (error) {
         // skip
       }
     }
-    return [orderInfo?.midPrice];
+    return [orderInfo?.midPrice, false];
   }, [orderInfo, traderAPI]);
 
-  const minStopLossPrice: number = useMemo(() => {
-    if (typeof midPrice !== 'number') {
+  const minStopLossPrice = useMemo(() => {
+    if (midPrice === undefined) {
       return 0.000000001;
     }
-    if (midPrice && orderInfo?.orderBlock === OrderBlockE.Short) {
-      return midPrice;
+    if (orderInfo?.orderBlock === OrderBlockE.Short) {
+      return isPredictionMarket ? midPrice - midPrice / orderInfo.leverage : midPrice;
     } else if (orderInfo?.leverage) {
       return Math.max(0.000000001, midPrice - midPrice / orderInfo.leverage);
     }
     return 0.000000001;
-  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice, isPredictionMarket]);
 
   const maxStopLossPrice = useMemo(() => {
     if (typeof midPrice === 'number' && orderInfo?.orderBlock === OrderBlockE.Long) {
       return midPrice;
     } else if (typeof midPrice === 'number' && orderInfo?.leverage) {
-      return midPrice + midPrice / orderInfo.leverage;
+      return isPredictionMarket ? midPrice : midPrice + midPrice / orderInfo.leverage;
     }
-  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
