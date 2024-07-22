@@ -34,17 +34,20 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
   const traderAPI = useAtomValue(traderAPIAtom);
 
   const [displayLimitPrice, displayTriggerPrice] = useMemo(() => {
-    if (!!order.limitPrice && !!order.limitPrice) {
-      try {
-        return traderAPI?.isPredictionMarket(order.symbol)
-          ? [
-              calculateProbability(order.limitPrice, order.side === OrderSideE.Sell),
-              calculateProbability(order.limitPrice, order.side === OrderSideE.Sell),
-            ]
-          : [order.limitPrice, order.stopPrice];
-      } catch (error) {
-        // skip
-      }
+    console.log({ order });
+    try {
+      return traderAPI?.isPredictionMarket(order.symbol)
+        ? [
+            order.limitPrice !== undefined
+              ? calculateProbability(order.limitPrice, order.side === OrderSideE.Sell)
+              : null,
+            order.stopPrice !== undefined
+              ? calculateProbability(order.stopPrice, order.side === OrderSideE.Sell)
+              : null,
+          ]
+        : [order.limitPrice, order.stopPrice];
+    } catch (error) {
+      // skip
     }
     return [order.limitPrice, order.stopPrice];
   }, [order, traderAPI]);

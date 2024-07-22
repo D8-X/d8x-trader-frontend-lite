@@ -61,7 +61,6 @@ function createMainOrder(orderInfo: OrderInfoI) {
   }
 
   const isNoVote = orderInfo.orderBlock === OrderBlockE.Short;
-
   let limitPrice =
     isPredictionMarket && orderInfo.limitPrice !== null
       ? calculatePrice(orderInfo.limitPrice, isNoVote)
@@ -152,7 +151,6 @@ export const ActionBlock = memo(() => {
   const { hasEnoughGasForFee, isMultisigAddress } = useUserWallet();
 
   const orderInfo = useAtomValue(orderInfoAtom);
-  console.log(orderInfo);
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -199,6 +197,7 @@ export const ActionBlock = memo(() => {
     setMaxOrderSize(undefined);
 
     const mainOrder = createMainOrder(orderInfo);
+    console.log({ mainOrder });
     const positionRiskOnTradePromise = positionRiskOnTrade(
       chainId,
       traderAPI,
@@ -318,7 +317,8 @@ export const ActionBlock = memo(() => {
     }
 
     const orders: OrderI[] = [];
-
+    console.log('orders start', orders);
+    console.log('order info start', orderInfo);
     orders.push(createMainOrder(orderInfo));
 
     if (orderInfo.stopLoss !== StopLossE.None && orderInfo.stopLossPrice) {
@@ -360,6 +360,8 @@ export const ActionBlock = memo(() => {
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });
     }
+    console.log('orders end', orders);
+    console.log('orderInfo end', orderInfo);
     return orders;
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
@@ -414,6 +416,9 @@ export const ActionBlock = memo(() => {
     );
   }, [isSuccess, txHash, chain, orderInfo?.symbol, setLatestOrderSentTimestamp, t]);
 
+  console.log('parsedOrders 0', parsedOrders);
+  console.log('orderInfo 0', orderInfo);
+
   const handleOrderConfirm = () => {
     if (
       !address ||
@@ -432,6 +437,7 @@ export const ActionBlock = memo(() => {
     setRequestSent(true);
     setIsValidityCheckDone(false);
     requestSentRef.current = true;
+    console.log('parsedOrders1', parsedOrders);
 
     orderDigest(chainId, parsedOrders, address)
       .then((data) => {
@@ -448,6 +454,7 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
+              console.log('parsedorders2', parsedOrders);
               postOrder(tradingClient, traderAPI, {
                 traderAddr: address,
                 orders: parsedOrders,
