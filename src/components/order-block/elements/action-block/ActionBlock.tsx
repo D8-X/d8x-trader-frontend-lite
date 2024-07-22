@@ -460,6 +460,7 @@ export const ActionBlock = memo(() => {
                 orders: parsedOrders,
                 signatures,
                 brokerData: data.data,
+                doChain: true,
               })
                 .then((tx) => {
                   setShowReviewOrderModal(false);
