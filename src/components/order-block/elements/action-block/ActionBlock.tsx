@@ -298,8 +298,7 @@ export const ActionBlock = memo(() => {
     const orderBlock = orderInfo?.orderBlock ?? OrderBlockE.Long;
     if (isPredictionMarket) {
       return `
-        ${t(orderBlockMap[OrderBlockE.Long])}
-        ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}
+        ${t('pages.trade.order-block.prediction.bet')}
         ${t(predictionOrderBlockMap[orderBlock])}
       `;
     }
@@ -666,7 +665,7 @@ export const ActionBlock = memo(() => {
       )}
       {![ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
         <Button
-          variant={orderInfo?.orderBlock === OrderBlockE.Short && !isPredictionMarket ? 'sell' : 'buy'}
+          variant={orderInfo?.orderBlock === OrderBlockE.Short ? 'sell' : 'buy'}
           disabled={!isBuySellButtonActive}
           onClick={openReviewOrderModal}
           className={styles.buyButton}

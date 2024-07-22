@@ -227,7 +227,8 @@
         },
         "prediction": {
           "yes": "是的",
-          "no": "不"
+          "no": "不",
+          "bet": "Bet"
         },
         "order-type": {
           "market": "市价单",

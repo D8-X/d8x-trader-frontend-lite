@@ -188,6 +188,25 @@ export const MarketSelect = memo(() => {
     return getDynamicLogo(selectedPerpetual?.baseCurrency.toLowerCase() ?? '') as TemporaryAnyT;
   }, [selectedPerpetual?.baseCurrency]);
 
+  const isPredictionMarket = useMemo(() => {
+    if (!selectedPerpetual || !selectedPool) {
+      return false;
+    }
+    try {
+      return traderAPI?.isPredictionMarket(
+        createSymbol({
+          poolSymbol: selectedPool.poolSymbol,
+          baseCurrency: selectedPerpetual.baseCurrency,
+          quoteCurrency: selectedPerpetual.quoteCurrency,
+        })
+      );
+    } catch (error) {
+      // skip
+    }
+    return false;
+  }, [traderAPI, selectedPerpetual, selectedPool]);
+
+  console.log({ isPredictionMarket });
   return (
     <div className={styles.holderRoot}>
       <div className={styles.iconWrapper}>
@@ -202,7 +221,9 @@ export const MarketSelect = memo(() => {
           </Typography>
           <div className={styles.selectedMarketValue}>
             <Typography variant="bodyBig" className={styles.selectedMarketPerpetual}>
-              {cutBaseCurrency(selectedPerpetual?.baseCurrency)}/{selectedPerpetual?.quoteCurrency}
+              {isPredictionMarket
+                ? cutBaseCurrency(selectedPerpetual?.baseCurrency)
+                : `${cutBaseCurrency(selectedPerpetual?.baseCurrency)}/${selectedPerpetual?.quoteCurrency}`}
             </Typography>
             <Typography variant="bodyTiny">{selectedPool?.settleSymbol}</Typography>
           </div>
