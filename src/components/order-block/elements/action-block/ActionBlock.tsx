@@ -197,7 +197,6 @@ export const ActionBlock = memo(() => {
     setMaxOrderSize(undefined);
 
     const mainOrder = createMainOrder(orderInfo);
-    console.log({ mainOrder });
     const positionRiskOnTradePromise = positionRiskOnTrade(
       chainId,
       traderAPI,
@@ -223,7 +222,11 @@ export const ActionBlock = memo(() => {
 
     const getPerpetualPricePromise = getPerpetualPrice(mainOrder.quantity, mainOrder.symbol, traderAPI)
       .then((data) => {
-        setPerpetualPrice(data.data.price);
+        const perpPrice =
+          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
+            ? calculateProbability(data.data.price, orderInfo.orderBlock === OrderBlockE.Short)
+            : data.data.price;
+        setPerpetualPrice(perpPrice);
       })
       .catch(console.error);
 
@@ -317,8 +320,6 @@ export const ActionBlock = memo(() => {
     }
 
     const orders: OrderI[] = [];
-    console.log('orders start', orders);
-    console.log('order info start', orderInfo);
     orders.push(createMainOrder(orderInfo));
 
     if (orderInfo.stopLoss !== StopLossE.None && orderInfo.stopLossPrice) {
@@ -360,8 +361,6 @@ export const ActionBlock = memo(() => {
         executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
       });
     }
-    console.log('orders end', orders);
-    console.log('orderInfo end', orderInfo);
     return orders;
   }, [orderInfo, selectedPool, address, proxyAddr, requestSent, isBuySellButtonActive]);
 
@@ -416,9 +415,6 @@ export const ActionBlock = memo(() => {
     );
   }, [isSuccess, txHash, chain, orderInfo?.symbol, setLatestOrderSentTimestamp, t]);
 
-  console.log('parsedOrders 0', parsedOrders);
-  console.log('orderInfo 0', orderInfo);
-
   const handleOrderConfirm = () => {
     if (
       !address ||
@@ -437,7 +433,6 @@ export const ActionBlock = memo(() => {
     setRequestSent(true);
     setIsValidityCheckDone(false);
     requestSentRef.current = true;
-    console.log('parsedOrders1', parsedOrders);
 
     orderDigest(chainId, parsedOrders, address)
       .then((data) => {
@@ -454,7 +449,6 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              console.log('parsedorders2', parsedOrders);
               postOrder(tradingClient, traderAPI, {
                 traderAddr: address,
                 orders: parsedOrders,
@@ -577,17 +571,13 @@ export const ActionBlock = memo(() => {
     if (
       orderInfo.orderType === OrderTypeE.Market &&
       orderInfo.maxMinEntryPrice !== null &&
-      selectedPerpetual?.midPrice !== undefined
+      perpetualPrice !== undefined // perpetualPrice is already in prob if prediction market (getPerpetualPricePromise)
     ) {
-      const midPrice =
-        perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
-          ? calculateProbability(selectedPerpetual.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
-          : selectedPerpetual.midPrice;
       let isSlippageTooLarge;
-      if (orderInfo.orderBlock === OrderBlockE.Long) {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice < midPrice;
+      if (isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long) {
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice < perpetualPrice;
       } else {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice > midPrice;
+        isSlippageTooLarge = orderInfo.maxMinEntryPrice > perpetualPrice;
       }
       if (isSlippageTooLarge) {
         return ValidityCheckE.SlippageTooLarge;
@@ -601,13 +591,14 @@ export const ActionBlock = memo(() => {
     orderInfo?.orderType,
     orderInfo?.takeProfitPrice,
     orderInfo?.maxMinEntryPrice,
-    selectedPerpetual,
     perpetualStaticInfo,
     poolTokenBalance,
     isMarketClosed,
     collateralDeposit,
     positionToModify,
     showReviewOrderModal,
+    isPredictionMarket,
+    perpetualPrice,
   ]);
 
   const validityCheckText = useMemo(() => {
@@ -750,7 +741,7 @@ export const ActionBlock = memo(() => {
                 <SidesRow
                   leftSide={
                     <Typography variant="bodySmallPopup" className={styles.left}>
-                      {orderInfo.orderBlock === OrderBlockE.Long
+                      {isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long
                         ? t('pages.trade.action-block.review.max')
                         : t('pages.trade.action-block.review.min')}
                     </Typography>

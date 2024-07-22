@@ -34,7 +34,6 @@ export const OpenOrderRow = ({ order, handleOrderCancel }: OpenOrderRowPropsI) =
   const traderAPI = useAtomValue(traderAPIAtom);
 
   const [displayLimitPrice, displayTriggerPrice] = useMemo(() => {
-    console.log({ order });
     try {
       return traderAPI?.isPredictionMarket(order.symbol)
         ? [
