@@ -86,6 +86,12 @@ if (web3AuthConfig.isEnabled) {
           typeOfLogin: 'jwt',
           clientId,
         },
+        email_passwordless: {
+          verifier: verifier,
+          // verifierSubIdentifier: "YOUR_SUB_VERIFIER_NAME", // Pass in the sub verifier name here
+          typeOfLogin: 'passwordless', // Pass on the login provider of the verifier you've created
+          clientId,
+        },
       },
     },
   });
@@ -247,6 +253,32 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     []
   );
 
+  const connectEmail = useCallback(
+    async () => {
+      if (web3AuthInstance && !web3AuthInstance.connected) {
+        await web3AuthInstance
+          .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+            loginProvider: 'email_passwordless',
+            extraLoginOptions: {
+              login_hint: 'd8x@exchange.io', // email to send the OTP to
+            },
+          })
+          .then(() => {
+            setLoggedIn(true);
+          })
+          .catch((error) => {
+            console.error(error);
+            setWeb3AuthSigning(false);
+            return null;
+          });
+      }
+
+      // handleWeb3AuthSuccessConnect(info, privateKey as string);
+    },
+    // [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
+    []
+  );
+
   const signInWithTwitter = useCallback(async () => {
     if (!auth || signInRef.current) {
       //console.log('auth not defined');
@@ -310,20 +342,20 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     try {
       await disconnectAsync();
       const authProvider = new EmailAuthProvider();
-      //console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
+      console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
       const loginRes = await signInWithPopup(auth, authProvider);
-      //console.log('login details', loginRes);
+      console.log('login details', loginRes);
       //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
       const idToken = await loginRes.user.getIdToken(true);
       setWeb3AuthIdToken(idToken);
-      await connectWeb3Auth(idToken);
+      await connectEmail();
     } catch (error) {
       console.error(error);
       setWeb3AuthSigning(false);
     } finally {
       signInRef.current = false;
     }
-  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
+  }, [connectEmail, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
