@@ -10,6 +10,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import styles from './InfoLabelBlock.module.scss';
 
 interface InfoBlockPropsI {
+  titlePrefix?: string | ReactNode;
   title: string | ReactNode;
   content: string | ReactNode;
   labelClassname?: string;
@@ -18,6 +19,7 @@ interface InfoBlockPropsI {
 }
 
 export const InfoLabelBlock = ({
+  titlePrefix,
   title,
   content,
   labelClassname,
@@ -31,7 +33,8 @@ export const InfoLabelBlock = ({
   return (
     <>
       <div className={classNames(styles.label, labelClassname)}>
-        <span className={classNames(styles.title, titleClassname)}>{title}</span>{' '}
+        {titlePrefix && <span>{titlePrefix}</span>}
+        <span className={classNames(styles.title, titleClassname)}>{title}</span>
         <span className={classNames(styles.iconHolder, iconHolderClassname)}>
           <InfoOutlined onClick={() => setModalOpen(true)} className={styles.actionIcon} />
         </span>

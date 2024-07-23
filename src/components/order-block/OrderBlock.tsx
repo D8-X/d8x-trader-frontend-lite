@@ -10,7 +10,7 @@ import { useAccount } from 'wagmi';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-import { Separator } from '../separator/Separator';
+// import { Separator } from '../separator/Separator';
 import { ActionBlock } from './elements/action-block/ActionBlock';
 import { InfoBlock } from './elements/info-block/InfoBlock';
 import { LeverageSelector } from './elements/leverage-selector/LeverageSelector';
@@ -37,13 +37,13 @@ export const OrderBlock = memo(() => {
         <OrderTypeSelector />
         <LeverageSelector />
       </CardContent>
-      <Separator className={styles.separator} />
+      {/*<Separator className={styles.separator} />*/}
       <CardContent className={styles.card}>
         <TriggerPrice />
         <LimitPrice />
         <OrderSize />
       </CardContent>
-      <Separator className={styles.separator} />
+      {/*<Separator className={styles.separator} />*/}
       <CardContent className={classnames(styles.card, styles.selectors)}>
         <StopLossSelector />
         <TakeProfitSelector />

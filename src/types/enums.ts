@@ -80,7 +80,7 @@ export enum ExpiryE {
 }
 
 export enum StopLossE {
-  '1%' = '-1%',
+  '5%' = '-5%',
   '25%' = '-25%',
   '50%' = '-50%',
   '75%' = '-75%',
@@ -88,7 +88,7 @@ export enum StopLossE {
 }
 
 export enum TakeProfitE {
-  '1%' = '1%',
+  '5%' = '5%',
   '50%' = '50%',
   '100%' = '100%',
   '500%' = '500%',

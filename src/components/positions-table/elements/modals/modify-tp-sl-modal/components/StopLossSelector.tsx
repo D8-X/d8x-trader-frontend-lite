@@ -144,7 +144,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
 
   const translationMap: Record<StopLossE, string> = {
     [StopLossE.None]: t('pages.trade.order-block.stop-loss.none'),
-    [StopLossE['1%']]: '1%',
+    [StopLossE['5%']]: '5%',
     [StopLossE['25%']]: '25%',
     [StopLossE['50%']]: '50%',
     [StopLossE['75%']]: '75%',

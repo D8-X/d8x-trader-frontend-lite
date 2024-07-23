@@ -20,6 +20,7 @@ interface CustomPriceSelectorPropsI<T extends string> {
   currency?: string;
   stepSize: string;
   disabled?: boolean;
+  hide?: boolean;
 }
 
 function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelectorPropsI<T>) {
@@ -36,15 +37,16 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
     currency,
     stepSize,
     disabled = false,
+    hide = false,
   } = props;
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.labelHolder}>
+    <Box className={classnames(styles.root, { [styles.hidden]: hide })}>
+      <Box className={classnames(styles.labelHolder, { [styles.hidden]: hide })}>
         {label}
         <OutlinedInput
           id={id}
-          className={styles.customPriceInput}
+          className={classnames(styles.customPriceInput, { [styles.hidden]: hide })}
           endAdornment={
             <InputAdornment position="end">
               <Typography variant="adornment">{currency}</Typography>
@@ -59,7 +61,7 @@ function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelect
           disabled={disabled}
         />
       </Box>
-      <Box className={styles.priceOptions}>
+      <Box className={classnames(styles.priceOptions, { [styles.hidden]: hide })}>
         {options.map((key) => (
           <Button
             key={key}

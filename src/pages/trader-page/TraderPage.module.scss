@@ -43,8 +43,8 @@
 
 .rightBlock {
   flex: 1;
-  max-width: 400px;
-  min-width: 400px;
+  max-width: 350px;
+  min-width: 350px;
   margin-left: $d8x-spacing * 2.5;
   display: flex;
   gap: 10px;
@@ -68,8 +68,8 @@
 
 @media screen and ($d8x-breakpoint-max-lg) {
   .rightBlock {
-    max-width: 400px;
-    min-width: 400px;
+    max-width: 350px;
+    min-width: 350px;
   }
 }
 
