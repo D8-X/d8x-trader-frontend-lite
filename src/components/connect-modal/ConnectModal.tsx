@@ -41,6 +41,7 @@ export const ConnectModal = () => {
             <div className={styles.actionButtonsContainer}>
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
               <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
+              <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Email} />
               <OrSeparator />
               <WalletConnectButtonHolder
                 connectButtonLabel={

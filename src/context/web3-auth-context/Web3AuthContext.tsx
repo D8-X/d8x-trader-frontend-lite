@@ -3,7 +3,7 @@ import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { type OPENLOGIN_NETWORK_TYPE, OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
-import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider, EmailAuthProvider } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   createContext,
@@ -29,6 +29,7 @@ interface Web3AuthContextPropsI {
   disconnect: () => void;
   signInWithTwitter: () => void;
   signInWithGoogle: () => void;
+  signInWithEmail: () => void;
   isConnecting: boolean;
   isConnected: boolean;
 }
@@ -298,6 +299,32 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     }
   }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
+  const signInWithEmail = useCallback(async () => {
+    if (!auth || signInRef.current) {
+      //console.log('auth not defined');
+      return;
+    }
+
+    setWeb3AuthSigning(true);
+    signInRef.current = true;
+    try {
+      await disconnectAsync();
+      const authProvider = new EmailAuthProvider();
+      //console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
+      const loginRes = await signInWithPopup(auth, authProvider);
+      //console.log('login details', loginRes);
+      //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
+      const idToken = await loginRes.user.getIdToken(true);
+      setWeb3AuthIdToken(idToken);
+      await connectWeb3Auth(idToken);
+    } catch (error) {
+      console.error(error);
+      setWeb3AuthSigning(false);
+    } finally {
+      signInRef.current = false;
+    }
+  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
+
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
       setUserInfo(null);
@@ -315,6 +342,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         web3Auth: web3AuthInstance,
         signInWithTwitter,
         signInWithGoogle,
+        signInWithEmail,
         disconnect: handleDisconnect,
         isConnecting: web3AuthSigning,
         isConnected: web3AuthInstance ? web3AuthInstance.connected : false,
