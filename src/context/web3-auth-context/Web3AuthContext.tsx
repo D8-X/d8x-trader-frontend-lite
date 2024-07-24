@@ -3,7 +3,14 @@ import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
 import { type OPENLOGIN_NETWORK_TYPE, OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
-import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider, EmailAuthProvider } from 'firebase/auth';
+import {
+  signInWithPopup,
+  TwitterAuthProvider,
+  GoogleAuthProvider,
+  sendSignInLinkToEmail,
+  getAuth,
+  signInWithEmailLink,
+} from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   createContext,
@@ -40,6 +47,23 @@ let clientId = '';
 let verifier = '';
 let web3AuthNetwork: OPENLOGIN_NETWORK_TYPE;
 let web3AuthInstance: Web3AuthNoModal | null = null;
+
+const actionCodeSettings = {
+  // URL you want to redirect back to. The domain (www.example.com) for this
+  // URL must be in the authorized domains list in the Firebase Console.
+  url: 'http://localhost',
+  // This must be true.
+  handleCodeInApp: true,
+  // iOS: {
+  //   bundleId: 'com.example.ios',
+  // },
+  // android: {
+  //   packageName: 'com.example.android',
+  //   installApp: true,
+  //   minimumVersion: '12',
+  // },
+  // dynamicLinkDomain: 'example.page.link',
+};
 
 if (web3AuthConfig.isEnabled) {
   clientId = web3AuthConfig.web3AuthClientId;
@@ -84,12 +108,6 @@ if (web3AuthConfig.isEnabled) {
         jwt: {
           verifier,
           typeOfLogin: 'jwt',
-          clientId,
-        },
-        email_passwordless: {
-          verifier: verifier,
-          // verifierSubIdentifier: "YOUR_SUB_VERIFIER_NAME", // Pass in the sub verifier name here
-          typeOfLogin: 'passwordless', // Pass on the login provider of the verifier you've created
           clientId,
         },
       },
@@ -253,32 +271,6 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     []
   );
 
-  const connectEmail = useCallback(
-    async () => {
-      if (web3AuthInstance && !web3AuthInstance.connected) {
-        await web3AuthInstance
-          .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
-            loginProvider: 'email_passwordless',
-            extraLoginOptions: {
-              login_hint: 'd8x@exchange.io', // email to send the OTP to
-            },
-          })
-          .then(() => {
-            setLoggedIn(true);
-          })
-          .catch((error) => {
-            console.error(error);
-            setWeb3AuthSigning(false);
-            return null;
-          });
-      }
-
-      // handleWeb3AuthSuccessConnect(info, privateKey as string);
-    },
-    // [loggedIn, handleWeb3AuthSuccessConnect, setSocialPK, setUserInfo]
-    []
-  );
-
   const signInWithTwitter = useCallback(async () => {
     if (!auth || signInRef.current) {
       //console.log('auth not defined');
@@ -339,23 +331,27 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
 
     setWeb3AuthSigning(true);
     signInRef.current = true;
+    const email = 'm66260@protonmail.com';
+
     try {
       await disconnectAsync();
-      const authProvider = new EmailAuthProvider();
-      console.log('signInWithPopup', web3AuthInstance?.status, web3AuthInstance?.connected);
-      const loginRes = await signInWithPopup(auth, authProvider);
+      const firebaseAuth = getAuth();
+      console.log('sendSignInLinkToEmail');
+      await sendSignInLinkToEmail(firebaseAuth, email, actionCodeSettings);
+      console.log('signInWithEmailLink', web3AuthInstance?.status, web3AuthInstance?.connected);
+      const loginRes = await signInWithEmailLink(firebaseAuth, email, window.location.href);
       console.log('login details', loginRes);
       //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
       const idToken = await loginRes.user.getIdToken(true);
       setWeb3AuthIdToken(idToken);
-      await connectEmail();
+      await connectWeb3Auth(idToken);
     } catch (error) {
       console.error(error);
       setWeb3AuthSigning(false);
     } finally {
       signInRef.current = false;
     }
-  }, [connectEmail, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
+  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
