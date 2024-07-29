@@ -8,8 +8,8 @@ import {
   TwitterAuthProvider,
   GoogleAuthProvider,
   sendSignInLinkToEmail,
-  getAuth,
   signInWithEmailLink,
+  isSignInWithEmailLink,
 } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
 import {
@@ -36,7 +36,8 @@ interface Web3AuthContextPropsI {
   disconnect: () => void;
   signInWithTwitter: () => void;
   signInWithGoogle: () => void;
-  signInWithEmail: () => void;
+  signInWithEmail: (email: string, emailLink: string) => void;
+  sendEmailSignInLink: (email: string) => void;
   isConnecting: boolean;
   isConnected: boolean;
 }
@@ -323,35 +324,54 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     }
   }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
 
-  const signInWithEmail = useCallback(async () => {
+  const sendEmailSignInLink = useCallback(async (email: string) => {
     if (!auth || signInRef.current) {
       //console.log('auth not defined');
       return;
     }
 
-    setWeb3AuthSigning(true);
-    signInRef.current = true;
-    const email = 'm66260@protonmail.com';
-
     try {
-      await disconnectAsync();
-      const firebaseAuth = getAuth();
-      console.log('sendSignInLinkToEmail');
-      await sendSignInLinkToEmail(firebaseAuth, email, actionCodeSettings);
-      console.log('signInWithEmailLink', web3AuthInstance?.status, web3AuthInstance?.connected);
-      const loginRes = await signInWithEmailLink(firebaseAuth, email, window.location.href);
-      console.log('login details', loginRes);
-      //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
-      const idToken = await loginRes.user.getIdToken(true);
-      setWeb3AuthIdToken(idToken);
-      await connectWeb3Auth(idToken);
+      console.log('sendSignInLinkToEmail(', email, ')');
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      console.log('email sent');
     } catch (error) {
       console.error(error);
-      setWeb3AuthSigning(false);
-    } finally {
-      signInRef.current = false;
     }
-  }, [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]);
+  }, []);
+
+  const signInWithEmail = useCallback(
+    async (email: string, emailLink: string) => {
+      if (!auth || signInRef.current) {
+        //console.log('auth not defined');
+        return;
+      }
+
+      if (!isSignInWithEmailLink(auth, emailLink)) {
+        console.log('Invalid email link:', emailLink);
+        return;
+      }
+
+      setWeb3AuthSigning(true);
+      signInRef.current = true;
+
+      try {
+        await disconnectAsync();
+        console.log('signInWithEmailLink(', email, ')');
+        const loginRes = await signInWithEmailLink(auth, email, emailLink);
+        console.log('login details', loginRes);
+        //console.log('getIdToken', web3AuthInstance.status, web3AuthInstance.connected);
+        const idToken = await loginRes.user.getIdToken(true);
+        setWeb3AuthIdToken(idToken);
+        await connectWeb3Auth(idToken);
+      } catch (error) {
+        console.error(error);
+        setWeb3AuthSigning(false);
+      } finally {
+        signInRef.current = false;
+      }
+    },
+    [connectWeb3Auth, setWeb3AuthIdToken, disconnectAsync, setWeb3AuthSigning]
+  );
 
   const handleDisconnect = useCallback(async () => {
     if (isConnected) {
@@ -371,6 +391,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
         signInWithTwitter,
         signInWithGoogle,
         signInWithEmail,
+        sendEmailSignInLink,
         disconnect: handleDisconnect,
         isConnecting: web3AuthSigning,
         isConnected: web3AuthInstance ? web3AuthInstance.connected : false,

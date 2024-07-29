@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { memo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -21,22 +21,50 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
 
   const { isConnected } = useAccount();
 
-  const { web3Auth, signInWithGoogle, signInWithTwitter, signInWithEmail, isConnecting } = useWeb3Auth();
+  const { web3Auth, signInWithGoogle, signInWithTwitter, signInWithEmail, sendEmailSignInLink, isConnecting } =
+    useWeb3Auth();
 
-  if (isConnected) {
-    return null;
-  }
+  const [userEmail, setUserEmail] = useState('');
 
-  const { handleClick, icon } = (() => {
+  const { handleClick, icon } = useMemo(() => {
     switch (signInMethod) {
       case Web3SignInMethodE.X:
         return { handleClick: signInWithTwitter, icon: <X /> };
       case Web3SignInMethodE.Google:
         return { handleClick: signInWithGoogle, icon: <Google /> };
       case Web3SignInMethodE.Email:
-        return { handleClick: signInWithEmail, icon: <Email /> };
+        return {
+          handleClick: () => {
+            if (userEmail !== '') {
+              const emailLink = window.prompt(`Please enter the link sent to ${userEmail}:`);
+              if (emailLink) {
+                signInWithEmail(userEmail, emailLink);
+                setUserEmail('');
+              }
+            } else {
+              const email = window.prompt('Please enter your e-mail address:');
+              if (email) {
+                sendEmailSignInLink(email);
+                setUserEmail(email);
+              }
+            }
+          },
+          icon: <Email />,
+        };
     }
-  })();
+  }, [
+    signInMethod,
+    signInWithTwitter,
+    signInWithGoogle,
+    signInWithEmail,
+    sendEmailSignInLink,
+    setUserEmail,
+    userEmail,
+  ]);
+
+  if (isConnected) {
+    return null;
+  }
 
   return (
     <Button
