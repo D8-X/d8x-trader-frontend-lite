@@ -1,5 +1,5 @@
 import classnames from 'classnames';
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -10,6 +10,8 @@ import { useWeb3Auth } from 'context/web3-auth-context/Web3AuthContext';
 import { Web3SignInMethodE } from 'types/enums';
 
 import styles from './Web3AuthConnectButton.module.scss';
+import { useAtom } from 'jotai';
+import { web3AuthUserEmailAtom } from 'store/web3-auth.store';
 
 interface Web3AuthConnectButtonPropsI {
   buttonClassName?: string;
@@ -24,33 +26,34 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
   const { web3Auth, signInWithGoogle, signInWithTwitter, signInWithEmail, sendEmailSignInLink, isConnecting } =
     useWeb3Auth();
 
-  const [userEmail, setUserEmail] = useState('m66260@protonmail.com'); // TODO: change to ''
+  const [userEmail, setUserEmail] = useAtom(web3AuthUserEmailAtom);
 
-  const { handleClick, icon } = useMemo(() => {
-    switch (signInMethod) {
-      case Web3SignInMethodE.X:
-        return { handleClick: signInWithTwitter, icon: <X /> };
-      case Web3SignInMethodE.Google:
-        return { handleClick: signInWithGoogle, icon: <Google /> };
-      case Web3SignInMethodE.Email:
-        return {
-          handleClick: () => {
-            if (userEmail !== '') {
-              const emailLink = window.prompt(`Please enter the link sent to ${userEmail}:`);
-              if (emailLink) {
-                signInWithEmail(userEmail, emailLink);
-                setUserEmail('');
-              }
-            } else {
-              const email = window.prompt('Please enter your e-mail address:');
-              if (email) {
-                sendEmailSignInLink(email);
-                setUserEmail(email);
-              }
+  const { handleClick, icon, title } = useMemo(() => {
+    if (signInMethod === Web3SignInMethodE.Email) {
+      return {
+        handleClick: () => {
+          if (userEmail !== '') {
+            const emailLink = window.prompt(`Please enter the link sent to ${userEmail}:`);
+            if (emailLink) {
+              signInWithEmail(userEmail, emailLink);
+              // setUserEmail('');
             }
-          },
-          icon: <Email />,
-        };
+          } else {
+            const email = window.prompt('Please enter your e-mail address:');
+            if (email) {
+              sendEmailSignInLink(email);
+              setUserEmail(email);
+            }
+          }
+        },
+        icon: <Email />,
+        title: userEmail === '' ? 'Sign In with Email' : 'Enter Sign In Link',
+      };
+    } else {
+      const buttonTitle = t(`common.connect-modal.sign-in-with-${signInMethod.toLowerCase()}-button`);
+      return signInMethod === Web3SignInMethodE.X
+        ? { handleClick: signInWithTwitter, icon: <X />, title: buttonTitle }
+        : { handleClick: signInWithGoogle, icon: <Google />, title: buttonTitle };
     }
   }, [
     signInMethod,
@@ -60,6 +63,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
     sendEmailSignInLink,
     setUserEmail,
     userEmail,
+    t,
   ]);
 
   if (isConnected) {
@@ -75,7 +79,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
       variant="primary"
     >
       {icon}
-      {t(`common.connect-modal.sign-in-with-${signInMethod.toLowerCase()}-button`)}
+      {title}
     </Button>
   );
 });
