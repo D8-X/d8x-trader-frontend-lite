@@ -23,19 +23,27 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
 
   const { isConnected } = useAccount();
 
-  const { web3Auth, signInWithGoogle, signInWithTwitter, signInWithEmail, sendEmailSignInLink, isConnecting } =
-    useWeb3Auth();
+  const {
+    web3Auth,
+    signInWithGoogle,
+    signInWithTwitter,
+    signInWithEmailAccount,
+    signInWithEmailPasswordless,
+    sendEmailSignInLink,
+    createEmailAccount,
+    isConnecting,
+  } = useWeb3Auth();
 
   const [userEmail, setUserEmail] = useAtom(web3AuthUserEmailAtom);
 
   const { handleClick, icon, title } = useMemo(() => {
-    if (signInMethod === Web3SignInMethodE.Email) {
+    if (signInMethod === Web3SignInMethodE.EmailLink) {
       return {
         handleClick: () => {
           if (userEmail !== '') {
             const emailLink = window.prompt(`Please enter the link sent to ${userEmail}:`);
             if (emailLink) {
-              signInWithEmail(userEmail, emailLink);
+              signInWithEmailPasswordless(userEmail, emailLink);
               // setUserEmail('');
             }
           } else {
@@ -47,7 +55,28 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
           }
         },
         icon: <Email />,
-        title: userEmail === '' ? 'Sign In with Email' : 'Enter Sign In Link',
+        title: userEmail === '' ? 'Sign In with Email Link' : 'Enter Sign In Link',
+      };
+    } else if (signInMethod === Web3SignInMethodE.EmailAccount) {
+      return {
+        handleClick: () => {
+          if (userEmail !== '') {
+            const pwd = window.prompt(`Please enter your password:`);
+            if (pwd) {
+              signInWithEmailAccount(userEmail, pwd);
+              // setUserEmail('');
+            }
+          } else {
+            const email = window.prompt('Please enter your e-mail address:');
+            const pwd = window.prompt('Create your password:');
+            if (email && pwd) {
+              createEmailAccount(email, pwd);
+              setUserEmail(email);
+            }
+          }
+        },
+        icon: <Email />,
+        title: userEmail === '' ? 'Sign Up with Email' : 'Sign In with Email & Password',
       };
     } else {
       const buttonTitle = t(`common.connect-modal.sign-in-with-${signInMethod.toLowerCase()}-button`);
@@ -59,8 +88,10 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
     signInMethod,
     signInWithTwitter,
     signInWithGoogle,
-    signInWithEmail,
+    signInWithEmailPasswordless,
+    signInWithEmailAccount,
     sendEmailSignInLink,
+    createEmailAccount,
     setUserEmail,
     userEmail,
     t,

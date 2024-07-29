@@ -151,5 +151,6 @@ export enum FieldTypeE {
 export enum Web3SignInMethodE {
   X = 'x',
   Google = 'google',
-  Email = 'email',
+  EmailLink = 'email_link',
+  EmailAccount = 'email_account',
 }
