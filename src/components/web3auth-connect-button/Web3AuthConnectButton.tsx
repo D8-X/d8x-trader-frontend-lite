@@ -24,7 +24,7 @@ export const Web3AuthConnectButton = memo(({ buttonClassName, signInMethod }: We
   const { web3Auth, signInWithGoogle, signInWithTwitter, signInWithEmail, sendEmailSignInLink, isConnecting } =
     useWeb3Auth();
 
-  const [userEmail, setUserEmail] = useState('');
+  const [userEmail, setUserEmail] = useState('m66260@protonmail.com'); // TODO: change to ''
 
   const { handleClick, icon } = useMemo(() => {
     switch (signInMethod) {

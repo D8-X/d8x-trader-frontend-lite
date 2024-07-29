@@ -52,7 +52,7 @@ let web3AuthInstance: Web3AuthNoModal | null = null;
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for this
   // URL must be in the authorized domains list in the Firebase Console.
-  url: 'http://localhost',
+  url: 'http://localhost:5173',
   // This must be true.
   handleCodeInApp: true,
   // iOS: {
@@ -347,9 +347,10 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
       }
 
       if (!isSignInWithEmailLink(auth, emailLink)) {
-        console.log('Invalid email link:', emailLink);
+        console.log('Invalid email w/ link:', email, emailLink);
         return;
       }
+      console.log('Valid email w/ link:', email, emailLink);
 
       setWeb3AuthSigning(true);
       signInRef.current = true;
