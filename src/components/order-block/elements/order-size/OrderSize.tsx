@@ -75,6 +75,8 @@ export const OrderSize = memo(() => {
   const anchorRef = useRef<HTMLDivElement>(null);
   const maxOrderSizeDefinedRef = useRef(false);
   const maxOrderSizeRetriesCountRef = useRef(0);
+  const maxOrderSizeRequestRef = useRef(false);
+  const triggerBalancesUpdateRef = useRef(triggerBalancesUpdate);
 
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
@@ -181,12 +183,20 @@ export const OrderSize = memo(() => {
   );
 
   const refetchMaxOrderSize = useCallback(
-    (userAddress: Address) => {
-      if (!perpetualStaticInfo || !isSDKConnected || !isEnabledChain(chainId)) {
-        setMaxOrderSize(undefined);
-        maxOrderSizeDefinedRef.current = false;
+    (userAddress: Address, needValueCleanUp: boolean) => {
+      if (maxOrderSizeRequestRef.current) {
         return;
       }
+
+      if (!perpetualStaticInfo || !isSDKConnected || !isEnabledChain(chainId)) {
+        if (needValueCleanUp) {
+          setMaxOrderSize(undefined);
+          maxOrderSizeDefinedRef.current = false;
+        }
+        return;
+      }
+
+      maxOrderSizeRequestRef.current = true;
 
       fetchMaxOrderSize(
         chainId,
@@ -202,6 +212,9 @@ export const OrderSize = memo(() => {
         .catch((error) => {
           console.error(error);
           maxOrderSizeDefinedRef.current = false;
+        })
+        .finally(() => {
+          maxOrderSizeRequestRef.current = false;
         });
     },
     [isSDKConnected, chainId, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]
@@ -213,8 +226,14 @@ export const OrderSize = memo(() => {
       return;
     }
 
+    let needValueCleanUp = true;
+    if (triggerBalancesUpdateRef.current !== triggerBalancesUpdate) {
+      needValueCleanUp = false;
+      triggerBalancesUpdateRef.current = triggerBalancesUpdate;
+    }
+
     maxOrderSizeDefinedRef.current = false;
-    refetchMaxOrderSize(address);
+    refetchMaxOrderSize(address, needValueCleanUp);
 
     const intervalId = setInterval(() => {
       if (maxOrderSizeDefinedRef.current) {
@@ -230,7 +249,7 @@ export const OrderSize = memo(() => {
         return;
       }
 
-      refetchMaxOrderSize(address);
+      refetchMaxOrderSize(address, needValueCleanUp);
       maxOrderSizeRetriesCountRef.current++;
     }, INTERVAL_FOR_DATA_REFETCH);
 
