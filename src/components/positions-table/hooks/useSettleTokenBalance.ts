@@ -38,7 +38,7 @@ export const useSettleTokenBalance = ({ poolByPosition }: SettleTokenBalanceProp
       },
     ],
     query: {
-      enabled: address && traderAPI?.chainId === chain?.id && !!poolByPosition?.settleTokenAddr && isConnected,
+      enabled: address && Number(traderAPI?.chainId) === chain?.id && !!poolByPosition?.settleTokenAddr && isConnected,
     },
   });
 
