@@ -89,7 +89,7 @@ export const StrategyBlock = () => {
     query: {
       enabled:
         strategyAddress &&
-        traderAPI?.chainId === chainId &&
+        Number(traderAPI?.chainId) === chainId &&
         isEnabledChain(chainId) &&
         !!strategyPool?.settleTokenAddr &&
         isConnected,
