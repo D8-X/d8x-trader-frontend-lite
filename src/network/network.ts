@@ -92,8 +92,10 @@ export async function getPerpetualStaticInfo(
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
+    // TODO: legacy, remove error when new BEs are live
+    throw new Error(`Unable to fetch perpetual static info for symbol ${symbol}`);
     // console.log('perpStaticInfo via BE');
-    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
+    // return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
   }
 }
 
