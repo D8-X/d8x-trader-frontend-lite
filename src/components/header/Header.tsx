@@ -202,7 +202,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         try {
           let currentTraderAPI = null;
           const enabledChainId = getEnabledChainId(chainId);
-          if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId ?? 0) === enabledChainId) {
+          if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId) === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
           const data = await getExchangeInfo(enabledChainId, currentTraderAPI);
@@ -251,7 +251,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       enabled:
         !exchangeRequestRef.current &&
         address &&
-        traderAPI?.chainId === chainId &&
+        Number(traderAPI?.chainId) === chainId &&
         isEnabledChain(chainId) &&
         !!selectedPool?.settleTokenAddr &&
         isConnected &&

@@ -44,7 +44,8 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   } = useBalance({
     address: tradingAddress,
     query: {
-      enabled: tradingAddress && traderAPI?.chainId === chain?.id && isConnected && !isReconnecting && !isConnecting,
+      enabled:
+        tradingAddress && Number(traderAPI?.chainId) === chain?.id && isConnected && !isReconnecting && !isConnecting,
     },
   });
 
