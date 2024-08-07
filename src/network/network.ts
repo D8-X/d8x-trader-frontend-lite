@@ -88,14 +88,12 @@ export async function getPerpetualStaticInfo(
   symbol: string
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
   if (traderAPI && Number(traderAPI.chainId) === chainId) {
-    console.log('perpStaticInfo via SDK');
+    // console.log('perpStaticInfo via SDK');
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
-    throw new Error(`Unable to fetch perpetual static info for symbol ${symbol}`);
-    // TODO: uncomment below
-    // // console.log('perpStaticInfo via BE');
-    // return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
+    // console.log('perpStaticInfo via BE');
+    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
   }
 }
 

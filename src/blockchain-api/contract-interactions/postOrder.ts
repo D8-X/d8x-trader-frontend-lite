@@ -35,7 +35,6 @@ export async function postOrder(
 
   const chain = walletClient.chain;
   const gasPrice = await getGasPrice(chain.id);
-  // TODO: check this
   if (brokerData.OrderBookAddr !== traderAPI.getOrderBookAddress(orders[0].symbol)) {
     console.log({
       orderBook: orders[0].symbol,
