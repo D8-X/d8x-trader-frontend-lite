@@ -225,6 +225,11 @@
           "long": "开多",
           "short": "开空"
         },
+        "prediction": {
+          "yes": "是的",
+          "no": "不",
+          "bet": "Bet"
+        },
         "order-type": {
           "market": "市价单",
           "limit": "限价单",
@@ -854,6 +859,7 @@
         "crypto": "加密货币",
         "fx": "外汇",
         "all": "所有",
+        "prediction": "预测的过程",
         "commodity": "大宗商品",
         "closed": "休市"
       },

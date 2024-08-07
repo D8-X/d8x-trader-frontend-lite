@@ -36,9 +36,17 @@ export const LeverageSelector = memo(() => {
   }, [perpetualStaticInfo?.initialMarginRate]);
 
   const marks = useMemo(() => {
-    const newMarks: MarkI[] = [{ value: 1, label: '1x' }];
+    const newMarks: MarkI[] = [
+      {
+        value: 1,
+        // label: '1x'
+      },
+    ];
     multipliers.forEach((multiplier) =>
-      newMarks.push({ value: multiplier * maxLeverage, label: `${multiplier * maxLeverage}x` })
+      newMarks.push({
+        value: multiplier * maxLeverage,
+        // label: `${multiplier * maxLeverage}x`
+      })
     );
     return newMarks;
   }, [maxLeverage]);

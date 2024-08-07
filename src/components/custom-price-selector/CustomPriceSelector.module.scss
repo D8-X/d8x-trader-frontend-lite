@@ -4,8 +4,13 @@
   flex-direction: column;
   align-items: flex-start;
   gap: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 2;
-  margin-top: $d8x-spacing * 2;
+  margin-bottom: $d8x-spacing * 4;
+  transition: margin-bottom 0.4s ease-in;
+
+  &.hidden {
+    margin-bottom: 0;
+    max-height: 30px;
+  }
 }
 
 .labelHolder {
@@ -13,9 +18,24 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: $d8x-spacing * 3;
+  transition: margin-bottom 0.3s ease-in;
+
+  &.hidden {
+    margin-bottom: 0;
+  }
 }
 
 .customPriceInput {
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+
+  &.hidden {
+    opacity: 0;
+    cursor: pointer;
+    user-select: none;
+    pointer-events: none;
+  }
+
   :global(.MuiOutlinedInput-input) {
     padding: 2 * $d8x-spacing 10px;
   }
@@ -27,6 +47,14 @@
   justify-content: flex-start;
   gap: $d8x-spacing;
   flex-wrap: wrap;
+  transition: height 0.3s ease-in;
+  overflow-y: hidden;
+  height: 30px;
+  margin-bottom: 2 * $d8x-spacing;
+
+  &.hidden {
+    height: 0;
+  }
 
   :global(.MuiButtonGroup-root) {
     width: 100%;
@@ -37,8 +65,8 @@
   :global(.MuiButtonBase-root) {
     flex: 1;
     border-radius: 8px;
-    padding-top: 0.9 * $d8x-spacing;
-    padding-bottom: 0.4 * $d8x-spacing;
+    min-width: inherit;
+    padding: $d8x-spacing 0 0.5 * $d8x-spacing;
 
     &.selected {
       border: 1px solid transparent;
@@ -66,8 +94,8 @@
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
   .root {
-    margin-bottom: $d8x-spacing;
-    margin-top: $d8x-spacing;
+    margin-bottom: 0;
+    margin-top: 0;
   }
 
   .labelHolder {

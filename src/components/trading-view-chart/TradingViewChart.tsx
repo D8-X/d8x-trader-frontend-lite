@@ -1,23 +1,23 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { type CandlestickData, type ISeriesApi, type Time } from 'lightweight-charts';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 
-import { Box, CircularProgress } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 
 import { candlesAtom, candlesDataReadyAtom, newCandleAtom } from 'store/tv-chart.store';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import { ONE_MINUTE_SECONDS, ONE_MINUTE_TIME, TIMEZONE_OFFSET } from './constants';
 import { ChartBlock } from './elements/chart-block/ChartBlock';
 import { PeriodSelector } from './elements/period-selector/PeriodSelector';
-import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './TradingViewChart.module.scss';
 
 export const TradingViewChart = memo(() => {
-  const [candles] = useAtom(candlesAtom);
+  const candles = useAtomValue(candlesAtom);
+  const isCandleDataReady = useAtomValue(candlesDataReadyAtom);
   const [newCandle, setNewCandle] = useAtom(newCandleAtom);
-  const [isCandleDataReady] = useAtom(candlesDataReadyAtom);
 
   const seriesRef = useRef<ISeriesApi<'Candlestick'>>(null);
   const latestCandleTimeRef = useRef<Time>();
@@ -72,16 +72,16 @@ export const TradingViewChart = memo(() => {
   }, [candlesWithLocalTime]);
 
   return (
-    <Box className={styles.root} ref={ref}>
+    <div className={styles.root} ref={ref}>
       <ChartBlock width={width} candles={candlesWithLocalTime} seriesRef={seriesRef} numberDigits={precision} />
-      <Box className={styles.periodsHolder}>
+      <div className={styles.periodsHolder}>
         <PeriodSelector />
-      </Box>
+      </div>
       {!isCandleDataReady && (
-        <Box className={styles.loaderHolder}>
+        <div className={styles.loaderHolder}>
           <CircularProgress color="primary" />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 });

@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import { MenuItem, Typography } from '@mui/material';
 
+import { AssetTypeE } from 'types/enums';
 import { TemporaryAnyT } from 'types/types';
 import { getDynamicLogo } from 'utils/getDynamicLogo';
 
 import type { SelectItemI } from '../../../header-select/types';
-import { PerpetualWithPoolAndMarketI } from '../../types';
+import type { PerpetualWithPoolAndMarketI } from '../../types';
 
 import styles from './MarketOption.module.scss';
 
@@ -19,11 +20,14 @@ interface MarketOptionPropsI {
 }
 
 export const MarketOption = memo(({ option, isSelected, onClick }: MarketOptionPropsI) => {
+  const { t } = useTranslation();
+
   const IconComponent = useMemo(
     () => getDynamicLogo(option.item.baseCurrency.toLowerCase()) as TemporaryAnyT,
     [option.item.baseCurrency]
   );
-  const { t } = useTranslation();
+
+  const marketData = option.item.marketData;
 
   return (
     <MenuItem
@@ -47,24 +51,26 @@ export const MarketOption = memo(({ option, isSelected, onClick }: MarketOptionP
           </Typography>
         </div>
         <div className={styles.optionRightBlock}>
-          {option.item.marketData && option.item.marketData.isOpen ? (
+          {marketData && marketData.isOpen ? (
             <>
               <Typography variant="bodySmall" className={styles.value}>
-                {option.item.marketData.currentPx.toFixed(2)}
+                {marketData.currentPx.toFixed(2)}
               </Typography>
-              <Typography
-                variant="bodyTiny"
-                className={classnames(styles.priceChange, {
-                  [styles.buyPrice]: option.item.marketData.ret24hPerc > 0,
-                  [styles.sellPrice]: option.item.marketData.ret24hPerc < 0,
-                })}
-              >
-                {option.item.marketData.ret24hPerc.toFixed(2)}%
-              </Typography>
+              {marketData.assetType !== AssetTypeE.Prediction && (
+                <Typography
+                  variant="bodyTiny"
+                  className={classnames(styles.priceChange, {
+                    [styles.buyPrice]: marketData.ret24hPerc > 0,
+                    [styles.sellPrice]: marketData.ret24hPerc < 0,
+                  })}
+                >
+                  {marketData.ret24hPerc.toFixed(2)}%
+                </Typography>
+              )}
             </>
           ) : (
             <Typography variant="bodySmall" className={styles.status}>
-              {option.item.marketData ? t('common.select.market.closed') : ''}
+              {marketData ? t('common.select.market.closed') : ''}
             </Typography>
           )}
         </div>

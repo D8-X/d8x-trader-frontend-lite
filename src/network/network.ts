@@ -1,4 +1,4 @@
-import { floatToABK64x64, type TraderInterface } from '@d8x/perpetuals-sdk';
+import { SmartContractOrder, type TraderInterface } from '@d8x/perpetuals-sdk';
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
@@ -8,7 +8,6 @@ import type {
   BoostStationResponseI,
   BoostStationParamResponseI,
   CancelOrderResponseI,
-  CollateralChangeResponseI,
   EtherFiApyI,
   ExchangeInfoI,
   MaintenanceStatusI,
@@ -73,7 +72,7 @@ export async function getExchangeInfo(
   chainId: number,
   traderAPI: TraderInterface | null
 ): Promise<ValidatedResponseI<ExchangeInfoI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('exchangeInfo via SDK');
     const info = await traderAPI.exchangeInfo();
     return { type: 'exchange-info', msg: '', data: info };
@@ -88,13 +87,15 @@ export async function getPerpetualStaticInfo(
   traderAPI: TraderInterface | null,
   symbol: string
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('perpStaticInfo via SDK');
     const info = traderAPI.getPerpetualStaticInfo(symbol);
     return { type: 'perpetual-static-info', msg: '', data: info };
   } else {
+    // TODO: legacy, remove error when new BEs are live
+    throw new Error(`Unable to fetch perpetual static info for symbol ${symbol}`);
     // console.log('perpStaticInfo via BE');
-    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
+    // return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
   }
 }
 
@@ -111,7 +112,7 @@ export async function getPositionRisk(
     params.append('t', '' + timestamp);
   }
 
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log(`positionRisk via SDK`);
     const data = await traderAPI.positionRisk(traderAddr);
     return { type: 'position-risk', msg: '', data };
@@ -164,7 +165,7 @@ export function positionRiskOnCollateralAction(
   amount: number,
   positionRisk: MarginAccountI
 ): Promise<ValidatedResponseI<{ newPositionRisk: MarginAccountI; availableMargin: number }>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log('positionRiskOnCollateral via SDK');
     return traderAPI.positionRiskOnCollateralAction(amount, positionRisk).then((data) => {
       return traderAPI.getAvailableMargin(traderAddr, positionRisk.symbol).then((margin) => {
@@ -201,7 +202,7 @@ export async function getOpenOrders(
   traderAddr: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<PerpetualOpenOrdersI[]>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     // console.log(`openOrders via SDK`);
     const data = await traderAPI.openOrders(traderAddr);
     return { type: 'open-orders', msg: '', data };
@@ -234,7 +235,7 @@ export function getMaxOrderSizeForTrader(
   symbol: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<MaxOrderSizeResponseI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     return traderAPI
       .maxOrderSizeForTrader(traderAddr, symbol)
       .then(({ buy, sell }) => {
@@ -261,6 +262,17 @@ export function getMaxOrderSizeForTrader(
   }
 }
 
+// TODO: remove legacy interface
+interface OrderDigestLegacyI {
+  digests: string[];
+  orderIds: string[];
+  OrderBookAddr: string;
+  abi: string | string[];
+  SCOrders: SmartContractOrder[];
+  error?: string;
+  usage?: string;
+}
+
 // needs broker input
 export function orderDigest(
   chainId: number,
@@ -279,7 +291,21 @@ export function orderDigest(
       console.error({ data });
       throw new Error(data.statusText);
     }
-    return data.json();
+
+    // return data.json();
+    // TODO: remove legacy code below:
+    return data.json().then((resp: ValidatedResponseI<OrderDigestLegacyI | OrderDigestI>) => ({
+      ...resp,
+      data:
+        'SCOrders' in resp.data
+          ? {
+              ...resp.data,
+              brokerAddr: resp.data.SCOrders[0].brokerAddr,
+              brokerFeeTbps: Number(resp.data.SCOrders[0].brokerFeeTbps),
+              brokerSignatures: resp.data.SCOrders.map(({ brokerSignature }) => (brokerSignature ?? '0x').toString()),
+            }
+          : resp.data,
+    }));
   });
 }
 
@@ -289,7 +315,7 @@ export function getCancelOrder(
   symbol: string,
   orderId: string
 ): Promise<ValidatedResponseI<CancelOrderResponseI>> {
-  if (traderAPI && traderAPI.chainId === chainId) {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
     const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
     return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
       return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
@@ -323,48 +349,6 @@ export function getCancelOrder(
   }
 }
 
-export function getAddCollateral(
-  chainId: number,
-  traderAPI: TraderInterface | null,
-  symbol: string,
-  amount: number
-): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
-  if (traderAPI) {
-    const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
-    const proxyAddr = traderAPI.getProxyAddress();
-    const proxyABI = traderAPI.getProxyABI('deposit');
-    const amountHex = floatToABK64x64(amount);
-    return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-      return {
-        type: 'add-collateral',
-        msg: '',
-        data: {
-          perpId: perpId,
-          proxyAddr: proxyAddr,
-          abi: proxyABI,
-          amountHex: amountHex.toHexString(),
-          priceUpdate: {
-            updateData: submission.priceFeedVaas,
-            publishTimes: submission.timestamps,
-            updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
-          },
-        },
-      };
-    });
-  } else {
-    return fetch(
-      `${getApiUrlByChainId(chainId)}/add-collateral?symbol=${symbol}&amount=${amount}`,
-      getRequestOptions()
-    ).then((data) => {
-      if (!data.ok) {
-        console.error({ data });
-        throw new Error(data.statusText);
-      }
-      return data.json();
-    });
-  }
-}
-
 export function getAvailableMargin(
   chainId: number,
   traderAPI: TraderInterface | null,
@@ -386,46 +370,6 @@ export function getAvailableMargin(
       }
       return data.json();
     });
-  }
-}
-
-export async function getRemoveCollateral(
-  chainId: number,
-  traderAPI: TraderInterface | null,
-  symbol: string,
-  amount: number
-): Promise<ValidatedResponseI<CollateralChangeResponseI>> {
-  if (traderAPI) {
-    const perpId = traderAPI.getPerpetualStaticInfo(symbol).id;
-    const proxyAddr = traderAPI.getProxyAddress();
-    const proxyABI = traderAPI.getProxyABI('withdraw');
-    const amountHex = floatToABK64x64(amount);
-    const submission = await traderAPI.fetchLatestFeedPriceInfo(symbol);
-    return {
-      type: 'remove-collateral',
-      msg: '',
-      data: {
-        perpId: perpId,
-        proxyAddr: proxyAddr,
-        abi: proxyABI,
-        amountHex: amountHex.toString(),
-        priceUpdate: {
-          updateData: submission.priceFeedVaas,
-          publishTimes: submission.timestamps,
-          updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.priceFeedVaas.length,
-        },
-      },
-    };
-  } else {
-    const data = await fetch(
-      `${getApiUrlByChainId(chainId)}/remove-collateral?symbol=${symbol}&amount=${amount}`,
-      getRequestOptions()
-    );
-    if (!data.ok) {
-      console.error({ data });
-      throw new Error(data.statusText);
-    }
-    return data.json();
   }
 }
 

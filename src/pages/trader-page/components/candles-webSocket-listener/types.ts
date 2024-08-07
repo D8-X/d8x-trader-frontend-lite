@@ -1,15 +1,6 @@
 import { AssetTypeE } from 'types/enums';
 
-export enum MessageTypeE {
-  Connect = 'connect',
-  Error = 'error',
-  Subscribe = 'subscribe',
-  Update = 'update',
-}
-
-export enum MessageTopicE {
-  Markets = 'markets',
-}
+import { MessageTopicE, MessageTypeE } from './enums';
 
 export interface CommonWsMessageI {
   type: MessageTypeE;

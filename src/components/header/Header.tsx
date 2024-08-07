@@ -46,6 +46,7 @@ import { SettingsButton } from './elements/settings-button/SettingsButton';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 
 interface HeaderPropsI {
   /**
@@ -129,17 +130,28 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       const perpetuals: PerpetualDataI[] = [];
       data.pools.forEach((pool) => {
         perpetuals.push(
-          ...pool.perpetuals.map((perpetual) => ({
-            id: perpetual.id,
-            poolName: pool.poolSymbol,
-            baseCurrency: perpetual.baseCurrency,
-            quoteCurrency: perpetual.quoteCurrency,
-            symbol: createSymbol({
+          ...pool.perpetuals.map((perpetual) => {
+            const symbol = createSymbol({
               poolSymbol: pool.poolSymbol,
               baseCurrency: perpetual.baseCurrency,
               quoteCurrency: perpetual.quoteCurrency,
-            }),
-          }))
+            });
+            let isPredictionMarket = false;
+            try {
+              const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
+              isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarket(sInfo);
+            } catch {
+              // skip
+            }
+            return {
+              id: perpetual.id,
+              poolName: pool.poolSymbol,
+              baseCurrency: perpetual.baseCurrency,
+              quoteCurrency: perpetual.quoteCurrency,
+              symbol,
+              isPredictionMarket,
+            };
+          })
         );
       });
       setPerpetuals(perpetuals);
@@ -170,7 +182,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
   useEffect(() => {
-    if (traderAPI && traderAPI.chainId === getEnabledChainId(chainId)) {
+    if (traderAPI && Number(traderAPI.chainId) === getEnabledChainId(chainId)) {
       traderAPIRef.current = traderAPI;
     }
   }, [traderAPI, chainId]);
@@ -190,7 +202,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         try {
           let currentTraderAPI = null;
           const enabledChainId = getEnabledChainId(chainId);
-          if (retries > 0 && traderAPIRef.current && traderAPIRef.current?.chainId === enabledChainId) {
+          if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId) === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
           const data = await getExchangeInfo(enabledChainId, currentTraderAPI);
@@ -239,7 +251,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       enabled:
         !exchangeRequestRef.current &&
         address &&
-        traderAPI?.chainId === chainId &&
+        Number(traderAPI?.chainId) === chainId &&
         isEnabledChain(chainId) &&
         !!selectedPool?.settleTokenAddr &&
         isConnected &&

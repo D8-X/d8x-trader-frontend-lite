@@ -16,6 +16,7 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { calculatePrice } from 'helpers/calculatePrice';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { getTradingFee, orderDigest, positionRiskOnTrade } from 'network/network';
@@ -201,6 +202,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       collateralDeposit === null ||
       !settleTokenDecimals ||
       !chain ||
+      !traderAPI ||
       !isEnabledChain(chainId)
     ) {
       return;
@@ -231,13 +233,22 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       },
     });
 
+    let isPredictionMarket = false;
+    try {
+      isPredictionMarket = traderAPI.isPredictionMarket(selectedPosition.symbol);
+    } catch (error) {
+      // skip
+    }
+
     const parsedOrders: OrderI[] = [];
     if (takeProfitPrice != null && takeProfitPrice !== selectedPosition.takeProfit.fullValue) {
       parsedOrders.push({
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.Limit,
-        limitPrice: takeProfitPrice,
+        limitPrice: isPredictionMarket
+          ? calculatePrice(takeProfitPrice, selectedPosition.side === OrderSideE.Sell)
+          : takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -255,7 +266,9 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
         // Changed values comparing to main Order
         side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
         type: OpenOrderTypeE.StopMarket,
-        stopPrice: stopLossPrice,
+        stopPrice: isPredictionMarket
+          ? calculatePrice(stopLossPrice, selectedPosition.side === OrderSideE.Sell)
+          : stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -286,7 +299,13 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                  postOrder(tradingClient, signatures, data.data, false)
+                  postOrder(tradingClient, traderAPI, {
+                    traderAddr: address,
+                    orders: parsedOrders,
+                    signatures,
+                    brokerData: data.data,
+                    doChain: false,
+                  })
                     .then(({ hash }) => {
                       // success submitting order to the node
                       // order was sent

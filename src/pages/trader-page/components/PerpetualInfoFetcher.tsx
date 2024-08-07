@@ -29,7 +29,7 @@ export const PerpetualInfoFetcher = () => {
   }, [selectedPool, selectedPerpetual]);
 
   useEffect(() => {
-    if (requestSentRef.current) {
+    if (requestSentRef.current || !traderAPI) {
       return;
     }
 

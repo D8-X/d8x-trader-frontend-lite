@@ -91,7 +91,7 @@ export const EnterStrategy = ({ isLoading }: EnterStrategyPropsI) => {
       },
     ],
     query: {
-      enabled: address && traderAPI?.chainId === chainId && !!strategyPool?.settleTokenAddr && isConnected,
+      enabled: address && Number(traderAPI?.chainId) === chainId && !!strategyPool?.settleTokenAddr && isConnected,
     },
   });
 

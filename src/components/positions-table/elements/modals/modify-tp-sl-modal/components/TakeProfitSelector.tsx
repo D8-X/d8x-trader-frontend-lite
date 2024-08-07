@@ -1,3 +1,4 @@
+import { useAtomValue } from 'jotai';
 import {
   type ChangeEvent,
   type Dispatch,
@@ -14,12 +15,14 @@ import { Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
+import { traderAPIAtom } from 'store/pools.store';
 
 interface TakeProfitSelectorPropsI {
   setTakeProfitPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -29,6 +32,8 @@ interface TakeProfitSelectorPropsI {
 
 export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled }: TakeProfitSelectorPropsI) => {
   const { t } = useTranslation();
+
+  const traderAPI = useAtomValue(traderAPIAtom);
 
   const [takeProfit, setTakeProfit] = useState<TakeProfitE | null>(null);
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null | undefined>(undefined);
@@ -51,19 +56,39 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
     setTakeProfit(takeProfitValue);
   };
 
+  const [entryPrice, isPredictionMarket] = useMemo(() => {
+    if (!!traderAPI && !!position) {
+      try {
+        const predMarket = traderAPI?.isPredictionMarket(position.symbol);
+
+        return [
+          predMarket
+            ? calculateProbability(position.entryPrice, position.side === OrderSideE.Sell)
+            : position.entryPrice,
+          predMarket,
+        ];
+      } catch (error) {
+        // skip
+      }
+    }
+    return [position.entryPrice, false];
+  }, [position, traderAPI]);
+
   const minTakeProfitPrice = useMemo(() => {
-    if (position.entryPrice && position.side === OrderSideE.Buy) {
-      return position.entryPrice;
+    if (entryPrice && position.side === OrderSideE.Buy) {
+      return entryPrice;
+    } else if (entryPrice) {
+      return isPredictionMarket ? entryPrice : 0.000000001;
     }
     return 0.000000001;
-  }, [position]);
+  }, [position, entryPrice, isPredictionMarket]);
 
   const maxTakeProfitPrice = useMemo(() => {
-    if (position.entryPrice && position.side === OrderSideE.Sell) {
-      return position.entryPrice;
+    if (entryPrice && position.side === OrderSideE.Sell) {
+      return isPredictionMarket ? undefined : entryPrice;
     }
     return undefined;
-  }, [position]);
+  }, [position, entryPrice, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(position.entryPrice), [position.entryPrice]);
 
@@ -98,14 +123,14 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
   useEffect(() => {
     if (takeProfit && takeProfit !== TakeProfitE.None) {
       let limitPrice;
-      if (position.side === OrderSideE.Buy) {
-        limitPrice = position.entryPrice * (1 + mapTakeProfitToNumber(takeProfit) / position.leverage);
+      if (position.side === OrderSideE.Buy || (position.side === OrderSideE.Sell && isPredictionMarket)) {
+        limitPrice = entryPrice * (1 + mapTakeProfitToNumber(takeProfit) / position.leverage);
       } else {
-        limitPrice = position.entryPrice * (1 - mapTakeProfitToNumber(takeProfit) / position.leverage);
+        limitPrice = entryPrice * (1 - mapTakeProfitToNumber(takeProfit) / position.leverage);
       }
       setTakeProfitInputPrice(Math.max(0.000000001, +limitPrice.toFixed(valueToFractionDigits(+limitPrice))));
     }
-  }, [takeProfit, position]);
+  }, [takeProfit, position, entryPrice, isPredictionMarket]);
 
   useEffect(() => {
     setTakeProfitPrice(takeProfitInputPrice);

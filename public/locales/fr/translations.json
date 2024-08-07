@@ -225,6 +225,11 @@
           "long": "Long",
           "short": "Short"
         },
+        "prediction": {
+          "yes": "Oui",
+          "no": "Non",
+          "bet": "Parie"
+        },
         "order-type": {
           "market": "Marché",
           "limit": "Limite",
@@ -854,6 +859,7 @@
         "crypto": "Crypto",
         "fx": "Devises",
         "all": "Tout",
+        "prediction": "prédiction",
         "commodity": "Matières premières",
         "closed": "Fermé"
       },

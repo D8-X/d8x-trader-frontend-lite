@@ -128,7 +128,7 @@ export const PositionsTable = () => {
 
   const refreshPositions = useCallback(async () => {
     if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== traderAPI.chainId) {
+      if (isAPIBusyRef.current || chainId !== Number(traderAPI.chainId)) {
         return;
       }
 

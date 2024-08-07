@@ -1,7 +1,9 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
 import { inputValueAtom, orderSizeAtom } from 'components/order-block/elements/order-size/store';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { createSymbol } from 'helpers/createSymbol';
 import { ExpiryE, OrderBlockE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import { OrderInfoI } from 'types/types';
@@ -10,11 +12,12 @@ import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 
 import {
+  addr0FeeAtom,
   collateralDepositAtom,
   newPositionRiskAtom,
+  perpetualStaticInfoAtom,
   perpetualStatisticsAtom,
   poolFeeAtom,
-  addr0FeeAtom,
 } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
@@ -40,25 +43,46 @@ export const orderTypeAtom = atom(
     return get(orderTypeValueAtom);
   },
   (get, set, newType: OrderTypeE) => {
+    const orderBlock = get(orderBlockAtom);
+    const perpetualStatistics = get(perpetualStatisticsAtom);
+    const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+
+    let isPredictionMarket = false;
+    try {
+      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+    } catch {
+      // skip
+    }
+
     if (newType === OrderTypeE.Limit) {
-      const perpetualStatistics = get(perpetualStatisticsAtom);
-      const orderBlock = get(orderBlockAtom);
       let initialLimit: number;
       if (perpetualStatistics?.midPrice) {
         const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.midPrice)));
         initialLimit = Math.round(perpetualStatistics.midPrice * (1 + 0.01 * direction) * step) / step;
+        if (isPredictionMarket) {
+          initialLimit =
+            Math.round(
+              calculateProbability(perpetualStatistics.midPrice, orderBlock === OrderBlockE.Short) *
+                (1 + 0.01 * direction) *
+                step
+            ) / step;
+        }
       } else {
         initialLimit = -1;
       }
       set(limitPriceValueAtom, initialLimit);
       set(triggerPriceValueAtom, -1);
     } else if (newType === OrderTypeE.Stop) {
-      const perpetualStatistics = get(perpetualStatisticsAtom);
       let initialTrigger: number;
       if (perpetualStatistics?.markPrice) {
         const step = Math.max(1, 10 ** Math.ceil(2.5 - Math.log10(perpetualStatistics?.markPrice)));
         initialTrigger = Math.round(perpetualStatistics.markPrice * step) / step;
+        if (isPredictionMarket) {
+          initialTrigger =
+            Math.round(calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * step) /
+            step;
+        }
       } else {
         initialTrigger = -1;
       }
@@ -108,6 +132,15 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   if (!perpetualStatistics) {
     return null;
   }
+
+  const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+  let isPredictionMarket = false;
+  try {
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+  } catch {
+    // skip
+  }
+
   const poolFee = get(poolFeeAtom);
   const addr0Fee = get(addr0FeeAtom);
 
@@ -119,16 +152,16 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const orderType = get(orderTypeAtom);
   const leverageSaved = get(leverageAtom);
   const size = get(orderSizeAtom);
-  const limitPrice = get(limitPriceAtom);
-  const triggerPrice = get(triggerPriceAtom);
+  const limitPrice = get(limitPriceAtom); // in probability if prediction market
+  const triggerPrice = get(triggerPriceAtom); // in probability if prediction market
   const keepPositionLeverage = get(keepPositionLeverageAtom);
   const reduceOnly = get(reduceOnlyAtom);
   const slippage = get(slippageSliderAtom);
   const expireDays = get(expireDaysAtom);
   const stopLoss = get(stopLossAtom);
-  const stopLossCustomPrice = get(stopLossPriceAtom);
+  const stopLossCustomPrice = get(stopLossPriceAtom); // in probability if prediction market
   const takeProfit = get(takeProfitAtom);
-  const takeProfitCustomPrice = get(takeProfitPriceAtom);
+  const takeProfitCustomPrice = get(takeProfitPriceAtom); // in probability if prediction market
 
   const symbol = createSymbol({
     baseCurrency: perpetualStatistics.baseCurrency,
@@ -166,20 +199,27 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     }
   }
 
-  let maxMinEntryPrice = null;
+  let maxMinEntryPrice = null; // in probability if prediction market
   if (orderType === OrderTypeE.Market) {
     maxMinEntryPrice =
       perpetualStatistics.indexPrice *
       (1 + mapSlippageToNumber(slippage) * (OrderBlockE.Short === orderBlock ? -1 : 1));
+    maxMinEntryPrice = isPredictionMarket
+      ? calculateProbability(maxMinEntryPrice, orderBlock === OrderBlockE.Short)
+      : maxMinEntryPrice;
   }
-
-  let stopLossPrice = null;
+  let stopLossPrice = null; // in probability if prediction market
   if (stopLoss !== StopLossE.None && stopLoss !== null) {
     const stopLossMultiplier =
-      1 - ((orderBlock === OrderBlockE.Long ? 1 : -1) * Math.abs(mapStopLossToNumber(stopLoss))) / leverage;
+      1 -
+      ((orderBlock === OrderBlockE.Long || isPredictionMarket ? 1 : -1) * Math.abs(mapStopLossToNumber(stopLoss))) /
+        leverage;
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       stopLossPrice = perpetualStatistics.markPrice * stopLossMultiplier;
+      stopLossPrice = isPredictionMarket
+        ? calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * stopLossMultiplier
+        : stopLossPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       stopLossPrice = limitPrice * stopLossMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
@@ -193,14 +233,18 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     stopLossPrice = stopLossCustomPrice;
   }
 
-  let takeProfitPrice = null;
+  let takeProfitPrice = null; // in probability if prediction market
   if (takeProfit !== TakeProfitE.None && takeProfit !== null) {
     const takeProfitMultiplier =
       // (1 + mapTakeProfitToNumber(takeProfit) * (orderBlock === OrderBlockE.Long ? 1 : -1)) / leverage;
-      1 + ((orderBlock === OrderBlockE.Long ? 1 : -1) * mapTakeProfitToNumber(takeProfit)) / leverage;
+      1 +
+      ((orderBlock === OrderBlockE.Long || isPredictionMarket ? 1 : -1) * mapTakeProfitToNumber(takeProfit)) / leverage;
 
     if (orderType === OrderTypeE.Market && maxMinEntryPrice) {
       takeProfitPrice = perpetualStatistics.markPrice * takeProfitMultiplier;
+      takeProfitPrice = isPredictionMarket
+        ? calculateProbability(perpetualStatistics.markPrice, orderBlock === OrderBlockE.Short) * takeProfitMultiplier
+        : takeProfitPrice;
     } else if (orderType === OrderTypeE.Limit && limitPrice) {
       takeProfitPrice = limitPrice * takeProfitMultiplier;
     } else if (orderType === OrderTypeE.Stop) {
@@ -227,16 +271,17 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
     tradingFee,
     baseFee,
     collateral,
-    maxMinEntryPrice,
+    maxMinEntryPrice, // in probability if prediction market
     keepPositionLeverage,
     reduceOnly: orderType !== OrderTypeE.Market ? reduceOnly : null,
     expireDays: orderType !== OrderTypeE.Market ? expireDays : null,
-    limitPrice: orderType !== OrderTypeE.Market ? limitPrice : null,
-    triggerPrice: orderType === OrderTypeE.Stop ? triggerPrice : null,
+    limitPrice: orderType !== OrderTypeE.Market ? limitPrice : null, // in probability if prediction market
+    triggerPrice: orderType === OrderTypeE.Stop ? triggerPrice : null, // in probability if prediction market
     stopLoss,
-    stopLossPrice,
+    stopLossPrice, // in probability if prediction market
     takeProfit,
-    takeProfitPrice,
+    takeProfitPrice, // in probability if prediction market
+    isPredictionMarket,
   };
 });
 

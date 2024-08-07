@@ -225,6 +225,11 @@
           "long": "Compra",
           "short": "Venta"
         },
+        "prediction": {
+          "yes": "Si",
+          "no": "No",
+          "bet": "Apuesta"
+        },
         "order-type": {
           "market": "Mercado",
           "limit": "Límite",
@@ -854,6 +859,7 @@
         "crypto": "Cripto",
         "fx": "FX",
         "all": "Todos",
+        "prediction": "Predicción",
         "commodity": "Productos Basicos",
         "closed": "Cerrado"
       },

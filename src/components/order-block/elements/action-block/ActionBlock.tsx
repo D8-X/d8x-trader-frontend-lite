@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { calculatePrice } from 'helpers/calculatePrice';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
 import { getPerpetualPrice, orderDigest, positionRiskOnTrade } from 'network/network';
@@ -33,6 +36,7 @@ import {
   positionsAtom,
   proxyAddrAtom,
   selectedPerpetualAtom,
+  selectedPerpetualDataAtom,
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
@@ -50,14 +54,29 @@ import styles from './ActionBlock.module.scss';
 
 function createMainOrder(orderInfo: OrderInfoI) {
   let orderType = orderInfo.orderType.toUpperCase();
+  const isPredictionMarket = orderInfo.isPredictionMarket;
+
   if (orderInfo.orderType === OrderTypeE.Stop) {
     orderType = orderInfo.limitPrice !== null && orderInfo.limitPrice > -1 ? 'STOP_LIMIT' : 'STOP_MARKET';
   }
 
-  let limitPrice = orderInfo.limitPrice;
+  const isNoVote = orderInfo.orderBlock === OrderBlockE.Short;
+  let limitPrice =
+    isPredictionMarket && orderInfo.limitPrice !== null
+      ? calculatePrice(orderInfo.limitPrice, isNoVote)
+      : orderInfo.limitPrice;
+
   if (orderInfo.orderType === OrderTypeE.Market) {
-    limitPrice = orderInfo.maxMinEntryPrice;
+    limitPrice =
+      isPredictionMarket && orderInfo.maxMinEntryPrice !== null
+        ? calculatePrice(orderInfo.maxMinEntryPrice, isNoVote)
+        : orderInfo.maxMinEntryPrice;
   }
+
+  const stopPrice =
+    isPredictionMarket && orderInfo.triggerPrice !== null
+      ? calculatePrice(orderInfo.triggerPrice, isNoVote)
+      : orderInfo.triggerPrice;
 
   let deadlineMultiplier = 200; // By default, is it set to 200 hours
   if (orderInfo.orderType !== OrderTypeE.Market && orderInfo.expireDays) {
@@ -69,7 +88,7 @@ function createMainOrder(orderInfo: OrderInfoI) {
     side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell,
     type: orderType,
     limitPrice: limitPrice !== null && limitPrice > -1 ? limitPrice : undefined,
-    stopPrice: orderInfo.triggerPrice !== null ? orderInfo.triggerPrice : undefined,
+    stopPrice: stopPrice !== null ? stopPrice : undefined,
     quantity: orderInfo.size,
     leverage: orderInfo.leverage,
     reduceOnly: orderInfo.reduceOnly !== null ? orderInfo.reduceOnly : undefined,
@@ -82,6 +101,11 @@ function createMainOrder(orderInfo: OrderInfoI) {
 const orderBlockMap: Record<OrderBlockE, string> = {
   [OrderBlockE.Long]: 'pages.trade.action-block.order-action.long',
   [OrderBlockE.Short]: 'pages.trade.action-block.order-action.short',
+};
+
+const predictionOrderBlockMap: Record<OrderBlockE, string> = {
+  [OrderBlockE.Long]: 'pages.trade.order-block.prediction.yes',
+  [OrderBlockE.Short]: 'pages.trade.order-block.prediction.no',
 };
 
 const orderTypeMap: Record<OrderTypeE, string> = {
@@ -147,6 +171,7 @@ export const ActionBlock = memo(() => {
   const [newPositionRisk, setNewPositionRisk] = useAtom(newPositionRiskAtom);
   const [perpetualPrice, setPerpetualPrice] = useAtom(perpetualPriceAtom);
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
+  const selectedPerpetualData = useAtomValue(selectedPerpetualDataAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -158,6 +183,8 @@ export const ActionBlock = memo(() => {
   const validityCheckRef = useRef(false);
 
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
+
+  const isPredictionMarket = selectedPerpetualData?.isPredictionMarket ?? false;
 
   const openReviewOrderModal = async () => {
     if (!orderInfo || !address || !traderAPI || !poolFee || !isEnabledChain(chainId)) {
@@ -195,7 +222,11 @@ export const ActionBlock = memo(() => {
 
     const getPerpetualPricePromise = getPerpetualPrice(mainOrder.quantity, mainOrder.symbol, traderAPI)
       .then((data) => {
-        setPerpetualPrice(data.data.price);
+        const perpPrice =
+          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
+            ? calculateProbability(data.data.price, orderInfo.orderBlock === OrderBlockE.Short)
+            : data.data.price;
+        setPerpetualPrice(perpPrice);
       })
       .catch(console.error);
 
@@ -263,9 +294,16 @@ export const ActionBlock = memo(() => {
     } else if (validityCheckButtonType === ValidityCheckButtonE.NoTriggerPrice) {
       return `${t('pages.trade.action-block.validity.button-no-trigger')}`;
     }
-    return `${t(orderBlockMap[orderInfo?.orderBlock ?? OrderBlockE.Long])} ${` `} 
-            ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}`;
-  }, [t, validityCheckButtonType, orderInfo?.orderBlock, orderInfo?.orderType]);
+
+    const orderBlock = orderInfo?.orderBlock ?? OrderBlockE.Long;
+    if (isPredictionMarket) {
+      return `
+        ${t('pages.trade.order-block.prediction.bet')}
+        ${t(predictionOrderBlockMap[orderBlock])}
+      `;
+    }
+    return `${t(orderBlockMap[orderBlock])} ${t(orderTypeMap[orderInfo?.orderType ?? OrderTypeE.Market])}`;
+  }, [t, validityCheckButtonType, orderInfo?.orderBlock, orderInfo?.orderType, isPredictionMarket]);
 
   const parsedOrders = useMemo(() => {
     if (requestSentRef.current || requestSent) {
@@ -281,7 +319,6 @@ export const ActionBlock = memo(() => {
     }
 
     const orders: OrderI[] = [];
-
     orders.push(createMainOrder(orderInfo));
 
     if (orderInfo.stopLoss !== StopLossE.None && orderInfo.stopLossPrice) {
@@ -289,7 +326,9 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: 'STOP_MARKET',
-        stopPrice: orderInfo.stopLossPrice,
+        stopPrice: orderInfo.isPredictionMarket
+          ? calculatePrice(orderInfo.stopLossPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : orderInfo.stopLossPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -307,7 +346,9 @@ export const ActionBlock = memo(() => {
         // Changed values comparing to main Order
         side: orderInfo.orderBlock === OrderBlockE.Long ? OrderSideE.Sell : OrderSideE.Buy,
         type: OrderTypeE.Limit.toUpperCase(),
-        limitPrice: orderInfo.takeProfitPrice,
+        limitPrice: orderInfo.isPredictionMarket
+          ? calculatePrice(orderInfo.takeProfitPrice, orderInfo.orderBlock === OrderBlockE.Short)
+          : orderInfo.takeProfitPrice,
         deadline: Math.floor(Date.now() / 1000 + 60 * 60 * SECONDARY_DEADLINE_MULTIPLIER),
 
         // Same as for main Order
@@ -382,6 +423,7 @@ export const ActionBlock = memo(() => {
       !selectedPool ||
       !proxyAddr ||
       !poolTokenDecimals ||
+      !traderAPI ||
       !isEnabledChain(chainId)
     ) {
       return;
@@ -406,7 +448,13 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(tradingClient, signatures, data.data)
+              postOrder(tradingClient, traderAPI, {
+                traderAddr: address,
+                orders: parsedOrders,
+                signatures,
+                brokerData: data.data,
+                doChain: true,
+              })
                 .then((tx) => {
                   setShowReviewOrderModal(false);
                   // order was sent
@@ -458,10 +506,13 @@ export const ActionBlock = memo(() => {
       } else if (orderInfo.orderType === OrderTypeE.Stop && orderInfo.triggerPrice) {
         price = orderInfo.triggerPrice;
       }
+      if (perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
+        price = calculateProbability(price, orderInfo.orderBlock === OrderBlockE.Short);
+      }
       return formatToCurrency(price, orderInfo.quoteCurrency);
     }
     return '-';
-  }, [orderInfo]);
+  }, [orderInfo, perpetualStaticInfo]);
 
   const isMarketClosed = useDebounce(
     useMemo(() => {
@@ -520,10 +571,10 @@ export const ActionBlock = memo(() => {
     if (
       orderInfo.orderType === OrderTypeE.Market &&
       orderInfo.maxMinEntryPrice !== null &&
-      perpetualPrice !== undefined
+      perpetualPrice !== undefined // perpetualPrice is already in prob if prediction market (getPerpetualPricePromise)
     ) {
       let isSlippageTooLarge;
-      if (orderInfo.orderBlock === OrderBlockE.Long) {
+      if (isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long) {
         isSlippageTooLarge = orderInfo.maxMinEntryPrice < perpetualPrice;
       } else {
         isSlippageTooLarge = orderInfo.maxMinEntryPrice > perpetualPrice;
@@ -540,13 +591,14 @@ export const ActionBlock = memo(() => {
     orderInfo?.orderType,
     orderInfo?.takeProfitPrice,
     orderInfo?.maxMinEntryPrice,
-    perpetualPrice,
-    perpetualStaticInfo?.lotSizeBC,
+    perpetualStaticInfo,
     poolTokenBalance,
     isMarketClosed,
     collateralDeposit,
     positionToModify,
     showReviewOrderModal,
+    isPredictionMarket,
+    perpetualPrice,
   ]);
 
   const validityCheckText = useMemo(() => {
@@ -599,6 +651,11 @@ export const ActionBlock = memo(() => {
     }
   }, [orderInfo]);
 
+  const liqPrice =
+    newPositionRisk?.liquidationPrice?.[0] && isPredictionMarket
+      ? calculateProbability(newPositionRisk.liquidationPrice[0], orderInfo?.orderBlock === OrderBlockE.Short)
+      : newPositionRisk?.liquidationPrice?.[0] ?? 0;
+
   return (
     <div className={styles.root}>
       {[ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
@@ -624,7 +681,9 @@ export const ActionBlock = memo(() => {
               leftSide={
                 <Typography variant="bodyLargePopup" className={styles.semibold}>
                   {orderInfo.leverage > 0 ? `${formatNumber(orderInfo.leverage)}x` : ''}{' '}
-                  {t(orderTypeMap[orderInfo.orderType])} {t(orderBlockMap[orderInfo.orderBlock])}
+                  {!isPredictionMarket && t(orderTypeMap[orderInfo.orderType])}{' '}
+                  {t(orderBlockMap[isPredictionMarket ? OrderBlockE.Long : orderInfo.orderBlock])}{' '}
+                  {isPredictionMarket && t(predictionOrderBlockMap[orderInfo.orderBlock])}
                 </Typography>
               }
               rightSide={
@@ -682,7 +741,7 @@ export const ActionBlock = memo(() => {
                 <SidesRow
                   leftSide={
                     <Typography variant="bodySmallPopup" className={styles.left}>
-                      {orderInfo.orderBlock === OrderBlockE.Long
+                      {isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long
                         ? t('pages.trade.action-block.review.max')
                         : t('pages.trade.action-block.review.min')}
                     </Typography>
@@ -822,11 +881,8 @@ export const ActionBlock = memo(() => {
                   </Typography>
                 }
                 rightSide={
-                  isOrderValid &&
-                  newPositionRisk &&
-                  newPositionRisk.liquidationPrice[0] > 0 &&
-                  newPositionRisk.liquidationPrice[0] < Infinity
-                    ? formatToCurrency(newPositionRisk.liquidationPrice[0] ?? 0, orderInfo.quoteCurrency)
+                  isOrderValid && newPositionRisk && liqPrice > 0 && liqPrice < Infinity
+                    ? formatToCurrency(liqPrice ?? 0, orderInfo.quoteCurrency)
                     : '-'
                 }
                 rightSideStyles={styles.rightSide}

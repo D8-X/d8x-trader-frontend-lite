@@ -60,7 +60,7 @@ export const OneClickTradingModal = () => {
   const handleCreateRef = useRef(false);
 
   useEffect(() => {
-    if (!address || !traderAPI || !publicClient || traderAPI.chainId !== publicClient.chain.id) {
+    if (!address || !traderAPI || !publicClient || Number(traderAPI.chainId) !== publicClient.chain.id) {
       return;
     }
 

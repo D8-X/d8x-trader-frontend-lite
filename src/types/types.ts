@@ -1,4 +1,4 @@
-import { TraderInterface, type SmartContractOrder } from '@d8x/perpetuals-sdk';
+import { PerpetualStaticInfo, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +48,7 @@ export interface PerpetualDataI {
   baseCurrency: string;
   quoteCurrency: string;
   symbol: string;
+  isPredictionMarket: boolean;
 }
 
 export interface SymbolDataI {
@@ -126,16 +127,7 @@ export interface GeoLocationDataI {
   countryCode: string;
 }
 
-export interface PerpetualStaticInfoI extends ErrorResponseI {
-  id: number;
-  limitOrderBookAddr: string;
-  initialMarginRate: number;
-  maintenanceMarginRate: number;
-  S2Symbol: string;
-  S3Symbol: string;
-  lotSizeBC: number;
-  referralRebate: number;
-}
+export interface PerpetualStaticInfoI extends ErrorResponseI, PerpetualStaticInfo {}
 
 export interface PerpetualPriceI {
   price: number;
@@ -205,6 +197,7 @@ export interface OrderInfoI {
   stopLossPrice: number | null;
   takeProfit: TakeProfitE | null;
   takeProfitPrice: number | null;
+  isPredictionMarket: boolean;
 }
 
 export interface OrderI {
@@ -234,8 +227,9 @@ export interface OrderDigestI {
   digests: string[];
   orderIds: string[];
   OrderBookAddr: string;
-  abi: string | string[];
-  SCOrders: SmartContractOrder[];
+  brokerAddr: string;
+  brokerFeeTbps: number;
+  brokerSignatures: string[];
   error?: string;
   usage?: string;
 }
@@ -247,12 +241,10 @@ export interface CancelOrderResponseI {
   priceUpdate: PriceUpdatesI;
 }
 
-export interface CollateralChangeResponseI {
-  perpId: number;
-  proxyAddr: string;
-  abi: string;
-  amountHex: string;
-  priceUpdate: PriceUpdatesI;
+export interface CollateralChangePropsI {
+  amount: number;
+  traderAddr: Address;
+  symbol: string;
 }
 
 export interface PriceUpdatesI {

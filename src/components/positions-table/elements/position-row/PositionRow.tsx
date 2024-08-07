@@ -1,12 +1,14 @@
 import { useAtomValue } from 'jotai';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DeleteForeverOutlined, ModeEditOutlineOutlined, ShareOutlined } from '@mui/icons-material';
 import { IconButton, TableCell, TableRow, Typography } from '@mui/material';
 
+import { calculateProbability } from 'helpers/calculateProbability';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { collateralToSettleConversionAtom } from 'store/pools.store';
+import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -33,9 +35,27 @@ export const PositionRow = memo(
     const { t } = useTranslation();
 
     const c2s = useAtomValue(collateralToSettleConversionAtom);
+    const traderAPI = useAtomValue(traderAPIAtom);
 
     const parsedSymbol = parseSymbol(position.symbol);
     const collToSettleInfo = parsedSymbol?.poolSymbol ? c2s.get(parsedSymbol.poolSymbol) : undefined;
+
+    const [displayEntryPrice, displayLiqPrice, displayCcy] = useMemo(() => {
+      if (!!traderAPI && !!parsedSymbol) {
+        try {
+          return traderAPI?.isPredictionMarket(position.symbol)
+            ? [
+                calculateProbability(position.entryPrice, position.side === OrderSideE.Sell),
+                calculateProbability(position.liqPrice, position.side === OrderSideE.Sell),
+                parsedSymbol.quoteCurrency,
+              ]
+            : [position.entryPrice, position.liqPrice, parsedSymbol.quoteCurrency];
+        } catch (error) {
+          // skip
+        }
+      }
+      return [position.entryPrice, position.liqPrice, parsedSymbol?.quoteCurrency];
+    }, [position, parsedSymbol, traderAPI]);
 
     return (
       <TableRow key={position.symbol}>
@@ -57,15 +77,13 @@ export const PositionRow = memo(
           </Typography>
         </TableCell>
         <TableCell align="right">
-          <Typography variant="cellSmall">
-            {formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency, true)}
-          </Typography>
+          <Typography variant="cellSmall">{formatToCurrency(displayEntryPrice, displayCcy, true)}</Typography>
         </TableCell>
         <TableCell align="right">
           <Typography variant="cellSmall">
             {position.liqPrice < 0
               ? `- ${parsedSymbol?.quoteCurrency}`
-              : formatToCurrency(position.liqPrice, parsedSymbol?.quoteCurrency, true)}
+              : formatToCurrency(displayLiqPrice, displayCcy, true)}
           </Typography>
         </TableCell>
         <TableCell align="right">

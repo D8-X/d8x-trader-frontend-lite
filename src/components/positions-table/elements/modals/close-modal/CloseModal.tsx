@@ -149,6 +149,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       !tradingClient ||
       !settleTokenDecimals ||
       !chain ||
+      !traderAPI ||
       !isEnabledChain(chain?.id)
     ) {
       return;
@@ -180,7 +181,12 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
             decimals: settleTokenDecimals,
           }).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(tradingClient, signatures, data.data)
+            postOrder(tradingClient, traderAPI, {
+              traderAddr: address,
+              orders: [closeOrder],
+              signatures,
+              brokerData: data.data,
+            })
               .then(({ hash }) => {
                 setTxHash(hash);
                 setSymbolForTx(selectedPosition.symbol);

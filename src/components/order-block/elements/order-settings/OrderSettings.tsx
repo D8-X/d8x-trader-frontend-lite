@@ -1,3 +1,4 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue } from 'jotai';
 import { type ChangeEvent, memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,15 +21,21 @@ import SettingsIcon from 'assets/icons/settingsIcon.svg?react';
 import { Dialog } from 'components/dialog/Dialog';
 import { ExpirySelector } from 'components/order-block/elements/expiry-selector/ExpirySelector';
 import { Separator } from 'components/separator/Separator';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { createSymbol } from 'helpers/createSymbol';
 import {
   orderBlockAtom,
-  orderTypeAtom,
   orderInfoAtom,
+  orderTypeAtom,
   reduceOnlyAtom,
   slippageSliderAtom,
 } from 'store/order-block.store';
-import { perpetualStatisticsAtom, positionsAtom, selectedPerpetualAtom } from 'store/pools.store';
+import {
+  perpetualStaticInfoAtom,
+  perpetualStatisticsAtom,
+  positionsAtom,
+  selectedPerpetualAtom,
+} from 'store/pools.store';
 import { OrderBlockE, OrderSideE, OrderTypeE } from 'types/enums';
 import { type MarkI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -65,6 +72,7 @@ export const OrderSettings = memo(() => {
   const orderType = useAtomValue(orderTypeAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const [slippage, setSlippage] = useAtom(slippageSliderAtom);
   // const [keepPositionLeverage, setKeepPositionLeverage] = useAtom(keepPositionLeverageAtom);
   const [reduceOnly, setReduceOnly] = useAtom(reduceOnlyAtom);
@@ -118,6 +126,23 @@ export const OrderSettings = memo(() => {
     }
     return 0;
   }, [orderBlock, updatedSlippage, perpetualStatistics]);
+
+  const [formattedEntryPrice, isPredictionMarket] = useMemo(() => {
+    if (selectedPerpetual && selectedPerpetual.id === perpetualStaticInfo?.id) {
+      if (TraderInterface.isPredictionMarket(perpetualStaticInfo)) {
+        return [
+          formatToCurrency(
+            calculateProbability(entryPrice, orderBlock === OrderBlockE.Short),
+            selectedPerpetual.quoteCurrency
+          ),
+          true,
+        ];
+      } else {
+        return [formatToCurrency(entryPrice, selectedPerpetual.quoteCurrency), false];
+      }
+    }
+    return [null, false];
+  }, [entryPrice, selectedPerpetual, perpetualStaticInfo, orderBlock]);
 
   const isReduceOnlyEnabled = useMemo(() => {
     if (perpetualStatistics && orderInfo) {
@@ -232,10 +257,10 @@ export const OrderSettings = memo(() => {
             />
           </Box>
           <Typography variant="body2" className={styles.maxEntryPrice}>
-            {orderBlock === OrderBlockE.Long
+            {isPredictionMarket || orderBlock === OrderBlockE.Long
               ? t('pages.trade.order-block.slippage.max')
               : t('pages.trade.order-block.slippage.min')}{' '}
-            {formatToCurrency(entryPrice, selectedPerpetual?.quoteCurrency)}
+            {formattedEntryPrice}
           </Typography>
         </DialogContent>
         <Separator />

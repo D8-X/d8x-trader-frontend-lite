@@ -1,5 +1,6 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import classNames from 'classnames';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +11,10 @@ import ViewChartIcon from 'assets/icons/viewChart.svg?react';
 import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
-import { perpetualStatisticsAtom, showChartForMobileAtom } from 'store/pools.store';
+import { calculateProbability } from 'helpers/calculateProbability';
+import { orderBlockAtom } from 'store/order-block.store';
+import { perpetualStaticInfoAtom, perpetualStatisticsAtom, showChartForMobileAtom } from 'store/pools.store';
+import { OrderBlockE } from 'types/enums';
 import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -25,7 +29,10 @@ export const PerpetualStats = () => {
   const isMiddleScreen = useMediaQuery(theme.breakpoints.down('md'));
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [perpetualStatistics] = useAtom(perpetualStatisticsAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
+  const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+
   const [showChartForMobile, setShowChartForMobile] = useAtom(showChartForMobileAtom);
 
   let midPriceClass = styles.statMainValuePositive;
@@ -34,21 +41,33 @@ export const PerpetualStats = () => {
       perpetualStatistics?.midPriceDiff >= 0 ? styles.statMainValuePositive : styles.statMainValueNegative;
   }
 
+  const [[displayMidPrice, displayIndexPrice, displayMarkPrice], displayCcy] = useMemo(() => {
+    if (!!perpetualStatistics && !!perpetualStaticInfo) {
+      let isPredictionMarket = false;
+      try {
+        isPredictionMarket = TraderInterface.isPredictionMarket(perpetualStaticInfo);
+      } catch {
+        // skip
+      }
+      const px = [perpetualStatistics.midPrice, perpetualStatistics.indexPrice, perpetualStatistics.markPrice];
+      return isPredictionMarket
+        ? [px.map((x) => calculateProbability(x, orderBlock === OrderBlockE.Short)), perpetualStatistics.quoteCurrency]
+        : [px, perpetualStatistics.quoteCurrency];
+    }
+    return [[undefined, undefined, undefined], undefined];
+  }, [perpetualStatistics, perpetualStaticInfo, orderBlock]);
+
   const midPrice: StatDataI = useMemo(
     () => ({
       id: 'midPrice',
       label: t('pages.trade.stats.mid-price'),
       tooltip: t('pages.trade.stats.mid-price-tooltip'),
-      value: perpetualStatistics
-        ? formatToCurrency(perpetualStatistics.midPrice, perpetualStatistics.quoteCurrency, true)
-        : '--',
-      numberOnly: perpetualStatistics
-        ? formatToCurrency(perpetualStatistics.midPrice, '', true, undefined, true)
-        : '--',
+      value: displayCcy ? formatToCurrency(displayMidPrice, displayCcy, true) : '--',
+      numberOnly: displayCcy ? formatToCurrency(displayMidPrice, '', true, undefined, true) : '--',
       className: midPriceClass, // Add the custom class here
       // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
     }),
-    [midPriceClass, t, perpetualStatistics]
+    [midPriceClass, t, displayMidPrice, displayCcy]
   );
 
   const items: StatDataI[] = useMemo(
@@ -57,24 +76,16 @@ export const PerpetualStats = () => {
         id: 'markPrice',
         label: t('pages.trade.stats.mark-price'),
         tooltip: t('pages.trade.stats.mark-price-tooltip'),
-        value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.markPrice, perpetualStatistics.quoteCurrency, true)
-          : '--',
-        numberOnly: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.markPrice, '', true, undefined, true)
-          : '--',
+        value: displayCcy ? formatToCurrency(displayMarkPrice, displayCcy, true) : '--',
+        numberOnly: perpetualStatistics ? formatToCurrency(displayMarkPrice, '', true, undefined, true) : '--',
         // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
         id: 'indexPrice',
         label: t('pages.trade.stats.index-price'),
         tooltip: t('pages.trade.stats.index-price-tooltip'),
-        value: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.indexPrice, perpetualStatistics.quoteCurrency, true)
-          : '--',
-        numberOnly: perpetualStatistics
-          ? formatToCurrency(perpetualStatistics.indexPrice, '', true, undefined, true)
-          : '--',
+        value: displayCcy ? formatToCurrency(displayIndexPrice, displayCcy, true) : '--',
+        numberOnly: displayCcy ? formatToCurrency(displayIndexPrice, '', true, undefined, true) : '--',
         // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
@@ -96,7 +107,7 @@ export const PerpetualStats = () => {
         currencyOnly: perpetualStatistics ? perpetualStatistics.baseCurrency : '',
       },
     ],
-    [t, perpetualStatistics]
+    [t, perpetualStatistics, displayIndexPrice, displayMarkPrice, displayCcy]
   );
 
   if (isMobileScreen) {

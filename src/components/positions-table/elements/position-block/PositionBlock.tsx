@@ -1,13 +1,15 @@
 import { useAtomValue } from 'jotai';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DeleteForeverOutlined, ModeEditOutlineOutlined, ShareOutlined } from '@mui/icons-material';
 import { Box, IconButton, Typography } from '@mui/material';
 
 import { SidesRow } from 'components/sides-row/SidesRow';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { parseSymbol } from 'helpers/parseSymbol';
-import { collateralToSettleConversionAtom } from 'store/pools.store';
+import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, TableHeaderI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -36,10 +38,28 @@ export const PositionBlock = memo(
     const { t } = useTranslation();
 
     const c2s = useAtomValue(collateralToSettleConversionAtom);
+    const traderAPI = useAtomValue(traderAPIAtom);
 
     const parsedSymbol = parseSymbol(position.symbol);
     const pnlColor = position.unrealizedPnlQuoteCCY >= 0 ? styles.green : styles.red;
     const collToSettleInfo = parsedSymbol?.poolSymbol ? c2s.get(parsedSymbol.poolSymbol) : undefined;
+
+    const [displayEntryPrice, displayLiqPrice, displayCcy] = useMemo(() => {
+      if (!!traderAPI && !!parsedSymbol) {
+        try {
+          return traderAPI?.isPredictionMarket(position.symbol)
+            ? [
+                calculateProbability(position.entryPrice, position.side === OrderSideE.Sell),
+                calculateProbability(position.liqPrice, position.side === OrderSideE.Sell),
+                parsedSymbol.quoteCurrency,
+              ]
+            : [position.entryPrice, position.liqPrice, parsedSymbol.quoteCurrency];
+        } catch (error) {
+          // skip
+        }
+      }
+      return [position.entryPrice, position.liqPrice, parsedSymbol?.quoteCurrency];
+    }, [position, parsedSymbol, traderAPI]);
 
     return (
       <Box className={styles.root}>
@@ -96,7 +116,7 @@ export const PositionBlock = memo(
           <SidesRow
             leftSide={headers[3].label}
             leftSideTooltip={headers[3].tooltip}
-            rightSide={formatToCurrency(position.entryPrice, parsedSymbol?.quoteCurrency, true)}
+            rightSide={formatToCurrency(displayEntryPrice, displayCcy, true)}
             leftSideStyles={styles.dataLabel}
             rightSideStyles={styles.dataValue}
           />
@@ -106,7 +126,7 @@ export const PositionBlock = memo(
             rightSide={
               position.liqPrice < 0
                 ? `- ${parsedSymbol?.quoteCurrency}`
-                : formatToCurrency(position.liqPrice, parsedSymbol?.quoteCurrency, true)
+                : formatToCurrency(displayLiqPrice, displayCcy, true)
             }
             leftSideStyles={styles.dataLabel}
             rightSideStyles={styles.dataValue}

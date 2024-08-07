@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { DATETIME_FORMAT } from 'appConstants';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { collateralToSettleConversionAtom } from 'store/pools.store';
+import { OrderSideE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
 
@@ -22,6 +24,11 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   const perpetual = tradeHistory.perpetual;
   const time = format(new Date(tradeHistory.timestamp), DATETIME_FORMAT);
   const pnlColor = tradeHistory.realizedPnl > 0 ? 'var(--d8x-color-buy-rgba)' : 'var(--d8x-color-sell-rgba)';
+
+  const displayPrice = perpetual?.isPredictionMarket
+    ? calculateProbability(tradeHistory.price, tradeHistory.side === OrderSideE.Sell)
+    : tradeHistory.price;
+  const displayCcy = perpetual?.isPredictionMarket ? perpetual?.quoteCurrency : perpetual?.quoteCurrency;
 
   return (
     <TableRow key={tradeHistory.transactionHash}>
@@ -42,9 +49,7 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
         <Typography variant="cellSmall">TYPE</Typography>
       </TableCell>*/}
       <TableCell align={headers[3].align}>
-        <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(tradeHistory.price, perpetual.quoteCurrency, true) : ''}
-        </Typography>
+        <Typography variant="cellSmall">{perpetual ? formatToCurrency(displayPrice, displayCcy, true) : ''}</Typography>
       </TableCell>
       <TableCell align={headers[4].align}>
         <Typography variant="cellSmall">

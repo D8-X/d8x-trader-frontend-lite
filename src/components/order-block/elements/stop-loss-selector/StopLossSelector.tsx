@@ -2,19 +2,21 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { Checkbox, Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
 import { orderInfoAtom, stopLossAtom, stopLossPriceAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom } from 'store/pools.store';
+import { selectedPerpetualAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderBlockE, OrderTypeE, StopLossE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const StopLossSelector = memo(() => {
   const { t } = useTranslation();
 
+  const traderAPI = useAtomValue(traderAPIAtom);
   const orderInfo = useAtomValue(orderInfoAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const setStopLossPrice = useSetAtom(stopLossPriceAtom);
@@ -22,6 +24,7 @@ export const StopLossSelector = memo(() => {
 
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null>(null);
   const [isDisabled, setDisabled] = useState(false);
+  const [isShown, setShown] = useState(false);
 
   const currentOrderBlockRef = useRef(orderInfo?.orderBlock);
   const currentLeverageRef = useRef(orderInfo?.leverage);
@@ -42,22 +45,42 @@ export const StopLossSelector = memo(() => {
     setStopLoss(stopLossValue);
   };
 
+  const [midPrice, isPredictionMarket] = useMemo(() => {
+    if (!!traderAPI && !!orderInfo) {
+      try {
+        const predMarket = traderAPI?.isPredictionMarket(orderInfo.symbol);
+        return [
+          predMarket
+            ? calculateProbability(orderInfo.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
+            : orderInfo.midPrice,
+          predMarket,
+        ];
+      } catch (error) {
+        // skip
+      }
+    }
+    return [orderInfo?.midPrice, false];
+  }, [orderInfo, traderAPI]);
+
   const minStopLossPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Short) {
-      return orderInfo.midPrice;
-    } else if (orderInfo?.midPrice && orderInfo?.leverage) {
-      return Math.max(0.000000001, orderInfo.midPrice - orderInfo.midPrice / orderInfo.leverage);
+    if (midPrice === undefined) {
+      return 0.000000001;
+    }
+    if (orderInfo?.orderBlock === OrderBlockE.Short) {
+      return isPredictionMarket ? midPrice - midPrice / orderInfo.leverage : midPrice;
+    } else if (orderInfo?.leverage) {
+      return Math.max(0.000000001, midPrice - midPrice / orderInfo.leverage);
     }
     return 0.000000001;
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice, isPredictionMarket]);
 
   const maxStopLossPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Long) {
-      return orderInfo.midPrice;
-    } else if (orderInfo?.midPrice && orderInfo?.leverage) {
-      return orderInfo.midPrice + orderInfo.midPrice / orderInfo.leverage;
+    if (typeof midPrice === 'number' && orderInfo?.orderBlock === OrderBlockE.Long) {
+      return midPrice;
+    } else if (typeof midPrice === 'number' && orderInfo?.leverage) {
+      return isPredictionMarket ? midPrice : midPrice + midPrice / orderInfo.leverage;
     }
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock, orderInfo?.leverage]);
+  }, [orderInfo?.orderBlock, orderInfo?.leverage, midPrice, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
@@ -83,6 +106,14 @@ export const StopLossSelector = memo(() => {
 
     setStopLossPrice(stopLossInputPrice);
   }, [minStopLossPrice, maxStopLossPrice, stopLossInputPrice, setStopLoss, setStopLossPrice]);
+
+  const handleCheckChange = useCallback(
+    (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      setShown(checked);
+      setStopLoss(StopLossE.None);
+    },
+    [setStopLoss]
+  );
 
   useEffect(() => {
     if (currentOrderBlockRef.current !== orderInfo?.orderBlock) {
@@ -137,6 +168,7 @@ export const StopLossSelector = memo(() => {
       id="custom-stop-loss-price"
       label={
         <InfoLabelBlock
+          titlePrefix={<Checkbox id="hide-show-stop-loss" checked={isShown} onChange={handleCheckChange} />}
           title={t('pages.trade.order-block.stop-loss.title')}
           content={
             <>
@@ -157,6 +189,7 @@ export const StopLossSelector = memo(() => {
       currency={selectedPerpetual?.quoteCurrency}
       stepSize={stepSize}
       disabled={isDisabled}
+      hide={!isShown}
     />
   );
 });

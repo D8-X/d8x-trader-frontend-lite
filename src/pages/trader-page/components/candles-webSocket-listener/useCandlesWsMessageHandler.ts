@@ -1,12 +1,13 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useRef } from 'react';
+
 import { selectedPerpetualAtom } from 'store/pools.store';
 import {
-  candlesAtom,
   candlesDataReadyAtom,
   candlesLatestMessageTimeAtom,
   marketsDataAtom,
   newCandleAtom,
+  originalCandlesAtom,
   selectedPeriodAtom,
 } from 'store/tv-chart.store';
 import { type TvChartCandleI } from 'types/types';
@@ -14,14 +15,13 @@ import { debounceLeading } from 'utils/debounceLeading';
 
 import { createPairWithPeriod } from './helpers/createPairWithPeriod';
 import { unsubscribeLostCandleAtom } from './subscribingCheckAtom';
-import {
+import { MessageTopicE, MessageTypeE } from './enums';
+import type {
   CommonWsMessageI,
   ConnectWsMessageI,
   MarketsSubscribeWsErrorMessageI,
   MarketsSubscribeWsMessageI,
   MarketsWsMessageI,
-  MessageTopicE,
-  MessageTypeE,
   SubscribeWsErrorMessageI,
   SubscribeWsMessageI,
   UpdateWsMessageI,
@@ -80,7 +80,7 @@ const debounceLatestMessageTime = debounceLeading((callback: () => void) => {
 export function useCandlesWsMessageHandler() {
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const selectedPeriod = useAtomValue(selectedPeriodAtom);
-  const setCandles = useSetAtom(candlesAtom);
+  const setCandles = useSetAtom(originalCandlesAtom);
   const setNewCandle = useSetAtom(newCandleAtom);
   const setMarketsData = useSetAtom(marketsDataAtom);
   const setCandlesDataReady = useSetAtom(candlesDataReadyAtom);

@@ -360,11 +360,15 @@ export const theme = createTheme({
     MuiCheckbox: {
       styleOverrides: {
         root: {
-          padding: '0 8px',
+          padding: '0 0 0 8px',
           color: 'var(--d8x-color-action-icon)',
 
           '.MuiSvgIcon-root': {
             width: '15px',
+          },
+
+          '&.Mui-checked': {
+            color: 'var(--d8x-color-action-icon)',
           },
         },
       },

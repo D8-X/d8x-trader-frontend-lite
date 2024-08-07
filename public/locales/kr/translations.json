@@ -221,6 +221,10 @@
           "long": "Long",
           "short": "Short"
         },
+        "prediction": {
+          "yes": "YES",
+          "no": "NO"
+        },
         "order-type": {
           "market": "시장",
           "limit": "한도",
@@ -835,6 +839,7 @@
         "header": "Choose Market",
         "crypto": "Crypto",
         "fx": "FX",
+        "prediction": "예측",
         "commodity": "Commodity",
         "closed": "Closed"
       },

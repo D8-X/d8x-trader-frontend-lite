@@ -2,18 +2,20 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { type ChangeEvent, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { Checkbox, Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateStepSize } from 'helpers/calculateStepSize';
+import { calculateProbability } from 'helpers/calculateProbability';
 import { orderInfoAtom, takeProfitAtom, takeProfitPriceAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom } from 'store/pools.store';
+import { selectedPerpetualAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderBlockE, OrderTypeE, TakeProfitE } from 'types/enums';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 export const TakeProfitSelector = memo(() => {
   const { t } = useTranslation();
+  const traderAPI = useAtomValue(traderAPIAtom);
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -22,6 +24,7 @@ export const TakeProfitSelector = memo(() => {
 
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null>(null);
   const [isDisabled, setDisabled] = useState(false);
+  const [isShown, setShown] = useState(false);
 
   const currentOrderBlockRef = useRef(orderInfo?.orderBlock);
   const currentLeverageRef = useRef(orderInfo?.leverage);
@@ -42,19 +45,38 @@ export const TakeProfitSelector = memo(() => {
     setTakeProfit(takeProfitValue);
   };
 
+  const [midPrice, isPredictionMarket] = useMemo(() => {
+    if (!!traderAPI && !!orderInfo) {
+      try {
+        const predMarket = traderAPI?.isPredictionMarket(orderInfo.symbol);
+        return [
+          predMarket
+            ? calculateProbability(orderInfo.midPrice, orderInfo.orderBlock === OrderBlockE.Short)
+            : orderInfo.midPrice,
+          predMarket,
+        ];
+      } catch (error) {
+        // skip
+      }
+    }
+    return [orderInfo?.midPrice, false];
+  }, [orderInfo, traderAPI]);
+
   const minTakeProfitPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Long) {
-      return orderInfo.midPrice;
+    if (midPrice && orderInfo?.orderBlock === OrderBlockE.Long) {
+      return midPrice;
+    } else if (midPrice && orderInfo?.orderBlock === OrderBlockE.Short) {
+      return isPredictionMarket ? midPrice : 0.000000001;
     }
     return 0.000000001;
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock]);
+  }, [midPrice, orderInfo?.orderBlock, isPredictionMarket]);
 
   const maxTakeProfitPrice = useMemo(() => {
-    if (orderInfo?.midPrice && orderInfo.orderBlock === OrderBlockE.Short) {
-      return orderInfo.midPrice;
+    if (midPrice && orderInfo?.orderBlock === OrderBlockE.Short) {
+      return isPredictionMarket ? undefined : midPrice;
     }
     return undefined;
-  }, [orderInfo?.midPrice, orderInfo?.orderBlock]);
+  }, [midPrice, orderInfo?.orderBlock, isPredictionMarket]);
 
   const stepSize = useMemo(() => calculateStepSize(selectedPerpetual?.indexPrice), [selectedPerpetual?.indexPrice]);
 
@@ -80,6 +102,14 @@ export const TakeProfitSelector = memo(() => {
 
     setTakeProfitPrice(takeProfitInputPrice);
   }, [minTakeProfitPrice, maxTakeProfitPrice, takeProfitInputPrice, setTakeProfit, setTakeProfitPrice]);
+
+  const handleCheckChange = useCallback(
+    (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      setShown(checked);
+      setTakeProfit(TakeProfitE.None);
+    },
+    [setTakeProfit]
+  );
 
   useEffect(() => {
     if (currentOrderBlockRef.current !== orderInfo?.orderBlock) {
@@ -136,6 +166,7 @@ export const TakeProfitSelector = memo(() => {
       id="custom-take-profit-price"
       label={
         <InfoLabelBlock
+          titlePrefix={<Checkbox id="hide-show-take-profit" checked={isShown} onChange={handleCheckChange} />}
           title={t('pages.trade.order-block.take-profit.title')}
           content={
             <>
@@ -156,6 +187,7 @@ export const TakeProfitSelector = memo(() => {
       currency={selectedPerpetual?.quoteCurrency}
       stepSize={stepSize}
       disabled={isDisabled}
+      hide={!isShown}
     />
   );
 });
