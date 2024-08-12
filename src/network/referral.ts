@@ -1,6 +1,6 @@
 import type { APIReferPayload, APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
-import { ReferralCodeSigner } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Chain, Transport, WalletClient } from 'viem';
+import { ReferralCodeSigner, referralTypes } from '@d8x/perpetuals-sdk';
+import type { Account, Chain, Transport, WalletClient } from 'viem';
 
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
@@ -41,9 +41,6 @@ export async function postUpsertCode(
   walletClient: WalletClient<Transport, Chain, Account>,
   onSignatureSuccess: () => void
 ) {
-  const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
-
   const payload: APIReferralCodePayload = {
     code,
     referrerAddr,
@@ -52,10 +49,16 @@ export async function postUpsertCode(
     signature: '',
   };
 
-  const codeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
-  payload.signature = await codeSigner.getSignatureForNewCode(payload);
+  const typedData = ReferralCodeSigner.referralCodeNewCodePayloadToTypedData(payload);
+  const signature = await walletClient.signTypedData({
+    domain: {},
+    types: referralTypes,
+    primaryType: 'NewCode',
+    message: typedData,
+  });
+  payload.signature = signature;
 
-  if (!(await ReferralCodeSigner.checkNewCodeSignature(payload))) {
+  if (!ReferralCodeSigner.checkNewCodeSignature(payload)) {
     throw new Error('Signature is not valid');
   } else {
     onSignatureSuccess();
@@ -80,9 +83,6 @@ export async function postRefer(
   walletClient: WalletClient<Transport, Chain, Account>,
   onSignatureSuccess: () => void
 ) {
-  const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({ message: { raw: x as Address | Uint8Array } }) as Promise<string>;
-
   const payload: APIReferPayload = {
     parentAddr: walletClient.account.address,
     referToAddr,
@@ -91,8 +91,13 @@ export async function postRefer(
     signature: '',
   };
 
-  const codeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
-  payload.signature = await codeSigner.getSignatureForNewReferral(payload);
+  const typedData = ReferralCodeSigner.newReferralPayloadToTypedData(payload);
+  const signature = await walletClient.signTypedData({
+    types: referralTypes,
+    primaryType: 'NewReferral',
+    message: typedData,
+  });
+  payload.signature = signature;
 
   onSignatureSuccess();
   return fetch(`${getReferralUrlByChainId(chainId)}/refer`, {
@@ -114,12 +119,6 @@ export async function postUseReferralCode(
   walletClient: WalletClient<Transport, Chain, Account>,
   onSignatureSuccess: () => void
 ) {
-  const signingFun = (x: string | Uint8Array) =>
-    walletClient.signMessage({
-      message: { raw: x as Address | Uint8Array },
-      account: walletClient.account,
-    }) as Promise<string>;
-
   const payload: APIReferralCodeSelectionPayload = {
     code,
     traderAddr: address,
@@ -127,10 +126,15 @@ export async function postUseReferralCode(
     signature: '',
   };
 
-  const referralCodeSigner = new ReferralCodeSigner(signingFun, walletClient.account.address, '');
-  payload.signature = await referralCodeSigner.getSignatureForCodeSelection(payload);
+  const typedData = ReferralCodeSigner.codeSelectionPayloadToTypedData(payload);
+  const signature = await walletClient.signTypedData({
+    types: referralTypes,
+    primaryType: 'CodeSelection',
+    message: typedData,
+  });
+  payload.signature = signature;
 
-  if (!(await ReferralCodeSigner.checkCodeSelectionSignature(payload))) {
+  if (!ReferralCodeSigner.checkCodeSelectionSignature(payload)) {
     throw new Error('Signature is not valid');
   } else {
     onSignatureSuccess();
