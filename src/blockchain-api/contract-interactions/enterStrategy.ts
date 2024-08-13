@@ -37,6 +37,7 @@ export async function enterStrategy(
   setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ): Promise<{
   hash?: Address;
+  orderIds: string[];
   interrupted?: boolean;
   interruptedMessage?: string;
 }> {

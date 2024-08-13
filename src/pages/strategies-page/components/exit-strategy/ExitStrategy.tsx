@@ -27,9 +27,15 @@ interface ExitStrategyPropsI {
   isLoading: boolean;
   hasBuyOpenOrder: boolean;
   strategyClient: WalletClient;
+  strategyAddressBalance: number;
 }
 
-export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: ExitStrategyPropsI) => {
+export const ExitStrategy = ({
+  isLoading,
+  hasBuyOpenOrder,
+  strategyClient,
+  strategyAddressBalance,
+}: ExitStrategyPropsI) => {
   const { t } = useTranslation();
 
   const { address, chainId } = useAccount();
@@ -53,7 +59,7 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const { setTxHash } = useExitStrategy();
+  const { isExecuted, setTxHash, setOrderId } = useExitStrategy();
 
   const handleExit = useCallback(() => {
     if (
@@ -77,9 +83,10 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
       sendTransactionAsync,
       setCurrentPhaseKey
     )
-      .then(({ hash }) => {
+      .then(({ hash, orderIds }) => {
         // console.log(`submitting close strategy txn ${hash}`);
         setTxHash(hash);
+        setOrderId(orderIds[0]);
         setCurrentPhaseKey('pages.strategies.exit.phases.waiting');
       })
       .catch((error) => {
@@ -101,6 +108,7 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
     strategyAddress,
     sendTransactionAsync,
     setTxHash,
+    setOrderId,
   ]);
 
   const claimRequestSentRef = useRef(false);
@@ -137,8 +145,7 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
       sendTransactionAsync
     )
       .then(({ hash }) => {
-        console.log('hash');
-
+        console.log({ hash });
         if (hash) {
           setTxHash(hash);
           //console.log('claiming funds::success');
@@ -160,7 +167,13 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
       });
   }, [chainId, walletClient, strategyClient, isMultisigAddress, traderAPI, sendTransactionAsync, setTxHash]);
 
-  const handleClick = isMultisigAddress && !hasPosition ? claimFunds : handleExit;
+  useEffect(() => {
+    if (isExecuted && !isMultisigAddress) {
+      claimFunds();
+    }
+  }, [isExecuted, isMultisigAddress, claimFunds]);
+
+  const handleClick = !hasPosition && strategyAddressBalance > 0 ? claimFunds : handleExit;
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);
@@ -179,12 +192,12 @@ export const ExitStrategy = ({ isLoading, hasBuyOpenOrder, strategyClient }: Exi
   }, [isLoading, hasBuyOpenOrder]);
 
   const buttonLabel = useMemo(() => {
-    if (isMultisigAddress && !hasPosition) {
+    if (!hasPosition && strategyAddressBalance) {
       return t('pages.strategies.claim-funds.claim-button');
     } else {
       return t('pages.strategies.exit.exit-button');
     }
-  }, [isMultisigAddress, hasPosition, t]);
+  }, [strategyAddressBalance, hasPosition, t]);
 
   return (
     <div className={styles.root}>

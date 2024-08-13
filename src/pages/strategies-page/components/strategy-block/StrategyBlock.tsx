@@ -1,16 +1,16 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits, WalletClient } from 'viem';
-import { useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import { useAccount, useReadContracts } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
-import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
-import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+// import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
+// import { ToastContent } from 'components/toast-content/ToastContent';
+// import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { traderAPIAtom } from 'store/pools.store';
 import {
@@ -28,7 +28,7 @@ import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
 import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
-import { useClaimFunds } from './hooks/useClaimFunds';
+// import { useClaimFunds } from './hooks/useClaimFunds';
 
 import styles from './StrategyBlock.module.scss';
 
@@ -40,10 +40,10 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
   const { t } = useTranslation();
 
   const { address, chainId, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const { sendTransactionAsync } = useSendTransaction();
+  // const { data: walletClient } = useWalletClient();
+  // const { sendTransactionAsync } = useSendTransaction();
 
-  const { isMultisigAddress } = useUserWallet();
+  // const { isMultisigAddress } = useUserWallet();
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyPool = useAtomValue(strategyPoolAtom);
@@ -53,14 +53,14 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
   const setStrategyPosition = useSetAtom(strategyPositionAtom);
 
   const [frequentUpdates, setFrequentUpdates] = useState(0);
-  const [hadPosition, setHadPosition] = useState(hasPosition);
-  const [refetchBalanceRequestSent, setRefetchBalanceRequestSent] = useState(false);
-  const [triggerClaimFunds, setTriggerClaimFunds] = useState(false);
+  // const [, setHadPosition] = useState(hasPosition);
+  // const [, setRefetchBalanceRequestSent] = useState(false);
+  // const [triggerClaimFunds, setTriggerClaimFunds] = useState(false);
   const [strategyOpenOrders, setStrategyOpenOrders] = useState<Record<string, OrderI>>({});
 
   const strategyPositionRequestSentRef = useRef(false);
   const openOrdersRequestSentRef = useRef(false);
-  const claimRequestSentRef = useRef(false);
+  // const claimRequestSentRef = useRef(false);
 
   const strategyAddress = useMemo(() => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
@@ -69,8 +69,8 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
   const {
     data: strategyAddressBalanceData,
     refetch: refetchStrategyAddressBalance,
-    isRefetching,
-    isFetched,
+    // isRefetching,
+    // isFetched,
   } = useReadContracts({
     allowFailure: false,
     contracts: [
@@ -93,6 +93,7 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
         isEnabledChain(chainId) &&
         !!strategyPool?.settleTokenAddr &&
         isConnected,
+      refetchInterval: INTERVAL_FOR_DATA_POLLING,
     },
   });
 
@@ -100,15 +101,15 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
     ? +formatUnits(strategyAddressBalanceData[0], strategyAddressBalanceData[1])
     : null;
 
-  useEffect(() => {
-    if (isRefetching) {
-      setRefetchBalanceRequestSent(true);
-    } else if (isFetched) {
-      setRefetchBalanceRequestSent(false);
-    }
-  }, [isRefetching, isFetched]);
+  // useEffect(() => {
+  //   if (isRefetching) {
+  //     setRefetchBalanceRequestSent(true);
+  //   } else if (isFetched) {
+  //     setRefetchBalanceRequestSent(false);
+  //   }
+  // }, [isRefetching, isFetched]);
 
-  const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance, refetchStrategyAddressBalance);
+  // const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance, refetchStrategyAddressBalance);
 
   useEffect(() => {
     refetchStrategyAddressBalance().then();
@@ -223,88 +224,98 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
     }
   }, [frequentUpdates, enableFrequentUpdates]);
 
-  useEffect(() => {
-    if (
-      hasPosition === false &&
-      hadPosition &&
-      !hasBuyOpenOrder &&
-      !claimRequestSentRef.current &&
-      !refetchBalanceRequestSent &&
-      strategyAddressBalance !== null &&
-      strategyAddressBalance > 0 &&
-      isEnabledChain(chainId) &&
-      traderAPI &&
-      walletClient &&
-      !isMultisigAddress
-    ) {
-      claimRequestSentRef.current = true;
-      //console.log('claiming funds');
-      claimStrategyFunds(
-        {
-          chainId,
-          walletClient,
-          strategyClient,
-          isMultisigAddress,
-          symbol: STRATEGY_SYMBOL,
-          traderAPI,
-        },
-        sendTransactionAsync
-      )
-        .then(({ hash }) => {
-          if (hash) {
-            setTxHash(hash);
-            //console.log('claiming funds::success');
-          } else {
-            //console.log('claiming funds::no hash');
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
-          setTriggerClaimFunds((prev) => !prev);
-        })
-        .finally(() => {
-          claimRequestSentRef.current = false;
-          setHadPosition(null);
-        });
-    }
-  }, [
-    hasPosition,
-    hadPosition,
-    hasBuyOpenOrder,
-    refetchBalanceRequestSent,
-    strategyAddressBalance,
-    chainId,
-    traderAPI,
-    walletClient,
-    strategyClient,
-    isMultisigAddress,
-    setTxHash,
-    sendTransactionAsync,
-    triggerClaimFunds,
-  ]);
+  // useEffect(() => {
+  //   if (
+  //     hasPosition === false &&
+  //     hadPosition &&
+  //     !hasBuyOpenOrder &&
+  //     !claimRequestSentRef.current &&
+  //     !refetchBalanceRequestSent &&
+  //     strategyAddressBalance !== null &&
+  //     strategyAddressBalance > 0 &&
+  //     isEnabledChain(chainId) &&
+  //     traderAPI &&
+  //     walletClient &&
+  //     !isMultisigAddress
+  //   ) {
+  //     claimRequestSentRef.current = true;
+  //     //console.log('claiming funds');
+  //     claimStrategyFunds(
+  //       {
+  //         chainId,
+  //         walletClient,
+  //         strategyClient,
+  //         isMultisigAddress,
+  //         symbol: STRATEGY_SYMBOL,
+  //         traderAPI,
+  //       },
+  //       sendTransactionAsync
+  //     )
+  //       .then(({ hash }) => {
+  //         if (hash) {
+  //           setTxHash(hash);
+  //           //console.log('claiming funds::success');
+  //         } else {
+  //           //console.log('claiming funds::no hash');
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //         toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+  //         setTriggerClaimFunds((prev) => !prev);
+  //       })
+  //       .finally(() => {
+  //         claimRequestSentRef.current = false;
+  //         setHadPosition(null);
+  //       });
+  //   }
+  // }, [
+  //   hasPosition,
+  //   hadPosition,
+  //   hasBuyOpenOrder,
+  //   refetchBalanceRequestSent,
+  //   strategyAddressBalance,
+  //   chainId,
+  //   traderAPI,
+  //   walletClient,
+  //   strategyClient,
+  //   isMultisigAddress,
+  //   setTxHash,
+  //   sendTransactionAsync,
+  //   triggerClaimFunds,
+  // ]);
 
-  useEffect(() => {
-    if (
-      !hasPosition &&
-      strategyAddressBalance !== null &&
-      strategyAddressBalance > 0 &&
-      !claimRequestSentRef.current &&
-      !refetchBalanceRequestSent &&
-      !hasSellOpenOrder
-    ) {
-      setHadPosition(true);
-    }
-  }, [hasPosition, hasSellOpenOrder, refetchBalanceRequestSent, strategyAddressBalance]);
+  // useEffect(() => {
+  //   if (
+  //     !hasPosition &&
+  //     strategyAddressBalance !== null &&
+  //     strategyAddressBalance > 0 &&
+  //     !claimRequestSentRef.current &&
+  //     !refetchBalanceRequestSent &&
+  //     !hasSellOpenOrder
+  //   ) {
+  //     setHadPosition(true);
+  //   }
+  // }, [hasPosition, hasSellOpenOrder, refetchBalanceRequestSent, strategyAddressBalance]);
 
   // Reset all states
   useEffect(() => {
     setStrategyOpenOrders({});
     setHasPosition(null);
-    setHadPosition(null);
+    // setHadPosition(null);
     setFrequentUpdates(0);
     enableFrequentUpdates(false);
   }, [chainId, address, setHasPosition, enableFrequentUpdates]);
+
+  const exitActionRef = useRef(!hasSellOpenOrder && (hasPosition || hasBuyOpenOrder));
+
+  useEffect(() => {
+    if (exitActionRef.current && strategyAddressBalance === 0) {
+      exitActionRef.current = false;
+    } else if (!exitActionRef.current && hasPosition) {
+      exitActionRef.current = true;
+    }
+  }, [strategyAddressBalance, hasPosition]);
 
   return (
     <div className={styles.root}>
@@ -323,16 +334,15 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
           </div>
         ) : (
           <>
-            {!hasSellOpenOrder && (hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
+            {exitActionRef.current && (
               <ExitStrategy
-                isLoading={(!hasPosition && strategyAddressBalance > 0 && !isMultisigAddress) || hasBuyOpenOrder}
+                isLoading={hasBuyOpenOrder}
                 hasBuyOpenOrder={hasBuyOpenOrder}
                 strategyClient={strategyClient}
+                strategyAddressBalance={strategyAddressBalance}
               />
             )}
-            {((!hasPosition && strategyAddressBalance === 0) || hasSellOpenOrder) && (
-              <EnterStrategy isLoading={hasSellOpenOrder} strategyClient={strategyClient} />
-            )}
+            {!exitActionRef.current && <EnterStrategy isLoading={hasSellOpenOrder} strategyClient={strategyClient} />}
           </>
         )}
       </div>

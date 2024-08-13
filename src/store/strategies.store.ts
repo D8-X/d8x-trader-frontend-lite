@@ -11,6 +11,8 @@ import {
   StrategyAddressI,
 } from '../types/types';
 
+export const ORDER_STATUS_INTERVAL = 3_000;
+
 export const STRATEGY_ADDRESSES_LS_KEY = 'd8x_strategyAddresses';
 
 export const strategyAddressesAtom = atomWithStorage<StrategyAddressI[]>(STRATEGY_ADDRESSES_LS_KEY, []);

@@ -107,7 +107,7 @@ export const EnterStrategy = ({ isLoading, strategyClient }: EnterStrategyPropsI
 
   const strategyWalletGas = gasPrice && strategtWalletBalance ? strategtWalletBalance.value / gasPrice : undefined;
 
-  const { setTxHash } = useEnterStrategy(addAmount);
+  const { isExecuted, setTxHash, setOrderId } = useEnterStrategy(addAmount);
 
   const handleInputCapture = useCallback(
     (orderSizeValue: string) => {
@@ -266,9 +266,10 @@ export const EnterStrategy = ({ isLoading, strategyClient }: EnterStrategyPropsI
       sendTransactionAsync,
       setCurrentPhaseKey
     )
-      .then(({ hash }) => {
+      .then(({ hash, orderIds }) => {
         // console.log(`submitting enter strategy txn ${hash}`);
         setTxHash(hash);
+        setOrderId(orderIds[0]);
         setCurrentPhaseKey('pages.strategies.enter.phases.waiting');
       })
       .catch((error) => {
@@ -294,6 +295,7 @@ export const EnterStrategy = ({ isLoading, strategyClient }: EnterStrategyPropsI
     strategyWalletGas,
     sendTransactionAsync,
     setTxHash,
+    setOrderId,
     refetch,
   ]);
 
@@ -314,6 +316,13 @@ export const EnterStrategy = ({ isLoading, strategyClient }: EnterStrategyPropsI
       setCurrentPhaseKey('pages.strategies.enter.phases.waiting');
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (isExecuted) {
+      setCurrentPhaseKey('');
+      setLoading(false);
+    }
+  }, [isExecuted]);
 
   return (
     <div className={styles.root}>

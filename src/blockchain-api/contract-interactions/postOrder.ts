@@ -18,7 +18,7 @@ export async function postOrder(
     brokerData,
     doChain,
   }: { traderAddr: Address; orders: OrderI[]; signatures: string[]; brokerData: OrderDigestI; doChain?: boolean }
-): Promise<{ hash: Address }> {
+): Promise<{ hash: Address; orderIds: string[] }> {
   if (!walletClient.account || walletClient?.chain === undefined) {
     throw new Error('account not connected');
   }
@@ -58,6 +58,6 @@ export async function postOrder(
   return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
     // success submitting order to the node - inform backend
     orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
-    return { hash: tx };
+    return { hash: tx, orderIds: brokerData.orderIds };
   });
 }
