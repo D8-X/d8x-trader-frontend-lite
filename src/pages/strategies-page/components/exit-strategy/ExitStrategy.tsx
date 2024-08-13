@@ -97,7 +97,7 @@ export const ExitStrategy = ({
       .finally(() => {
         requestSentRef.current = false;
         setRequestSent(false);
-        setLoading(false);
+        // setLoading(false);
       });
   }, [
     chainId,
@@ -168,10 +168,11 @@ export const ExitStrategy = ({
   }, [chainId, walletClient, strategyClient, isMultisigAddress, traderAPI, sendTransactionAsync, setTxHash]);
 
   useEffect(() => {
-    if (isExecuted && !isMultisigAddress) {
+    console.log({ isExecuted, strategyAddressBalance, isMultisigAddress });
+    if (isExecuted && strategyAddressBalance > 0 && !isMultisigAddress) {
       claimFunds();
     }
-  }, [isExecuted, isMultisigAddress, claimFunds]);
+  }, [isExecuted, strategyAddressBalance, isMultisigAddress, claimFunds]);
 
   const handleClick = !hasPosition && strategyAddressBalance > 0 ? claimFunds : handleExit;
 

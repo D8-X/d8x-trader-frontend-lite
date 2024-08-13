@@ -35,7 +35,7 @@ export const useExitStrategy = () => {
     abi: LOB_ABI,
     functionName: 'getOrderStatus',
     query: {
-      enabled: isSuccess && !isExecuted && !!strategyPerpetual?.limitOrderBookAddr && !!orderId,
+      enabled: !!strategyPerpetual?.limitOrderBookAddr && !!orderId,
       refetchInterval: ORDER_STATUS_INTERVAL,
     },
     args: [orderId as string],
@@ -44,9 +44,11 @@ export const useExitStrategy = () => {
   useEffect(() => {
     if (orderStatus === OrderStatus.EXECUTED) {
       setExecuted(true);
+      setOrderId(undefined);
     } else if (orderStatus === OrderStatus.CANCELED) {
-      toast.error(<ToastContent title={t('pages.strategies.exit.toasts.tx-failed.title')} bodyLines={[]} />);
       setExecuted(true);
+      setOrderId(undefined);
+      toast.error(<ToastContent title={t('pages.strategies.exit.toasts.tx-failed.title')} bodyLines={[]} />);
     }
   }, [orderStatus, t]);
 
