@@ -28,6 +28,7 @@ interface ExitStrategyPropsI {
   hasBuyOpenOrder: boolean;
   strategyClient: WalletClient;
   strategyAddressBalance: number;
+  refetchStrategyAddressBalance: () => void;
 }
 
 export const ExitStrategy = ({
@@ -35,6 +36,7 @@ export const ExitStrategy = ({
   hasBuyOpenOrder,
   strategyClient,
   strategyAddressBalance,
+  refetchStrategyAddressBalance,
 }: ExitStrategyPropsI) => {
   const { t } = useTranslation();
 
@@ -147,11 +149,13 @@ export const ExitStrategy = ({
       .then(({ hash }) => {
         console.log({ hash });
         if (hash) {
-          setTxHash(hash);
-          //console.log('claiming funds::success');
+          /// can't use setTxHash <- this is to trigger order status checks, not fund stuff
+          // setTxHash(hash);
+          console.log('claiming funds::success');
         } else {
-          //console.log('claiming funds::no hash');
+          console.log('claiming funds::no hash');
         }
+        refetchStrategyAddressBalance();
       })
       .catch((error) => {
         console.error(error);
@@ -165,7 +169,15 @@ export const ExitStrategy = ({
         setRequestSent(false);
         setLoading(false);
       });
-  }, [chainId, walletClient, strategyClient, isMultisigAddress, traderAPI, sendTransactionAsync, setTxHash]);
+  }, [
+    chainId,
+    walletClient,
+    strategyClient,
+    isMultisigAddress,
+    traderAPI,
+    refetchStrategyAddressBalance,
+    sendTransactionAsync,
+  ]);
 
   useEffect(() => {
     console.log({ isExecuted, strategyAddressBalance, isMultisigAddress });
