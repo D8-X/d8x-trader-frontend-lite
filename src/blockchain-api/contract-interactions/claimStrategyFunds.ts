@@ -1,7 +1,7 @@
 import { type Config, getBalance } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import { type Address, erc20Abi } from 'viem';
-import { estimateGas, readContract, waitForTransactionReceipt, writeContract } from 'viem/actions';
+import { estimateGas, waitForTransactionReceipt, writeContract } from 'viem/actions';
 
 import { HedgeConfigI } from 'types/types';
 
@@ -14,12 +14,20 @@ import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from '../constants';
 const GAS_TARGET = 1_000_000n;
 
 export async function claimStrategyFunds(
-  { chainId, walletClient, strategyClient, isMultisigAddress, symbol, traderAPI }: HedgeConfigI,
+  {
+    chainId,
+    walletClient,
+    strategyClient,
+    isMultisigAddress,
+    symbol,
+    traderAPI,
+    strategyAddressBalanceBigint,
+  }: HedgeConfigI,
   sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>
 ): Promise<{
   hash: Address | null;
 }> {
-  if (!walletClient.account?.address || !strategyClient.account?.address) {
+  if (!walletClient.account?.address || !strategyClient.account?.address || !strategyAddressBalanceBigint) {
     throw new Error('Account not connected');
   }
 
@@ -40,12 +48,7 @@ export async function claimStrategyFunds(
   }
 
   //console.log('get balance and gas');
-  const settleTokenBalance = await readContract(walletClient, {
-    address: settleTokenAddr as Address,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [strategyClient.account.address],
-  });
+  const settleTokenBalance = strategyAddressBalanceBigint;
   const gasPrice = await getGasPrice(walletClient.chain?.id);
   if (settleTokenBalance > 0n) {
     const params = {

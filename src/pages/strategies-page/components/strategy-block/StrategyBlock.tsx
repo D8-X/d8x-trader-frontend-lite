@@ -45,6 +45,7 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
 
   const [frequentUpdates, setFrequentUpdates] = useState(0);
   const [strategyOpenOrders, setStrategyOpenOrders] = useState<Record<string, OrderI>>({});
+  const [delayedVariable, setDelayVariable] = useState(false);
 
   const strategyPositionRequestSentRef = useRef(false);
   const openOrdersRequestSentRef = useRef(false);
@@ -204,14 +205,41 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
   }, [chainId, address, setHasPosition, enableFrequentUpdates]);
 
   const exitActionRef = useRef(!hasSellOpenOrder && (hasPosition || hasBuyOpenOrder));
-
   useEffect(() => {
     if (exitActionRef.current && strategyAddressBalance === 0) {
       exitActionRef.current = false;
     } else if (!exitActionRef.current && hasPosition) {
       exitActionRef.current = true;
+    } else if (!exitActionRef.current && strategyAddressBalance && strategyAddressBalance > 0 && !hasSellOpenOrder) {
+      exitActionRef.current = true;
     }
-  }, [strategyAddressBalance, hasPosition]);
+  }, [strategyAddressBalance, hasPosition, hasSellOpenOrder]);
+
+  const previousBalanceRef = useRef(strategyAddressBalance);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    if (previousBalanceRef.current === 0 && strategyAddressBalance !== null && strategyAddressBalance > 0) {
+      // Balance changed from 0 to a positive value
+      setDelayVariable(true);
+
+      timeoutId = setTimeout(() => {
+        setDelayVariable(false);
+      }, 10000); // 5 seconds delay
+    }
+
+    // Update the previous balance ref
+    previousBalanceRef.current = strategyAddressBalance;
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [strategyAddressBalance]);
+
+  console.log(delayedVariable);
 
   return (
     <div className={styles.root}>
@@ -230,16 +258,17 @@ export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient
           </div>
         ) : (
           <>
-            {exitActionRef.current && (
+            {exitActionRef.current && !delayedVariable && (
               <ExitStrategy
                 isLoading={hasBuyOpenOrder}
                 hasBuyOpenOrder={hasBuyOpenOrder}
                 strategyClient={strategyClient}
                 strategyAddressBalance={strategyAddressBalance}
                 refetchStrategyAddressBalance={refetchStrategyAddressBalance}
+                strategyAddressBalanceBigint={strategyAddressBalanceData?.[0] ?? 0n}
               />
             )}
-            {!exitActionRef.current && hasPosition !== null && strategyAddressBalance !== null && (
+            {(!exitActionRef.current || delayedVariable) && hasPosition !== null && strategyAddressBalance !== null && (
               <EnterStrategy isLoading={hasSellOpenOrder} strategyClient={strategyClient} />
             )}
           </>

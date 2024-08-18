@@ -28,6 +28,7 @@ interface ExitStrategyPropsI {
   hasBuyOpenOrder: boolean;
   strategyClient: WalletClient;
   strategyAddressBalance: number;
+  strategyAddressBalanceBigint: bigint;
   refetchStrategyAddressBalance: () => void;
 }
 
@@ -36,6 +37,7 @@ export const ExitStrategy = ({
   hasBuyOpenOrder,
   strategyClient,
   strategyAddressBalance,
+  strategyAddressBalanceBigint,
   refetchStrategyAddressBalance,
 }: ExitStrategyPropsI) => {
   const { t } = useTranslation();
@@ -61,7 +63,7 @@ export const ExitStrategy = ({
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const { isExecuted, setTxHash, setOrderId } = useExitStrategy();
+  const { setTxHash, setOrderId } = useExitStrategy();
 
   const handleExit = useCallback(() => {
     if (
@@ -81,7 +83,16 @@ export const ExitStrategy = ({
     setLoading(true);
 
     exitStrategy(
-      { chainId, walletClient, strategyClient, isMultisigAddress, symbol: STRATEGY_SYMBOL, traderAPI, strategyAddress },
+      {
+        chainId,
+        walletClient,
+        strategyClient,
+        isMultisigAddress,
+        symbol: STRATEGY_SYMBOL,
+        traderAPI,
+        strategyAddress,
+        strategyAddressBalanceBigint,
+      },
       sendTransactionAsync,
       setCurrentPhaseKey
     )
@@ -111,82 +122,83 @@ export const ExitStrategy = ({
     sendTransactionAsync,
     setTxHash,
     setOrderId,
+    strategyAddressBalanceBigint,
   ]);
 
   const claimRequestSentRef = useRef(false);
+  const claimFunds = useCallback(
+    (balance: bigint) => {
+      if (
+        claimRequestSentRef.current ||
+        !walletClient ||
+        !traderAPI ||
+        !isEnabledChain(chainId) ||
+        !pagesConfig.enabledStrategiesPageByChains.includes(chainId)
+      ) {
+        console.log('early exit');
+        return;
+      }
 
-  const claimFunds = useCallback(() => {
-    if (
-      claimRequestSentRef.current ||
-      !walletClient ||
-      !traderAPI ||
-      !isEnabledChain(chainId) ||
-      !pagesConfig.enabledStrategiesPageByChains.includes(chainId)
-    ) {
-      console.log('early exit');
-      return;
+      claimRequestSentRef.current = true;
+      setCurrentPhaseKey('');
+      setShowConfirmModal(false);
+      setRequestSent(true);
+      setLoading(true);
+
+      console.log('claimStrategyFunds');
+
+      claimStrategyFunds(
+        {
+          chainId,
+          walletClient,
+          strategyClient,
+          isMultisigAddress,
+          symbol: STRATEGY_SYMBOL,
+          traderAPI,
+          strategyAddressBalanceBigint: balance,
+        },
+        sendTransactionAsync
+      )
+        .then(({ hash }) => {
+          console.log({ hash });
+          if (hash) {
+            /// can't use setTxHash <- this is to trigger order status checks, not fund stuff
+            // setTxHash(hash);
+            console.log('claiming funds::success');
+          } else {
+            console.log('claiming funds::no hash');
+          }
+          refetchStrategyAddressBalance();
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
+          setLoading(false);
+        })
+        .finally(() => {
+          claimRequestSentRef.current = false;
+          setRequestSent(false);
+          setLoading(false);
+        });
+    },
+    [
+      chainId,
+      walletClient,
+      strategyClient,
+      isMultisigAddress,
+      traderAPI,
+      refetchStrategyAddressBalance,
+      sendTransactionAsync,
+    ]
+  );
+
+  const handleClick = useCallback(() => {
+    if (!hasPosition && strategyAddressBalance > 0) {
+      claimFunds(strategyAddressBalanceBigint);
+    } else {
+      handleExit();
     }
-
-    claimRequestSentRef.current = true;
-    setCurrentPhaseKey('');
-    setShowConfirmModal(false);
-    setRequestSent(true);
-    setLoading(true);
-
-    console.log('claimStrategyFunds');
-
-    claimStrategyFunds(
-      {
-        chainId,
-        walletClient,
-        strategyClient,
-        isMultisigAddress,
-        symbol: STRATEGY_SYMBOL,
-        traderAPI,
-      },
-      sendTransactionAsync
-    )
-      .then(({ hash }) => {
-        console.log({ hash });
-        if (hash) {
-          /// can't use setTxHash <- this is to trigger order status checks, not fund stuff
-          // setTxHash(hash);
-          console.log('claiming funds::success');
-        } else {
-          console.log('claiming funds::no hash');
-        }
-        refetchStrategyAddressBalance();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
-        setLoading(false);
-      })
-      .finally(() => {
-        console.log('finally');
-
-        claimRequestSentRef.current = false;
-        setRequestSent(false);
-        setLoading(false);
-      });
-  }, [
-    chainId,
-    walletClient,
-    strategyClient,
-    isMultisigAddress,
-    traderAPI,
-    refetchStrategyAddressBalance,
-    sendTransactionAsync,
-  ]);
-
-  useEffect(() => {
-    console.log({ isExecuted, strategyAddressBalance, isMultisigAddress });
-    if (isExecuted && strategyAddressBalance > 0 && !isMultisigAddress) {
-      claimFunds();
-    }
-  }, [isExecuted, strategyAddressBalance, isMultisigAddress, claimFunds]);
-
-  const handleClick = !hasPosition && strategyAddressBalance > 0 ? claimFunds : handleExit;
+  }, [hasPosition, strategyAddressBalance, strategyAddressBalanceBigint, handleExit, claimFunds]);
 
   const handleModalClose = useCallback(() => {
     setShowConfirmModal(false);
