@@ -1,5 +1,5 @@
 import type { APIReferPayload, APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
-import { ReferralCodeSigner, referralTypes } from '@d8x/perpetuals-sdk';
+import { ReferralCodeSigner, referralDomain, referralTypes } from '@d8x/perpetuals-sdk';
 import type { Account, Chain, Transport, WalletClient } from 'viem';
 
 import { config } from 'config';
@@ -51,7 +51,7 @@ export async function postUpsertCode(
 
   const typedData = ReferralCodeSigner.referralCodeNewCodePayloadToTypedData(payload);
   const signature = await walletClient.signTypedData({
-    domain: {},
+    domain: referralDomain,
     types: referralTypes,
     primaryType: 'NewCode',
     message: typedData,
@@ -94,6 +94,7 @@ export async function postRefer(
   const typedData = ReferralCodeSigner.newReferralPayloadToTypedData(payload);
   const signature = await walletClient.signTypedData({
     types: referralTypes,
+    domain: referralDomain,
     primaryType: 'NewReferral',
     message: typedData,
   });
@@ -129,6 +130,7 @@ export async function postUseReferralCode(
   const typedData = ReferralCodeSigner.codeSelectionPayloadToTypedData(payload);
   const signature = await walletClient.signTypedData({
     types: referralTypes,
+    domain: referralDomain,
     primaryType: 'CodeSelection',
     message: typedData,
   });
