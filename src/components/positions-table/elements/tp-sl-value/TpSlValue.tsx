@@ -91,7 +91,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
         ordersData.stopLoss.value = formatToCurrency(
           isPredictionMarket && position.stopLoss.fullValue !== undefined
             ? calculateProbability(position.stopLoss.fullValue, position.side === OrderSideE.Sell)
-            : position.takeProfit.fullValue,
+            : position.stopLoss.fullValue,
           isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
