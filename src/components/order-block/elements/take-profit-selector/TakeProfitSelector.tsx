@@ -88,7 +88,7 @@ export const TakeProfitSelector = memo(() => {
       return '--';
     }
     let percent = (takeProfitInputPrice / midPrice - 1) * orderInfo?.leverage;
-    if (percent < 0.005) {
+    if (Math.abs(percent) < 0.005) {
       percent = 0;
     }
     return `${Math.round(100 * percent)}%`;
