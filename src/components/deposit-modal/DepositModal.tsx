@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -31,6 +31,8 @@ import { OwltoButton } from './elements/owlto-button/OwltoButton';
 import { MockSwap } from './elements/mock-swap/MockSwap';
 
 import styles from './DepositModal.module.scss';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { MethodE } from 'types/enums';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
@@ -49,6 +51,9 @@ export const DepositModal = () => {
   const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
   const isCedeEnabled = isCedeWidgetEnabled(chainId);
   const isMockTokenSwapEnabled = isMockSwapEnabled(chainId);
+  const { hasEnoughGasForFee } = useUserWallet();
+
+  const [title, setTitle] = useState('');
 
   const targetAddress = useMemo(() => {
     if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
@@ -68,6 +73,16 @@ export const DepositModal = () => {
     }
   }, [chainId, poolTokenBalance, setDepositModalOpen]);
 
+  useEffect(() => {
+    if (!hasEnoughGasForFee(MethodE.Interact, 1n)) {
+      setTitle('Insufficient funds for gas');
+    } else if (poolTokenBalance === 0) {
+      setTitle('Get Test Tokens');
+    } else {
+      setTitle(t('common.deposit-modal.title'));
+    }
+  }, [poolTokenBalance, hasEnoughGasForFee, t]);
+
   if (!isEnabledChain(chainId)) {
     return null;
   }
@@ -80,44 +95,53 @@ export const DepositModal = () => {
       onClose={handleOnClose}
       onCloseClick={handleOnClose}
       className={styles.dialog}
-      dialogTitle={t('common.deposit-modal.title')}
+      dialogTitle={title}
     >
       <div className={styles.section}>
         <CurrencySelect />
       </div>
       <Separator />
       <OKXConvertor />
-      <div className={styles.section}>
-        {activatedOneClickTrading ? (
-          <Typography variant="bodyMedium" className={styles.noteText}>
-            {t('common.deposit-modal.important-notice.0')}
-          </Typography>
-        ) : (
-          <div>{/* empty block */}</div>
-        )}
-        <Typography variant="bodySmall" className={styles.noteText}>
-          <Translate
-            i18nKey="common.deposit-modal.important-notice.1"
-            values={{ currencyName: selectedCurrency?.settleToken }}
-          />{' '}
-          {poolTokenAddress && (
-            <>
-              {t('common.deposit-modal.important-notice.2')}
-              <CopyLink
-                elementToShow={cutAddress(poolTokenAddress)}
-                textToCopy={poolTokenAddress}
-                classname={styles.copyText}
-              />
-              {t('common.deposit-modal.important-notice.3')}{' '}
-            </>
+      {!isMockSwapEnabled(chainId) || selectedCurrency?.isGasToken ? (
+        <div className={styles.section}>
+          {activatedOneClickTrading ? (
+            <Typography variant="bodyMedium" className={styles.noteText}>
+              {t('common.deposit-modal.important-notice.0')}
+            </Typography>
+          ) : (
+            <div>{/* empty block */}</div>
           )}
-          {t('common.deposit-modal.important-notice.4')}{' '}
-          <Translate i18nKey="common.deposit-modal.important-notice.5" values={{ chainName: chain?.name }} />
-        </Typography>
-      </div>
-      <div className={styles.section}>
-        <CopyInput id="address" textToCopy={targetAddress || ''} />
-      </div>
+          <Typography variant="bodySmall" className={styles.noteText}>
+            <Translate
+              i18nKey="common.deposit-modal.important-notice.1"
+              values={{ currencyName: selectedCurrency?.settleToken }}
+            />{' '}
+            {poolTokenAddress && (
+              <>
+                {t('common.deposit-modal.important-notice.2')}
+                <CopyLink
+                  elementToShow={cutAddress(poolTokenAddress)}
+                  textToCopy={poolTokenAddress}
+                  classname={styles.copyText}
+                />
+                {t('common.deposit-modal.important-notice.3')}{' '}
+              </>
+            )}
+            {t('common.deposit-modal.important-notice.4')}{' '}
+            <Translate i18nKey="common.deposit-modal.important-notice.5" values={{ chainName: chain?.name }} />
+          </Typography>
+          <div className={styles.section}>
+            <CopyInput id="address" textToCopy={targetAddress || ''} />
+          </div>
+        </div>
+      ) : (
+        <div className={styles.section}>
+          <Typography variant="bodyMedium" className={styles.noteText}>
+            {`You need test tokens to trade`}
+          </Typography>
+        </div>
+      )}
+
       {(isCedeEnabled || isLiFiEnabled || isOwltoEnabled) && (
         <div className={classnames(styles.section, styles.widgetButtons)}>
           {isBridgeShownOnPage && (isLiFiEnabled || isOwltoEnabled) ? (

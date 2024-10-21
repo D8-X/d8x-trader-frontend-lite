@@ -10,9 +10,12 @@ import { modalSelectedCurrencyAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom, poolsAtom } from 'store/pools.store';
 
 import { CurrencyItemI } from './types';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 
 export const CurrencySelect = () => {
   const { t } = useTranslation();
+
+  const { gasTokenBalance } = useUserWallet();
 
   const [selectedCurrency, setSelectedCurrency] = useAtom(modalSelectedCurrencyAtom);
   const pools = useAtomValue(poolsAtom);
@@ -63,10 +66,12 @@ export const CurrencySelect = () => {
   }, [gasTokenSymbol, pools]);
 
   useEffect(() => {
-    if (currencyItems.length > 0) {
+    if (currencyItems.length > 1 && gasTokenBalance?.value !== 0n) {
+      setSelectedCurrency(currencyItems[1]);
+    } else if (currencyItems.length > 0) {
       setSelectedCurrency(currencyItems[0]);
     }
-  }, [currencyItems, setSelectedCurrency]);
+  }, [currencyItems, gasTokenBalance, setSelectedCurrency]);
 
   return (
     <SidesRow
