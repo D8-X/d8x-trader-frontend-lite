@@ -51,7 +51,7 @@ export const DepositModal = () => {
   const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
   const isCedeEnabled = isCedeWidgetEnabled(chainId);
   const isMockTokenSwapEnabled = isMockSwapEnabled(chainId);
-  const { hasEnoughGasForFee } = useUserWallet();
+  const { gasTokenBalance, hasEnoughGasForFee } = useUserWallet();
 
   const [title, setTitle] = useState('');
 
@@ -67,13 +67,16 @@ export const DepositModal = () => {
   }, [setDepositModalOpen]);
 
   useEffect(() => {
-    if (isMockSwapEnabled(chainId) && (poolTokenBalance === 0 || !hasEnoughGasForFee(MethodE.Interact, 1n))) {
+    if (
+      isMockSwapEnabled(chainId) &&
+      (poolTokenBalance === 0 || (gasTokenBalance && !hasEnoughGasForFee(MethodE.Interact, 1n)))
+    ) {
       setTitle('Get Test Tokens');
       setDepositModalOpen(true);
     } else {
       setTitle(t('common.deposit-modal.title'));
     }
-  }, [chainId, poolTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t]);
+  }, [chainId, poolTokenBalance, gasTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t]);
 
   if (!isEnabledChain(chainId)) {
     return null;
@@ -147,7 +150,11 @@ export const DepositModal = () => {
           {isCedeEnabled ? <CedeWidgetButton /> : <div>{/* empty block */}</div>}
         </div>
       )}
-      {isMockTokenSwapEnabled && <MockSwap />}
+      {isMockTokenSwapEnabled && (
+        <div>
+          <MockSwap />
+        </div>
+      )}
       <Separator />
       <div className={styles.section}>
         <WalletBalances />
