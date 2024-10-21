@@ -1,6 +1,6 @@
 import classnames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
@@ -20,7 +20,7 @@ import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom, modalSelectedCurrencyAtom } from 'store/global-modals.store';
-import { gasTokenSymbolAtom } from 'store/pools.store';
+import { gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
@@ -42,6 +42,7 @@ export const DepositModal = () => {
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
@@ -60,11 +61,18 @@ export const DepositModal = () => {
     setDepositModalOpen(false);
   }, [setDepositModalOpen]);
 
-  const poolAddress = selectedCurrency?.contractAddress || '';
+  useEffect(() => {
+    if (isMockSwapEnabled(chainId) && poolTokenBalance === 0) {
+      console.log({ chainId, poolTokenBalance });
+      setDepositModalOpen(true);
+    }
+  }, [chainId, poolTokenBalance, setDepositModalOpen]);
 
   if (!isEnabledChain(chainId)) {
     return null;
   }
+
+  const poolTokenAddress = selectedCurrency?.contractAddress || '';
 
   return (
     <Dialog
@@ -92,10 +100,14 @@ export const DepositModal = () => {
             i18nKey="common.deposit-modal.important-notice.1"
             values={{ currencyName: selectedCurrency?.settleToken }}
           />{' '}
-          {poolAddress && (
+          {poolTokenAddress && (
             <>
               {t('common.deposit-modal.important-notice.2')}
-              <CopyLink elementToShow={cutAddress(poolAddress)} textToCopy={poolAddress} classname={styles.copyText} />
+              <CopyLink
+                elementToShow={cutAddress(poolTokenAddress)}
+                textToCopy={poolTokenAddress}
+                classname={styles.copyText}
+              />
               {t('common.deposit-modal.important-notice.3')}{' '}
             </>
           )}
@@ -119,7 +131,7 @@ export const DepositModal = () => {
           {isCedeEnabled ? <CedeWidgetButton /> : <div>{/* empty block */}</div>}
         </div>
       )}
-      {isMockTokenSwapEnabled && <MockSwap />}
+      {isMockTokenSwapEnabled && !selectedCurrency?.isGasToken && <MockSwap />}
       <Separator />
       <div className={styles.section}>
         <WalletBalances />
