@@ -67,21 +67,13 @@ export const DepositModal = () => {
   }, [setDepositModalOpen]);
 
   useEffect(() => {
-    if (isMockSwapEnabled(chainId) && poolTokenBalance === 0) {
-      console.log({ chainId, poolTokenBalance });
-      setDepositModalOpen(true);
-    }
-  }, [chainId, poolTokenBalance, setDepositModalOpen]);
-
-  useEffect(() => {
-    if (!hasEnoughGasForFee(MethodE.Interact, 1n)) {
-      setTitle('Insufficient funds for gas');
-    } else if (poolTokenBalance === 0) {
+    if (isMockSwapEnabled(chainId) && (poolTokenBalance === 0 || !hasEnoughGasForFee(MethodE.Interact, 1n))) {
       setTitle('Get Test Tokens');
+      setDepositModalOpen(true);
     } else {
       setTitle(t('common.deposit-modal.title'));
     }
-  }, [poolTokenBalance, hasEnoughGasForFee, t]);
+  }, [chainId, poolTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t]);
 
   if (!isEnabledChain(chainId)) {
     return null;
@@ -102,7 +94,7 @@ export const DepositModal = () => {
       </div>
       <Separator />
       <OKXConvertor />
-      {!isMockSwapEnabled(chainId) || selectedCurrency?.isGasToken ? (
+      {!isMockSwapEnabled(chainId) ? (
         <div className={styles.section}>
           {activatedOneClickTrading ? (
             <Typography variant="bodyMedium" className={styles.noteText}>
@@ -155,7 +147,7 @@ export const DepositModal = () => {
           {isCedeEnabled ? <CedeWidgetButton /> : <div>{/* empty block */}</div>}
         </div>
       )}
-      {isMockTokenSwapEnabled && !selectedCurrency?.isGasToken && <MockSwap />}
+      {isMockTokenSwapEnabled && <MockSwap />}
       <Separator />
       <div className={styles.section}>
         <WalletBalances />
