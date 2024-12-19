@@ -33,7 +33,13 @@ import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
+import {
+  cancelOrderIdAtom,
+  clearOpenOrdersAtom,
+  openOrdersAtom,
+  traderAPIAtom,
+  traderAPIBusyAtom,
+} from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
@@ -60,6 +66,7 @@ export const OpenOrdersTable = memo(() => {
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
+  const cancelOrderId = useSetAtom(cancelOrderIdAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
@@ -153,6 +160,12 @@ export const OpenOrdersTable = memo(() => {
 
     const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
     if (cancelEventIdx >= 0) {
+      const { args } = decodeEventLog({
+        abi: PROXY_ABI as readonly string[],
+        data: receipt.logs[cancelEventIdx].data,
+        topics: receipt.logs[cancelEventIdx].topics,
+      });
+      cancelOrderId((args as unknown as { orderHash: string }).orderHash);
       toast.success(
         <ToastContent
           title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
@@ -196,7 +209,7 @@ export const OpenOrdersTable = memo(() => {
         />
       );
     }
-  }, [receipt, isSuccess, t, chain, txHash]);
+  }, [receipt, isSuccess, t, chain, txHash, cancelOrderId]);
 
   const handleCancelOrderConfirm = () => {
     if (!selectedOrder) {
