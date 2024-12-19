@@ -9,7 +9,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { LiFiWidgetModal } from 'components/li-fi-widget-modal/LiFiWidgetModal';
 import { StaticBackground } from 'components/static-background/StaticBackground';
 import { ThemeApplier } from 'components/theme-applier/ThemeApplier';
 import { GeoBlockingProvider } from 'context/geo-blocking-context/GeoBlockingContext';
@@ -51,7 +50,6 @@ if (container) {
                             <WebSocketContextProvider>
                               <StaticBackground />
                               <App />
-                              <LiFiWidgetModal />
                             </WebSocketContextProvider>
                           </UserWalletProvider>
                         </Web3AuthProvider>

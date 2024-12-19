@@ -57,7 +57,7 @@ export const CollateralSelect = () => {
           </span>
           <span className={styles.label}>
             {collateralFilter !== null
-              ? c2s.get(collateralFilter)?.settleSymbol ?? collateralFilter
+              ? (c2s.get(collateralFilter)?.settleSymbol ?? collateralFilter)
               : t('common.select.option-all')}
           </span>
         </span>

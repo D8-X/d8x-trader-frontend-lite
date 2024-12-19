@@ -1,11 +1,18 @@
-import { Address, WalletClient, WriteContractParameters, erc20Abi, parseUnits } from 'viem';
+import { readContracts } from '@wagmi/core';
+import {
+  type Address,
+  type EstimateContractGasParameters,
+  type WalletClient,
+  type WriteContractParameters,
+  erc20Abi,
+  parseUnits,
+} from 'viem';
 import { estimateContractGas, waitForTransactionReceipt, writeContract } from 'viem/actions';
+import { type Dispatch, type SetStateAction } from 'react';
 
 import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from 'blockchain-api/constants';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { readContracts } from '@wagmi/core';
-import { Dispatch, SetStateAction } from 'react';
 
 interface FundMarginPropsI {
   walletClient: WalletClient;
@@ -54,15 +61,23 @@ export async function fundStrategyMargin(
     //console.log('funding strategy account');
     setCurrentPhaseKey('pages.strategies.enter.phases.funding');
     const gasPrice = await getGasPrice(walletClient.chain?.id);
-    const params: WriteContractParameters = {
+
+    const estimateParams: EstimateContractGasParameters = {
       ...settleTokenContract,
       functionName: 'transfer',
       args: [strategyAddr, amountBigint],
       account: walletClient.account,
-      gasPrice: gasPrice,
+      gasPrice,
     };
-    const gas = await estimateContractGas(walletClient, params); // reverts if insufficient balance
-    const tx1 = await writeContract(walletClient, { ...params, gas }).catch((error) => {
+    const gas = await estimateContractGas(walletClient, estimateParams); // reverts if insufficient balance
+
+    const writeParams: WriteContractParameters = {
+      ...estimateParams,
+      chain: walletClient.chain,
+      account: walletClient.account,
+      gas,
+    };
+    const tx1 = await writeContract(walletClient, writeParams).catch((error) => {
       throw new Error(error.shortMessage);
     });
     await waitForTransactionReceipt(walletClient, {

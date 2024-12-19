@@ -17,7 +17,7 @@ export const CedeWidgetButton = () => {
       onClick={() => setModalOpen(true)}
       className={styles.actionButton}
       variant="primary"
-      title={t('common.li-fi-widget.button-title')}
+      title={t('common.offramp-button')}
     >
       {t('common.offramp-button')}
     </Button>

@@ -791,11 +791,6 @@
         "2": "for more information."
       }
     },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
-    },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
       "per-page": "Per page"

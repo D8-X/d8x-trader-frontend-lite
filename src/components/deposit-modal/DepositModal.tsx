@@ -15,7 +15,6 @@ import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { isCedeWidgetEnabled } from 'helpers/isCedeWidgetEnabled';
-import { isLifiWidgetEnabled } from 'helpers/isLifiWidgetEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
@@ -26,7 +25,6 @@ import { cutAddress } from 'utils/cutAddress';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { CedeWidgetButton } from './elements/cede-widget-button/CedeWidgetButton';
-import { LiFiWidgetButton } from './elements/lifi-widget-button/LiFiWidgetButton';
 import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 import { OwltoButton } from './elements/owlto-button/OwltoButton';
 import { MockSwap } from './elements/mock-swap/MockSwap';
@@ -49,7 +47,6 @@ export const DepositModal = () => {
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
   const isCedeEnabled = isCedeWidgetEnabled(chainId);
   const isMockTokenSwapEnabled = isMockSwapEnabled(chainId);
   const { gasTokenBalance, hasEnoughGasForFee } = useUserWallet();
@@ -138,13 +135,10 @@ export const DepositModal = () => {
         </div>
       )}
 
-      {(isCedeEnabled || isLiFiEnabled || isOwltoEnabled) && (
+      {(isCedeEnabled || isOwltoEnabled) && (
         <div className={classnames(styles.section, styles.widgetButtons)}>
-          {isBridgeShownOnPage && (isLiFiEnabled || isOwltoEnabled) ? (
-            <div>
-              {isLiFiEnabled && <LiFiWidgetButton />}
-              {isOwltoEnabled && <OwltoButton />}
-            </div>
+          {isBridgeShownOnPage && isOwltoEnabled ? (
+            <div>{isOwltoEnabled && <OwltoButton />}</div>
           ) : (
             <div>{/* empty block */}</div>
           )}

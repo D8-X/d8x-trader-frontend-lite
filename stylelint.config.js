@@ -21,6 +21,7 @@ module.exports = {
     'scss/at-if-closing-brace-space-after': 'always-intermediate',
     'scss/at-import-partial-extension': null,
     'scss/at-extend-no-missing-placeholder': null,
+    'scss/load-partial-extension': null,
     'scss/no-global-function-names': null,
     'selector-class-pattern': null,
     'selector-pseudo-class-no-unknown': [

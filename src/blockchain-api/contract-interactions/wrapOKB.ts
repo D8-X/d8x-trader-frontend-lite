@@ -1,5 +1,10 @@
-import { WriteContractParameters } from '@wagmi/core';
-import { parseEther, parseUnits, type Address } from 'viem';
+import {
+  parseEther,
+  parseUnits,
+  type Address,
+  type EstimateContractGasParameters,
+  type WriteContractParameters,
+} from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasPrice } from 'blockchain-api/getGasPrice';
@@ -42,33 +47,37 @@ export async function wrapOKB({
 
   const gasPrice = await getGasPrice(walletClient.chain?.id);
 
-  let params: WriteContractParameters;
-
+  let estimateParams: EstimateContractGasParameters;
   if (amountWrap && amountWrap > 0) {
-    params = {
-      chainId: walletClient.chain?.id,
+    estimateParams = {
       address: wrappedTokenAddress,
       functionName: 'deposit',
-      gasPrice: gasPrice,
+      gasPrice,
       account,
       value: parseEther(amountWrap.toString()),
       abi,
     };
   } else if (amountUnwrap && amountUnwrap > 0) {
-    params = {
-      chainId: walletClient.chain?.id,
+    estimateParams = {
       address: wrappedTokenAddress,
       functionName: 'withdraw',
       args: [parseUnits(amountUnwrap.toString(), wrappedTokenDecimals)],
-      gasPrice: gasPrice,
+      gasPrice,
       account,
       abi,
     };
   } else {
     throw new Error('No amount to wrap/unwrap');
   }
-  const gasLimit = await estimateContractGas(walletClient, params)
+  const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  return walletClient.writeContract({ ...params, account, chain: walletClient.chain, gas: gasLimit });
+
+  const writeParams: WriteContractParameters = {
+    ...estimateParams,
+    chain: walletClient.chain,
+    gas: gasLimit,
+    account,
+  };
+  return walletClient.writeContract(writeParams);
 }

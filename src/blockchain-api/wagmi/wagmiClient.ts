@@ -9,32 +9,7 @@ import {
   walletConnectWallet,
   bybitWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import {
-  polygon,
-  polygonMumbai,
-  polygonZkEvm,
-  arbitrumSepolia,
-  skaleEuropa,
-  skaleEuropaTestnet,
-  arbitrum,
-  mainnet,
-  optimism,
-  bsc,
-  base,
-  zkSync,
-  avalanche,
-  aurora,
-  linea,
-  gnosis,
-  fantom,
-  moonriver,
-  moonbeam,
-  fuse,
-  boba,
-  metis,
-  mode,
-  scroll,
-} from 'wagmi/chains';
+import { polygonMumbai, polygonZkEvm, arbitrumSepolia, skaleEuropaTestnet, arbitrum } from 'wagmi/chains';
 import { createConfig, http } from 'wagmi';
 import { createClient } from 'viem';
 
@@ -77,44 +52,26 @@ const chains = [
       },
     },
   },
-  // LiFi specific chains
-  { ...mainnet },
-  { ...optimism },
-  { ...polygon },
-  { ...bsc },
-  { ...zkSync },
-  { ...base },
-  { ...avalanche },
-  { ...aurora },
-  { ...linea },
-  { ...gnosis },
-  { ...fantom },
-  { ...moonriver },
-  { ...moonbeam },
-  { ...fuse },
-  { ...boba },
-  { ...metis },
-  { ...mode },
-  { ...scroll },
-  { ...skaleEuropa },
-].sort(({ id: id1 }, { id: id2 }) => {
-  const index1 = config.enabledChains.indexOf(id1);
-  const index2 = config.enabledChains.indexOf(id2);
+]
+  .filter((chain) => config.enabledChains.includes(chain.id))
+  .sort(({ id: id1 }, { id: id2 }) => {
+    const index1 = config.enabledChains.indexOf(id1);
+    const index2 = config.enabledChains.indexOf(id2);
 
-  if (index1 !== -1 && index2 !== -1) {
-    // Both ids are in enabledChains, sort by their order in enabledChains
-    return index1 - index2;
-  } else if (index1 !== -1) {
-    // Only id1 is in enabledChains, it should come first
-    return -1;
-  } else if (index2 !== -1) {
-    // Only id2 is in enabledChains, it should come first
-    return 1;
-  } else {
-    // Neither id is in enabledChains, maintain original order
-    return 0;
-  }
-}) as [Chain, ...Chain[]];
+    if (index1 !== -1 && index2 !== -1) {
+      // Both ids are in enabledChains, sort by their order in enabledChains
+      return index1 - index2;
+    } else if (index1 !== -1) {
+      // Only id1 is in enabledChains, it should come first
+      return -1;
+    } else if (index2 !== -1) {
+      // Only id2 is in enabledChains, it should come first
+      return 1;
+    } else {
+      // Neither id is in enabledChains, maintain original order
+      return 0;
+    }
+  }) as [Chain, ...Chain[]];
 
 const projectId = config.projectId;
 

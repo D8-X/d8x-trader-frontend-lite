@@ -10,11 +10,9 @@ import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import { Menu } from '@mui/icons-material';
 import { Button, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CloseIcon from 'assets/icons/new/close.svg?react';
-import { LiFiWidgetButton } from 'components/wallet-connect-button/LiFiWidgetButton';
 import { OneClickTradingButton } from 'components/wallet-connect-button/OneClickTradingButton';
 import { OwltoButton } from 'components/wallet-connect-button/OwltoButton';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
-import { isLifiWidgetEnabled } from 'helpers/isLifiWidgetEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 
@@ -107,7 +105,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
   // fetch the settle ccy fx -> save to atom
@@ -365,7 +362,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         <>
           <div className={styles.settingButtonsHolderMobile}>
             {!isSignedInSocially && <OneClickTradingButton />}
-            {isLiFiEnabled && isBridgeShownOnPage && <LiFiWidgetButton />}
             {isOwltoEnabled && isBridgeShownOnPage && <OwltoButton />}
             <ThemeSwitcher />
             <LanguageSwitcher isMini={true} />

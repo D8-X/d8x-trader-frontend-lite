@@ -791,11 +791,6 @@
         "2": "f了解更多信息。"
       }
     },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "跨链转入",
-      "header-from": "跨链转出"
-    },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
       "per-page": "每页"

@@ -11,14 +11,12 @@ import { Button, useMediaQuery, useTheme } from '@mui/material';
 import WalletIcon from 'assets/icons/walletIcon.svg?react';
 import { config, web3AuthConfig } from 'config';
 import { AccountModal } from 'components/account-modal/AccountModal';
-import { isLifiWidgetEnabled } from 'helpers/isLifiWidgetEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { cutAddress } from 'utils/cutAddress';
 
-import { LiFiWidgetButton } from './LiFiWidgetButton';
 import { OneClickTradingButton } from './OneClickTradingButton';
 import { OwltoButton } from './OwltoButton';
 
@@ -43,7 +41,6 @@ export const WalletConnectedButtons = memo(({ mobile = false }: WalletConnectedB
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
 
   return (
     <ConnectButton.Custom>
@@ -63,7 +60,6 @@ export const WalletConnectedButtons = memo(({ mobile = false }: WalletConnectedB
                 <>
                   <div className={styles.buttonsHolder}>
                     {!isSignedInSocially && !mobile && <OneClickTradingButton />}
-                    {isLiFiEnabled && isBridgeShownOnPage && !mobile && <LiFiWidgetButton />}
                     {isOwltoEnabled && isBridgeShownOnPage && !mobile && <OwltoButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />

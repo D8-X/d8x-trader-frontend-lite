@@ -48,7 +48,7 @@ export const useTradesHistory = () => {
   const tradesHistoryWithSymbol: TradeHistoryWithSymbolDataI[] = useMemo(() => {
     return tradesHistory.map((tradeHistory) => {
       const perpetual = perpetuals.find(({ id }) => id === tradeHistory.perpetualId);
-      const settleSymbol = perpetual?.poolName ? c2s.get(perpetual?.poolName)?.settleSymbol ?? '' : '';
+      const settleSymbol = perpetual?.poolName ? (c2s.get(perpetual?.poolName)?.settleSymbol ?? '') : '';
       return {
         ...tradeHistory,
         symbol: perpetual ? `${perpetual.baseCurrency}/${perpetual.quoteCurrency}/${settleSymbol}` : '',

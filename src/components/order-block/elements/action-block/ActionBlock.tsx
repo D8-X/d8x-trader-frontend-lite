@@ -674,7 +674,7 @@ export const ActionBlock = memo(() => {
   const liqPrice =
     newPositionRisk?.liquidationPrice?.[0] && isPredictionMarket
       ? calculateProbability(newPositionRisk.liquidationPrice[0], orderInfo?.orderBlock === OrderBlockE.Short)
-      : newPositionRisk?.liquidationPrice?.[0] ?? 0;
+      : (newPositionRisk?.liquidationPrice?.[0] ?? 0);
 
   const isValiditySuccess = [ValidityCheckE.GoodToGo, ValidityCheckE.Closed].includes(validityCheckType);
 
