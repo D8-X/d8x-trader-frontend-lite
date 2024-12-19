@@ -254,6 +254,20 @@ export const failOrderIdAtom = atom(
   }
 );
 
+const cancelledOrderIdsAtom = atom<Set<string>>(new Set<string>());
+
+export const cancelOrderIdAtom = atom(
+  (get) => {
+    return get(cancelledOrderIdsAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(cancelledOrderIdsAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);
+
 const collateralToSettleConversionsAtom = atom<Map<string, CollToSettleInfoI>>(new Map());
 
 export const collateralToSettleConversionAtom = atom(

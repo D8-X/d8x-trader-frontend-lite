@@ -136,6 +136,7 @@ export function positionRiskOnTrade(
     orderCost: number;
     maxLongTrade: number;
     maxShortTrade: number;
+    ammPrice: number;
   }>
 > {
   return traderAPI
@@ -146,6 +147,7 @@ export function positionRiskOnTrade(
         orderCost: number;
         maxLongTrade: number;
         maxShortTrade: number;
+        ammPrice: number;
       }>;
     });
 }

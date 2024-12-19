@@ -10,7 +10,7 @@ import { OrderTypeE } from 'types/enums';
 import styles from './SlippageSelector.module.scss';
 
 const MIN_SLIPPAGE = 0.01;
-const MAX_SLIPPAGE = 100;
+const MAX_SLIPPAGE = 100000;
 const MULTIPLIERS = [1, 2, 3, 5];
 
 export const SlippageSelector = memo(() => {

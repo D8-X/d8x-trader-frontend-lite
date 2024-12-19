@@ -123,7 +123,6 @@ const orderTypeMap: Record<OrderTypeE, string> = {
 enum ValidityCheckE {
   Empty = '-',
   Closed = 'closed',
-  OrderTooLarge = 'order-too-large',
   OrderTooSmall = 'order-too-small',
   PositionTooSmall = 'position-too-small',
   BelowMinPosition = 'below-min-position',
@@ -225,7 +224,7 @@ export const ActionBlock = memo(() => {
           ? pmInitialMarginRate(orderInfo.orderBlock === OrderBlockE.Long ? 1 : -1, data.data.newPositionRisk.markPrice)
           : perpetualStaticInfo?.initialMarginRate;
 
-        if (initialMarginRate && data.data.newPositionRisk.leverage > 1 / initialMarginRate) {
+        if (initialMarginRate && data.data.newPositionRisk.leverage > Math.floor(1 / initialMarginRate)) {
           if (orderInfo.orderBlock === OrderBlockE.Long) {
             maxLong = 0;
           } else {
@@ -558,15 +557,6 @@ export const ActionBlock = memo(() => {
       !perpetualStaticInfo?.lotSizeBC
     ) {
       return ValidityCheckE.Empty;
-    }
-    let isTooLarge;
-    if (orderInfo.orderBlock === OrderBlockE.Long) {
-      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxBuy);
-    } else {
-      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxSell);
-    }
-    if (isTooLarge) {
-      return ValidityCheckE.OrderTooLarge;
     }
     const isOrderTooSmall = orderInfo.size > 0 && orderInfo.size < perpetualStaticInfo.lotSizeBC;
     if (isOrderTooSmall) {
