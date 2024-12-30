@@ -6,6 +6,7 @@ import {
   parseUnits,
   type WalletClient,
   type WriteContractParameters,
+  zeroAddress,
 } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
@@ -16,6 +17,8 @@ import { wagmiConfig } from './wagmi/wagmiClient';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { MethodE } from 'types/enums';
 import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from './constants';
+import { registerFlatToken } from './contract-interactions/registerFlatToken';
+import { flatTokenAbi } from './contract-interactions/flatTokenAbi';
 
 interface ApproveMarginTokenPropsI {
   walletClient: WalletClient;
@@ -24,29 +27,8 @@ interface ApproveMarginTokenPropsI {
   proxyAddr: string;
   minAmount: number;
   decimals: number;
+  userSelectedToken?: string; // TODO: this should be the user selected token, in case the pool token is a flat token
 }
-
-const flatTokenAbi = [
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    name: 'registeredToken',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-] as const;
 
 export async function approveMarginToken({
   walletClient,
@@ -55,6 +37,7 @@ export async function approveMarginToken({
   proxyAddr,
   minAmount,
   decimals,
+  userSelectedToken,
 }: ApproveMarginTokenPropsI) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
@@ -87,14 +70,38 @@ export async function approveMarginToken({
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
 
-    const tokenAddress = registeredToken ?? (settleTokenAddr as Address);
-    const spender = (registeredToken ? settleTokenAddr : proxyAddr) as Address;
+    let [tokenAddress, spender] = [settleTokenAddr, proxyAddr];
+
+    if (registeredToken !== undefined) {
+      // this is a flat token
+      spender = settleTokenAddr; // flat token spends real tokens
+      if (userSelectedToken !== undefined && registeredToken === zeroAddress) {
+        // user has to register first
+        tokenAddress = userSelectedToken;
+        await registerFlatToken({
+          walletClient,
+          flatTokenAddr: settleTokenAddr as Address,
+          userTokenAddr: userSelectedToken as Address,
+          isMultisigAddress,
+          gasPrice,
+        });
+      } else if (registeredToken !== zeroAddress) {
+        // already registered
+        tokenAddress = registeredToken;
+      } else if (registeredToken !== userSelectedToken) {
+        // user already registered but with a different token
+        throw new Error(`Registered token (${tokenAddress}) !=  User selected token (${userSelectedToken})`);
+      } else {
+        // insufficient data
+        throw new Error(`Account is not registered and no token selected`);
+      }
+    }
 
     const estimateParams: EstimateContractGasParameters = {
-      address: tokenAddress,
+      address: tokenAddress as Address,
       abi: erc20Abi,
       functionName: 'approve',
-      args: [spender, BigInt(MaxUint256)],
+      args: [spender as Address, BigInt(MaxUint256)],
       gasPrice: gasPrice,
       account: account,
     };
