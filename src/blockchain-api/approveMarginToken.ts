@@ -74,7 +74,7 @@ export async function approveMarginToken({
 
     if (registeredToken !== undefined) {
       // this is a flat token
-      spender = settleTokenAddr; // flat token spends real tokens
+      spender = settleTokenAddr; // flat token spends real tokens, proxy spends flat tokens and needs no approval
       if (userSelectedToken !== undefined && registeredToken === zeroAddress) {
         // user has to register first
         tokenAddress = userSelectedToken;
@@ -87,10 +87,11 @@ export async function approveMarginToken({
         });
       } else if (registeredToken !== zeroAddress) {
         // already registered
+        if (registeredToken !== userSelectedToken) {
+          // user selected token was sent and is not the one already registered
+          throw new Error(`Registered token (${registeredToken}) !=  User selected token (${userSelectedToken})`);
+        }
         tokenAddress = registeredToken;
-      } else if (registeredToken !== userSelectedToken) {
-        // user already registered but with a different token
-        throw new Error(`Registered token (${tokenAddress}) !=  User selected token (${userSelectedToken})`);
       } else {
         // insufficient data
         throw new Error(`Account is not registered and no token selected`);
