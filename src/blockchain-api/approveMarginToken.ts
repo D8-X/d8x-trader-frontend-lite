@@ -43,23 +43,31 @@ export async function approveMarginToken({
     throw new Error('Account not connected');
   }
   const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
-  const [{ result: allowance }, { result: registeredToken }] = await readContracts(wagmiConfig, {
-    contracts: [
-      {
-        address: settleTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'allowance',
-        args: [walletClient.account.address, proxyAddr as Address],
-      },
-      {
-        address: settleTokenAddr as Address,
-        abi: flatTokenAbi,
-        functionName: 'registeredToken',
-        args: [walletClient.account.address],
-      },
-    ],
-    allowFailure: true,
-  });
+  const [{ result: allowance }, { result: registeredToken }, { result: tokenController }] = await readContracts(
+    wagmiConfig,
+    {
+      contracts: [
+        {
+          address: settleTokenAddr as Address,
+          abi: erc20Abi,
+          functionName: 'allowance',
+          args: [walletClient.account.address, proxyAddr as Address],
+        },
+        {
+          address: settleTokenAddr as Address,
+          abi: flatTokenAbi,
+          functionName: 'registeredToken',
+          args: [walletClient.account.address],
+        },
+        {
+          address: settleTokenAddr as Address,
+          abi: flatTokenAbi,
+          functionName: 'controller',
+        },
+      ],
+      allowFailure: true,
+    }
+  );
 
   if (allowance !== undefined && allowance >= minAmountBN) {
     return null;
@@ -70,18 +78,19 @@ export async function approveMarginToken({
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
 
-    let [tokenAddress, spender] = [settleTokenAddr, proxyAddr];
+    let [tokenAddress, spender] = [settleTokenAddr as Address, proxyAddr as Address];
 
-    if (registeredToken !== undefined) {
+    if (registeredToken !== undefined && tokenController !== undefined && tokenController === spender) {
       // this is a flat token
-      spender = settleTokenAddr; // flat token spends real tokens, proxy spends flat tokens and needs no approval
+      spender = settleTokenAddr as Address; // flat token spends real tokens, proxy spends flat tokens and needs no approval
+      // tokenAddress = user registered token
       if (userSelectedToken !== undefined && registeredToken === zeroAddress) {
         // user has to register first
-        tokenAddress = userSelectedToken;
+        tokenAddress = userSelectedToken as Address;
         await registerFlatToken({
           walletClient,
           flatTokenAddr: settleTokenAddr as Address,
-          userTokenAddr: userSelectedToken as Address,
+          userTokenAddr: tokenAddress,
           isMultisigAddress,
           gasPrice,
         });
@@ -99,10 +108,10 @@ export async function approveMarginToken({
     }
 
     const estimateParams: EstimateContractGasParameters = {
-      address: tokenAddress as Address,
+      address: tokenAddress,
       abi: erc20Abi,
       functionName: 'approve',
-      args: [spender as Address, BigInt(MaxUint256)],
+      args: [spender, BigInt(MaxUint256)],
       gasPrice: gasPrice,
       account: account,
     };

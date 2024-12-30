@@ -1,7 +1,12 @@
 import type { Address, PublicClient } from 'viem';
 import { flatTokenAbi } from './flatTokenAbi';
 
-export async function getFlatTokenInfo(publicClient: PublicClient, tokenAddress: Address, traderAddress: Address) {
+export async function getFlatTokenInfo(
+  publicClient: PublicClient,
+  proxyAddr: Address,
+  tokenAddress: Address,
+  traderAddress: Address
+) {
   const flatToken = {
     address: tokenAddress,
     abi: flatTokenAbi,
@@ -18,5 +23,10 @@ export async function getFlatTokenInfo(publicClient: PublicClient, tokenAddress:
       ],
       allowFailure: true,
     });
-  return { supportedTokens: supportedTokens ?? [], userRegisteredToken: traderRegisteredToken, controller };
+  return {
+    isFlatToken: controller === proxyAddr,
+    supportedTokens: supportedTokens ?? [],
+    userRegisteredToken: traderRegisteredToken,
+    controller,
+  };
 }
