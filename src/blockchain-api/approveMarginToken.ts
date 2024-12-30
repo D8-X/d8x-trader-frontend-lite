@@ -1,4 +1,4 @@
-import { readContract, waitForTransactionReceipt } from '@wagmi/core';
+import { readContracts, waitForTransactionReceipt } from '@wagmi/core';
 import {
   type Address,
   erc20Abi,
@@ -26,6 +26,28 @@ interface ApproveMarginTokenPropsI {
   decimals: number;
 }
 
+const flatTokenAbi = [
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'registeredToken',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
+
 export async function approveMarginToken({
   walletClient,
   settleTokenAddr,
@@ -38,15 +60,25 @@ export async function approveMarginToken({
     throw new Error('Account not connected');
   }
   const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
-
-  const allowance = await readContract(wagmiConfig, {
-    address: settleTokenAddr as Address,
-    abi: erc20Abi,
-    functionName: 'allowance',
-    args: [walletClient.account.address, proxyAddr as Address],
+  const [{ result: allowance }, { result: registeredToken }] = await readContracts(wagmiConfig, {
+    contracts: [
+      {
+        address: settleTokenAddr as Address,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [walletClient.account.address, proxyAddr as Address],
+      },
+      {
+        address: settleTokenAddr as Address,
+        abi: flatTokenAbi,
+        functionName: 'registeredToken',
+        args: [walletClient.account.address],
+      },
+    ],
+    allowFailure: true,
   });
 
-  if (allowance >= minAmountBN) {
+  if (allowance !== undefined && allowance >= minAmountBN) {
     return null;
   } else {
     const account = walletClient.account;
@@ -55,11 +87,14 @@ export async function approveMarginToken({
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
 
+    const tokenAddress = registeredToken ?? (settleTokenAddr as Address);
+    const spender = (registeredToken ? settleTokenAddr : proxyAddr) as Address;
+
     const estimateParams: EstimateContractGasParameters = {
-      address: settleTokenAddr as Address,
+      address: tokenAddress,
       abi: erc20Abi,
       functionName: 'approve',
-      args: [proxyAddr as Address, BigInt(MaxUint256)],
+      args: [spender, BigInt(MaxUint256)],
       gasPrice: gasPrice,
       account: account,
     };
