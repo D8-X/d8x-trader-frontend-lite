@@ -29,6 +29,7 @@ import {
   traderAPIAtom,
   traderAPIBusyAtom,
   triggerBalancesUpdateAtom,
+  userSelectedTokenAtom,
 } from 'store/pools.store';
 import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
@@ -54,6 +55,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const traderAPI = useAtomValue(traderAPIAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
+  const userSelectedToken = useAtomValue(userSelectedTokenAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const [isAPIBusy, setAPIBusy] = useAtom(traderAPIBusyAtom);
 
@@ -432,6 +434,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
         proxyAddr,
         minAmount: +addCollateral / px,
         decimals: settleTokenDecimals,
+        userSelectedToken,
       })
         .then(() => {
           deposit(tradingClient, traderAPI, {

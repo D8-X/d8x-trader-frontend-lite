@@ -45,6 +45,7 @@ import {
   selectedPerpetualDataAtom,
   selectedPoolAtom,
   traderAPIAtom,
+  userSelectedTokenAtom,
 } from 'store/pools.store';
 import { MethodE, OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import type { OrderI, OrderInfoI } from 'types/types';
@@ -161,6 +162,7 @@ export const ActionBlock = memo(() => {
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const selectedCurrency = useAtomValue(selectedCurrencyAtom);
+  const userSelectedToken = useAtomValue(userSelectedTokenAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const positions = useAtomValue(positionsAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -467,6 +469,7 @@ export const ActionBlock = memo(() => {
             proxyAddr,
             minAmount: collateralDeposit * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
             decimals: poolTokenDecimals,
+            userSelectedToken,
           })
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes

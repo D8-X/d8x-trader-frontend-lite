@@ -283,3 +283,6 @@ export const collateralToSettleConversionAtom = atom(
     });
   }
 );
+
+// @TODO: set this based on user selection
+export const userSelectedTokenAtom = atom<string | undefined>(undefined);
