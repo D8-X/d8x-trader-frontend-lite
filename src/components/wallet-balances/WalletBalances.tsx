@@ -48,10 +48,10 @@ export const WalletBalances = () => {
         }
       />
       {activePools.map((pool) => (
-        <PoolLine key={pool.poolSymbol} pool={pool} />
+        <PoolLine key={pool.poolSymbol + pool.marginTokenAddr} pool={pool} />
       ))}
       {inactivePools.map((pool) => (
-        <PoolLine key={pool.poolSymbol} pool={pool} showEmpty={false} />
+        <PoolLine key={pool.poolSymbol + pool.marginTokenAddr} pool={pool} showEmpty={false} />
       ))}
     </div>
   );

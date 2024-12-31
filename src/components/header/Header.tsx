@@ -54,6 +54,7 @@ import { isDisabledPool } from 'utils/isDisabledPool';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
+import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
 
 interface HeaderPropsI {
   /**
@@ -126,6 +127,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           if (traderAPI) {
             try {
               poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
+              console.log(pool.poolSymbol, poolId);
             } catch (error) {
               console.error(error);
             }
@@ -452,6 +454,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               )}
             </Toolbar>
             {isConnected && <DepositModal />}
+            {isConnected && <FlatTokenModal />}
           </PageAppBar>
           <nav>
             <Drawer

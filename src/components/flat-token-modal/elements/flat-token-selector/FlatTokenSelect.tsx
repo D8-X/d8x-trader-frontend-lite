@@ -1,39 +1,40 @@
-import { useSetAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { SidesRow } from 'components/sides-row/SidesRow';
-import { flatTokenAtom } from 'store/pools.store';
+import { flatTokenAtom, selectedStableAtom } from 'store/pools.store';
 
-import { FlatTokenI } from 'types/types';
-
-export const FlatTokenSelect = ({ flatToken }: { flatToken: FlatTokenI }) => {
-  const { t } = useTranslation();
-
-  const setFlatToken = useSetAtom(flatTokenAtom);
-
+export const FlatTokenSelect = () => {
+  const flatToken = useAtomValue(flatTokenAtom);
+  const [seletedStable, setSelectedStable] = useAtom(selectedStableAtom);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   return (
     <SidesRow
-      leftSide={t('common.currency-label')}
+      leftSide={'Supported Tokens'}
       rightSide={
         <DropDownSelect
           id="token-dropdown"
-          selectedValue={flatToken.registeredToken}
+          selectedValue={seletedStable}
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
           fullWidth
         >
-          {flatToken.supportedTokens.map((item) => (
+          {/* <DropDownMenuItem
+            option={'-'}
+            isActive={flatToken?.registeredToken == undefined}
+            onClick={() => {
+              setAnchorEl(null);
+            }}
+          /> */}
+          {flatToken?.supportedTokens.map((item) => (
             <DropDownMenuItem
               key={item}
               option={item}
-              isActive={item === flatToken.registeredToken}
+              isActive={item === seletedStable}
               onClick={() => {
-                setFlatToken({ ...flatToken, registeredToken: item });
+                setSelectedStable(item);
                 setAnchorEl(null);
               }}
             />

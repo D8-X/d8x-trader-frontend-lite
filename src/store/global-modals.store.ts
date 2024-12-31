@@ -15,3 +15,4 @@ export const stopLossModalOpenAtom = atom(false);
 export const takeProfitModalOpenAtom = atom(false);
 export const marketSelectModalOpenAtom = atom(false);
 export const tradeHistoryModalOpenAtom = atom(false);
+export const flatTokentModalOpenAtom = atom(false);

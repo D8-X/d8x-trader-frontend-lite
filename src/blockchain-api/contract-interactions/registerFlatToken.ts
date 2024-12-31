@@ -15,6 +15,7 @@ interface RegisterFlatTokenPropsI {
   userTokenAddr: Address;
   isMultisigAddress: boolean | null;
   gasPrice?: bigint;
+  confirm?: boolean;
 }
 
 export async function registerFlatToken({
@@ -23,11 +24,13 @@ export async function registerFlatToken({
   userTokenAddr,
   isMultisigAddress,
   gasPrice,
+  confirm,
 }: RegisterFlatTokenPropsI) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
   const gasPx = gasPrice ?? (await getGasPrice(walletClient.chain?.id));
+  const shouldConfirm = confirm ?? true;
   const estimateRegisterParams: EstimateContractGasParameters = {
     address: flatTokenAddr,
     abi: flatTokenAbi,
@@ -47,10 +50,12 @@ export async function registerFlatToken({
     gas: gasLimit,
   };
   return walletClient.writeContract(writeParams).then(async (tx) => {
-    await waitForTransactionReceipt(wagmiConfig, {
-      hash: tx,
-      timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
-    });
+    if (shouldConfirm) {
+      await waitForTransactionReceipt(wagmiConfig, {
+        hash: tx,
+        timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+      });
+    }
     return { hash: tx };
   });
 }

@@ -20,7 +20,7 @@ import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom, modalSelectedCurrencyAtom } from 'store/global-modals.store';
-import { flatTokenAtom, gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
+import { gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
@@ -32,7 +32,6 @@ import { MockSwap } from './elements/mock-swap/MockSwap';
 import styles from './DepositModal.module.scss';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { MethodE } from 'types/enums';
-import { FlatTokenSelect } from './elements/flat-token-selector/FlatTokenSelect';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
@@ -45,7 +44,6 @@ export const DepositModal = () => {
   const tradingClient = useAtomValue(tradingClientAtom);
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
-  const flatToken = useAtomValue(flatTokenAtom);
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
@@ -136,8 +134,6 @@ export const DepositModal = () => {
           </Typography>
         </div>
       )}
-
-      {flatToken !== undefined && flatToken.isFlatToken ? <FlatTokenSelect flatToken={flatToken} /> : null}
 
       {(isCedeEnabled || isOwltoEnabled) && (
         <div className={classnames(styles.section, styles.widgetButtons)}>

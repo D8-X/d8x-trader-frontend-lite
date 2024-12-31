@@ -1,5 +1,5 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address } from 'viem';
 
@@ -7,30 +7,22 @@ import { DropDownMenuItem } from 'components/dropdown-select/components/DropDown
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { modalSelectedCurrencyAtom } from 'store/global-modals.store';
-import { gasTokenSymbolAtom, poolsAtom, proxyAddrAtom, flatTokenAtom } from 'store/pools.store';
+import { gasTokenSymbolAtom, poolsAtom } from 'store/pools.store';
 
 import { CurrencyItemI } from './types';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { MethodE } from 'types/enums';
-import { fetchFlatTokenInfo } from 'blockchain-api/contract-interactions/fetchFlatTokenInfo';
-import { useAccount, usePublicClient } from 'wagmi';
 
 export const CurrencySelect = () => {
   const { t } = useTranslation();
 
   const { hasEnoughGasForFee } = useUserWallet();
-  const publicClient = usePublicClient();
-  const { address } = useAccount();
 
   const [selectedCurrency, setSelectedCurrency] = useAtom(modalSelectedCurrencyAtom);
   const pools = useAtomValue(poolsAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
-  const proxyAddr = useAtomValue(proxyAddrAtom);
-  const setFlatToken = useSetAtom(flatTokenAtom);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const isFetching = useRef(false);
 
   const currencyItems = useMemo(() => {
     const currencies: CurrencyItemI[] = [];
@@ -49,7 +41,7 @@ export const CurrencySelect = () => {
       const activePools = pools.filter((pool) => pool.isRunning);
       activePools.forEach((pool) =>
         currencies.push({
-          id: `${pool.poolId}`,
+          id: `${pool.poolId}-${pool.settleTokenAddr}`,
           name: pool.poolSymbol,
           settleToken: pool.settleSymbol,
           isGasToken: false,
@@ -61,7 +53,7 @@ export const CurrencySelect = () => {
       const inactivePools = pools.filter((pool) => !pool.isRunning);
       inactivePools.forEach((pool) =>
         currencies.push({
-          id: `${pool.poolId}`,
+          id: `${pool.poolId}-${pool.settleTokenAddr}`,
           name: pool.poolSymbol,
           settleToken: pool.settleSymbol,
           isGasToken: false,
@@ -81,22 +73,6 @@ export const CurrencySelect = () => {
       setSelectedCurrency(currencyItems[0]);
     }
   }, [currencyItems, hasEnoughGasForFee, setSelectedCurrency]);
-
-  useEffect(() => {
-    if (selectedCurrency?.contractAddress && proxyAddr && publicClient && address && !isFetching.current) {
-      isFetching.current = true;
-      console.log('fetching ....');
-      fetchFlatTokenInfo(publicClient, proxyAddr as Address, selectedCurrency?.contractAddress as Address, address)
-        .then((info) => {
-          console.log(info);
-          setFlatToken(info);
-        })
-        .catch((e) => console.error(e))
-        .finally(() => {
-          isFetching.current = false;
-        });
-    }
-  }, [address, proxyAddr, publicClient, selectedCurrency?.contractAddress, setFlatToken]);
 
   return (
     <SidesRow
