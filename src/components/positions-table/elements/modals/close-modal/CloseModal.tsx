@@ -23,12 +23,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { orderSubmitted } from 'network/broker';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import {
-  collateralToSettleConversionAtom,
-  proxyAddrAtom,
-  traderAPIAtom,
-  userSelectedTokenAtom,
-} from 'store/pools.store';
+import { collateralToSettleConversionAtom, proxyAddrAtom, traderAPIAtom, flatTokenAtom } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -54,7 +49,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const tradingClient = useAtomValue(tradingClientAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
-  const userSelectedToken = useAtomValue(userSelectedTokenAtom);
+  const flatToken = useAtomValue(flatTokenAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const { address, chain } = useAccount();
@@ -179,7 +174,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
             proxyAddr,
             minAmount: 0,
             decimals: settleTokenDecimals,
-            userSelectedToken,
+            registeredToken: flatToken?.registeredToken,
           }).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
             postOrder(tradingClient, traderAPI, {

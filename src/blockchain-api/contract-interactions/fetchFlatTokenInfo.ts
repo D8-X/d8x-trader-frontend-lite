@@ -1,7 +1,7 @@
-import type { Address, PublicClient } from 'viem';
+import { zeroAddress, type Address, type PublicClient } from 'viem';
 import { flatTokenAbi } from './flatTokenAbi';
 
-export async function getFlatTokenInfo(
+export async function fetchFlatTokenInfo(
   publicClient: PublicClient,
   proxyAddr: Address,
   tokenAddress: Address,
@@ -11,7 +11,7 @@ export async function getFlatTokenInfo(
     address: tokenAddress,
     abi: flatTokenAbi,
   } as const;
-  const [{ result: supportedTokens }, { result: traderRegisteredToken }, { result: controller }] =
+  const [{ result: supportedTokens }, { result: registeredToken }, { result: controller }] =
     await publicClient.multicall({
       contracts: [
         {
@@ -25,8 +25,11 @@ export async function getFlatTokenInfo(
     });
   return {
     isFlatToken: controller === proxyAddr,
-    supportedTokens: supportedTokens ?? [],
-    userRegisteredToken: traderRegisteredToken,
+    registeredToken:
+      controller === proxyAddr && registeredToken !== undefined && registeredToken !== zeroAddress
+        ? registeredToken
+        : undefined,
+    supportedTokens: supportedTokens === undefined ? [] : [...supportedTokens],
     controller,
   };
 }

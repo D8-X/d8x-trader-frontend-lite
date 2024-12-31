@@ -24,7 +24,7 @@ import {
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
-  userSelectedTokenAtom,
+  flatTokenAtom,
 } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
@@ -67,7 +67,7 @@ export const Add = memo(() => {
   const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const triggerAddInputFocus = useAtomValue(triggerAddInputFocusAtom);
-  const userSelectedToken = useAtomValue(userSelectedTokenAtom);
+  const flatToken = useAtomValue(flatTokenAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
@@ -183,7 +183,7 @@ export const Add = memo(() => {
       proxyAddr,
       minAmount: addAmount / 1.05,
       decimals: poolTokenDecimals,
-      userSelectedToken,
+      registeredToken: flatToken?.registeredToken,
     })
       .then(() => {
         setApprovalCompleted(true);
@@ -231,7 +231,7 @@ export const Add = memo(() => {
       proxyAddr,
       minAmount: addAmount / 1.05,
       decimals: poolTokenDecimals,
-      userSelectedToken,
+      registeredToken: flatToken?.registeredToken,
     })
       .then(() => {
         setApprovalCompleted(false);

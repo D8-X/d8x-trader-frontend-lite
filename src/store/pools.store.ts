@@ -5,6 +5,7 @@ import { atomWithStorage } from 'jotai/utils';
 import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import type {
   CollToSettleInfoI,
+  FlatTokenI,
   FundingI,
   MarginAccountI,
   OrderI,
@@ -284,5 +285,4 @@ export const collateralToSettleConversionAtom = atom(
   }
 );
 
-// @TODO: set this based on user selection
-export const userSelectedTokenAtom = atom<string | undefined>(undefined);
+export const flatTokenAtom = atom<FlatTokenI | undefined>(undefined);

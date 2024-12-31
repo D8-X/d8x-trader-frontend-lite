@@ -24,7 +24,7 @@ import { parseSymbol } from 'helpers/parseSymbol';
 import { getTradingFee, orderDigest, positionRiskOnTrade } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { proxyAddrAtom, traderAPIAtom, userSelectedTokenAtom } from 'store/pools.store';
+import { proxyAddrAtom, traderAPIAtom, flatTokenAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -71,7 +71,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
-  const userSelectedToken = useAtomValue(userSelectedTokenAtom);
+  const flatToken = useAtomValue(flatTokenAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
@@ -313,7 +313,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 proxyAddr,
                 minAmount: collateralDeposit,
                 decimals: settleTokenDecimals,
-                userSelectedToken,
+                registeredToken: flatToken?.registeredToken,
               })
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes

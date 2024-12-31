@@ -27,7 +27,7 @@ interface ApproveMarginTokenPropsI {
   proxyAddr: string;
   minAmount: number;
   decimals: number;
-  userSelectedToken?: string; // TODO: this should be the user selected token, in case the pool token is a flat token
+  registeredToken?: string; // TODO: this should be the user selected token, in case the pool token is a flat token
 }
 
 export async function approveMarginToken({
@@ -37,13 +37,13 @@ export async function approveMarginToken({
   proxyAddr,
   minAmount,
   decimals,
-  userSelectedToken,
+  registeredToken,
 }: ApproveMarginTokenPropsI) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
   const minAmountBN = parseUnits((1.05 * minAmount).toFixed(decimals), decimals);
-  const [{ result: allowance }, { result: registeredToken }, { result: tokenController }] = await readContracts(
+  const [{ result: allowance }, { result: onChainRegisteredToken }, { result: tokenController }] = await readContracts(
     wagmiConfig,
     {
       contracts: [
@@ -80,13 +80,13 @@ export async function approveMarginToken({
 
     let [tokenAddress, spender] = [settleTokenAddr as Address, proxyAddr as Address];
 
-    if (registeredToken !== undefined && tokenController !== undefined && tokenController === spender) {
+    if (onChainRegisteredToken !== undefined && tokenController !== undefined && tokenController === spender) {
       // this is a flat token
       spender = settleTokenAddr as Address; // flat token spends real tokens, proxy spends flat tokens and needs no approval
       // tokenAddress = user registered token
-      if (userSelectedToken !== undefined && registeredToken === zeroAddress) {
+      if (registeredToken !== undefined && onChainRegisteredToken === zeroAddress) {
         // user has to register first
-        tokenAddress = userSelectedToken as Address;
+        tokenAddress = registeredToken as Address;
         await registerFlatToken({
           walletClient,
           flatTokenAddr: settleTokenAddr as Address,
@@ -94,13 +94,13 @@ export async function approveMarginToken({
           isMultisigAddress,
           gasPrice,
         });
-      } else if (registeredToken !== zeroAddress) {
+      } else if (onChainRegisteredToken !== zeroAddress) {
         // already registered
-        if (registeredToken !== userSelectedToken) {
+        if (onChainRegisteredToken !== registeredToken) {
           // user selected token was sent and is not the one already registered
-          throw new Error(`Registered token (${registeredToken}) !=  User selected token (${userSelectedToken})`);
+          throw new Error(`Registered token (${onChainRegisteredToken}) !=  User selected token (${registeredToken})`);
         }
-        tokenAddress = registeredToken;
+        tokenAddress = onChainRegisteredToken;
       } else {
         // insufficient data
         throw new Error(`Account is not registered and no token selected`);
