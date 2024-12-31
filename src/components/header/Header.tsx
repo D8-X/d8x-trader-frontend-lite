@@ -50,6 +50,7 @@ import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { isDisabledPool } from 'utils/isDisabledPool';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
@@ -134,7 +135,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             ...pool,
             poolId,
           };
-        });
+        })
+        .filter(({ poolId }) => !isDisabledPool(chainId, poolId));
       setPools(pools);
 
       setCollaterals(pools.map((pool) => pool.settleSymbol));
@@ -180,7 +182,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       setOracleFactoryAddr(data.oracleFactoryAddr);
       setProxyAddr(data.proxyAddr);
     },
-    [setPools, setCollaterals, setPerpetuals, setAllPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
+    [chainId, setPools, setCollaterals, setPerpetuals, setAllPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
   );
 
   useEffect(() => {

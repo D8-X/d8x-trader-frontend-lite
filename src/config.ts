@@ -31,10 +31,12 @@ const {
   VITE_FIREBASE_APPID: firebaseAppId = '',
   VITE_FIREBASE_MEASUREMENTID: firebaseMeasurementId = '',
   VITE_DEFAULT_MARKETS: defaultMarkets = '',
+  VITE_DISABLED_POOLS: disabledPools = '',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
 const KEY_VALUE_SEPARATOR = '::';
+const VALUES_SEPARATOR = ',';
 
 function parseUrls(urlData: string): Record<string, string> {
   if (!urlData) {
@@ -55,6 +57,18 @@ function splitNumbers(numbers: string): number[] {
   return numbers.split(URLS_SEPARATOR).map(Number);
 }
 
+function parseNumbers(data: string): Record<string, number[]> {
+  if (!data) {
+    return {};
+  }
+  const allValues: Record<string, number[]> = {};
+  data.split(URLS_SEPARATOR).forEach((entry) => {
+    const parsed = entry.split(KEY_VALUE_SEPARATOR);
+    allValues[parsed[0]] = parsed[1].split(VALUES_SEPARATOR).map(Number);
+  });
+  return allValues;
+}
+
 export const config = {
   projectId,
   geonamesUsername,
@@ -73,6 +87,7 @@ export const config = {
   showChallengeModal: showChallengeModal === 'true',
   defaultTheme,
   defaultMarket: parseUrls(defaultMarkets),
+  disabledPools: parseNumbers(disabledPools),
 };
 
 export const pagesConfig = {
