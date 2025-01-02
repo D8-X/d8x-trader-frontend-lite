@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button, Typography } from '@mui/material';
 import { Dialog } from 'components/dialog/Dialog';
@@ -10,13 +10,15 @@ import { depositModalOpenAtom, flatTokentModalOpenAtom } from 'store/global-moda
 
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-import styles from './DepositModal.module.scss';
+import styles from './FlatTokenModal.module.scss';
 import { FlatTokenSelect } from './elements/flat-token-selector/FlatTokenSelect';
 import { flatTokenAtom, proxyAddrAtom, selectedPoolAtom, selectedStableAtom } from 'store/pools.store';
 import { Address } from 'viem';
 import { fetchFlatTokenInfo } from 'blockchain-api/contract-interactions/fetchFlatTokenInfo';
 import { registerFlatToken } from 'blockchain-api/contract-interactions/registerFlatToken';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { toast } from 'react-toastify';
+import { ToastContent } from 'components/toast-content/ToastContent';
 
 export const FlatTokenModal = () => {
   const { address, chainId } = useAccount();
@@ -32,41 +34,97 @@ export const FlatTokenModal = () => {
   const selectedPool = useAtomValue(selectedPoolAtom);
 
   const [title] = useState('');
+  const [txHash, setTxHash] = useState<Address | undefined>();
 
-  const isFetching = useRef(false);
+  const isBusyRef = useRef(false);
 
   const handleOnClose = useCallback(() => {
     setFlatTokentModalOpen(false);
   }, [setFlatTokentModalOpen]);
 
+  const isRegisterEnabled =
+    walletClient && flatToken?.isFlatToken && address && selectedPool && selectedStable && !txHash;
+
   const handleRegisterToken = () => {
-    if (walletClient && flatToken?.isFlatToken && address && selectedPool && selectedStable)
+    if (walletClient && flatToken?.isFlatToken && address && selectedPool && selectedStable && !isBusyRef.current) {
+      isBusyRef.current = true;
       registerFlatToken({
         walletClient: walletClient,
-        flatTokenAddr: selectedPool?.settleTokenAddr as Address,
+        flatTokenAddr: selectedPool.settleTokenAddr as Address,
         userTokenAddr: selectedStable,
         isMultisigAddress: isMultisigAddress,
+        confirm: false,
       })
         .then(({ hash }) => {
-          // TODO: toasts
-          console.log('registerToken tx:', hash);
-          setFlatTokentModalOpen(false);
+          setTxHash(hash);
         })
         .catch((e) => {
-          console.log(e);
+          toast.error(
+            <ToastContent
+              title={`Something went wrong`}
+              bodyLines={[
+                {
+                  label: 'Error',
+                  value: e,
+                },
+              ]}
+            />
+          );
+        })
+        .finally(() => {
+          isBusyRef.current = false;
         });
+    }
   };
 
+  const { isSuccess, isError } = useWaitForTransactionReceipt({
+    hash: txHash,
+    query: { enabled: !!txHash },
+  });
+
   useEffect(() => {
-    if (!isFetching.current) {
+    if (isSuccess) {
+      toast.success(
+        <ToastContent
+          title={`Success`}
+          bodyLines={[
+            {
+              label: 'Token',
+              value: selectedStable,
+            },
+          ]}
+        />
+      );
+      setTxHash(undefined);
+      setFlatTokentModalOpen(false);
+    }
+  }, [isSuccess, selectedStable, setFlatTokentModalOpen]);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(
+        <ToastContent
+          title={`Error`}
+          bodyLines={[
+            {
+              label: 'Txn',
+              value: txHash,
+            },
+          ]}
+        />
+      );
+      setTxHash(undefined);
+    }
+  }, [isError, txHash]);
+
+  useEffect(() => {
+    if (!isBusyRef.current) {
       setFlatToken(undefined);
       setSelectedStable(undefined);
       if (selectedPool?.settleTokenAddr && proxyAddr && publicClient && address) {
-        isFetching.current = true;
-        console.log('fetching ....', proxyAddr, selectedPool.settleTokenAddr, address);
+        isBusyRef.current = true;
         fetchFlatTokenInfo(publicClient, proxyAddr as Address, selectedPool.settleTokenAddr as Address, address)
           .then((info) => {
-            console.log(info);
             setFlatToken(info);
             if (info.isFlatToken && !info.registeredToken) {
               setDepositModalOpen(false);
@@ -75,7 +133,7 @@ export const FlatTokenModal = () => {
           })
           .catch()
           .finally(() => {
-            isFetching.current = false;
+            isBusyRef.current = false;
           });
       }
     }
@@ -123,7 +181,7 @@ export const FlatTokenModal = () => {
       </div>
 
       <div className={styles.row}>
-        <Button variant="primary" onClick={handleRegisterToken} disabled={!selectedStable}>
+        <Button variant="primary" onClick={handleRegisterToken} disabled={!isRegisterEnabled}>
           Save
         </Button>
       </div>
