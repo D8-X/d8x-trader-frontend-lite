@@ -1,15 +1,26 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { DropDownMenuItem } from 'components/dropdown-select/components/DropDownMenuItem';
 import { DropDownSelect } from 'components/dropdown-select/DropDownSelect';
 import { SidesRow } from 'components/sides-row/SidesRow';
-import { flatTokenAtom, selectedStableAtom } from 'store/pools.store';
+import { flatTokenAtom, poolsAtom, selectedStableAtom } from 'store/pools.store';
 
 export const FlatTokenSelect = () => {
   const flatToken = useAtomValue(flatTokenAtom);
   const [seletedStable, setSelectedStable] = useAtom(selectedStableAtom);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const pools = useAtomValue(poolsAtom);
+
+  const supportedTokens = useMemo(() => {
+    if (flatToken?.isFlatToken && pools) {
+      return flatToken.supportedTokens.map(({ symbol, address }) => {
+        const poolForToken = pools.find(({ settleTokenAddr }) => settleTokenAddr === address);
+        return { symbol: poolForToken?.poolSymbol ?? symbol, address: address };
+      });
+    }
+  }, [pools, flatToken]);
+
   return (
     <SidesRow
       leftSide={'Supported Tokens'}
@@ -21,14 +32,7 @@ export const FlatTokenSelect = () => {
           setAnchorEl={setAnchorEl}
           fullWidth
         >
-          {/* <DropDownMenuItem
-            option={'-'}
-            isActive={flatToken?.registeredToken == undefined}
-            onClick={() => {
-              setAnchorEl(null);
-            }}
-          /> */}
-          {flatToken?.supportedTokens.map((item) => (
+          {supportedTokens?.map((item) => (
             <DropDownMenuItem
               key={item.address}
               option={item.symbol}
