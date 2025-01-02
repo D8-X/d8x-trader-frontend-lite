@@ -11,6 +11,15 @@
   margin: $d8x-spacing * 6 0;
 }
 
+.row {
+  display: flex;
+  justify-content: center;
+
+  + .row {
+    margin-top: 16px;
+  }
+}
+
 .widgetButtons {
   display: flex;
   justify-content: space-between;

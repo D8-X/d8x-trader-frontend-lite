@@ -8,7 +8,7 @@ import { flatTokenAtom, poolsAtom, selectedStableAtom } from 'store/pools.store'
 
 export const FlatTokenSelect = () => {
   const flatToken = useAtomValue(flatTokenAtom);
-  const [seletedStable, setSelectedStable] = useAtom(selectedStableAtom);
+  const [selectedStable, setSelectedStable] = useAtom(selectedStableAtom);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pools = useAtomValue(poolsAtom);
 
@@ -27,7 +27,7 @@ export const FlatTokenSelect = () => {
       rightSide={
         <DropDownSelect
           id="token-dropdown"
-          selectedValue={seletedStable}
+          selectedValue={supportedTokens?.find(({ address }) => address === selectedStable)?.symbol}
           anchorEl={anchorEl}
           setAnchorEl={setAnchorEl}
           fullWidth
@@ -36,7 +36,7 @@ export const FlatTokenSelect = () => {
             <DropDownMenuItem
               key={item.address}
               option={item.symbol}
-              isActive={item.address === seletedStable}
+              isActive={item.address === selectedStable}
               onClick={() => {
                 setSelectedStable(item.address);
                 setAnchorEl(null);

@@ -180,10 +180,12 @@ export const FlatTokenModal = () => {
         </Typography>
       </div>
 
-      <div className={styles.row}>
-        <Button variant="primary" onClick={handleRegisterToken} disabled={!isRegisterEnabled}>
-          Save
-        </Button>
+      <div className={styles.button}>
+        <div className={styles.row}>
+          <Button variant="primary" onClick={handleRegisterToken} disabled={!isRegisterEnabled}>
+            Save
+          </Button>
+        </div>
       </div>
     </Dialog>
   );
