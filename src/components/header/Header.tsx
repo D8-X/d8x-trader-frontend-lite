@@ -121,18 +121,9 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       }
 
       const pools = data.pools
-        .filter((pool) => pool.isRunning)
+        .filter((pool) => pool.isRunning && pool.perpetuals.length > 0)
         .map((pool) => {
-          let poolId = 0;
-          if (traderAPI) {
-            try {
-              poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
-              console.log(pool.poolSymbol, poolId);
-            } catch (error) {
-              console.error(error);
-            }
-          }
-
+          const poolId = Math.floor(pool.perpetuals[0].id / 100_000);
           return {
             ...pool,
             poolId,
@@ -145,7 +136,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
       const perpetuals: PerpetualDataI[] = [];
 
-      data.pools.forEach((pool) => {
+      pools.forEach((pool) => {
         // Map over the pool.perpetuals array and filter out INVALID and INITIALIZING perpetuals
         const validPerpetuals = pool.perpetuals
           .filter((perpetual) => !INVALID_PERPETUAL_STATES.includes(perpetual.state))
