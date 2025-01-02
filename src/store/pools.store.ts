@@ -5,6 +5,7 @@ import { atomWithStorage } from 'jotai/utils';
 import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import type {
   CollToSettleInfoI,
+  FlatTokenI,
   FundingI,
   MarginAccountI,
   OrderI,
@@ -16,6 +17,7 @@ import type {
   PoolWithIdI,
   TradeHistoryI,
 } from 'types/types';
+import { Address } from 'viem';
 
 const SHOW_CHART_FOR_MOBILE_LS_KEY = 'd8x_showChartForMobile';
 
@@ -283,3 +285,6 @@ export const collateralToSettleConversionAtom = atom(
     });
   }
 );
+
+export const flatTokenAtom = atom<FlatTokenI | undefined>(undefined);
+export const selectedStableAtom = atom<Address | undefined>(undefined);

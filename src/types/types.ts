@@ -542,3 +542,14 @@ export interface MockSwapConfigI {
     marginTokenSwap: string;
   }[];
 }
+
+export interface SupportedTokenI {
+  symbol: string;
+  address: Address;
+}
+export interface FlatTokenI {
+  isFlatToken: boolean;
+  symbol: string;
+  registeredToken: Address | undefined;
+  supportedTokens: SupportedTokenI[];
+}

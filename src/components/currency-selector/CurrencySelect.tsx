@@ -41,7 +41,7 @@ export const CurrencySelect = () => {
       const activePools = pools.filter((pool) => pool.isRunning);
       activePools.forEach((pool) =>
         currencies.push({
-          id: `${pool.poolId}`,
+          id: `${pool.poolId}-${pool.settleTokenAddr}`,
           name: pool.poolSymbol,
           settleToken: pool.settleSymbol,
           isGasToken: false,
@@ -53,7 +53,7 @@ export const CurrencySelect = () => {
       const inactivePools = pools.filter((pool) => !pool.isRunning);
       inactivePools.forEach((pool) =>
         currencies.push({
-          id: `${pool.poolId}`,
+          id: `${pool.poolId}-${pool.settleTokenAddr}`,
           name: pool.poolSymbol,
           settleToken: pool.settleSymbol,
           isGasToken: false,
