@@ -30,11 +30,11 @@ export const FlatTokenSelect = () => {
           /> */}
           {flatToken?.supportedTokens.map((item) => (
             <DropDownMenuItem
-              key={item}
-              option={item}
-              isActive={item === seletedStable}
+              key={item.address}
+              option={item.symbol}
+              isActive={item.address === seletedStable}
               onClick={() => {
-                setSelectedStable(item);
+                setSelectedStable(item.address);
                 setAnchorEl(null);
               }}
             />

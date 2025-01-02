@@ -70,12 +70,14 @@ export const useMarkets = () => {
             })
         )
       );
-    return marketsList.filter((market) => {
-      return (
-        market.item.state === 'NORMAL' ||
-        (market.item.marketData?.assetType === AssetTypeE.Prediction &&
-          ['NORMAL', 'EMERGENCY', 'SETTLE', 'CLEARED'].includes(market.item.state))
-      );
-    });
+    return marketsList;
+
+    // .filter((market) => {
+    //   return (
+    //     market.item.state === 'NORMAL' ||
+    //     (market.item.marketData?.assetType === AssetTypeE.Prediction &&
+    //       ['NORMAL', 'EMERGENCY', 'SETTLE', 'CLEARED'].includes(market.item.state))
+    //   );
+    // });
   }, [pools, marketsData, orderBlock, traderAPI]);
 };
