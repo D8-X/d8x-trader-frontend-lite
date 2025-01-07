@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useReadContracts } from 'wagmi';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { INVALID_PERPETUAL_STATES } from 'appConstants';
 
 import { Menu } from '@mui/icons-material';
@@ -76,8 +76,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const { t } = useTranslation();
 
-  const { chain, chainId, address, isConnected, isReconnecting, isConnecting } = useAccount();
-
+  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const chainId = useChainId();
   const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
   const setPools = useSetAtom(poolsAtom);
