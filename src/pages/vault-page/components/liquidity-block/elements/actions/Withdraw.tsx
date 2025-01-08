@@ -9,7 +9,6 @@ import { useAccount, useWaitForTransactionReceipt, useWalletClient, useReadContr
 
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
-import { PERIOD_OF_1_DAY } from 'appConstants';
 import { executeLiquidityWithdrawal } from 'blockchain-api/contract-interactions/executeLiquidityWithdrawal';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
@@ -32,6 +31,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
+import { getLiquidityLockedPeriod } from 'helpers/getLiquidityLockedPeriod';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -181,6 +181,10 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
       });
   };
 
+  const lpLockPeriod = useMemo(() => {
+    return getLiquidityLockedPeriod(chain?.id);
+  }, [chain?.id]);
+
   const shareAmount = useMemo(() => {
     if (!withdrawals) {
       return;
@@ -192,13 +196,13 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     const latestWithdrawal = withdrawals[withdrawals.length - 1];
     const latestWithdrawalTimeElapsed = latestWithdrawal.timeElapsedSec * 1000;
 
-    const withdrawalTime = currentTime + PERIOD_OF_1_DAY - latestWithdrawalTimeElapsed;
+    const withdrawalTime = currentTime + lpLockPeriod - latestWithdrawalTimeElapsed;
     if (currentTime < withdrawalTime) {
       return 0;
     } else {
       return latestWithdrawal.shareAmount;
     }
-  }, [withdrawals]);
+  }, [lpLockPeriod, withdrawals]);
 
   const predictedAmount = useMemo(() => {
     if (!withdrawals) {

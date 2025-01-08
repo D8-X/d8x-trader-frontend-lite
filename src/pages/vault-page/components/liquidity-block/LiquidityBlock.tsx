@@ -36,7 +36,6 @@ export const LiquidityBlock = memo(() => {
     }
     const currentTime = Date.now();
     const latestWithdrawalTimeElapsed = withdrawals[withdrawals.length - 1].timeElapsedSec * 1000;
-
     const withdrawalTime = currentTime + lpLockPeriod - latestWithdrawalTimeElapsed;
     if (currentTime < withdrawalTime) {
       return format(new Date(withdrawalTime), 'MMMM d yyyy HH:mm');
