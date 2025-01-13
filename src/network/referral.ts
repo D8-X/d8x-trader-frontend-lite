@@ -1,6 +1,6 @@
 import type { APIReferPayload, APIReferralCodePayload, APIReferralCodeSelectionPayload } from '@d8x/perpetuals-sdk';
 import { ReferralCodeSigner, referralDomain, referralTypes } from '@d8x/perpetuals-sdk';
-import type { Account, Chain, Transport, WalletClient } from 'viem';
+import { getAddress, type Account, type Chain, type Transport, type WalletClient } from 'viem';
 
 import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
@@ -14,8 +14,6 @@ import type {
   TokenInfoI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
-import { verifyTypedData } from '@wagmi/core';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 function getReferralUrlByChainId(chainId: number) {
   const urlByFirstEnabledChainId = config.referralUrl[config.enabledChains[0]];
@@ -45,7 +43,7 @@ export async function postUpsertCode(
 ) {
   const payload: APIReferralCodePayload = {
     code,
-    referrerAddr,
+    referrerAddr: getAddress(referrerAddr),
     passOnPercTDF: Math.round((100 * 100 * traderRebatePerc) / (referrerRebatePerc + traderRebatePerc)),
     createdOn: Math.round(Date.now() / 1000),
     signature: '',
@@ -63,18 +61,6 @@ export async function postUpsertCode(
   if (!ReferralCodeSigner.checkNewCodeSignature(payload)) {
     throw new Error('Signature is not valid');
   } else {
-    console.log(payload);
-
-    const valid = await verifyTypedData(wagmiConfig, {
-      domain: referralDomain,
-      types: referralTypes,
-      message: typedData,
-      primaryType: 'NewCode',
-      address: walletClient.account.address,
-      signature: signature,
-    });
-    console.log({ valid });
-
     onSignatureSuccess();
     return fetch(`${getReferralUrlByChainId(chainId)}/upsert-code`, {
       ...getRequestOptions(RequestMethodE.Post),
