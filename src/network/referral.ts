@@ -14,6 +14,8 @@ import type {
   TokenInfoI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { verifyTypedData } from '@wagmi/core';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 function getReferralUrlByChainId(chainId: number) {
   const urlByFirstEnabledChainId = config.referralUrl[config.enabledChains[0]];
@@ -61,6 +63,18 @@ export async function postUpsertCode(
   if (!ReferralCodeSigner.checkNewCodeSignature(payload)) {
     throw new Error('Signature is not valid');
   } else {
+    console.log(payload);
+
+    const valid = await verifyTypedData(wagmiConfig, {
+      domain: referralDomain,
+      types: referralTypes,
+      message: typedData,
+      primaryType: 'NewCode',
+      address: walletClient.account.address,
+      signature: signature,
+    });
+    console.log({ valid });
+
     onSignatureSuccess();
     return fetch(`${getReferralUrlByChainId(chainId)}/upsert-code`, {
       ...getRequestOptions(RequestMethodE.Post),
