@@ -1,0 +1,36 @@
+@import '~styles/theme/theme.scss';
+
+.badge {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  border-radius: 2 * $d8x-border-radius;
+  padding: 3px 8px 2px;
+
+  &.withPoint {
+    &::before {
+      content: '\2022 ';
+      margin-right: $d8x-spacing;
+    }
+  }
+
+  &.crypto {
+    color: var(--d8x-badge-crypto-color);
+    background-color: var(--d8x-badge-crypto-background);
+  }
+
+  &.prediction {
+    color: var(--d8x-badge-prediction-color);
+    background-color: var(--d8x-badge-prediction-background);
+  }
+
+  &.fx {
+    color: var(--d8x-badge-fx-color);
+    background-color: var(--d8x-badge-fx-background);
+  }
+
+  &.commodity {
+    color: var(--d8x-badge-commodity-color);
+    background-color: var(--d8x-badge-commodity-background);
+  }
+}

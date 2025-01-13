@@ -1,0 +1,58 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.slippageOptions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2 * $d8x-spacing;
+
+  :global(.MuiButtonGroup-root) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: $d8x-spacing;
+  }
+
+  :global(.MuiButtonBase-root) {
+    flex: 1;
+    padding: 0;
+    min-width: 37px;
+    font-size: 14px;
+    font-weight: 400;
+
+    &.selected {
+      color: var(--d8x-button-secondary-color-selected);
+      border-color: var(--d8x-button-secondary-border-color-selected);
+      background-color: var(--d8x-button-secondary-background-selected);
+    }
+  }
+}
+
+.input {
+  @include transition(background-color);
+
+  width: 100px;
+
+  :global(.MuiInputAdornment-root) {
+    min-width: 10px;
+  }
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    @include transition(border-color);
+  }
+
+  &:global(.Mui-focused),
+  &:hover,
+  &:focus {
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--d8x-color-action);
+    }
+  }
+}

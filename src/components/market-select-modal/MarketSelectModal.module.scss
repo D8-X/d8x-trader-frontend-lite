@@ -1,0 +1,21 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.dialog {
+  :global(.MuiDialog-container) {
+    align-items: flex-start;
+  }
+
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 652px;
+  }
+}
+
+.optionList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 3 * $d8x-spacing;
+  padding: 4 * $d8x-spacing 0 0;
+}

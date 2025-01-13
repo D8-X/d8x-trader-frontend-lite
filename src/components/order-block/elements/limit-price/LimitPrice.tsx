@@ -3,9 +3,11 @@ import { useAtom, useAtomValue } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
+import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { InputE } from 'components/responsive-input/enums';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
@@ -44,7 +46,7 @@ export const LimitPrice = memo(() => {
         if (orderType === OrderTypeE.Limit) {
           const initialLimit = perpetualStatistics?.midPrice === undefined ? -1 : perpetualStatistics.midPrice;
           const userLimit =
-            perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo) && initialLimit > 0
+            perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo) && initialLimit > 0
               ? calculateProbability(initialLimit, orderBlock === OrderBlockE.Short)
               : initialLimit;
           setLimitPrice(`${userLimit}`);
@@ -68,6 +70,9 @@ export const LimitPrice = memo(() => {
 
   useEffect(() => {
     orderBlockChangedRef.current = true;
+    return () => {
+      orderBlockChangedRef.current = false;
+    };
   }, [orderBlock]);
 
   useEffect(() => {
@@ -78,7 +83,7 @@ export const LimitPrice = memo(() => {
 
       let isPredictionMarket = false;
       try {
-        isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+        isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
       } catch {
         // skip
       }
@@ -109,8 +114,8 @@ export const LimitPrice = memo(() => {
   }
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.labelHolder}>
+    <div className={styles.root}>
+      <div className={styles.labelHolder}>
         <InfoLabelBlock
           title={t('pages.trade.order-block.limit-price.title')}
           content={
@@ -120,17 +125,26 @@ export const LimitPrice = memo(() => {
             </>
           }
         />
-      </Box>
+      </div>
       <ResponsiveInput
         id="limit-size"
+        className={styles.responsiveInput}
         inputValue={inputValue}
         setInputValue={handleLimitPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={selectedPerpetual?.quoteCurrency}
+        currency={
+          <DynamicLogo
+            className={styles.dynamicLogo}
+            logoName={selectedPerpetual?.quoteCurrency.toLowerCase() ?? ''}
+            width={24}
+            height={24}
+          />
+        }
         placeholder="-"
         step={stepSize}
         min={-1}
+        type={InputE.Outlined}
       />
-    </Box>
+    </div>
   );
 });

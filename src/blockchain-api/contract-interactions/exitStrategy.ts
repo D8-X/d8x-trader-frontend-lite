@@ -1,10 +1,8 @@
 import { type Config } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import type { Dispatch, SetStateAction } from 'react';
-import { createWalletClient, http } from 'viem';
 
 import { HashZero } from 'appConstants';
-import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import { HedgeConfigI, OrderI } from 'types/types';
@@ -15,26 +13,26 @@ import { fundStrategyGas } from './fundStrategyGas';
 const DEADLINE = 60 * 60; // 1 hour from posting time
 
 export async function exitStrategy(
-  { chainId, walletClient, isMultisigAddress, symbol, traderAPI, limitPrice, strategyAddress }: HedgeConfigI,
+  {
+    chainId,
+    walletClient,
+    strategyClient,
+    isMultisigAddress,
+    symbol,
+    traderAPI,
+    limitPrice,
+    strategyAddress,
+  }: HedgeConfigI,
   sendTransactionAsync: SendTransactionMutateAsync<Config, unknown>,
   setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ) {
-  if (!walletClient.account?.address) {
+  if (!walletClient.account?.address || !strategyClient.account?.address) {
     throw new Error('Account not connected');
   }
 
-  //console.log('exit: generate strat account');
-  const hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
-    createWalletClient({
-      account,
-      chain: walletClient.chain,
-      transport: http(),
-    })
-  );
-
   //console.log('exit: fetch data');
   const position = await traderAPI
-    .positionRisk(hedgeClient.account.address, symbol)
+    .positionRisk(strategyClient.account.address, symbol)
     .then((pos) => pos[0])
     .catch(() => undefined);
   if (!position) {
@@ -55,11 +53,11 @@ export async function exitStrategy(
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
     deadline: Math.floor(Date.now() / 1000 + DEADLINE),
   };
-  const strategyAddr = strategyAddress ?? hedgeClient.account.address;
+  const strategyAddr = strategyAddress ?? strategyClient.account.address;
   const isDelegated = (await traderAPI
     .getReadOnlyProxyInstance()
     .isDelegate(strategyAddr, walletClient.account.address)) as boolean;
-  const { data } = await orderDigest(chainId, [order], hedgeClient.account.address);
+  const { data } = await orderDigest(chainId, [order], strategyClient.account.address);
 
   if (isDelegated) {
     //console.log('exit: post via user wallet');
@@ -72,13 +70,13 @@ export async function exitStrategy(
     });
   } else {
     await fundStrategyGas(
-      { walletClient, strategyAddress: strategyAddr, isMultisigAddress },
+      { walletClient, strategyClient, strategyAddress: strategyAddr, isMultisigAddress },
       sendTransactionAsync,
       setCurrentPhaseKey
     );
     //console.log('exit: post via strat wallet');
     setCurrentPhaseKey('pages.strategies.exit.phases.posting');
-    return postOrder(hedgeClient, traderAPI, {
+    return postOrder(strategyClient, traderAPI, {
       traderAddr: strategyAddr,
       orders: [order],
       signatures: [HashZero],

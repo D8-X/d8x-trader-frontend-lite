@@ -1,7 +1,9 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   overflow-x: auto;
+  border-radius: $d8x-border-radius;
 }
 
 .helperText {
@@ -22,6 +24,14 @@
 
   :global(.MuiTypography-root) {
     color: var(--d8x-color-text-table-cell);
+
+    &.buy {
+      color: var(--d8x-color-text-buy);
+    }
+
+    &.sell {
+      color: var(--d8x-color-text-sell);
+    }
   }
 
   tr {
@@ -31,6 +41,114 @@
       background-color: var(--d8x-color-background-table-even-row);
     }
   }
+}
+
+.perpetualData {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 3 * $d8x-spacing;
+
+  .iconsHolder {
+    position: relative;
+    width: 70px;
+    height: 40px;
+
+    .baseIcon,
+    .quoteIcon {
+      @include flex-center;
+
+      position: absolute;
+      inset: 0;
+      width: 40px;
+      height: 40px;
+      border: 1.5px solid var(--d8x-color-action);
+      background-color: var(--d8x-color-background-icon);
+      border-radius: 50%;
+
+      svg {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    .baseIcon {
+      right: inherit;
+      z-index: 2;
+    }
+
+    .quoteIcon {
+      left: inherit;
+      z-index: 1;
+
+      &:hover,
+      &:focus,
+      &:active {
+        z-index: 3;
+      }
+    }
+  }
+
+  .dataHolder {
+    display: flex;
+    flex-direction: column;
+
+    .pair {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .date {
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 12px;
+      color: var(--d8x-color-text-label-one);
+    }
+  }
+}
+
+.quantityData {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  .quantity {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 17px;
+  }
+
+  .side {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+}
+
+.priceData {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  .price {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+
+  .fee {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    color: var(--d8x-color-text-label-one);
+  }
+}
+
+.realizedProfit {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
 }
 
 .noData {

@@ -2,11 +2,10 @@ import { getMaxSignedPositionSize } from '@d8x/perpetuals-sdk';
 import { type Config } from '@wagmi/core';
 import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import type { Dispatch, SetStateAction } from 'react';
-import { createWalletClient, type Address, http, WalletClient, Transport, Chain, Account } from 'viem';
+import { type Address } from 'viem';
 
 import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
-import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { orderDigest } from 'network/network';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { HedgeConfigI, OrderI } from 'types/types';
@@ -24,6 +23,7 @@ export async function enterStrategy(
   {
     chainId,
     walletClient,
+    strategyClient,
     isMultisigAddress,
     symbol,
     traderAPI,
@@ -37,6 +37,7 @@ export async function enterStrategy(
   setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ): Promise<{
   hash?: Address;
+  orderIds: string[];
   interrupted?: boolean;
   interruptedMessage?: string;
 }> {
@@ -45,16 +46,8 @@ export async function enterStrategy(
   }
 
   let strategyAddr: Address;
-  let hedgeClient: WalletClient<Transport, Chain | undefined, Account> | undefined = undefined;
   if (!strategyAddress) {
-    hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
-      createWalletClient({
-        account,
-        chain: walletClient.chain,
-        transport: http(),
-      })
-    );
-    strategyAddr = hedgeClient!.account!.address;
+    strategyAddr = strategyClient.account!.address;
   } else {
     strategyAddr = strategyAddress;
   }
@@ -96,7 +89,7 @@ export async function enterStrategy(
     symbol: symbol,
     side: OrderSideE.Sell,
     type: OrderTypeE.Market,
-    quantity: Math.abs(orderSize * 0.98),
+    quantity: Math.abs(orderSize * 0.96),
     limitPrice: limitPrice,
     leverage: (0.99 * position.markPrice) / (indexPrice ?? position.markPrice),
     executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
@@ -114,23 +107,15 @@ export async function enterStrategy(
 
   // now we start sending txns --> need to generate strat wallet
   await fundStrategyGas(
-    { walletClient, strategyAddress: strategyAddr, isMultisigAddress },
+    { walletClient, strategyClient, strategyAddress: strategyAddr, isMultisigAddress },
     sendTransactionAsync,
     setCurrentPhaseKey
   );
-  if (hedgeClient === undefined) {
-    hedgeClient = await generateStrategyAccount(walletClient).then((account) =>
-      createWalletClient({
-        account,
-        chain: walletClient.chain,
-        transport: http(),
-      })
-    );
-  }
+
   // set user as delegate of strat wallet
   if (!isDelegated) {
     await setDelegate(
-      hedgeClient!,
+      strategyClient,
       traderAPI.getProxyAddress() as Address,
       walletClient.account.address,
       DELEGATE_INDEX
@@ -140,6 +125,7 @@ export async function enterStrategy(
   await fundStrategyMargin(
     {
       walletClient,
+      strategyClient,
       strategyAddress: strategyAddr,
       amount,
       settleTokenAddress: settleTokenAddr,
@@ -149,7 +135,7 @@ export async function enterStrategy(
   );
   // increase allowance if needed
   await approveMarginToken({
-    walletClient: hedgeClient!,
+    walletClient: strategyClient,
     settleTokenAddr,
     isMultisigAddress,
     proxyAddr: traderAPI.getProxyAddress(),
@@ -162,7 +148,7 @@ export async function enterStrategy(
 
   // post order
   setCurrentPhaseKey('pages.strategies.enter.phases.posting');
-  return postOrder(hedgeClient ? hedgeClient : walletClient, traderAPI, {
+  return postOrder(strategyClient, traderAPI, {
     traderAddr: strategyAddr,
     orders: [order],
     signatures: [HashZero],

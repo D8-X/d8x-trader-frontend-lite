@@ -33,6 +33,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { hasTpSlOrdersAtom } from '../order-block/elements/action-block/store';
 import { CloseModal } from './elements/modals/close-modal/CloseModal';
+import { ClaimModal } from './elements/modals/claim-modal/ClaimModal';
 import { ModifyModal } from './elements/modals/modify-modal/ModifyModal';
 import { ModifyTpSlModal } from './elements/modals/modify-tp-sl-modal/ModifyTpSlModal';
 import { ShareModal } from './elements/modals/share-modal/ShareModal';
@@ -64,6 +65,7 @@ export const PositionsTable = () => {
   const [isTpSlChangeModalOpen, setTpSlChangeModalOpen] = useState(false);
   const [isModifyModalOpen, setModifyModalOpen] = useState(false);
   const [isCloseModalOpen, setCloseModalOpen] = useState(false);
+  const [isClaimModalOpen, setClaimModalOpen] = useState(false);
   const [isShareModalOpen, setShareModalOpen] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<MarginAccountWithAdditionalDataI | null>();
   const [page, setPage] = useState(0);
@@ -88,6 +90,12 @@ export const PositionsTable = () => {
 
   const handlePositionClose = useCallback((position: MarginAccountWithAdditionalDataI) => {
     setCloseModalOpen(true);
+    setSelectedPosition(position);
+    isSelectedPositionSetRef.current = true;
+  }, []);
+
+  const handlePositionClaim = useCallback((position: MarginAccountWithAdditionalDataI) => {
+    setClaimModalOpen(true);
     setSelectedPosition(position);
     isSelectedPositionSetRef.current = true;
   }, []);
@@ -127,8 +135,8 @@ export const PositionsTable = () => {
   }, [pools, selectedPosition?.symbol]);
 
   const refreshPositions = useCallback(async () => {
-    if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
-      if (isAPIBusyRef.current || chainId !== Number(traderAPI.chainId)) {
+    if (address && isConnected && isEnabledChain(chainId) && isSDKConnected) {
+      if (isAPIBusyRef.current) {
         return;
       }
 
@@ -407,6 +415,7 @@ export const PositionsTable = () => {
                     handlePositionModify={handlePositionModify}
                     handlePositionShare={handlePositionShare}
                     handleTpSlModify={handleTpSlModify}
+                    handlePositionClaim={handlePositionClaim}
                   />
                 ))}
               {(!address || positions.length === 0) && (
@@ -435,6 +444,7 @@ export const PositionsTable = () => {
                 handlePositionModify={handlePositionModify}
                 handlePositionShare={handlePositionShare}
                 handleTpSlModify={handleTpSlModify}
+                handlePositionClaim={handlePositionClaim}
               />
             ))}
           {(!address || positions.length === 0) && (
@@ -496,6 +506,12 @@ export const PositionsTable = () => {
       />
       <CloseModal
         isOpen={isCloseModalOpen}
+        selectedPosition={selectedPosition}
+        poolByPosition={poolByPosition}
+        closeModal={closeCloseModal}
+      />
+      <ClaimModal
+        isOpen={isClaimModalOpen}
         selectedPosition={selectedPosition}
         poolByPosition={poolByPosition}
         closeModal={closeCloseModal}

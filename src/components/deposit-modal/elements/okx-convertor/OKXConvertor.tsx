@@ -10,6 +10,7 @@ import { Button, CircularProgress, Link, Typography } from '@mui/material';
 import { wrapOKB } from 'blockchain-api/contract-interactions/wrapOKB';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { SeparatorTypeE } from 'components/separator/enums';
 import { OrSeparator } from 'components/separator/OrSeparator';
 import { Translate } from 'components/translate/Translate';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
@@ -307,7 +308,7 @@ export const OKXConvertor = () => {
           </Button>
         </div>
       </div>
-      <OrSeparator className={styles.orSeparator} />
+      <OrSeparator className={styles.orSeparator} separatorType={SeparatorTypeE.Modal} />
     </div>
   );
 };

@@ -12,7 +12,7 @@
   color: var(--d8x-color-action);
 }
 
-.iconWrapper {
+.iconsWrapper {
   @include flex-center;
 
   height: 45px;
@@ -96,6 +96,11 @@
     align-items: center;
     gap: 2 * $d8x-spacing;
 
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
     > span {
       margin-bottom: -$d8x-spacing;
     }
@@ -166,7 +171,7 @@
     padding: $d8x-spacing;
   }
 
-  .iconWrapper {
+  .iconsWrapper {
     display: none;
   }
 }

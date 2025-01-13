@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, Typography } from '@mui/material';
 
+import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { InputE } from 'components/responsive-input/enums';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
@@ -30,8 +32,8 @@ export const TriggerPrice = memo(() => {
   const inputValueChangedRef = useRef(false);
 
   const stepSize = useMemo(
-    () => `${Math.min(1, +calculateStepSize(selectedPerpetual?.markPrice))}`,
-    [selectedPerpetual?.markPrice]
+    () => `${Math.min(1, +calculateStepSize(selectedPerpetual?.indexPrice))}`,
+    [selectedPerpetual?.indexPrice]
   );
 
   const handleTriggerPriceChange = useCallback(
@@ -42,7 +44,7 @@ export const TriggerPrice = memo(() => {
       } else {
         const initialTrigger = perpetualStatistics?.markPrice === undefined ? -1 : perpetualStatistics?.markPrice;
         const userTrigger =
-          perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo)
+          perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo)
             ? calculateProbability(initialTrigger, orderBlock === OrderBlockE.Short)
             : initialTrigger;
         setTriggerPrice(`${userTrigger}`);
@@ -70,7 +72,7 @@ export const TriggerPrice = memo(() => {
 
   return (
     <Box className={styles.root}>
-      <Box className={styles.label}>
+      <Box className={styles.labelHolder}>
         <InfoLabelBlock
           title={t('pages.trade.order-block.trigger-price.title')}
           content={
@@ -84,12 +86,21 @@ export const TriggerPrice = memo(() => {
       </Box>
       <ResponsiveInput
         id="trigger-size"
+        className={styles.responsiveInput}
         inputValue={inputValue}
         setInputValue={handleTriggerPriceChange}
         handleInputBlur={handleInputBlur}
-        currency={selectedPerpetual?.quoteCurrency}
+        currency={
+          <DynamicLogo
+            className={styles.dynamicLogo}
+            logoName={selectedPerpetual?.quoteCurrency.toLowerCase() ?? ''}
+            width={24}
+            height={24}
+          />
+        }
         step={stepSize}
         min={0}
+        type={InputE.Outlined}
       />
     </Box>
   );

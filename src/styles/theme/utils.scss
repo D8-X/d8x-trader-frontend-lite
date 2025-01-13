@@ -2,4 +2,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+}
+
+@mixin transition($styleProps, $duration: 125ms, $timingFunction: ease-in) {
+  transition: $styleProps $duration $timingFunction;
 }

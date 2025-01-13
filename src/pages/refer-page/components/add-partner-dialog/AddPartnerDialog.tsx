@@ -97,68 +97,71 @@ export const AddPartnerDialog = ({ isOpen, onClose }: AddPartnerDialogPropsI) =>
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <div className={styles.dialogRoot}>
-        <Typography variant="h5" className={styles.title}>
-          {t('pages.refer.manage-code.title-add')}
-        </Typography>
-        <div className={styles.baseRebateContainer}>
-          <Typography variant="bodySmall" fontWeight={600}>
-            {t('pages.refer.manage-code.commission-rate')}
-          </Typography>
-          <Typography variant="bodySmall" fontWeight={600}>
-            {commissionRate}%
-          </Typography>
-        </div>
-        <div className={styles.paddedContainer}>
-          <SidesRow
-            leftSide={t('pages.refer.manage-code.you')}
-            rightSide={`${sidesRowValues.userRate}%`}
-            rightSideStyles={styles.sidesRowValue}
-          />
-          <SidesRow
-            leftSide={t('pages.refer.manage-code.partner')}
-            rightSide={`${sidesRowValues.partnerRate}%`}
-            rightSideStyles={styles.sidesRowValue}
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.referrerKickbackInputContainer}>
-          <Typography variant="bodySmall">{t('pages.refer.manage-code.partner-kickback')}</Typography>
-          <OutlinedInput
-            type="text"
-            inputProps={{ min: 0, max: commissionRate }}
-            value={partnerRateInputValue}
-            onChange={handleKickbackRateChange}
-            className={styles.kickbackInput}
-            endAdornment="%"
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.codeInputContainer}>
-          <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
-            {t('pages.refer.manage-code.partner-address')}
-          </Typography>
-          <OutlinedInput
-            placeholder={t('pages.refer.manage-code.enter-addr')}
-            value={partnerAddressInputValue}
-            onChange={handlePartnerAddressChange}
-            className={styles.codeInput}
-          />
-          {!isAddressValid && partnerAddressInputTouchedRef.current && (
-            <Typography variant="bodySmall" color="red" component="p" mt={1}>
-              {t('pages.refer.manage-code.error')}
-            </Typography>
-          )}
-        </div>
-        <div className={styles.dialogActionsContainer}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      onCloseClick={onClose}
+      className={styles.dialog}
+      dialogTitle={t('pages.refer.manage-code.title-add')}
+      footerActions={
+        <>
           <Button variant="secondary" onClick={onClose} className={styles.cancelButton}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
           <Button variant="primary" disabled={!isAddressValid || !isEnabledChain(chainId)} onClick={handleReferPost}>
             {t('pages.refer.manage-code.add-partner')}
           </Button>
-        </div>
+        </>
+      }
+    >
+      <div className={styles.baseRebateContainer}>
+        <Typography variant="bodySmall" fontWeight={600}>
+          {t('pages.refer.manage-code.commission-rate')}
+        </Typography>
+        <Typography variant="bodySmall" fontWeight={600}>
+          {commissionRate}%
+        </Typography>
+      </div>
+      <div className={styles.paddedContainer}>
+        <SidesRow
+          leftSide={t('pages.refer.manage-code.you')}
+          rightSide={`${sidesRowValues.userRate}%`}
+          rightSideStyles={styles.sidesRowValue}
+        />
+        <SidesRow
+          leftSide={t('pages.refer.manage-code.partner')}
+          rightSide={`${sidesRowValues.partnerRate}%`}
+          rightSideStyles={styles.sidesRowValue}
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.referrerKickbackInputContainer}>
+        <Typography variant="bodySmall">{t('pages.refer.manage-code.partner-kickback')}</Typography>
+        <OutlinedInput
+          type="text"
+          inputProps={{ min: 0, max: commissionRate }}
+          value={partnerRateInputValue}
+          onChange={handleKickbackRateChange}
+          className={styles.kickbackInput}
+          endAdornment="%"
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.codeInputContainer}>
+        <Typography variant="bodySmall" className={styles.codeInputLabel} component="p">
+          {t('pages.refer.manage-code.partner-address')}
+        </Typography>
+        <OutlinedInput
+          placeholder={t('pages.refer.manage-code.enter-addr')}
+          value={partnerAddressInputValue}
+          onChange={handlePartnerAddressChange}
+          className={styles.codeInput}
+        />
+        {!isAddressValid && partnerAddressInputTouchedRef.current && (
+          <Typography variant="bodySmall" color="red" component="p" mt={1}>
+            {t('pages.refer.manage-code.error')}
+          </Typography>
+        )}
       </div>
     </Dialog>
   );

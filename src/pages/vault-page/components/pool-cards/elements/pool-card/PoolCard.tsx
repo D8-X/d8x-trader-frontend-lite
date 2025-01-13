@@ -1,19 +1,20 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { memo, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { Button } from '@mui/material';
 
+import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 import { getWeeklyAPY } from 'network/history';
 import { getAngleAPY, getEtherFiAPY } from 'network/network';
 import { clearInputsDataAtom } from 'store/order-block.store';
 import { selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 import { liquidityTypeAtom, triggerAddInputFocusAtom, triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
-import { getDynamicLogo } from 'utils/getDynamicLogo';
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
-import type { PoolWithIdI, TemporaryAnyT } from 'types/types';
+import type { PoolWithIdI } from 'types/types';
 import { LiquidityTypeE } from 'types/enums';
 
 import { DataColumn } from '../data-column/DataColumn';
@@ -34,6 +35,7 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
   const { t } = useTranslation();
 
   const { chainId } = useAccount();
+  const location = useLocation();
 
   const setSelectedPerpetual = useSetAtom(selectedPerpetualAtom);
   const clearInputsData = useSetAtom(clearInputsDataAtom);
@@ -56,7 +58,7 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
     }
 
     weeklyAPYRequestSentRef.current = true;
-    getWeeklyAPY(getEnabledChainId(chainId), pool.poolSymbol)
+    getWeeklyAPY(getEnabledChainId(chainId, location.hash), pool.poolSymbol)
       .then((data) => {
         setWeeklyAPY(data.allTimeAPY * 100);
       })
@@ -67,7 +69,11 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
       .finally(() => {
         weeklyAPYRequestSentRef.current = false;
       });
-  }, [chainId, pool.poolSymbol, triggerUserStatsUpdate]);
+
+    return () => {
+      weeklyAPYRequestSentRef.current = false;
+    };
+  }, [chainId, pool.poolSymbol, triggerUserStatsUpdate, location]);
 
   useEffect(() => {
     if (stUsdAPYRequestSentRef.current || pool.poolSymbol !== 'STUSD') {
@@ -86,6 +92,10 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
       .finally(() => {
         stUsdAPYRequestSentRef.current = false;
       });
+
+    return () => {
+      stUsdAPYRequestSentRef.current = false;
+    };
   }, [pool.poolSymbol, triggerUserStatsUpdate]);
 
   useEffect(() => {
@@ -106,6 +116,10 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
       .finally(() => {
         weethAPYRequestSentRef.current = false;
       });
+
+    return () => {
+      weethAPYRequestSentRef.current = false;
+    };
   }, [pool.poolSymbol, triggerUserStatsUpdate]);
 
   const yieldData = useMemo(() => {
@@ -163,14 +177,11 @@ export const PoolCard = memo(({ pool }: PoolCardPropsI) => {
     clearInputsData();
   };
 
-  const IconComponent = getDynamicLogo(pool.settleSymbol.toLowerCase()) as TemporaryAnyT;
   return (
     <div className={styles.root}>
       <div className={styles.header}>
         <div className={styles.logo}>
-          <Suspense fallback={null}>
-            <IconComponent width={80} height={80} />
-          </Suspense>
+          <DynamicLogo logoName={pool.settleSymbol.toLowerCase()} width={80} height={80} />
         </div>
         <div className={styles.symbol}>
           {pool.settleSymbol} {t('pages.vault.pool-card.vault')}

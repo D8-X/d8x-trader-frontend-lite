@@ -1,7 +1,5 @@
 import { useTranslation } from 'react-i18next';
 
-import { Button, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-
 import { Dialog } from 'components/dialog/Dialog';
 import { UsdcSwapWidget } from 'components/usdc-swap-widget/UsdcSwapWidget';
 import { Separator } from 'components/separator/Separator';
@@ -17,20 +15,18 @@ export const UsdcSwapModal = ({ isOpen, onClose }: UsdcSwapModalPropsI) => {
   const { t } = useTranslation();
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className={styles.root}>
-      <DialogTitle>{t('common.usdc-swap-widget.title')}</DialogTitle>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      onCloseClick={onClose}
+      className={styles.dialog}
+      dialogTitle={t('common.usdc-swap-widget.title')}
+    >
+      <div>{t('common.usdc-swap-widget.message')}</div>
       <Separator />
-      <DialogContent className={styles.dialogContent}>{t('common.usdc-swap-widget.message')}</DialogContent>
-      <Separator />
-      <DialogContent className={styles.dialogContent}>
+      <div>
         <UsdcSwapWidget />
-      </DialogContent>
-      <Separator />
-      <DialogActions className={styles.modalActions}>
-        <Button onClick={onClose} variant="secondary" size="small">
-          {t('common.info-modal.close')}
-        </Button>
-      </DialogActions>
+      </div>
     </Dialog>
   );
 };

@@ -5,13 +5,19 @@ import { getEarnings } from 'network/history';
 import { poolsAtom } from 'store/pools.store';
 
 import type { PoolValueI } from '../types/types';
-import { poolUsdPriceAtom } from './fetchPortfolio';
+import { poolUsdPriceAtom } from './fetchTotalReferralsRewards';
 import { UnrealizedPnLListAtomI } from './fetchUnrealizedPnL';
 
 export const totalEstimatedEarningsAtom = atom(0);
 export const earningsListAtom = atom<UnrealizedPnLListAtomI[]>([]);
 export const fetchEarningsAtom = atom(null, async (get, set, userAddress: Address, chainId: number) => {
   const poolUsdPrice = get(poolUsdPriceAtom);
+  if (Object.keys(poolUsdPrice).length === 0) {
+    set(totalEstimatedEarningsAtom, 0);
+    set(earningsListAtom, []);
+    return;
+  }
+
   const pools = get(poolsAtom);
 
   const earningsPromises = [];

@@ -2,6 +2,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { useMediaQuery, useTheme } from '@mui/material';
 
@@ -17,6 +18,7 @@ import styles from './GlobalStats.module.scss';
 
 export const GlobalStats = () => {
   const { t } = useTranslation();
+  const location = useLocation();
 
   const theme = useTheme();
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -46,7 +48,7 @@ export const GlobalStats = () => {
     }
 
     weeklyApiRequestSentRef.current = true;
-    getWeeklyAPY(getEnabledChainId(chainId), selectedPool.poolSymbol)
+    getWeeklyAPY(getEnabledChainId(chainId, location.hash), selectedPool.poolSymbol)
       .then((data) => {
         setWeeklyAPI(data.allTimeAPY * 100);
       })
@@ -57,7 +59,11 @@ export const GlobalStats = () => {
       .finally(() => {
         weeklyApiRequestSentRef.current = false;
       });
-  }, [chainId, selectedPool?.poolSymbol, triggerUserStatsUpdate]);
+
+    return () => {
+      weeklyApiRequestSentRef.current = false;
+    };
+  }, [chainId, selectedPool?.poolSymbol, triggerUserStatsUpdate, location]);
 
   useEffect(() => {
     setDCurrencyPrice(null);

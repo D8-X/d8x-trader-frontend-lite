@@ -15,8 +15,8 @@ import {
   withdrawalOnChainAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
-import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './PersonalStats.module.scss';
 
@@ -72,6 +72,10 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
       .finally(() => {
         earningsRequestSentRef.current = false;
       });
+
+    return () => {
+      earningsRequestSentRef.current = false;
+    };
   }, [chainId, address, selectedPool?.poolSymbol, triggerUserStatsUpdate]);
 
   return (
@@ -91,7 +95,14 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
           />
         </Box>
         <Typography variant="bodyMedium" className={styles.statValue}>
-          {userAmount !== null ? formatToCurrency(userAmount, `d${selectedPool?.settleSymbol}`, true) : '--'}
+          {userAmount !== null
+            ? formatToCurrency(
+                userAmount,
+                `d${selectedPool?.settleSymbol}`,
+                true,
+                Math.min(valueToFractionDigits(userAmount), 5)
+              )
+            : '--'}
         </Typography>
       </Box>
       <Box key="estimatedEarnings" className={styles.statContainer}>
@@ -113,19 +124,8 @@ export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
             ? formatToCurrency(
                 estimatedEarnings * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
                 selectedPool.settleSymbol,
-                false,
-                Math.max(
-                  2,
-                  Math.ceil(
-                    4 -
-                      Math.log10(
-                        Math.max(
-                          Math.abs(estimatedEarnings * (c2s.get(selectedPool.poolSymbol)?.value ?? 1)),
-                          0.0000000001
-                        )
-                      )
-                  )
-                )
+                true,
+                Math.min(valueToFractionDigits(estimatedEarnings * (c2s.get(selectedPool.poolSymbol)?.value ?? 1)), 5)
               )
             : '--'}
         </Typography>

@@ -1,0 +1,26 @@
+@import '~styles/theme/utils.scss';
+
+.miniButton {
+  @include transition(all);
+
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--d8x-color-border);
+  color: var(--d8x-color-text-main);
+  align-items: center;
+  padding-top: 8px;
+  max-width: 40px;
+  min-width: 40px;
+  max-height: 40px;
+
+  :global(.MuiTypography-root) {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  &:hover {
+    border: 1px solid var(--d8x-color-action);
+    background-color: var(--d8x-color-background-primary-hover);
+    color: var(--d8x-color-text-secondary);
+  }
+}

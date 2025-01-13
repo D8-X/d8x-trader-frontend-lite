@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { config } from 'config';
 import { mainWsLatestMessageTimeAtom, webSocketReadyAtom } from 'store/pools.store';
@@ -17,6 +18,7 @@ import { WebSocketContext, WebSocketContextI } from './WebSocketContext';
 
 export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const { chainId } = useAccount();
+  const location = useLocation();
 
   const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
   const latestMessageTime = useAtomValue(mainWsLatestMessageTimeAtom);
@@ -57,7 +59,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     wsRef.current?.close();
 
-    const wsUrl = config.wsUrl[getEnabledChainId(chainId)] || config.wsUrl.default;
+    const wsUrl = config.wsUrl[getEnabledChainId(chainId, location.hash)] || config.wsUrl.default;
     wsRef.current = createWebSocketWithReconnect(wsUrl);
     wsRef.current.onStateChange(setIsConnected);
 
@@ -69,7 +71,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
       wsRef.current?.off(handleMessage);
       wsRef.current?.close();
     };
-  }, [chainId]);
+  }, [chainId, location]);
 
   useEffect(() => {
     if (!isConnected) {

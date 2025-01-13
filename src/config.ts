@@ -20,7 +20,6 @@ const {
   VITE_ENABLED_PORTFOLIO_PAGE: enabledPortfolioPage = 'true',
   VITE_ENABLED_STRATEGIES_PAGE_BY_CHAINS: enabledStrategiesPageByChains = '',
   VITE_DEFAULT_THEME: defaultTheme = 'light',
-  VITE_ENABLED_LIFI_BY_CHAINS: enabledLifiByChains = '',
   VITE_ENABLED_OWLTO_BY_CHAINS: enabledOwltoByChains = '',
   VITE_ENABLED_CEDE_BY_CHAINS: enabledCedeByChains = '',
   VITE_WELCOME_MODAL: showChallengeModal = 'false',
@@ -31,10 +30,13 @@ const {
   VITE_FIREBASE_MESSAGINGSENDERID: firebaseMessengerId = '',
   VITE_FIREBASE_APPID: firebaseAppId = '',
   VITE_FIREBASE_MEASUREMENTID: firebaseMeasurementId = '',
+  VITE_DEFAULT_MARKETS: defaultMarkets = '',
+  VITE_DISABLED_POOLS: disabledPools = '',
 } = import.meta.env;
 
 const URLS_SEPARATOR = ';';
 const KEY_VALUE_SEPARATOR = '::';
+const VALUES_SEPARATOR = ',';
 
 function parseUrls(urlData: string): Record<string, string> {
   if (!urlData) {
@@ -55,6 +57,18 @@ function splitNumbers(numbers: string): number[] {
   return numbers.split(URLS_SEPARATOR).map(Number);
 }
 
+function parseNumbers(data: string): Record<string, number[]> {
+  if (!data) {
+    return {};
+  }
+  const allValues: Record<string, number[]> = {};
+  data.split(URLS_SEPARATOR).forEach((entry) => {
+    const parsed = entry.split(KEY_VALUE_SEPARATOR);
+    allValues[parsed[0]] = parsed[1].split(VALUES_SEPARATOR).map(Number);
+  });
+  return allValues;
+}
+
 export const config = {
   projectId,
   geonamesUsername,
@@ -68,11 +82,12 @@ export const config = {
   priceFeedEndpoint: parseUrls(priceFeedEndpoints),
   httpRPC: parseUrls(httpRPCs),
   enabledChains: splitNumbers(enabledChains),
-  enabledLiFiByChains: splitNumbers(enabledLifiByChains),
   enabledOwltoByChains: splitNumbers(enabledOwltoByChains),
   enabledCedeByChains: splitNumbers(enabledCedeByChains),
   showChallengeModal: showChallengeModal === 'true',
   defaultTheme,
+  defaultMarket: parseUrls(defaultMarkets),
+  disabledPools: parseNumbers(disabledPools),
 };
 
 export const pagesConfig = {

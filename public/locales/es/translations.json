@@ -67,6 +67,8 @@
             "remove": "Remover"
           },
           "close": "Cerrar Posición",
+          "claim": "Retirar tu dinero",
+          "claim-details": "Este mercado ha terminado y se está liquidando. Reclama tus fondos ahora.",
           "share": "Compartir posición",
           "add": "Añadir Margen",
           "remove": "Remover Margen",
@@ -91,6 +93,9 @@
         "toasts": {
           "submit-close": {
             "title": "Cerrando Posición"
+          },
+          "submit-claim": {
+            "title": "Reclamando fondos"
           },
           "submitted": {
             "title": "Orden Confirmada",
@@ -123,6 +128,10 @@
           "trade-executed": {
             "title": "Orden Ejecutada",
             "body": "Símbolo"
+          },
+          "trade-failed": {
+            "title": "Orden Fallida",
+            "body": "Comprueba tus ajustes de deslizamiento y saldo de tu cartera y vuelve a intentarlo."
           },
           "order-failed": {
             "title": "Orden Fallida",
@@ -188,6 +197,7 @@
       },
       "history-table": {
         "table-title": "Historial de Órdenes",
+        "body": "",
         "table-header": {
           "time": "Fecha",
           "perpetual": "Perpetuo",
@@ -199,7 +209,8 @@
         },
         "table-content": {
           "connect": "Por favor conecte su cartera",
-          "no-open": "No hay órdenes"
+          "no-open": "Aún no hay historial de operaciones",
+          "no-open-note": "Comience a operar para ver su historial"
         },
         "history-block-mobile": {
           "symbol": "Símbolo"
@@ -226,6 +237,8 @@
           "short": "Venta"
         },
         "prediction": {
+          "title": "Mercado de predicciones",
+          "note": "¡Predice el resultado y comienza a apostar ahora!",
           "yes": "Si",
           "no": "No",
           "bet": "Apuesta"
@@ -367,7 +380,9 @@
           "validity-checks": "Comprobación de validez",
           "cancel": "Cancelar",
           "confirm": "Confirmar",
-          "estimated-price": "Precio de entrada estimado"
+          "estimated-price": "Precio de entrada estimado",
+          "prediction-header": "Comparison to Polymarket",
+          "prediction-content": "Your order costs {{predFeeInCC}}. In addition you deposit {{collateralDeposit}} as margin, which you get back if you bet correctly. On Polymarket the same order costs {{costs}}."
         }
       },
       "filter": {
@@ -668,7 +683,10 @@
         "confirm-modal": {
           "title": "Salir de la estrategia",
           "text": "¿Estás seguro de que quieres salir?",
-          "confirm-button": "Salida"
+          "title-claim": "Retirar tu dinero",
+          "text-claim": "¿Quieres retirar tu dinero?",
+          "confirm-button": "Salida",
+          "confirm-button-claim": "Retirar"
         },
         "toasts": {
           "tx-submitted": {
@@ -686,6 +704,7 @@
         }
       },
       "claim-funds": {
+        "claim-button": "Reclamar fondos",
         "toasts": {
           "tx-submitted": {
             "title": "Sus fondos se reclamaron exitosamente",
@@ -736,6 +755,8 @@
     "external-service-status": "Estado de los servicios externos"
   },
   "common": {
+    "cost-of-order": "Costo",
+    "potential-return": "Rendimiento potencial",
     "change-language": "Cambiar Idioma",
     "wallet-connect": "Conectar",
     "account-button": "Cuenta",
@@ -746,8 +767,12 @@
     "address-label": "Direccion",
     "deposit-gas": "Deposite gasolina",
     "swap-bridge": "Swap/Bridge",
-    "offramp-button": "Deposit from CEX",
+    "offramp-button": "Depósito desde CEX",
+    "learn-more": "Más información...",
+    "view-all": "Ver todo",
     "max": "Max:",
+    "yes": "Sí",
+    "no": "No",
     "copied": "Copiado",
     "copy-error": "Apareció un error al copiar al portapapeles.",
     "page-reload": {
@@ -765,11 +790,6 @@
         "1": "Visita",
         "2": "para más información."
       }
-    },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
     },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
@@ -859,8 +879,8 @@
         "crypto": "Cripto",
         "fx": "FX",
         "all": "Todos",
-        "prediction": "Predicción",
-        "commodity": "Productos Basicos",
+        "polymarket": "Predicción",
+        "metal": "Productos Basicos",
         "closed": "Cerrado"
       },
       "search": "Buscar...",

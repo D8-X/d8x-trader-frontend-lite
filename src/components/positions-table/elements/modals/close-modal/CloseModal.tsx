@@ -5,21 +5,14 @@ import { toast } from 'react-toastify';
 import { type Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import {
-  Button,
-  Checkbox,
-  CircularProgress,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from '@mui/material';
+import { Button, Checkbox, CircularProgress, Typography } from '@mui/material';
 
 import { HashZero } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
+import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
@@ -164,9 +157,10 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
       type: OrderTypeE.Market.toUpperCase(),
       quantity: selectedPosition.positionNotionalBaseCCY,
-      executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
-      reduceOnly: true,
       leverage: 0,
+      reduceOnly: true,
+      executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
+      deadline: Math.floor(Date.now() / 1000 + 60 * 60 * 24),
     };
 
     orderDigest(chain.id, [closeOrder], address)
@@ -259,82 +253,88 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const parsedSymbol = parseSymbol(selectedPosition?.symbol);
 
   return (
-    <Dialog open={isOpen} className={modalStyles.root}>
-      <DialogTitle>{t('pages.trade.positions-table.modify-modal.close')}</DialogTitle>
-      <Separator />
-      <DialogContent>
-        <div className={modalStyles.newPositionHeader}>
-          <Typography variant="bodyMedium" className={modalStyles.centered}>
-            {t('pages.trade.positions-table.modify-modal.pos-details.title-existing')}
-          </Typography>
-        </div>
-        <div className={modalStyles.newPositionDetails}>
-          <SidesRow
-            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')}
-            rightSide={formatToCurrency(selectedPosition?.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
-          />
-          <SidesRow
-            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.side')}
-            rightSide={
-              selectedPosition?.side === 'BUY'
-                ? t('pages.trade.positions-table.table-content.buy')
-                : t('pages.trade.positions-table.table-content.sell')
-            }
-          />
-          <SidesRow
-            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')}
-            rightSide={
-              !selectedPosition || selectedPosition.liqPrice < 0
-                ? `- ${parsedSymbol?.quoteCurrency}`
-                : formatToCurrency(selectedPosition.liqPrice, parsedSymbol?.quoteCurrency, true)
-            }
-          />
-          <SidesRow
-            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.margin')}
-            rightSide={`${
-              poolByPosition
-                ? formatToCurrency(
-                    selectedPosition.collateralCC * (c2s.get(poolByPosition.poolSymbol)?.value ?? 1),
-                    poolByPosition.settleSymbol,
-                    true
-                  )
-                : '-'
-            }${selectedPosition && ` (${Math.round(selectedPosition.leverage * 100) / 100}x)`}`}
-          />
-          <SidesRow
-            leftSide={t('pages.trade.positions-table.modify-modal.pos-details.unrealized')}
-            rightSide={formatToCurrency(selectedPosition?.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
-            rightSideStyles={
-              selectedPosition && selectedPosition.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative
-            }
-          />
-        </div>
-      </DialogContent>
+    <Dialog
+      open={isOpen}
+      onClose={closeModal}
+      onCloseClick={closeModal}
+      className={modalStyles.root}
+      dialogTitle={t('pages.trade.positions-table.modify-modal.close')}
+      footerActions={
+        <>
+          <Button onClick={closeModal} variant="secondary" size="small">
+            {t('pages.trade.positions-table.modify-modal.cancel')}
+          </Button>
+          <GasDepositChecker multiplier={3n}>
+            <Button
+              onClick={handleClosePositionConfirm}
+              variant="primary"
+              size="small"
+              disabled={loading || requestSent}
+            >
+              {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+              {t('pages.trade.positions-table.modify-modal.confirm')}
+            </Button>
+          </GasDepositChecker>
+        </>
+      }
+    >
+      <div className={modalStyles.newPositionHeader}>
+        <Typography variant="bodyMedium" className={modalStyles.centered}>
+          {t('pages.trade.positions-table.modify-modal.pos-details.title-existing')}
+        </Typography>
+      </div>
+      <div className={modalStyles.newPositionDetails}>
+        <SidesRow
+          leftSide={t('pages.trade.positions-table.modify-modal.pos-details.size')}
+          rightSide={formatToCurrency(selectedPosition?.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true)}
+        />
+        <SidesRow
+          leftSide={t('pages.trade.positions-table.modify-modal.pos-details.side')}
+          rightSide={
+            selectedPosition?.side === 'BUY'
+              ? t('pages.trade.positions-table.table-content.buy')
+              : t('pages.trade.positions-table.table-content.sell')
+          }
+        />
+        <SidesRow
+          leftSide={t('pages.trade.positions-table.modify-modal.pos-details.liq-price')}
+          rightSide={
+            !selectedPosition || selectedPosition.liqPrice < 0
+              ? `- ${parsedSymbol?.quoteCurrency}`
+              : formatToCurrency(selectedPosition.liqPrice, parsedSymbol?.quoteCurrency, true)
+          }
+        />
+        <SidesRow
+          leftSide={t('pages.trade.positions-table.modify-modal.pos-details.margin')}
+          rightSide={`${
+            poolByPosition
+              ? formatToCurrency(
+                  selectedPosition.collateralCC * (c2s.get(poolByPosition.poolSymbol)?.value ?? 1),
+                  poolByPosition.settleSymbol,
+                  true
+                )
+              : '-'
+          }${selectedPosition && ` (${Math.round(selectedPosition.leverage * 100) / 100}x)`}`}
+        />
+        <SidesRow
+          leftSide={t('pages.trade.positions-table.modify-modal.pos-details.unrealized')}
+          rightSide={formatToCurrency(selectedPosition?.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
+          rightSideStyles={
+            selectedPosition && selectedPosition.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative
+          }
+        />
+      </div>
       {hasTpSl && (
         <>
-          <Separator />
-          <DialogContent>
-            <div className={modalStyles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
-              <SidesRow
-                leftSide={t('pages.trade.positions-table.modify-modal.pos-details.close-tp-sl')}
-                rightSide={<Checkbox checked={closeOpenOrders} className={modalStyles.checkbox} />}
-              />
-            </div>
-          </DialogContent>
+          <Separator separatorType={SeparatorTypeE.Modal} />
+          <div className={modalStyles.actionBlock} onClick={() => setCloseOpenOrders((prev) => !prev)}>
+            <SidesRow
+              leftSide={t('pages.trade.positions-table.modify-modal.pos-details.close-tp-sl')}
+              rightSide={<Checkbox checked={closeOpenOrders} className={modalStyles.checkbox} />}
+            />
+          </div>
         </>
       )}
-      <Separator />
-      <DialogActions>
-        <Button onClick={closeModal} variant="secondary" size="small">
-          {t('pages.trade.positions-table.modify-modal.cancel')}
-        </Button>
-        <GasDepositChecker multiplier={3n}>
-          <Button onClick={handleClosePositionConfirm} variant="primary" size="small" disabled={loading || requestSent}>
-            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-            {t('pages.trade.positions-table.modify-modal.confirm')}
-          </Button>
-        </GasDepositChecker>
-      </DialogActions>
     </Dialog>
   );
 });

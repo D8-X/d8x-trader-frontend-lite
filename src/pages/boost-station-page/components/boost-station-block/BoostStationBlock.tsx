@@ -72,6 +72,11 @@ export const BoostStationBlock = memo(() => {
 
     fetchData();
     fetchRankData();
+
+    return () => {
+      isRankRequestSent.current = false;
+      isDataRequestSent.current = false;
+    };
   }, [fetchData, fetchRankData]);
 
   useEffect(() => {
@@ -94,6 +99,10 @@ export const BoostStationBlock = memo(() => {
           isParamsRequestSent.current = false;
         });
     }
+
+    return () => {
+      isParamsRequestSent.current = false;
+    };
   }, []);
 
   const boostByChainId = boosts.find((boost) => boost.chainId === chainId);

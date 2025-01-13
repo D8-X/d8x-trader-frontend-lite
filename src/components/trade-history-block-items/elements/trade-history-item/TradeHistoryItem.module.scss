@@ -1,0 +1,107 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.root {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--d8x-color-background);
+  border-radius: $d8x-border-radius;
+  padding: 3 * $d8x-spacing;
+  gap: 2 * $d8x-spacing;
+}
+
+.iconsHolder {
+  position: relative;
+  width: 50px;
+  height: 30px;
+
+  .baseIcon,
+  .quoteIcon {
+    @include flex-center;
+
+    position: absolute;
+    inset: 0;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid var(--d8x-button-select-border-color);
+    background-color: var(--d8x-color-background-icon);
+    border-radius: 50%;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .baseIcon {
+    right: inherit;
+    z-index: 2;
+  }
+
+  .quoteIcon {
+    left: inherit;
+    z-index: 1;
+
+    &:hover,
+    &:focus,
+    &:active {
+      z-index: 3;
+    }
+  }
+}
+
+.dataHolder {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2 * $d8x-spacing;
+
+  .leftBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+
+    .pair {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .date {
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 12px;
+      color: var(--d8x-color-text-label-one);
+    }
+  }
+
+  .rightBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 1;
+
+    .amount {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+
+    .side {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 14px;
+
+      &.buy {
+        color: var(--d8x-color-text-buy);
+      }
+
+      &.sell {
+        color: var(--d8x-color-text-sell);
+      }
+    }
+  }
+}

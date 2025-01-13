@@ -1,4 +1,4 @@
-import { PerpetualStaticInfo, TraderInterface } from '@d8x/perpetuals-sdk';
+import { PerpetualState, PerpetualStaticInfo, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { ReactElement, ReactNode } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,19 +28,7 @@ export interface AppDimensionsI {
   height?: number;
 }
 
-export interface PerpetualI {
-  id: number;
-  state: string;
-  baseCurrency: string;
-  quoteCurrency: string;
-  indexPrice: number;
-  collToQuoteIndexPrice: number;
-  markPrice: number;
-  midPrice: number;
-  currentFundingRateBps: number;
-  openInterestBC: number;
-  isMarketClosed: boolean;
-}
+export interface PerpetualI extends PerpetualState {}
 
 export interface PerpetualDataI {
   id: number;
@@ -49,6 +37,7 @@ export interface PerpetualDataI {
   quoteCurrency: string;
   symbol: string;
   isPredictionMarket: boolean;
+  state: string;
 }
 
 export interface SymbolDataI {
@@ -299,6 +288,7 @@ export interface TableHeaderI<T> {
   align: AlignE;
   field?: keyof T;
   fieldType?: FieldTypeE;
+  hidden?: boolean;
 }
 
 export interface TvChartCandleI {
@@ -464,6 +454,7 @@ export interface HedgeConfigI {
   chainId: number; //42161 | 421614;
   symbol: string; // 'ETH-USD-WEETH';
   walletClient: WalletClient;
+  strategyClient: WalletClient;
   isMultisigAddress: boolean | null;
   traderAPI: TraderInterface;
   amount?: number; // only used to open
@@ -471,6 +462,7 @@ export interface HedgeConfigI {
   indexPrice?: number; // only used to open - defaults to mark price
   limitPrice?: number; // defaults to mark price to open, undefined to close (market w/o slippage protection)
   strategyAddress?: Address; // strategy address, if already known
+  strategyAddressBalanceBigint?: bigint;
 }
 
 export interface StrategyAddressI {
@@ -490,4 +482,63 @@ export interface CollToSettleInfoI {
   poolSymbol: string;
   settleSymbol: string;
   value: number;
+}
+
+export interface PredictionMarketRateI {
+  asset_address: Address;
+  rewards_daily_rate: number;
+}
+
+export interface PredictionMarketTokenI {
+  token_id: string;
+  outcome: string;
+  price: number;
+  winner: boolean;
+}
+
+export interface PredictionMarketMetaDataI {
+  enable_order_book: boolean;
+  active: boolean;
+  closed: boolean;
+  archived: boolean;
+  accepting_orders: boolean;
+  accepting_order_timestamp: number;
+  minimum_order_size: number;
+  minimum_tick_size: number;
+  condition_id: Address;
+  question_id: Address;
+  question: string;
+  description: string;
+  market_slug: string;
+  end_date_iso: string;
+  game_start_time: string;
+  seconds_delay: number;
+  fpmm: string;
+  maker_base_fee: number;
+  taker_base_fee: number;
+  notifications_enabled: boolean;
+  neg_risk: boolean;
+  neg_risk_market_id: Address;
+  neg_risk_request_id: Address;
+  icon: string;
+  image: string;
+  rewards: {
+    rates: PredictionMarketRateI[];
+    min_size: number;
+    max_spread: number;
+  };
+  is_50_50_outcome: boolean;
+  tokens: PredictionMarketTokenI[];
+  tags: string[];
+}
+
+export interface MockSwapConfigI {
+  chainId: number;
+  pools: {
+    id: number;
+    marginToken: string;
+    decimals: number;
+    marginTokenAddress: string;
+    marginTokenSwap: string;
+  }[];
 }

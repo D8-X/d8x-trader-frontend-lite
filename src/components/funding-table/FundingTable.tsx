@@ -101,7 +101,7 @@ export const FundingTable = memo(() => {
   const fundingListWithSymbol = useMemo(() => {
     return fundingList.map((funding): FundingWithSymbolDataI => {
       const perpetual = perpetuals.find(({ id }) => id === funding.perpetualId);
-      const settleSymbol = perpetual?.poolName ? c2s.get(perpetual?.poolName)?.settleSymbol ?? '' : '';
+      const settleSymbol = perpetual?.poolName ? (c2s.get(perpetual?.poolName)?.settleSymbol ?? '') : '';
       return {
         ...funding,
         amount: -funding.amount,

@@ -1,4 +1,5 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils';
 
 .root {
   position: relative;
@@ -6,13 +7,43 @@
   background-color: var(--d8x-color-background-items);
   padding: $d8x-spacing * 6 $d8x-spacing $d8x-spacing * 2.25 $d8x-spacing * 4;
   border-radius: $d8x-border-radius;
+  border: 1px solid var(--d8x-block-border-color);
 }
 
-.periodsHolder {
-  margin-top: $d8x-spacing * 2;
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $d8x-spacing * 4;
   padding-right: $d8x-spacing * 3;
-  padding-bottom: $d8x-spacing * 4;
 }
+
+.selectHolder {
+  @include flex-center;
+}
+
+.chartWrapper {
+  position: relative;
+}
+
+.bold {
+ font-size: 14px;
+ font-weight: 600;
+ line-height: 16px;
+}
+
+.italic {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+ }
+
+ .textWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+ }
 
 .loaderHolder {
   position: absolute;
@@ -22,4 +53,24 @@
   justify-content: center;
   align-items: center;
   background-color: var(--d8x-color-background-loader);
+}
+
+@media screen and ($d8x-breakpoint-max-sm) {
+  .heading {
+    flex-direction: column;
+  }
+
+  .selectHolder {
+    @include flex-center;
+  }
+
+  .periodsHolder {
+    margin-top: $d8x-spacing * 4;
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-xs) {
+  .periodsHolder {
+    margin-top: 0;
+  }
 }

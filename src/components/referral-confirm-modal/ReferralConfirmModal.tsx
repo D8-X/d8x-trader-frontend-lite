@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAccount, useWalletClient } from 'wagmi';
 
-import { Button, DialogActions, DialogTitle, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { connectModalOpenAtom } from 'store/global-modals.store';
@@ -99,6 +99,10 @@ export const ReferralConfirmModal = memo(() => {
       .finally(() => {
         activeCodeRequestRef.current = false;
       });
+
+    return () => {
+      activeCodeRequestRef.current = false;
+    };
   }, [refId, chainId, address]);
 
   useEffect(() => {
@@ -115,6 +119,10 @@ export const ReferralConfirmModal = memo(() => {
       .finally(() => {
         codeRebateRequestRef.current = false;
       });
+
+    return () => {
+      codeRebateRequestRef.current = false;
+    };
   }, [chainId, refId]);
 
   if (!refId) {
@@ -127,61 +135,66 @@ export const ReferralConfirmModal = memo(() => {
   const refIdIsValid = refIdTraderRebate !== null;
 
   return (
-    <Dialog open={showModal} className={styles.dialog}>
-      <DialogTitle>{t('pages.refer.use-code.title')}</DialogTitle>
-      <div className={styles.dialogRoot}>
-        <div className={styles.codeContainer}>
-          <Typography variant="bodyMedium" fontWeight={600}>
-            {t('pages.refer.use-code.base')}
-          </Typography>
-          <Typography variant="bodyMedium" fontWeight={600}>
-            {refId}
-          </Typography>
-        </div>
-        <div className={styles.paddedContainer}>
-          {/*
+    <Dialog
+      open={showModal}
+      className={styles.dialog}
+      onCloseClick={handleModalClose}
+      dialogTitle={t('pages.refer.use-code.title')}
+      dialogContentClassName={styles.dialogRoot}
+      footerActions={
+        <>
+          <Button onClick={handleModalClose} variant="secondary">
+            {t('pages.refer.use-code.cancel')}
+          </Button>
+          {!hasAddress && (
+            <>
+              {web3AuthConfig.isEnabled ? (
+                <Button onClick={() => setConnectModalOpen(true)} className={styles.connectButton} variant="primary">
+                  <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
+                </Button>
+              ) : (
+                <WalletConnectButton className={styles.connectButton} />
+              )}
+            </>
+          )}
+          {hasAddress && !isEnabledChain(chainId) && <WrongNetworkButton className={styles.connectButton} />}
+          {hasAddress && isEnabledChain(chainId) && noReferralCode && (
+            <Button
+              onClick={handleReferralCodeConfirm}
+              variant="primary"
+              size="small"
+              disabled={requestSent || !refIdIsValid}
+            >
+              {t('pages.refer.use-code.confirm')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <div className={styles.codeContainer}>
+        <Typography variant="bodyMedium" fontWeight={600}>
+          {t('pages.refer.use-code.base')}
+        </Typography>
+        <Typography variant="bodyMedium" fontWeight={600}>
+          {refId}
+        </Typography>
+      </div>
+      <div className={styles.paddedContainer}>
+        {/*
           <SidesRow
             leftSide={t('pages.refer.use-code.trader-rebate')}
             rightSide={`${refIdTraderRebate}%`}
             rightSideStyles={styles.sidesRowValue}
           />
           */}
-          {!hasAddress && <div className={styles.warning}>{t('pages.refer.use-code.connect-wallet')}</div>}
-          {hasAddress && isEnabledChain(chainId) && hasReferralCode && (
-            <div className={styles.warning}>{t('pages.refer.use-code.already-linked')}</div>
-          )}
-          {hasAddress && isEnabledChain(chainId) && noReferralCode && !refIdIsValid && (
-            <div className={styles.warning}>{t('pages.refer.trader-tab.code-not-found')}</div>
-          )}
-        </div>
+        {!hasAddress && <div className={styles.warning}>{t('pages.refer.use-code.connect-wallet')}</div>}
+        {hasAddress && isEnabledChain(chainId) && hasReferralCode && (
+          <div className={styles.warning}>{t('pages.refer.use-code.already-linked')}</div>
+        )}
+        {hasAddress && isEnabledChain(chainId) && noReferralCode && !refIdIsValid && (
+          <div className={styles.warning}>{t('pages.refer.trader-tab.code-not-found')}</div>
+        )}
       </div>
-      <DialogActions className={styles.dialogAction}>
-        <Button onClick={handleModalClose} variant="secondary">
-          {t('pages.refer.use-code.cancel')}
-        </Button>
-        {!hasAddress && (
-          <>
-            {web3AuthConfig.isEnabled ? (
-              <Button onClick={() => setConnectModalOpen(true)} className={styles.connectButton} variant="primary">
-                <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
-              </Button>
-            ) : (
-              <WalletConnectButton className={styles.connectButton} />
-            )}
-          </>
-        )}
-        {hasAddress && !isEnabledChain(chainId) && <WrongNetworkButton className={styles.connectButton} />}
-        {hasAddress && isEnabledChain(chainId) && noReferralCode && (
-          <Button
-            onClick={handleReferralCodeConfirm}
-            variant="primary"
-            size="small"
-            disabled={requestSent || !refIdIsValid}
-          >
-            {t('pages.refer.use-code.confirm')}
-          </Button>
-        )}
-      </DialogActions>
     </Dialog>
   );
 });

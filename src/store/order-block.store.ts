@@ -1,4 +1,4 @@
-import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { BUY_SIDE, TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 
 import { leverageAtom, setLeverageAtom } from 'components/order-block/elements/leverage-selector/store';
@@ -18,17 +18,20 @@ import {
   perpetualStaticInfoAtom,
   perpetualStatisticsAtom,
   poolFeeAtom,
+  positionsAtom,
 } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
-export const slippageSliderAtom = atom(2);
+export const slippageSliderAtom = atom(5);
 export const keepPositionLeverageAtom = atom(false);
 export const reduceOnlyAtom = atom(false);
 export const expireDaysAtom = atom(Number(ExpiryE['90D']));
 export const stopLossAtom = atom<StopLossE | null>(StopLossE.None);
 export const stopLossPriceAtom = atom<number | null>(null);
+export const stopLossInputPriceAtom = atom<number | null>(null);
 export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
 export const takeProfitPriceAtom = atom<number | null>(null);
+export const takeProfitInputPriceAtom = atom<number | null>(null);
 export const storageKeyAtom = atom<string | null>(null);
 
 export const latestOrderSentTimestampAtom = atom(0);
@@ -49,7 +52,7 @@ export const orderTypeAtom = atom(
 
     let isPredictionMarket = false;
     try {
-      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
     } catch {
       // skip
     }
@@ -136,7 +139,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
   let isPredictionMarket = false;
   try {
-    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
+    isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
   } catch {
     // skip
   }
@@ -162,12 +165,15 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const stopLossCustomPrice = get(stopLossPriceAtom); // in probability if prediction market
   const takeProfit = get(takeProfitAtom);
   const takeProfitCustomPrice = get(takeProfitPriceAtom); // in probability if prediction market
+  const positions = get(positionsAtom);
 
   const symbol = createSymbol({
     baseCurrency: perpetualStatistics.baseCurrency,
     quoteCurrency: perpetualStatistics.quoteCurrency,
     poolSymbol: perpetualStatistics.poolName,
   });
+
+  const openPosition = positions.find((position) => position.symbol === symbol);
 
   // const positionBySymbol = positions.find((position) => position.symbol === symbol);
 
@@ -180,22 +186,34 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   }
 
   let tradingFee = null;
-  if (poolFee) {
-    tradingFee = poolFee / 10;
-    if (stopLoss !== StopLossE.None && takeProfit !== TakeProfitE.None) {
-      tradingFee = tradingFee * 3;
-    } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
-      tradingFee = tradingFee * 2;
-    }
-  }
-
   let baseFee = null;
-  if (addr0Fee) {
-    baseFee = addr0Fee / 10;
-    if (stopLoss !== StopLossE.None && takeProfit !== TakeProfitE.None) {
-      baseFee = baseFee * 3;
-    } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
-      baseFee = baseFee * 2;
+  if (isPredictionMarket) {
+    if (perpetualStaticInfo?.maintenanceMarginRate) {
+      tradingFee = TraderInterface.exchangeFeePrdMkts(
+        perpetualStaticInfo.maintenanceMarginRate,
+        perpetualStatistics.markPrice,
+        size * (OrderBlockE.Short === orderBlock ? -1 : 1),
+        (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
+        1 / leverage
+      );
+    }
+    // baseFee stays null
+  } else {
+    if (poolFee) {
+      tradingFee = poolFee / 10;
+      if (stopLoss !== StopLossE.None && takeProfit !== TakeProfitE.None) {
+        tradingFee = tradingFee * 3;
+      } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
+        tradingFee = tradingFee * 2;
+      }
+    }
+    if (addr0Fee) {
+      baseFee = addr0Fee / 10;
+      if (stopLoss !== StopLossE.None && takeProfit !== TakeProfitE.None) {
+        baseFee = baseFee * 3;
+      } else if (stopLoss !== StopLossE.None || takeProfit !== TakeProfitE.None) {
+        baseFee = baseFee * 2;
+      }
     }
   }
 

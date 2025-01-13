@@ -1,34 +1,37 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { CopyInput } from 'components/copy-input/CopyInput';
 import { CopyLink } from 'components/copy-link/CopyLink';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
 import { Dialog } from 'components/dialog/Dialog';
+import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { isCedeWidgetEnabled } from 'helpers/isCedeWidgetEnabled';
-import { isLifiWidgetEnabled } from 'helpers/isLifiWidgetEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
+import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom, modalSelectedCurrencyAtom } from 'store/global-modals.store';
-import { gasTokenSymbolAtom } from 'store/pools.store';
+import { gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { CedeWidgetButton } from './elements/cede-widget-button/CedeWidgetButton';
-import { LiFiWidgetButton } from './elements/lifi-widget-button/LiFiWidgetButton';
 import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 import { OwltoButton } from './elements/owlto-button/OwltoButton';
+import { MockSwap } from './elements/mock-swap/MockSwap';
 
 import styles from './DepositModal.module.scss';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { MethodE } from 'types/enums';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
@@ -40,11 +43,15 @@ export const DepositModal = () => {
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
   const isCedeEnabled = isCedeWidgetEnabled(chainId);
+  const isMockTokenSwapEnabled = isMockSwapEnabled(chainId);
+  const { gasTokenBalance, hasEnoughGasForFee } = useUserWallet();
+
+  const [title, setTitle] = useState('');
 
   const targetAddress = useMemo(() => {
     if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
@@ -57,21 +64,38 @@ export const DepositModal = () => {
     setDepositModalOpen(false);
   }, [setDepositModalOpen]);
 
-  const poolAddress = selectedCurrency?.contractAddress || '';
+  useEffect(() => {
+    if (
+      isMockSwapEnabled(chainId) &&
+      (poolTokenBalance === 0 || (gasTokenBalance && !hasEnoughGasForFee(MethodE.Interact, 1n)))
+    ) {
+      setTitle('Get Test Tokens');
+      setDepositModalOpen(true);
+    } else {
+      setTitle(t('common.deposit-modal.title'));
+    }
+  }, [chainId, poolTokenBalance, gasTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t]);
 
   if (!isEnabledChain(chainId)) {
     return null;
   }
 
+  const poolTokenAddress = selectedCurrency?.contractAddress || '';
+
   return (
-    <Dialog open={isDepositModalOpen} onClose={handleOnClose} className={styles.dialog}>
-      <DialogTitle>{t('common.deposit-modal.title')}</DialogTitle>
-      <DialogContent className={styles.dialogContent}>
-        <div className={styles.section}>
-          <CurrencySelect />
-        </div>
-        <Separator />
-        <OKXConvertor />
+    <Dialog
+      open={isDepositModalOpen}
+      onClose={handleOnClose}
+      onCloseClick={handleOnClose}
+      className={styles.dialog}
+      dialogTitle={title}
+    >
+      <div className={styles.section}>
+        <CurrencySelect />
+      </div>
+      <Separator separatorType={SeparatorTypeE.Modal} />
+      <OKXConvertor />
+      {!isMockSwapEnabled(chainId) ? (
         <div className={styles.section}>
           {activatedOneClickTrading ? (
             <Typography variant="bodyMedium" className={styles.noteText}>
@@ -85,12 +109,12 @@ export const DepositModal = () => {
               i18nKey="common.deposit-modal.important-notice.1"
               values={{ currencyName: selectedCurrency?.settleToken }}
             />{' '}
-            {poolAddress && (
+            {poolTokenAddress && (
               <>
                 {t('common.deposit-modal.important-notice.2')}
                 <CopyLink
-                  elementToShow={cutAddress(poolAddress)}
-                  textToCopy={poolAddress}
+                  elementToShow={cutAddress(poolTokenAddress)}
+                  textToCopy={poolTokenAddress}
                   classname={styles.copyText}
                 />
                 {t('common.deposit-modal.important-notice.3')}{' '}
@@ -99,36 +123,40 @@ export const DepositModal = () => {
             {t('common.deposit-modal.important-notice.4')}{' '}
             <Translate i18nKey="common.deposit-modal.important-notice.5" values={{ chainName: chain?.name }} />
           </Typography>
-        </div>
-        <div className={styles.section}>
-          <CopyInput id="address" textToCopy={targetAddress || ''} />
-        </div>
-        {(isCedeEnabled || isLiFiEnabled || isOwltoEnabled) && (
-          <div className={classNames(styles.section, styles.widgetButtons)}>
-            {isBridgeShownOnPage && (isLiFiEnabled || isOwltoEnabled) ? (
-              <div>
-                {isLiFiEnabled && <LiFiWidgetButton />}
-                {isOwltoEnabled && <OwltoButton />}
-              </div>
-            ) : (
-              <div>{/* empty block */}</div>
-            )}
-            {isCedeEnabled ? <CedeWidgetButton /> : <div>{/* empty block */}</div>}
+          <div className={styles.section}>
+            <CopyInput id="address" textToCopy={targetAddress || ''} />
           </div>
-        )}
-        <Separator />
+        </div>
+      ) : (
         <div className={styles.section}>
-          <WalletBalances />
-          <Typography variant="bodyTiny" className={styles.noteText}>
-            <Translate i18nKey="common.deposit-modal.deposit-note" values={{ currencyName: gasTokenSymbol }} />
+          <Typography variant="bodyMedium" className={styles.noteText}>
+            {`You need test tokens to trade`}
           </Typography>
         </div>
-      </DialogContent>
-      <DialogActions className={styles.dialogAction}>
-        <Button onClick={handleOnClose} variant="secondary">
-          {t('common.deposit-modal.done-button')}
-        </Button>
-      </DialogActions>
+      )}
+
+      {(isCedeEnabled || isOwltoEnabled) && (
+        <div className={classnames(styles.section, styles.widgetButtons)}>
+          {isBridgeShownOnPage && isOwltoEnabled ? (
+            <div>{isOwltoEnabled && <OwltoButton />}</div>
+          ) : (
+            <div>{/* empty block */}</div>
+          )}
+          {isCedeEnabled ? <CedeWidgetButton /> : <div>{/* empty block */}</div>}
+        </div>
+      )}
+      {isMockTokenSwapEnabled && (
+        <div>
+          <MockSwap />
+        </div>
+      )}
+      <Separator separatorType={SeparatorTypeE.Modal} />
+      <div className={styles.section}>
+        <WalletBalances />
+        <Typography variant="bodyTiny" className={styles.noteText}>
+          <Translate i18nKey="common.deposit-modal.deposit-note" values={{ currencyName: gasTokenSymbol }} />
+        </Typography>
+      </div>
     </Dialog>
   );
 };

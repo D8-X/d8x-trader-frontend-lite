@@ -1,6 +1,8 @@
-import styles from './DataColumn.module.scss';
+import classnames from 'classnames';
+
 import { DataItemI } from './types';
-import classNames from 'classnames';
+
+import styles from './DataColumn.module.scss';
 
 interface DataColumnPropsI {
   title: string;
@@ -21,7 +23,7 @@ export const DataColumn = ({ title, titleLink, items }: DataColumnPropsI) => {
       {items.map((item) => (
         <div key={item.title} className={styles.itemLine}>
           <span
-            className={classNames(styles.itemLogoHolder, { [styles.rounded]: item.isRounded })}
+            className={classnames(styles.itemLogoHolder, { [styles.rounded]: item.isRounded })}
             style={{ backgroundColor: item.logoBackground }}
           >
             {item.logo}

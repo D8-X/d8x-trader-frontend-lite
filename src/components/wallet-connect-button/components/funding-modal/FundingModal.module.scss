@@ -28,23 +28,12 @@
   padding: 10 * $d8x-spacing 8 * $d8x-spacing;
 }
 
-.title {
-  text-align: center;
-}
-
 .closeButton {
   width: 150px;
 }
 
 .actionButton {
   width: 150px;
-}
-
-.buttonsBlock {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $d8x-spacing * 2;
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {

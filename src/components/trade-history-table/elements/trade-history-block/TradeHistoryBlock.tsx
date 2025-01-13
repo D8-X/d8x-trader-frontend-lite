@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import { format } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +38,7 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
     <div className={styles.root}>
       <div className={styles.headerWrapper}>
         <div>
-          <Typography variant="bodySmall" component="p">
+          <Typography variant="fourteen" component="p">
             {t('pages.trade.history-table.history-block-mobile.symbol')}
           </Typography>
           <Typography variant="bodySmall" component="p" className={styles.symbol}>
@@ -57,12 +58,15 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
           leftSide={headers[2].label}
           leftSideTooltip={headers[2].tooltip}
           rightSide={
-            tradeHistory.side === 'BUY'
+            tradeHistory.side.indexOf('BUY') > -1
               ? t('pages.trade.positions-table.table-content.buy')
               : t('pages.trade.positions-table.table-content.sell')
           }
           leftSideStyles={styles.dataLabel}
-          rightSideStyles={styles.dataValue}
+          rightSideStyles={classnames(styles.dataValue, {
+            [styles.buy]: tradeHistory.side.indexOf('BUY') > -1,
+            [styles.sell]: tradeHistory.side.indexOf('SELL') > -1,
+          })}
         />
         <SidesRow
           leftSide={headers[3].label}
@@ -72,15 +76,15 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
-          leftSide={headers[4].label}
-          leftSideTooltip={headers[4].tooltip}
+          leftSide={headers[5].label}
+          leftSideTooltip={headers[5].tooltip}
           rightSide={perpetual ? formatToCurrency(tradeHistory.quantity, perpetual.baseCurrency, true) : ''}
           leftSideStyles={styles.dataLabel}
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
-          leftSide={headers[5].label}
-          leftSideTooltip={headers[5].tooltip}
+          leftSide={headers[6].label}
+          leftSideTooltip={headers[6].tooltip}
           rightSide={
             perpetual
               ? formatToCurrency(
@@ -94,8 +98,8 @@ export const TradeHistoryBlock = ({ headers, tradeHistory }: TradeHistoryRowProp
           rightSideStyles={styles.dataValue}
         />
         <SidesRow
-          leftSide={headers[6].label}
-          leftSideTooltip={headers[6].tooltip}
+          leftSide={headers[7].label}
+          leftSideTooltip={headers[7].tooltip}
           rightSide={
             perpetual
               ? formatToCurrency(

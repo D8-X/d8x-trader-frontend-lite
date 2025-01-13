@@ -10,40 +10,38 @@ import { type StrategyAddressI } from 'types/types';
 
 export const syntheticPositionUSDAtom = atom<number | null>(null);
 
-export const fetchStrategySyntheticPosition = atom(null, async (get, set, userAddress: Address, chainId: number) => {
-  const traderAPI = get(traderAPIAtom);
-  if (!traderAPI) {
-    return;
-  }
+export const fetchStrategySyntheticPositionAtom = atom(
+  null,
+  async (get, set, userAddress: Address, chainId: number) => {
+    const strategyAddressesLS = localStorage.getItem(STRATEGY_ADDRESSES_LS_KEY);
+    if (!strategyAddressesLS) {
+      set(syntheticPositionUSDAtom, null);
+      return;
+    }
+    const strategyAddresses: StrategyAddressI[] = JSON.parse(strategyAddressesLS);
 
-  const strategyAddressesLS = localStorage.getItem(STRATEGY_ADDRESSES_LS_KEY);
-  if (!strategyAddressesLS) {
-    set(syntheticPositionUSDAtom, null);
-    return null;
-  }
-  const strategyAddresses: StrategyAddressI[] = JSON.parse(strategyAddressesLS);
+    const traderAPI = get(traderAPIAtom);
 
-  let syntheticPositionUSD = null;
-  if (pagesConfig.enabledStrategiesPage) {
-    const strategyAddress = strategyAddresses.find(
-      ({ userAddress: savedAddress }) => savedAddress === userAddress?.toLowerCase()
-    )?.strategyAddress;
-    if (strategyAddress) {
-      const { data: strategyData } = await getPositionRisk(chainId, traderAPI, strategyAddress, Date.now());
+    let syntheticPositionUSD = null;
+    if (pagesConfig.enabledStrategiesPage) {
+      const strategyAddress = strategyAddresses.find(
+        ({ userAddress: savedAddress }) => savedAddress === userAddress?.toLowerCase()
+      )?.strategyAddress;
+      if (strategyAddress) {
+        const { data: strategyData } = await getPositionRisk(chainId, traderAPI, strategyAddress, Date.now());
 
-      if (strategyData && strategyData.length > 0) {
-        const strategyPosition = strategyData.find(
-          ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
-        );
+        if (strategyData && strategyData.length > 0) {
+          const strategyPosition = strategyData.find(
+            ({ symbol, positionNotionalBaseCCY }) => symbol === STRATEGY_SYMBOL && positionNotionalBaseCCY !== 0
+          );
 
-        if (strategyPosition) {
-          syntheticPositionUSD = strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice;
+          if (strategyPosition) {
+            syntheticPositionUSD = strategyPosition.positionNotionalBaseCCY * strategyPosition.entryPrice;
+          }
         }
       }
     }
+
+    set(syntheticPositionUSDAtom, syntheticPositionUSD);
   }
-
-  set(syntheticPositionUSDAtom, syntheticPositionUSD);
-
-  return syntheticPositionUSD;
-});
+);

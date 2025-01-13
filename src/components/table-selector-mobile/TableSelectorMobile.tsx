@@ -12,11 +12,11 @@ import styles from './TableSelectorMobile.module.scss';
 
 interface TableSelectorMobilePropsI {
   selectorItems: SelectorItemI[];
+  activeIndex: number;
+  setActiveIndex: (index: number) => void;
 }
 
-export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
-
+export const TableSelectorMobile = ({ selectorItems, activeIndex, setActiveIndex }: TableSelectorMobilePropsI) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
@@ -25,7 +25,7 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
         <div className={styles.dropdownHolder}>
           <DropDownSelect
             id="table-selector-dropdown"
-            selectedValue={selectorItems[selectedIndex]?.label}
+            selectedValue={selectorItems[activeIndex]?.label}
             anchorEl={anchorEl}
             setAnchorEl={setAnchorEl}
             fullWidth
@@ -36,7 +36,7 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
                 value={index}
                 className={styles.dropdown}
                 onClick={() => {
-                  setSelectedIndex(index);
+                  setActiveIndex(index);
                   setAnchorEl(null);
                 }}
               >
@@ -46,10 +46,10 @@ export const TableSelectorMobile = ({ selectorItems }: TableSelectorMobilePropsI
           </DropDownSelect>
         </div>
         <div className={styles.buttonsBlock}>
-          <Filter activeTableType={selectorItems[selectedIndex].tableType} />
-          <Refresher activeTableType={selectorItems[selectedIndex].tableType} />
+          <Filter activeTableType={selectorItems[activeIndex].tableType} />
+          <Refresher activeTableType={selectorItems[activeIndex].tableType} />
         </div>
-        <div>{selectorItems[selectedIndex].item}</div>
+        <div>{selectorItems[activeIndex].item}</div>
       </div>
     </FilterModalProvider>
   );

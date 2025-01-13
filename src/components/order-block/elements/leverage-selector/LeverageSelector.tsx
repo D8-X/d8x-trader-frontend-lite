@@ -1,53 +1,75 @@
+import { pmInitialMarginRate } from '@d8x/perpetuals-sdk';
+import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Slider, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
-import { OrderSettings } from 'components/order-block/elements/order-settings/OrderSettings';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
-import { perpetualStaticInfoAtom } from 'store/pools.store';
-import { type MarkI } from 'types/types';
+import { orderBlockAtom, orderInfoAtom } from 'store/order-block.store';
+import { perpetualStaticInfoAtom, perpetualStatisticsAtom } from 'store/pools.store';
+import { OrderBlockE } from 'types/enums';
+import type { MarkI } from 'types/types';
 
 import { inputValueAtom, leverageAtom, setLeverageAtom } from './store';
 
 import styles from './LeverageSelector.module.scss';
 
-const multipliers = [0.25, 0.5, 0.75, 1];
-
-function valueLabelFormat(value: number) {
-  return `${value}x`;
-}
+const markCount = 5;
 
 export const LeverageSelector = memo(() => {
   const { t } = useTranslation();
 
   const leverage = useAtomValue(leverageAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const inputValue = useAtomValue(inputValueAtom);
+  const orderBlock = useAtomValue(orderBlockAtom);
+  const orderInfo = useAtomValue(orderInfoAtom);
   const setLeverage = useSetAtom(setLeverageAtom);
 
   const maxLeverage = useMemo(() => {
-    if (perpetualStaticInfo?.initialMarginRate) {
-      return Math.round(1 / perpetualStaticInfo.initialMarginRate);
+    if (
+      orderInfo?.isPredictionMarket !== undefined &&
+      perpetualStaticInfo?.initialMarginRate &&
+      perpetualStatistics?.markPrice
+    ) {
+      const initialMarginRate = orderInfo.isPredictionMarket
+        ? pmInitialMarginRate(orderBlock === OrderBlockE.Long ? 1 : -1, perpetualStatistics.markPrice)
+        : perpetualStaticInfo.initialMarginRate;
+      return Math.floor(5 / initialMarginRate) / 5;
     }
     return 10;
-  }, [perpetualStaticInfo?.initialMarginRate]);
+  }, [
+    orderInfo?.isPredictionMarket,
+    orderBlock,
+    perpetualStaticInfo?.initialMarginRate,
+    perpetualStatistics?.markPrice,
+  ]);
 
   const marks = useMemo(() => {
-    const newMarks: MarkI[] = [
-      {
-        value: 1,
-        // label: '1x'
-      },
-    ];
-    multipliers.forEach((multiplier) =>
-      newMarks.push({
-        value: multiplier * maxLeverage,
-        // label: `${multiplier * maxLeverage}x`
-      })
-    );
+    const newMarks: MarkI[] = [];
+
+    if (maxLeverage <= 5) {
+      const step = (maxLeverage - 1) / (markCount - 1);
+      for (let i = 0; i < markCount; i++) {
+        const value = 1 + i * step;
+        newMarks.push({
+          value: parseFloat(value.toFixed(2)),
+        });
+      }
+    } else {
+      const step = maxLeverage / markCount;
+      for (let i = 1; i <= markCount; i++) {
+        const value = Math.round(i * step);
+        newMarks.push({
+          value: value,
+        });
+      }
+    }
+
     return newMarks;
   }, [maxLeverage]);
 
@@ -76,30 +98,25 @@ export const LeverageSelector = memo(() => {
             </>
           }
         />
-        <OrderSettings />
       </div>
       <div className={styles.rowTwo}>
-        <div className={styles.sliderHolder}>
-          <Slider
-            aria-label="Leverage values"
-            value={leverage}
-            min={1}
-            max={maxLeverage}
-            step={leverageStep}
-            getAriaValueText={valueLabelFormat}
-            valueLabelFormat={valueLabelFormat}
-            valueLabelDisplay="auto"
-            marks={marks}
-            onChange={(_event, newValue) => {
-              if (typeof newValue === 'number') {
-                setLeverage(newValue);
-              }
-            }}
-          />
+        <div className={styles.buttonsHolder}>
+          {marks.map((mark) => (
+            <Button
+              key={mark.value}
+              variant="secondary"
+              className={classnames({ [styles.selected]: mark.value === leverage })}
+              size="small"
+              onClick={() => setLeverage(mark.value)}
+            >
+              {mark.value}x
+            </Button>
+          ))}
         </div>
         <ResponsiveInput
           id="leverage"
           className={styles.inputHolder}
+          inputClassName={styles.input}
           inputValue={inputValue}
           setInputValue={handleLeverageInputChange}
           handleInputBlur={handleInputBlur}

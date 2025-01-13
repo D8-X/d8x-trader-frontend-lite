@@ -3,8 +3,8 @@ import { type Address } from 'viem';
 
 import { poolsAtom, traderAPIAtom } from 'store/pools.store';
 
-import { poolUsdPriceAtom } from './fetchPortfolio';
 import type { PoolShareTokenBalanceI } from '../types/types';
+import { poolUsdPriceAtom } from './fetchTotalReferralsRewards';
 
 interface TokenPoolSharePercentI {
   symbol: string;
@@ -14,16 +14,24 @@ interface TokenPoolSharePercentI {
 }
 
 export const poolShareTokensShareAtom = atom<TokenPoolSharePercentI[]>([]);
-export const poolShareTokensUSDBalanceAtom = atom(0);
+export const poolShareTokensUSDBalanceAtom = atom<number | null>(null);
 
 export const fetchPoolShareAtom = atom(null, async (get, set, userAddress: Address) => {
   const traderAPI = get(traderAPIAtom);
   if (!traderAPI) {
+    set(poolShareTokensUSDBalanceAtom, null);
+    set(poolShareTokensShareAtom, []);
+    return;
+  }
+
+  const poolUsdPrice = get(poolUsdPriceAtom);
+  if (Object.keys(poolUsdPrice).length === 0) {
+    set(poolShareTokensUSDBalanceAtom, null);
+    set(poolShareTokensShareAtom, []);
     return;
   }
 
   const pools = get(poolsAtom);
-  const poolUsdPrice = get(poolUsdPriceAtom);
 
   const dCurrencyPriceMap: Record<string, number> = {};
   const poolShareTokenBalances: PoolShareTokenBalanceI[] = [];
@@ -42,6 +50,7 @@ export const fetchPoolShareAtom = atom(null, async (get, set, userAddress: Addre
     (acc, balance) => acc + balance.balance * poolUsdPrice[balance.symbol].collateral,
     0
   );
+
   set(poolShareTokensUSDBalanceAtom, poolShareTokensUSDBalance);
   set(
     poolShareTokensShareAtom,
@@ -52,6 +61,4 @@ export const fetchPoolShareAtom = atom(null, async (get, set, userAddress: Addre
       percent: (balance.balance * poolUsdPrice[balance.symbol].collateral) / poolShareTokensUSDBalance || 0,
     }))
   );
-
-  return poolShareTokensUSDBalance;
 });

@@ -7,7 +7,7 @@ import { AssetLine } from 'components/asset-line/AssetLine';
 import { earningsListAtom } from 'pages/portfolio-page/store/fetchEarnings';
 import { poolShareTokensShareAtom } from 'pages/portfolio-page/store/fetchPoolShare';
 import { collateralToSettleConversionAtom } from 'store/pools.store';
-import { formatCurrency } from 'utils/formatCurrency';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 import styles from './Vault.module.scss';
 
@@ -19,7 +19,6 @@ export const Vault = () => {
   const c2s = useAtomValue(collateralToSettleConversionAtom);
   const poolShareTokensShare = useAtomValue(poolShareTokensShareAtom);
   const earningsList = useAtomValue(earningsListAtom);
-
   const totalPoolShare = useMemo(
     () => poolShareTokensShare.reduce((acc, curr) => acc + curr.balance, 0),
     [poolShareTokensShare]
@@ -61,7 +60,9 @@ export const Vault = () => {
             <AssetLine
               key={earning.symbol}
               symbol={earning.settleSymbol}
-              value={formatCurrency(earning.value * (c2s.get(earning.symbol)?.value ?? 1))}
+              value={(earning.value * (c2s.get(earning.symbol)?.value ?? 1)).toFixed(
+                Math.min(valueToFractionDigits(earning.value * (c2s.get(earning.symbol)?.value ?? 1)), 4)
+              )}
             />
           ))}
         </div>

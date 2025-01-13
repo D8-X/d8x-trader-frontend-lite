@@ -11,20 +11,22 @@ import { Button, useMediaQuery, useTheme } from '@mui/material';
 import WalletIcon from 'assets/icons/walletIcon.svg?react';
 import { config, web3AuthConfig } from 'config';
 import { AccountModal } from 'components/account-modal/AccountModal';
-import { isLifiWidgetEnabled } from 'helpers/isLifiWidgetEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { cutAddress } from 'utils/cutAddress';
 
-import { LiFiWidgetButton } from './LiFiWidgetButton';
 import { OneClickTradingButton } from './OneClickTradingButton';
 import { OwltoButton } from './OwltoButton';
 
 import styles from './WalletConnectButton.module.scss';
 
-export const WalletConnectedButtons = memo(() => {
+interface WalletConnectedButtonsPropsI {
+  mobile?: boolean;
+}
+
+export const WalletConnectedButtons = memo(({ mobile = false }: WalletConnectedButtonsPropsI) => {
   const { t } = useTranslation();
 
   const setAccountModalOpen = useSetAtom(accountModalOpenAtom);
@@ -39,7 +41,6 @@ export const WalletConnectedButtons = memo(() => {
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isLiFiEnabled = isLifiWidgetEnabled(isOwltoEnabled, chainId);
 
   return (
     <ConnectButton.Custom>
@@ -58,9 +59,8 @@ export const WalletConnectedButtons = memo(() => {
               return (
                 <>
                   <div className={styles.buttonsHolder}>
-                    {!isSignedInSocially && <OneClickTradingButton />}
-                    {isLiFiEnabled && isBridgeShownOnPage && <LiFiWidgetButton />}
-                    {isOwltoEnabled && isBridgeShownOnPage && <OwltoButton />}
+                    {!isSignedInSocially && !mobile && <OneClickTradingButton />}
+                    {isOwltoEnabled && isBridgeShownOnPage && !mobile && <OwltoButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />
                     </Button>

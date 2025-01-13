@@ -2,18 +2,19 @@
 
 .root {
   padding: $d8x-spacing 0;
-  background-color: var(--d8x-color-background-items);
 
-  .line {
-    height: 0;
-    border-bottom: 1px solid var(--d8x-color-separator-border);
+  &.block {
+    background-color: var(--d8x-color-background-items);
+  }
+
+  &.modal {
+    background-color: var(--d8x-modal-background-color);
   }
 }
 
-:global(.MuiModal-root) {
-  .root {
-    background-color: var(--d8x-color-background);
-  }
+.line {
+  height: 0;
+  border-bottom: 1px solid var(--d8x-color-separator-border);
 }
 
 .orSeparator {

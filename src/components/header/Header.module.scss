@@ -1,7 +1,9 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
-  margin-bottom: 8 * $d8x-spacing;
+  margin-bottom: 6 * $d8x-spacing;
+  border-bottom: 1px solid var(--d8x-block-border-color);
 
   :global(.MuiPaper-root) {
     height: 80px;
@@ -16,6 +18,25 @@
 .headerHolder {
   display: flex;
   flex-direction: column;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px;
+}
+
+.menuTitle {
+  font-size: 16px;
+  line-height: 19px;
+  color: var(--d8x-color-text-main);
+}
+
+.closeButton {
+  padding: 0;
+  min-width: 25px !important;
 }
 
 .mainLogoHolder,
@@ -44,12 +65,45 @@
 .leftSide {
   display: flex;
   flex: 1;
-  gap: 8 * $d8x-spacing;
+  gap: 12 * $d8x-spacing;
   align-items: center;
 
   .navWrapper {
     display: flex;
-    gap: 8 * $d8x-spacing;
+    gap: 10 * $d8x-spacing;
+
+    > a {
+      @include transition(color);
+
+      text-decoration: none;
+
+      &::after {
+        @include transition(opacity);
+
+        content: ' ';
+        position: absolute;
+        left: -($d8x-spacing * 2);
+        right: -($d8x-spacing * 2);
+        bottom: -($d8x-spacing * 7.25);
+        top: inherit;
+        border-bottom: 2px solid var(--d8x-color-action);
+        opacity: 0;
+      }
+
+      &:hover {
+        color: var(--d8x-color-action);
+      }
+
+      &.active {
+        color: var(--d8x-color-action);
+        user-select: none;
+        pointer-events: none;
+
+        &::after {
+          opacity: 1;
+        }
+      }
+    }
   }
 }
 
@@ -63,7 +117,7 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  padding-top: $d8x-spacing * 10;
+  padding-top: $d8x-spacing * 6;
   padding-bottom: $d8x-spacing * 10;
   gap: $d8x-spacing * 6;
 }
@@ -84,9 +138,10 @@
     color: var(--d8x-color-text-main);
 
     &:hover {
+      @include transition(all);
+
       color: var(--d8x-color-action);
       cursor: pointer;
-      transition: 200ms ease-in-out;
     }
   }
 
@@ -105,8 +160,7 @@
   }
 
   &.active {
-    text-decoration: underline;
-    text-underline-offset: $d8x-spacing * 2;
+    text-decoration: none;
     padding: 12px;
     margin: -8px;
 
@@ -121,11 +175,6 @@
   padding-bottom: 0;
 }
 
-.languageSwitcher {
-  padding: $d8x-spacing * 10;
-  padding-top: $d8x-spacing * 6;
-}
-
 .closeAction {
   margin-top: auto;
   text-align: center;
@@ -135,8 +184,8 @@
 .menuButton {
   margin-left: $d8x-spacing * 4;
   padding: 0;
-  min-width: 48px;
-  height: 48px;
+  min-width: 40px;
+  height: 40px;
 }
 
 .logoLink {
@@ -147,19 +196,33 @@
 .walletConnect {
   justify-content: right;
   display: flex;
-  height: 48px;
+  height: 40px;
   gap: 15px;
 }
 
 .buttonsHolder {
   display: flex;
   gap: $d8x-spacing * 4;
-  height: 48px;
+  height: 40px;
+}
+
+.settingButtonsHolder {
+  display: flex;
+  margin-left: $d8x-spacing * 2 + 2;
+  gap: $d8x-spacing * 2 + 2;
+  height: 40px;
+}
+
+.settingButtonsHolderMobile {
+  display: flex;
+  justify-content: center;
+  gap: $d8x-spacing * 2 + 2;
+  padding: $d8x-spacing * 4 ;
 }
 
 .modalButton {
-  min-width: 195px;
-  height: 48px;
+  min-width: 156px;
+  height: 40px;
 }
 
 @media screen and ($d8x-breakpoint-max-lg) {
@@ -175,7 +238,7 @@
   .modalButton {
     padding-left: 20px;
     padding-right: 20px;
-    min-width: 48px;
+    min-width: 40px;
   }
 }
 

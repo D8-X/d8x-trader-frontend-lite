@@ -2,15 +2,21 @@ import { multicall } from '@wagmi/core';
 import { atom } from 'jotai';
 import { type Address, erc20Abi } from 'viem';
 
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { collateralToSettleConversionAtom, poolsAtom } from 'store/pools.store';
 
-import { poolUsdPriceAtom } from './fetchPortfolio';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { poolUsdPriceAtom } from './fetchTotalReferralsRewards';
 
 export const poolTokensUSDBalanceAtom = atom(0);
+
 export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAddress: Address) => {
-  const pools = get(poolsAtom);
   const poolUsdPrice = get(poolUsdPriceAtom);
+  if (Object.keys(poolUsdPrice).length === 0) {
+    set(poolTokensUSDBalanceAtom, 0);
+    return;
+  }
+
+  const pools = get(poolsAtom);
   const c2s = get(collateralToSettleConversionAtom);
 
   const [poolTokensBalances, poolTokensDecimals] = await Promise.all([
@@ -41,6 +47,6 @@ export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAdd
     }
     return acc;
   }, 0);
+
   set(poolTokensUSDBalanceAtom, poolTokensUSDBalance);
-  return poolTokensUSDBalance;
 });

@@ -3,6 +3,7 @@
 .root {
   display: flex;
   border-radius: $d8x-border-radius;
+  border: 1px solid var(--d8x-block-border-color);
   overflow-x: auto;
   background-color: var(--d8x-color-background-items);
 }

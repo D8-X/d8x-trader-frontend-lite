@@ -1,0 +1,49 @@
+@import '~styles/theme/theme.scss';
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 100px;
+  height: 32px;
+  padding: $d8x-spacing 2 * $d8x-spacing $d8x-spacing 3 * $d8x-spacing;
+  border-radius: $d8x-button-border-radius;
+}
+
+.menuHolder {
+  :global(.MuiPaper-root) {
+    padding: 2 * $d8x-spacing;
+    color: var(--d8x-color-text-main);
+    background-color: var(--d8x-color-background-paper);
+    border: 1px solid var(--d8x-block-border-color);
+    border-radius: 2 * $d8x-spacing;
+  }
+
+  :global(.MuiList-root) {
+    display: flex;
+    flex-direction: column;
+    gap: $d8x-spacing;
+  }
+}
+
+.selectedValue {
+  display: flex;
+  align-items: center;
+  gap: 2 * $d8x-spacing;
+  border-radius: $d8x-button-border-radius;
+}
+
+.arrowDropDown {
+  color: var(--d8x-button-select-color);
+  padding-top: 2 * $d8x-spacing;
+
+  &.disabledHandle {
+    color: var(--d8x-button-select-color-disabled);
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-md) {
+  .selectedValue {
+    font-size: 14px;
+  }
+}

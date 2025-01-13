@@ -1,10 +1,12 @@
+import classnames from 'classnames';
 import { type Dispatch, type PropsWithChildren, type ReactNode, type SetStateAction } from 'react';
 
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 import { Button, Menu, Typography } from '@mui/material';
 
+import ArrowDownIcon from 'assets/icons/new/arrowDown.svg?react';
+import ArrowUpIcon from 'assets/icons/new/arrowUp.svg?react';
+
 import styles from './DropDownSelect.module.scss';
-import classnames from 'classnames';
 
 interface DropDownSelectPropsI extends PropsWithChildren {
   id: string;
@@ -14,6 +16,7 @@ interface DropDownSelectPropsI extends PropsWithChildren {
   fullWidth?: boolean;
   disabled?: boolean;
   className?: string;
+  hasArrow?: boolean;
 }
 
 export const DropDownSelect = ({
@@ -25,6 +28,7 @@ export const DropDownSelect = ({
   fullWidth,
   disabled,
   className,
+  hasArrow = true,
 }: DropDownSelectPropsI) => {
   const isOpen = Boolean(anchorEl);
 
@@ -43,9 +47,11 @@ export const DropDownSelect = ({
         <Typography variant="bodyMedium" className={styles.selectedValue}>
           {selectedValue}
         </Typography>
-        <div className={classnames(styles.arrowDropDown, { [styles.disabledHandle]: disabled })}>
-          {isOpen ? <ArrowDropUp /> : <ArrowDropDown />}
-        </div>
+        {hasArrow && (
+          <div className={classnames(styles.arrowDropDown, { [styles.disabledHandle]: disabled })}>
+            {isOpen ? <ArrowUpIcon width={20} height={20} /> : <ArrowDownIcon width={20} height={20} />}
+          </div>
+        )}
       </Button>
       <Menu
         className={styles.menuHolder}

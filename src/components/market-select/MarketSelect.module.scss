@@ -1,0 +1,176 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.holderRoot {
+  @include transition(border-color);
+
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  background-color: var(--d8x-color-background-items);
+  border: 1px solid var(--d8x-market-select-border-color);
+  border-radius: $d8x-border-radius-large;
+  padding: 4 * $d8x-spacing;
+  gap: 4 * $d8x-spacing;
+  min-width: 350px;
+
+  &:hover {
+    border-color: var(--d8x-market-select-border-color-hover);
+  }
+
+  @include media-phone {
+    flex: 1;
+    min-width: 280px;
+    padding: 3 * $d8x-spacing;
+    gap: 3 * $d8x-spacing;
+  }
+}
+
+.iconsWrapper {
+  display: flex;
+
+  .baseIcon,
+  .quoteIcon {
+    @include flex-center;
+
+    width: 78px;
+    height: 78px;
+    border: 1.5px solid var(--d8x-currency-icon-color);
+    background-color: var(--d8x-currency-icon-background-color);
+    border-radius: 50%;
+
+    svg {
+      width: 60px;
+      height: 60px;
+    }
+
+    @include media-phone {
+      width: 32px;
+      height: 32px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .baseIcon {
+    z-index: 2;
+  }
+
+  .quoteIcon {
+    margin-left: -4 * $d8x-spacing;
+    z-index: 1;
+
+    &:hover,
+    &:focus,
+    &:active {
+      z-index: 3;
+    }
+  }
+
+  &.oneCurrency {
+    .quoteIcon {
+      display: none;
+    }
+  }
+}
+
+.marketSelectButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border-color: transparent;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
+}
+
+.arrowDropDown {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--d8x-color-action-icon);
+}
+
+.selectBlock {
+  border-radius: $d8x-spacing;
+  border: 1px solid silver;
+
+  :global(.MuiSelect-select) {
+    background-color: transparent !important;
+  }
+
+  :global(.MuiInputBase-root) {
+    min-width: 240px;
+    font-weight: 600;
+    color: var(--d8x-color-action);
+  }
+
+  :global(.MuiInputLabel-root):global(.Mui-focused) {
+    color: var(--d8x-color-text-main);
+  }
+
+  :global(.MuiInputLabel-root) {
+    color: var(--d8x-color-text-label-one);
+  }
+}
+
+.selectedMarketBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2 * $d8x-spacing;
+}
+
+.selectedMarketLabel {
+  color: var(--d8x-color-text-label-one);
+  line-height: 30px;
+}
+
+.selectedMarketValue {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--d8x-market-select-currency-color);
+  gap: 4 * $d8x-spacing;
+
+  .selectedMarketPerpetual {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 16px;
+  }
+}
+
+.midPrice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4 * $d8x-spacing;
+
+  .positive {
+    color: var(--d8x-color-text-buy);
+  }
+
+  .negative {
+    color: var(--d8x-color-text-sell);
+  }
+}
+
+.priceChange {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.statMainValue {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 20px;
+}

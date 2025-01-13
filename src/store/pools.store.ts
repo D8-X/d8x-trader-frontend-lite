@@ -2,6 +2,7 @@ import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
+import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import type {
   CollToSettleInfoI,
   FundingI,
@@ -22,6 +23,7 @@ export const traderAPIAtom = atom<TraderInterface | null>(null);
 export const traderAPIBusyAtom = atom(false);
 export const poolsAtom = atom<PoolWithIdI[]>([]);
 export const perpetualsAtom = atom<PerpetualDataI[]>([]);
+export const allPerpetualsAtom = atom<PerpetualDataI[]>([]);
 export const poolFeeAtom = atom<number | undefined>(undefined);
 export const addr0FeeAtom = atom<number | undefined>(undefined);
 export const oracleFactoryAddrAtom = atom('');
@@ -40,6 +42,7 @@ export const tradesHistoryAtom = atom<TradeHistoryI[]>([]);
 export const fundingListAtom = atom<FundingI[]>([]);
 export const triggerPositionsUpdateAtom = atom(true);
 export const triggerBalancesUpdateAtom = atom(true);
+export const executeScrollToTablesAtom = atom(false);
 
 const perpetualsStatsAtom = atom<Record<string, MarginAccountI>>({});
 export const allPerpetualStatisticsPrimitiveAtom = atom<Record<string, PerpetualStatisticsI>>({});
@@ -103,11 +106,14 @@ export const selectedPerpetualAtom = atom(
 
     const savedPerpetualId = get(selectedPerpetualIdAtom);
     const foundPerpetual = perpetuals.find((perpetual) => perpetual.id === +savedPerpetualId);
-    if (foundPerpetual) {
+
+    // Check if the found perpetual is valid
+    if (foundPerpetual && !INVALID_PERPETUAL_STATES.includes(foundPerpetual.state)) {
       return foundPerpetual;
     }
 
-    return perpetuals[0];
+    // Return the first valid perpetual that is NOT INVALID or INITIALIZING
+    return perpetuals.find((perpetual) => !INVALID_PERPETUAL_STATES.includes(perpetual.state)) || null;
   },
   (_get, set, perpetualId: number) => {
     set(selectedPerpetualIdAtom, perpetualId);
@@ -243,6 +249,20 @@ export const failOrderIdAtom = atom(
   },
   (_get, set, orderId: string) => {
     set(failedOrderIdsAtom, (prev) => {
+      prev.add(orderId);
+      return prev;
+    });
+  }
+);
+
+const cancelledOrderIdsAtom = atom<Set<string>>(new Set<string>());
+
+export const cancelOrderIdAtom = atom(
+  (get) => {
+    return get(cancelledOrderIdsAtom);
+  },
+  (_get, set, orderId: string) => {
+    set(cancelledOrderIdsAtom, (prev) => {
       prev.add(orderId);
       return prev;
     });

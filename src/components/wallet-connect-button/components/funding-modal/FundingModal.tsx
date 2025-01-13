@@ -116,34 +116,13 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
   }, [walletClient, delegateAddress, inputValue, sendTransaction]);
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <div className={styles.dialogContent}>
-        <div className={styles.dialogContent}>
-          <Typography variant="h4" className={styles.title}>
-            {t(`common.settings.one-click-modal.funding-modal.title`)}
-          </Typography>
-          <Typography variant="bodySmallPopup" className={styles.title}>
-            {t(`common.settings.one-click-modal.funding-modal.description`)}
-          </Typography>
-          <div className={styles.inputWrapper}>
-            <ResponsiveInput
-              id="fund-amount"
-              className={styles.inputHolder}
-              inputClassName={styles.inputClassName}
-              inputValue={inputValue}
-              setInputValue={setInputValue}
-              currency={delegateBalance?.symbol}
-              min={0}
-              max={+roundedGasTokenBalance}
-            />
-            {roundedGasTokenBalance && (
-              <Typography className={styles.helperText} variant="bodyTiny">
-                {t('common.max')} <Link onClick={handleMaxGas}>{roundedGasTokenBalance}</Link>
-              </Typography>
-            )}
-          </div>
-        </div>
-        <div className={styles.buttonsBlock}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      onCloseClick={onClose}
+      dialogTitle={t(`common.settings.one-click-modal.funding-modal.title`)}
+      footerActions={
+        <>
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
@@ -156,7 +135,28 @@ export const FundingModal = ({ isOpen, onClose, delegateAddress }: FundingModalP
             {isPending && <CircularProgress size="24px" sx={{ mr: 2 }} />}
             {t(`common.settings.one-click-modal.funding-modal.fund`)}
           </Button>
-        </div>
+        </>
+      }
+    >
+      <Typography variant="bodySmallPopup" className={styles.title}>
+        {t(`common.settings.one-click-modal.funding-modal.description`)}
+      </Typography>
+      <div className={styles.inputWrapper}>
+        <ResponsiveInput
+          id="fund-amount"
+          className={styles.inputHolder}
+          inputClassName={styles.inputClassName}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          currency={delegateBalance?.symbol}
+          min={0}
+          max={+roundedGasTokenBalance}
+        />
+        {roundedGasTokenBalance && (
+          <Typography className={styles.helperText} variant="bodyTiny">
+            {t('common.max')} <Link onClick={handleMaxGas}>{roundedGasTokenBalance}</Link>
+          </Typography>
+        )}
       </div>
     </Dialog>
   );

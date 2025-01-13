@@ -3,7 +3,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, CardHeader } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { longShortToYesNoMap } from 'helpers/longShortToYesNoMap';
 import { orderBlockAtom } from 'store/order-block.store';
@@ -21,23 +21,18 @@ export const OrderSelector = memo(() => {
   const isPredictionMarket = selectedPerpetualData?.isPredictionMarket ?? false;
 
   return (
-    <CardHeader
-      title={
-        <Box className={styles.rootOptions}>
-          {Object.values(OrderBlockE).map((key) => (
-            <Button
-              key={key}
-              className={classnames({ [styles.selected]: key === orderBlock })}
-              onClick={() => setOrderBlock(key)}
-            >
-              {isPredictionMarket
-                ? t(`pages.trade.order-block.prediction.${longShortToYesNoMap[key.toLowerCase()]}`)
-                : t(`pages.trade.order-block.selector.${key.toLowerCase()}`)}
-            </Button>
-          ))}
-        </Box>
-      }
-      className={styles.root}
-    />
+    <div className={styles.rootOptions}>
+      {Object.values(OrderBlockE).map((key) => (
+        <Button
+          key={key}
+          className={classnames({ [styles.selected]: key === orderBlock })}
+          onClick={() => setOrderBlock(key)}
+        >
+          {isPredictionMarket
+            ? t(`pages.trade.order-block.prediction.${longShortToYesNoMap[key.toLowerCase()]}`)
+            : t(`pages.trade.order-block.selector.${key.toLowerCase()}`)}
+        </Button>
+      ))}
+    </div>
   );
 });

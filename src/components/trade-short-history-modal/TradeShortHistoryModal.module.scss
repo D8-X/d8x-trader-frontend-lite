@@ -1,0 +1,19 @@
+@import '~styles/theme/theme.scss';
+
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .itemsHolder {
+    display: flex;
+    flex-direction: column;
+    gap: 2 * $d8x-spacing;
+  }
+
+  .viewAllLabel {
+    cursor: pointer;
+    color: var(--d8x-color-action);
+  }
+}

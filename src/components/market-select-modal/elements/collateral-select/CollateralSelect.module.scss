@@ -1,0 +1,27 @@
+@import '~styles/theme/theme.scss';
+
+.currencyLabel {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2 * $d8x-spacing;
+  font-size: 14px;
+
+  .iconHolder {
+    width: 16px;
+    height: 16px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .label {
+    margin-bottom: calc($d8x-spacing / -2);
+  }
+}
+
+.collateralButton {
+  min-width: 120px;
+}

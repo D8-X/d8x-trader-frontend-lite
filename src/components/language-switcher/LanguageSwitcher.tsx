@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +26,13 @@ const languageMetaMap: Record<LanguageE, LanguageMetaI> = {
   [LanguageE.FR]: createLandObject(LanguageE.FR, 'Français'),
 };
 
-export const LanguageSwitcher = () => {
+import styles from './LanguageSwitcher.module.scss';
+
+interface LanguageSwitcherPropsI {
+  isMini?: boolean;
+}
+
+export const LanguageSwitcher = ({ isMini = false }: LanguageSwitcherPropsI) => {
   const { i18n } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -41,13 +48,19 @@ export const LanguageSwitcher = () => {
     <DropDownSelect
       id="order-block-dropdown"
       selectedValue={
-        <>
-          <LanguageIcon /> {selectedLanguageMeta.name}
-        </>
+        isMini ? (
+          selectedLanguageMeta.lang.toUpperCase()
+        ) : (
+          <>
+            <LanguageIcon /> {selectedLanguageMeta.name}
+          </>
+        )
       }
       anchorEl={anchorEl}
       setAnchorEl={setAnchorEl}
       fullWidth
+      hasArrow={!isMini}
+      className={classnames({ [styles.miniButton]: isMini })}
     >
       {Object.entries(LanguageE).map(([key, lang]) => (
         <LanguageSwitcherMenuItem languageMeta={languageMetaMap[lang]} key={key} onClick={handleClose} />

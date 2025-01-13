@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import { memo } from 'react';
 
 import { Typography } from '@mui/material';
@@ -19,10 +19,15 @@ export const StatsLine = memo(({ items }: StatsLinePropsI) => (
       const isMidPrice = item.id === 'midPrice';
 
       return (
-        <div key={item.id} className={classNames(styles.statContainer, { [styles.midPriceContainer]: isMidPrice })}>
+        <div
+          key={item.id}
+          className={classnames(styles.statContainer, {
+            [styles.midPriceContainer]: isMidPrice,
+          })}
+        >
           {!isMidPrice && item.tooltip ? (
             <TooltipMobile tooltip={item.tooltip}>
-              <Typography variant="bodyTiny" className={classNames(styles.statLabel, styles.tooltip)}>
+              <Typography variant="bodyTiny" className={classnames(styles.statLabel, styles.tooltip)}>
                 {item.label}
               </Typography>
             </TooltipMobile>
@@ -33,6 +38,7 @@ export const StatsLine = memo(({ items }: StatsLinePropsI) => (
               </Typography>
             )
           )}
+
           {isMidPrice && item.tooltip ? (
             <TooltipMobile tooltip={item.tooltip}>
               <Typography variant="bodyLarge" className={item.className}>
@@ -46,15 +52,16 @@ export const StatsLine = memo(({ items }: StatsLinePropsI) => (
               </Typography>
             )
           )}
+
           {!isMidPrice && (
-            <Typography variant="bodyLarge" className={styles.statValue}>
-              {item.numberOnly}
-            </Typography>
-          )}
-          {!isMidPrice && (
-            <Typography variant="bodyTiny" className={styles.statCurrency}>
-              {item.currencyOnly}
-            </Typography>
+            <div className={styles.statValueContainer}>
+              <Typography variant="bodyLarge" className={styles.statValue}>
+                {item.numberOnly}
+              </Typography>
+              <Typography variant="bodyTiny" className={styles.statCurrency}>
+                {item.currencyOnly}
+              </Typography>
+            </div>
           )}
         </div>
       );

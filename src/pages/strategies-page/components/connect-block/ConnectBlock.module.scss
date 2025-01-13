@@ -7,6 +7,7 @@
   margin: 0 auto;
   background-color: var(--d8x-color-background-items);
   border-radius: $d8x-border-radius;
+  border: 1px solid var(--d8x-block-border-color);
   padding: $d8x-spacing * 6;
 }
 

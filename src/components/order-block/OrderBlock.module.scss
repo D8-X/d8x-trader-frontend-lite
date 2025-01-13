@@ -1,19 +1,103 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   width: 100%;
   border-radius: $d8x-border-radius;
   background-color: var(--d8x-color-background-order-block);
+  border: 1px solid var(--d8x-block-border-color);
 }
 
-.bottomCard {
-  background-color: var(--d8x-color-background-order-block-bottom);
+.headerButtons {
+  display: flex;
+  gap: 2 * $d8x-spacing;
+  margin-left: 4 * $d8x-spacing;
 }
 
-.selectors {
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+.card {
   display: flex;
   flex-direction: column;
-  padding-bottom: $d8x-spacing * 4 !important;
+  padding-top: $d8x-spacing * 2;
+  padding-bottom: $d8x-spacing * 2;
+
+  &.header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: $d8x-spacing * 3;
+  }
+
+  &.predictionHeader {
+    justify-content: flex-start;
+    padding-top: $d8x-spacing * 4;
+    gap: $d8x-spacing * 2;
+
+    .heading {
+      display: flex;
+      align-items: center;
+      gap: $d8x-spacing * 4;
+
+      .main {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 20px;
+        letter-spacing: -0.6%;
+      }
+
+      .name {
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 14px;
+        color: var(--d8x-badge-prediction-color);
+      }
+    }
+
+    .note {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 14px;
+      color: var(--d8x-color-text-label-one);
+    }
+  }
+
+  &.orders {
+    padding-top: $d8x-spacing * 3;
+  }
+
+  &.selectors {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: $d8x-spacing * 2;
+    padding-top: 0;
+  }
+
+  .predictionQuestion {
+    margin-bottom: $d8x-spacing * 3;
+  }
+
+  .learnMore {
+    cursor: pointer;
+    color: var(--d8x-color-action);
+  }
+}
+
+.additionalPrices {
+  display: flex;
+  justify-content: space-between;
+  gap: $d8x-spacing * 2;
+  margin-top: 2 * $d8x-spacing;
+
+  &.hidden {
+    display: none;
+    margin-top: 0;
+  }
 }
 
 .separator {
@@ -21,11 +105,11 @@
 }
 
 .depositLink {
-  margin-top: 2 * $d8x-spacing;
-  color: var(--d8x-color-action);
   display: inline-flex;
   align-items: center;
   gap: $d8x-spacing;
+  margin-top: $d8x-spacing * 2;
+  color: var(--d8x-color-action);
   cursor: pointer;
 }
 
@@ -33,25 +117,25 @@
   margin-top: $d8x-spacing;
 }
 
-@media screen and ($d8x-breakpoint-max-lg) {
-  .bottomCard {
-    padding-top: 8px;
+@media screen and ($d8x-breakpoint-max-xs) {
+  .root {
+    margin-top: $d8x-spacing * 2;
   }
 
   .card {
-    padding-top: $d8x-spacing * 2;
-    padding-bottom: $d8x-spacing * 2;
-  }
-}
+    padding-bottom: $d8x-spacing * 3;
 
-@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
-  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-  .bottomCard {
-    padding-top: calc($d8x-spacing / 2);
+    &.header {
+      padding-bottom: $d8x-spacing * 2;
+    }
+
+    &.selectors {
+      gap: $d8x-spacing * 3;
+    }
   }
 
-  .card {
-    padding-top: calc($d8x-spacing / 2);
-    padding-bottom: calc($d8x-spacing / 2);
+  .additionalPrices {
+    gap: $d8x-spacing * 3;
+    margin-top: $d8x-spacing * 3;
   }
 }

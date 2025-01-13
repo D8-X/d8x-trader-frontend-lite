@@ -48,6 +48,10 @@ export const VaultPage = () => {
       .finally(() => {
         withdrawalsRequestSentRef.current = false;
       });
+
+    return () => {
+      withdrawalsRequestSentRef.current = false;
+    };
   }, [chainId, address, selectedPool, setWithdrawals, triggerWithdrawalsUpdate]);
 
   return (

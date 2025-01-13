@@ -15,6 +15,12 @@
   color: var(--d8x-color-action-icon);
 }
 
+.actionButton {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 8px;
+}
+
 .headerWrapper {
   display: flex;
   align-items: center;
@@ -39,16 +45,20 @@
 .dataLabel {
   color: var(--d8x-color-text-main);
   font-weight: 500;
+  font-size: 14px;
 }
 
 .dataValue {
-  color: var(--d8x-color-text-highlight);
+  color: var(--d8x-color-text-label-one);
+  font-size: 14px;
 }
 
 .green {
   color: var(--d8x-color-buy-rgba);
+  font-size: 14px;
 }
 
 .red {
   color: var(--d8x-color-sell-rgba);
+  font-size: 14px;
 }

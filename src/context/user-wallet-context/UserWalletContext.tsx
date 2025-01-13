@@ -62,6 +62,9 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     refetch().finally(() => {
       isMultisigRefetchRef.current = false;
     });
+    return () => {
+      isMultisigRefetchRef.current = false;
+    };
   }, [address, refetch]);
 
   useEffect(() => {

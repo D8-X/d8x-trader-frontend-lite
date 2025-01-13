@@ -1,5 +1,12 @@
 import { readContract, waitForTransactionReceipt } from '@wagmi/core';
-import { type Address, erc20Abi, parseUnits, type WalletClient, type WriteContractParameters } from 'viem';
+import {
+  type Address,
+  erc20Abi,
+  type EstimateContractGasParameters,
+  parseUnits,
+  type WalletClient,
+  type WriteContractParameters,
+} from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { MaxUint256 } from 'appConstants';
@@ -47,8 +54,8 @@ export async function approveMarginToken({
       throw new Error('account not connected');
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
-    const params: WriteContractParameters = {
-      chain: walletClient.chain,
+
+    const estimateParams: EstimateContractGasParameters = {
       address: settleTokenAddr as Address,
       abi: erc20Abi,
       functionName: 'approve',
@@ -56,16 +63,22 @@ export async function approveMarginToken({
       gasPrice: gasPrice,
       account: account,
     };
-
-    const gasLimit = await estimateContractGas(walletClient, params).catch(() =>
+    const gasLimit = await estimateContractGas(walletClient, estimateParams).catch(() =>
       getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
     );
 
-    return walletClient.writeContract({ ...params, gas: gasLimit }).then((tx) => {
-      return waitForTransactionReceipt(wagmiConfig, {
+    const writeParams: WriteContractParameters = {
+      ...estimateParams,
+      chain: walletClient.chain,
+      account: account,
+      gas: gasLimit,
+    };
+    return walletClient.writeContract(writeParams).then(async (tx) => {
+      await waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
         timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
-      }).then(() => ({ hash: tx }));
+      });
+      return { hash: tx };
     });
   }
 }

@@ -1,19 +1,20 @@
 import { useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
-import { type Address } from 'viem';
+import { createWalletClient, http, type Address } from 'viem';
 import { useAccount, useWalletClient } from 'wagmi';
 
 import { Button, Typography } from '@mui/material';
 
-import { strategyAddressesAtom } from 'store/strategies.store';
-import { getStrategyAddress } from 'blockchain-api/getStrategyAddress';
+import { activeStrategyWalletAtom, strategyAddressesAtom } from 'store/strategies.store';
 
 import styles from './ConnectBlock.module.scss';
+import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 
 export const ConnectBlock = () => {
   const { t } = useTranslation();
 
+  const setActiveStrategyWallet = useSetAtom(activeStrategyWalletAtom);
   const setStrategyAddress = useSetAtom(strategyAddressesAtom);
 
   const { address } = useAccount();
@@ -21,7 +22,15 @@ export const ConnectBlock = () => {
 
   const handleConnect = useCallback(() => {
     if (walletClient && address) {
-      getStrategyAddress(walletClient).then((addr) => {
+      generateStrategyAccount(walletClient).then((account) => {
+        setActiveStrategyWallet(
+          createWalletClient({
+            account,
+            chain: walletClient.chain,
+            transport: http(),
+          })
+        );
+        const addr = account.address;
         setStrategyAddress((prev) => {
           const newAddresses = [...prev];
           const userAddressLower = address.toLowerCase();
@@ -38,7 +47,7 @@ export const ConnectBlock = () => {
         });
       });
     }
-  }, [walletClient, address, setStrategyAddress]);
+  }, [walletClient, address, setActiveStrategyWallet, setStrategyAddress]);
 
   return (
     <div className={styles.root}>

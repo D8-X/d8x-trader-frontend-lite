@@ -184,6 +184,7 @@
       },
       "history-table": {
         "table-title": "Trade History",
+        "body": "",
         "table-header": {
           "time": "Time",
           "perpetual": "Perpetual",
@@ -195,7 +196,8 @@
         },
         "table-content": {
           "connect": "지갑 연결",
-          "no-open": "No trade history"
+          "no-open": "아직 거래 내역이 없습니다",
+          "no-open-note": "거래를 시작하여 내역을 확인하세요"
         },
         "history-block-mobile": {
           "symbol": "Symbol"
@@ -222,8 +224,11 @@
           "short": "Short"
         },
         "prediction": {
-          "yes": "YES",
-          "no": "NO"
+          "title": "예측 시장",
+          "note": "거래 전략을 선택하고 라이트 사용자로서 옵션 거래를 시작하세요!",
+          "yes": "Yes",
+          "no": "No",
+          "bet": "Bet"
         },
         "order-type": {
           "market": "시장",
@@ -670,6 +675,7 @@
         }
       },
       "claim-funds": {
+        "claim-button": "Claim Funds",
         "toasts": {
           "tx-submitted": {
             "title": "Your funds are successfully claimed",
@@ -728,8 +734,12 @@
     "address-label": "Address",
     "deposit-gas": "Deposit gas",
     "swap-bridge": "Swap/Bridge",
-    "offramp-button": "Deposit from CEX",
+    "offramp-button": "CEX에서 입금",
+    "learn-more": "더 알아보기...",
+    "view-all": "모두 보기",
     "max": "Max:",
+    "yes": "Yes",
+    "no": "No",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",
     "page-reload": {
@@ -747,11 +757,6 @@
         "1": "Visit",
         "2": "for more information."
       }
-    },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
     },
     "pagination": {
       "per-page": "Per page"
@@ -839,8 +844,8 @@
         "header": "Choose Market",
         "crypto": "Crypto",
         "fx": "FX",
-        "prediction": "예측",
-        "commodity": "Commodity",
+        "polymarket": "예측",
+        "metal": "Commodity",
         "closed": "Closed"
       },
       "search": "Search...",

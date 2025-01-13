@@ -1,9 +1,73 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
+  padding: 3 * $d8x-spacing;
+  border-radius: $d8x-border-radius;
+  background-color: var(--d8x-color-background-card-overlay);
+}
+
+.manualBlock {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2 * $d8x-spacing;
+  margin-bottom: 2 * $d8x-spacing;
+}
+
+.walletBalance {
+  display: flex;
+  gap: 2 * $d8x-spacing;
+  margin-bottom: $d8x-spacing;
+
+  .infoText {
+    font-size: 10px;
+    line-height: 12px;
+    color: var(--d8x-color-text-label-one);
+  }
+
+  .infoTextTooltip {
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 12px;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    color: var(--d8x-color-text-label-one);
+  }
+}
+
+.inputBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4 * $d8x-spacing;
+
+  input[type='number'] {
+    -moz-appearance: auto !important;
+    -webkit-appearance: auto !important;
+    appearance: auto !important;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: auto !important;
+      margin: initial;
+    }
+
+    &::-moz-inner-spin-button,
+    &::-moz-outer-spin-button {
+      -moz-appearance: auto !important;
+      margin: initial;
+    }
+  }
+}
+
+.inputHolder {
+  flex: 1;
+
+  :global(.MuiInputBase-root) {
+    padding-right: 0;
+    width: 100%;
+  }
 
   .selector {
     color: var(--d8x-color-action);
@@ -11,9 +75,32 @@
   }
 }
 
-.inputHolder {
-  :global(.MuiInputBase-root) {
-    padding-right: 0;
+.dynamicLogo {
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.actionIconsHolder {
+  display: flex;
+  gap: 2 * $d8x-spacing;
+  flex-wrap: nowrap;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .currencyIcon {
+    @include transition(opacity);
+
+    opacity: 0.5;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
   }
 }
 
@@ -32,26 +119,19 @@
 
 @media screen and ($d8x-breakpoint-max-xs) {
   .root {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .labelHolder {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: $d8x-spacing * 3;
+    padding: 4 * $d8x-spacing;
   }
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) {
-  .root {
+  .manualBlock {
     margin-top: 2 * $d8x-spacing;
   }
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
   screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-  .root {
+  .manualBlock {
     margin-top: $d8x-spacing;
   }
 }

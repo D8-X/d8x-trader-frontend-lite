@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { config } from 'config';
 
@@ -18,6 +19,7 @@ import { useCandlesWsMessageHandler } from './useCandlesWsMessageHandler';
 
 export const CandlesWebSocketListener = memo(() => {
   const { chainId } = useAccount();
+  const location = useLocation();
 
   const latestMessageTime = useAtomValue(candlesLatestMessageTimeAtom);
 
@@ -57,7 +59,7 @@ export const CandlesWebSocketListener = memo(() => {
   useEffect(() => {
     wsRef.current?.close();
 
-    const candlesWsUrl = config.candlesWsUrl[getEnabledChainId(chainId)] || config.candlesWsUrl.default;
+    const candlesWsUrl = config.candlesWsUrl[getEnabledChainId(chainId, location.hash)] || config.candlesWsUrl.default;
     wsRef.current = createWebSocketWithReconnect(candlesWsUrl);
     wsRef.current.onStateChange(setIsConnected);
 
@@ -69,7 +71,7 @@ export const CandlesWebSocketListener = memo(() => {
       wsRef.current?.off(handleMessage);
       wsRef.current?.close();
     };
-  }, [chainId]);
+  }, [chainId, location]);
 
   useCandleMarketsSubscribe({ isConnected, send });
 

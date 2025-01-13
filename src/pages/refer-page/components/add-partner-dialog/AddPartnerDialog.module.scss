@@ -1,14 +1,10 @@
 @import '~styles/theme/theme.scss';
 
-.dialogRoot {
-  min-width: 450px;
-  width: 100%;
-  padding: 10 * $d8x-spacing 0 8 * $d8x-spacing 0;
-}
-
-.title {
-  text-align: center;
-  margin-bottom: 8 * $d8x-spacing;
+.dialog {
+  :global(.MuiPaper-root) {
+    min-width: 450px;
+    width: 100%;
+  }
 }
 
 .baseRebateContainer {
@@ -87,12 +83,6 @@
   margin: -2 * $d8x-spacing 0 8 * $d8x-spacing;
 }
 
-.dialogActionsContainer {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 8 * $d8x-spacing;
-}
-
 .actionButton {
   width: 200px;
 }
@@ -105,12 +95,6 @@
   .referrerKickbackInputContainer,
   .traderKickbackInputContainer {
     gap: 5 * $d8x-spacing;
-  }
-
-  .dialogActionsContainer {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4 * $d8x-spacing;
   }
 
   .closeButton {

@@ -1,28 +1,21 @@
+import classnames from 'classnames';
 import { useAtomValue } from 'jotai';
-import {
-  type ChangeEvent,
-  type Dispatch,
-  memo,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type Dispatch, memo, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, StopLossE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapStopLossToNumber } from 'utils/mapStopLossToNumber';
 import { traderAPIAtom } from 'store/pools.store';
+
+import styles from './Selectors.module.scss';
 
 interface StopLossSelectorPropsI {
   setStopLossPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -38,10 +31,7 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   const [stopLoss, setStopLoss] = useState<StopLossE | null>(null);
   const [stopLossInputPrice, setStopLossInputPrice] = useState<number | null | undefined>(undefined);
 
-  const parsedSymbol = parseSymbol(position.symbol);
-
-  const handleStopLossPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const stopLossPriceValue = event.target.value;
+  const handleStopLossPriceChange = (stopLossPriceValue: string) => {
     if (stopLossPriceValue !== '') {
       setStopLossInputPrice(+stopLossPriceValue);
     } else {
@@ -151,30 +141,41 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   };
 
   return (
-    <CustomPriceSelector<StopLossE>
-      id="custom-stop-loss-price"
-      label={
-        <InfoLabelBlock
-          title={t('pages.trade.order-block.stop-loss.title')}
-          content={
-            <>
-              <Typography>{t('pages.trade.order-block.stop-loss.body1')}</Typography>
-              <Typography>{t('pages.trade.order-block.stop-loss.body2')}</Typography>
-              <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
-            </>
-          }
-        />
-      }
-      options={Object.values(StopLossE)}
-      translationMap={translationMap}
-      handlePriceChange={handleStopLossChange}
-      handleInputPriceChange={handleStopLossPriceChange}
-      validateInputPrice={validateStopLossPrice}
-      selectedInputPrice={stopLoss !== StopLossE.None ? stopLossInputPrice : null}
-      selectedPrice={stopLoss}
-      currency={parsedSymbol?.quoteCurrency}
-      stepSize={stepSize}
-      disabled={disabled}
-    />
+    <div className={styles.root}>
+      <CustomPriceSelector
+        id="custom-stop-loss-price"
+        label={
+          <InfoLabelBlock
+            title={t('pages.trade.order-block.stop-loss.title')}
+            content={
+              <>
+                <Typography>{t('pages.trade.order-block.stop-loss.body1')}</Typography>
+                <Typography>{t('pages.trade.order-block.stop-loss.body2')}</Typography>
+                <Typography>{t('pages.trade.order-block.stop-loss.body3')}</Typography>
+              </>
+            }
+          />
+        }
+        handleInputPriceChange={handleStopLossPriceChange}
+        validateInputPrice={validateStopLossPrice}
+        selectedInputPrice={stopLoss !== StopLossE.None ? stopLossInputPrice : null}
+        stepSize={stepSize}
+        disabled={disabled}
+        inline={true}
+      />
+      <div className={styles.priceOptions}>
+        {Object.values(StopLossE).map((key) => (
+          <Button
+            key={key}
+            variant="outlined"
+            className={classnames({ [styles.selected]: key === stopLoss })}
+            onClick={() => handleStopLossChange(key)}
+            disabled={disabled}
+          >
+            {translationMap[key]}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 });

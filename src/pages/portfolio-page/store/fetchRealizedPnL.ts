@@ -23,6 +23,7 @@ export const fetchRealizedPnLAtom = atom(null, async (get, set, userAddress: Add
     }
     return acc;
   }, {});
+
   set(
     realizedPnLListAtom,
     Object.keys(realizedPnLReduced).map((key) => ({

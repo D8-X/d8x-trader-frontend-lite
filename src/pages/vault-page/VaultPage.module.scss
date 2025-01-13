@@ -28,9 +28,24 @@
   .selectHolder {
     background-color: var(--d8x-color-background-items);
     border-radius: $d8x-spacing * 3;
+    border: 1px solid var(--d8x-block-border-color);
     padding: $d8x-spacing * 2;
-    max-height: 72px;
+    max-height: 90px;
+    display: flex;
+    align-items: center;
   }
+}
+
+.mobileSelectBoxes {
+  display: flex;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: $d8x-spacing * 4;
+  border-radius: $d8x-border-radius;
+  border: 1px solid var(--d8x-block-border-color);
+  gap: $d8x-spacing * 3;
+  justify-content: center;
 }
 
 @media screen and ($d8x-breakpoint-max-md) {
@@ -40,13 +55,8 @@
   }
 }
 
-.mobileSelectBoxes {
-  display: flex;
-  max-width: 600px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: $d8x-spacing * 4;
-  gap: $d8x-spacing * 3;
-  justify-content: center;
+@media screen and ($d8x-breakpoint-max-xs) {
+  .mobileSelectBoxes {
+    width: 100%;
+  }
 }

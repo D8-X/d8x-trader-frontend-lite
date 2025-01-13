@@ -1,15 +1,22 @@
-import { Address, WalletClient, WriteContractParameters, createWalletClient, erc20Abi, http, parseUnits } from 'viem';
+import { readContracts } from '@wagmi/core';
+import {
+  type Address,
+  type EstimateContractGasParameters,
+  type WalletClient,
+  type WriteContractParameters,
+  erc20Abi,
+  parseUnits,
+} from 'viem';
 import { estimateContractGas, waitForTransactionReceipt, writeContract } from 'viem/actions';
+import { type Dispatch, type SetStateAction } from 'react';
 
 import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from 'blockchain-api/constants';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
-import { generateStrategyAccount } from 'blockchain-api/generateStrategyAccount';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { readContracts } from '@wagmi/core';
-import { Dispatch, SetStateAction } from 'react';
 
 interface FundMarginPropsI {
   walletClient: WalletClient;
+  strategyClient: WalletClient;
   strategyAddress?: Address;
   isMultisigAddress: boolean | null;
   amount: number;
@@ -17,22 +24,15 @@ interface FundMarginPropsI {
 }
 
 export async function fundStrategyMargin(
-  { walletClient, strategyAddress, isMultisigAddress, amount, settleTokenAddress }: FundMarginPropsI,
+  { walletClient, strategyClient, strategyAddress, isMultisigAddress, amount, settleTokenAddress }: FundMarginPropsI,
   setCurrentPhaseKey: Dispatch<SetStateAction<string>>
 ) {
-  if (!walletClient.account?.address) {
+  if (!walletClient.account?.address || !strategyClient.account?.address) {
     throw new Error('Account not connected');
   }
   let strategyAddr: Address;
   if (!strategyAddress) {
-    const strategyWalletClient = await generateStrategyAccount(walletClient).then((account) =>
-      createWalletClient({
-        account,
-        chain: walletClient.chain,
-        transport: http(),
-      })
-    );
-    strategyAddr = strategyWalletClient.account.address;
+    strategyAddr = strategyClient.account.address;
   } else {
     strategyAddr = strategyAddress;
   }
@@ -61,15 +61,23 @@ export async function fundStrategyMargin(
     //console.log('funding strategy account');
     setCurrentPhaseKey('pages.strategies.enter.phases.funding');
     const gasPrice = await getGasPrice(walletClient.chain?.id);
-    const params: WriteContractParameters = {
+
+    const estimateParams: EstimateContractGasParameters = {
       ...settleTokenContract,
       functionName: 'transfer',
       args: [strategyAddr, amountBigint],
       account: walletClient.account,
-      gasPrice: gasPrice,
+      gasPrice,
     };
-    const gas = await estimateContractGas(walletClient, params); // reverts if insufficient balance
-    const tx1 = await writeContract(walletClient, { ...params, gas }).catch((error) => {
+    const gas = await estimateContractGas(walletClient, estimateParams); // reverts if insufficient balance
+
+    const writeParams: WriteContractParameters = {
+      ...estimateParams,
+      chain: walletClient.chain,
+      account: walletClient.account,
+      gas,
+    };
+    const tx1 = await writeContract(walletClient, writeParams).catch((error) => {
       throw new Error(error.shortMessage);
     });
     await waitForTransactionReceipt(walletClient, {

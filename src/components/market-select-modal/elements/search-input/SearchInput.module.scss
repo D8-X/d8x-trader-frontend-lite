@@ -1,0 +1,30 @@
+@import '~styles/theme/theme.scss';
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.searchRaw {
+  width: 100%;
+  background-color: var(--d8x-color-background);
+  color: var(--d8x-color-text-main);
+  border: 1px solid var(--d8x-color-input-border);
+  padding: 8px 8px 8px 40px;
+  border-radius: $d8x-button-border-radius;
+  height: 32px;
+}
+
+.searchIcon {
+  position: absolute;
+  margin-left: 8px;
+  }
+
+.closeIcon {
+  position: absolute;
+  cursor: pointer;
+  right: 0;
+  margin-right: 8px;
+}

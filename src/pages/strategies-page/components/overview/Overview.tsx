@@ -49,6 +49,10 @@ export const Overview = () => {
 
   useEffect(() => {
     fetchData();
+
+    return () => {
+      isDataRequestSent.current = false;
+    };
   }, [fetchData]);
 
   return (

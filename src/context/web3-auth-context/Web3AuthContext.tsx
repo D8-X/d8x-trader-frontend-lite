@@ -1,7 +1,7 @@
 import { CHAIN_NAMESPACES, WALLET_ADAPTERS, Web3AuthNoModalOptions } from '@web3auth/base';
 import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider';
 import { Web3AuthNoModal } from '@web3auth/no-modal';
-import { type OPENLOGIN_NETWORK_TYPE, OpenloginAdapter } from '@web3auth/openlogin-adapter';
+import { type WEB3AUTH_NETWORK_TYPE, AuthAdapter } from '@web3auth/auth-adapter';
 import { Web3AuthConnector } from '@web3auth/web3auth-wagmi-connector';
 import { signInWithPopup, TwitterAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { useAtom, useSetAtom } from 'jotai';
@@ -37,7 +37,7 @@ const Web3AuthContext = createContext<Web3AuthContextPropsI | undefined>(undefin
 
 let clientId = '';
 let verifier = '';
-let web3AuthNetwork: OPENLOGIN_NETWORK_TYPE;
+let web3AuthNetwork: WEB3AUTH_NETWORK_TYPE;
 let web3AuthInstance: Web3AuthNoModal | null = null;
 
 if (web3AuthConfig.isEnabled) {
@@ -71,7 +71,7 @@ if (web3AuthConfig.isEnabled) {
   };
   web3AuthInstance = new Web3AuthNoModal(web3AuthOptions);
 
-  const openloginAdapter = new OpenloginAdapter({
+  const openloginAdapter = new AuthAdapter({
     privateKeyProvider,
     adapterSettings: {
       uxMode: 'redirect',
@@ -223,7 +223,7 @@ export const Web3AuthProvider = memo(({ children }: PropsWithChildren) => {
     async (idToken: string) => {
       if (web3AuthInstance && !web3AuthInstance.connected) {
         await web3AuthInstance
-          .connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+          .connectTo(WALLET_ADAPTERS.AUTH, {
             loginProvider: 'jwt',
             extraLoginOptions: {
               id_token: idToken,

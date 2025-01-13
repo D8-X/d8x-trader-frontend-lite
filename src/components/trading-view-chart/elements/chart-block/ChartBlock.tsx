@@ -11,6 +11,7 @@ import { ONE_MINUTE_TIME, TIMEZONE_OFFSET } from '../../constants';
 
 interface CandlesSeriesPropsI {
   width?: number;
+  height?: number;
   candles: CandlestickData[];
   seriesRef: Ref<ISeriesApi<'Candlestick'>> | undefined;
   numberDigits: number;
@@ -22,7 +23,7 @@ function timeFormatter(timestamp: number) {
   return new Date(timestamp * 1000 - TIMEZONE_OFFSET * ONE_MINUTE_TIME).toLocaleString();
 }
 
-export const ChartBlock = memo(({ width, candles, seriesRef, numberDigits }: CandlesSeriesPropsI) => {
+export const ChartBlock = memo(({ width, height, candles, seriesRef, numberDigits }: CandlesSeriesPropsI) => {
   const dimensions = useAtomValue(appDimensionsAtom);
   // A hack to make it rerender and update chart's layout
   useAtomValue(enabledDarkModeAtom);
@@ -30,11 +31,14 @@ export const ChartBlock = memo(({ width, candles, seriesRef, numberDigits }: Can
   const theme = useTheme();
 
   const chartHeight = useMemo(() => {
+    if (height) {
+      return height;
+    }
     if (dimensions.width && dimensions.width >= theme.breakpoints.values.lg) {
       return dimensions.height ? Math.max(Math.round(2 * (dimensions.height / 5)), MIN_CHART_HEIGHT) : MIN_CHART_HEIGHT;
     }
     return Math.round(Math.min(Math.max((width || MIN_CHART_HEIGHT) * 0.5, 300), MIN_CHART_HEIGHT));
-  }, [dimensions, width, theme.breakpoints]);
+  }, [dimensions, width, height, theme.breakpoints]);
 
   return (
     <Chart

@@ -8,13 +8,32 @@
   justify-content: center;
 }
 
-.dialog {
-  :global(.MuiPaper-root) {
-    background-color: var(--d8x-color-background);
-    color: var(--d8x-color-text-main);
-  }
+.closeButton {
+  padding: 0;
+  min-width: unset;
+}
 
-  :global(.MuiDialog-paper) {
-    border-radius: $d8x-border-radius;
+.dialogContent {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.dialogAction {
+  justify-content: center;
+  padding: 4 * $d8x-spacing 5 * $d8x-spacing;
+}
+
+@include media-phone {
+  :global(.MuiDialog-root) {
+    :global(.MuiDialog-container) {
+      align-items: flex-end !important;
+
+      :global(.MuiPaper-root) {
+        margin: 50% 0 0;
+        max-width: 100%;
+        max-height: 50vh;
+        border-radius: $d8x-border-radius-large $d8x-border-radius-large 0 0;
+      }
+    }
   }
 }

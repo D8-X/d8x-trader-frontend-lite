@@ -11,18 +11,138 @@
 
 .dialog {
   :global(.MuiPaper-root) {
-    max-width: 500px;
+    max-width: 375px;
     width: 100%;
   }
 }
 
-.emphasis {
-  background-color: var(--d8x-color-background-items-second);
-  padding: $d8x-spacing * 5 $d8x-spacing * 8;
+.semibold {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+
+  svg {
+    margin-bottom: -$d8x-spacing;
+    margin-right: $d8x-spacing;
+  }
+
+  .errorDetails {
+    margin-top: $d8x-spacing * 2;
+  }
 }
 
-.semibold {
+.newPositionHeader {
+  margin-bottom: $d8x-spacing * 3;
+}
+
+.orderType {
   font-weight: 500;
+  font-size: 24px;
+  line-height: 28px;
+  margin-bottom: 2 * $d8x-spacing;
+}
+
+.positionPrice {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: $d8x-spacing * 2;
+  color: var(--d8x-color-text-label-one);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: $d8x-spacing * 6;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  > span {
+    margin-bottom: -$d8x-spacing;
+  }
+}
+
+.borderedBox {
+  border: 1px solid var(--d8x-color-border);
+  border-radius: $d8x-border-radius-medium;
+  margin-bottom: $d8x-spacing * 5;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  &.emphasis {
+    background-color: var(--d8x-color-background-card-overlay);
+  }
+
+  &.success {
+    color: var(--d8x-color-buy-rgba);
+    border-color: var(--d8x-color-buy-rgba);
+  }
+
+  &.error {
+    color: var(--d8x-color-sell-rgba);
+    border-color: var(--d8x-color-sell-rgba);
+  }
+}
+
+.separator {
+  border-color: var(--d8x-color-border);
+}
+
+.boxContent {
+  display: flex;
+  flex-direction: column;
+  gap: $d8x-spacing * 2;
+  padding: $d8x-spacing * 3;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: $d8x-spacing * 2;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--d8x-color-text-label-one);
+  margin-bottom: $d8x-spacing;
+
+  > span {
+    margin-bottom: -$d8x-spacing / 2;
+  }
+}
+
+.positionSize {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: $d8x-spacing * 2;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 28px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  > span {
+    margin-bottom: -$d8x-spacing;
+  }
+}
+
+.heading2 {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.contentText {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--d8x-color-text-label-one);
 }
 
 .bold {
@@ -31,26 +151,25 @@
 
 .left {
   color: var(--d8x-color-text-label-two);
+  line-height: 14px;
 }
 
-.centered {
+.tpSlNote {
   display: block;
   text-align: center;
+  margin-top: $d8x-spacing * 3;
 }
 
 .orderDetails {
   margin-top: $d8x-spacing * 3;
   margin-bottom: $d8x-spacing * 3;
-}
-
-.newPositionHeader {
-  margin-top: $d8x-spacing * 3;
-  margin-bottom: $d8x-spacing * 3;
+  padding: 0 $d8x-spacing;
 }
 
 .newPositionDetails {
   margin-top: $d8x-spacing * 3;
   margin-bottom: $d8x-spacing * 3;
+  padding: 0 $d8x-spacing;
 }
 
 .validityMessages {
@@ -65,16 +184,6 @@
 @media screen and ($d8x-breakpoint-max-sm) {
   .emphasis {
     padding: $d8x-spacing * 3 $d8x-spacing * 8;
-  }
-
-  .dialogTitle {
-    font-size: 16px;
-    line-height: 20px;
-    padding: 24px 16px 16px;
-  }
-
-  .dialogActions {
-    padding: 16px 16px 24px;
   }
 
   .rightSide {

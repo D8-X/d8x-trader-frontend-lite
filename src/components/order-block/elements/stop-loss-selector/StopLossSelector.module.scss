@@ -1,0 +1,26 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.percent {
+  @include flex-center;
+
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  padding-top: calc($d8x-spacing / 2);
+  border-radius: 100px;
+  background-color: rgba(var(--d8x-color-background-sell-rgb), 0.1);
+  color: rgba(var(--d8x-color-background-sell-rgb), 1);
+}
+
+.customPriceSelector {
+  background-color: var(--d8x-color-background-card-overlay) !important;
+  flex: 1;
+
+  :global(.MuiInputBase-root) {
+    padding-right: 0;
+    width: 100%;
+  }
+}

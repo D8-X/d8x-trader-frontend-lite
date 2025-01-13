@@ -1,20 +1,9 @@
 @import '~styles/theme/theme.scss';
 
-.dialogRoot {
+.content {
   display: flex;
   flex-direction: column;
   gap: 8 * $d8x-spacing;
-  padding: 10 * $d8x-spacing 8 * $d8x-spacing;
-}
-
-.title {
-  text-align: center;
-}
-
-.actionButtonsContainer {
-  display: flex;
-  justify-content: space-between;
-  gap: 6 * $d8x-spacing;
 }
 
 .input {

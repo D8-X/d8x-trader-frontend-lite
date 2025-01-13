@@ -1,0 +1,24 @@
+@import '~styles/theme/theme.scss';
+
+.noDataBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 4 * $d8x-spacing;
+  height: 30vh;
+  gap: 4 * $d8x-spacing;
+
+  .heading {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+
+  .note {
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 16px;
+  }
+}

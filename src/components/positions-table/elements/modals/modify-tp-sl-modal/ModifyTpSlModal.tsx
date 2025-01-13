@@ -1,3 +1,4 @@
+import { BUY_SIDE, SELL_SIDE } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -6,13 +7,14 @@ import { toast } from 'react-toastify';
 import { type Address } from 'viem';
 import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
-import { Button, CircularProgress, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 
 import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
+import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
@@ -47,7 +49,7 @@ function createMainOrder(position: MarginAccountWithAdditionalDataI) {
 
   return {
     symbol: position.symbol,
-    side: position.side,
+    side: position.side === BUY_SIDE ? SELL_SIDE : BUY_SIDE,
     type: OrderTypeE.Market,
     // limitPrice: undefined,
     // stopPrice: undefined,
@@ -98,7 +100,14 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
     validityCheckRef.current = true;
 
     const mainOrder = createMainOrder(selectedPosition);
-    positionRiskOnTrade(chainId, traderAPI, mainOrder, address, selectedPosition, poolFee)
+    positionRiskOnTrade(
+      chainId,
+      traderAPI,
+      mainOrder,
+      address,
+      selectedPosition.positionNotionalBaseCCY * (selectedPosition.side === BUY_SIDE ? 1 : -1),
+      poolFee
+    )
       .then((data) => {
         setCollateralDeposit(data.data.orderCost);
       })
@@ -106,6 +115,10 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       .finally(() => {
         validityCheckRef.current = false;
       });
+
+    return () => {
+      validityCheckRef.current = false;
+    };
   }, [selectedPosition, address, traderAPI, chainId, poolFee]);
 
   const fetchPoolFee = useCallback((_chainId: number, _poolSymbol: string, _address: Address) => {
@@ -130,6 +143,10 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       return;
     }
     fetchPoolFee(chainId, poolByPosition.poolSymbol, address);
+
+    return () => {
+      fetchFeeRef.current = false;
+    };
   }, [chainId, poolByPosition?.poolSymbol, address, fetchPoolFee]);
 
   const { isSuccess, isError, isFetched } = useWaitForTransactionReceipt({
@@ -360,35 +377,41 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       stopLossPrice === selectedPosition.stopLoss.fullValue);
 
   return (
-    <Dialog open={isOpen} className={classnames(styles.root, styles.wide)}>
-      <DialogTitle>{t('pages.trade.positions-table.modify-modal.tp-sl-title')}</DialogTitle>
-      <DialogContent className={styles.contentWithGap}>
+    <Dialog
+      open={isOpen}
+      onClose={closeModal}
+      onCloseClick={closeModal}
+      className={classnames(styles.root, styles.wide)}
+      dialogTitle={t('pages.trade.positions-table.modify-modal.tp-sl-title')}
+      footerActions={
+        <>
+          <Button onClick={closeModal} variant="secondary" size="small">
+            {t('pages.trade.positions-table.modify-modal.cancel')}
+          </Button>
+          <GasDepositChecker multiplier={4n}>
+            <Button
+              onClick={handleModifyPositionConfirm}
+              variant="primary"
+              size="small"
+              disabled={isDisabledCreateButton}
+            >
+              {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+              {t('pages.trade.positions-table.modify-modal.create')}
+            </Button>
+          </GasDepositChecker>
+        </>
+      }
+    >
+      <div className={styles.contentWithGap}>
         {t('pages.trade.positions-table.modify-modal.tp-sl-position', {
           positionSize: formatToCurrency(selectedPosition.positionNotionalBaseCCY, parsedSymbol?.baseCurrency, true),
         })}
-      </DialogContent>
-      <Separator />
-      <DialogContent className={styles.selectors}>
+      </div>
+      <Separator separatorType={SeparatorTypeE.Modal} />
+      <div className={styles.selectors}>
         <TakeProfitSelector setTakeProfitPrice={setTakeProfitPrice} position={selectedPosition} disabled={loading} />
         <StopLossSelector setStopLossPrice={setStopLossPrice} position={selectedPosition} disabled={loading} />
-      </DialogContent>
-      <Separator />
-      <DialogActions>
-        <Button onClick={closeModal} variant="secondary" size="small">
-          {t('pages.trade.positions-table.modify-modal.cancel')}
-        </Button>
-        <GasDepositChecker multiplier={4n}>
-          <Button
-            onClick={handleModifyPositionConfirm}
-            variant="primary"
-            size="small"
-            disabled={isDisabledCreateButton}
-          >
-            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-            {t('pages.trade.positions-table.modify-modal.create')}
-          </Button>
-        </GasDepositChecker>
-      </DialogActions>
+      </div>
     </Dialog>
   );
 });

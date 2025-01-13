@@ -1,10 +1,9 @@
 import classnames from 'classnames';
-import { type ChangeEvent, memo, type ReactNode } from 'react';
+import { type ChangeEvent, type InputHTMLAttributes, memo, type ReactNode } from 'react';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
+import { InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
-import DecreaseIcon from 'assets/icons/decreaseIcon.svg?react';
-import IncreaseIcon from 'assets/icons/increaseIcon.svg?react';
+import { InputE } from './enums';
 
 import styles from './ResponsiveInput.module.scss';
 
@@ -16,13 +15,15 @@ interface ResponsiveInputPropsI {
   setInputValue: (newValue: string) => void;
   handleInputBlur?: () => void;
   handleInputFocus?: () => void;
-  currency: ReactNode | undefined;
+  currency?: ReactNode;
   placeholder?: string;
   step?: string;
   min?: number;
   max?: number;
   adornmentAction?: ReactNode;
   disabled?: boolean;
+  type?: InputE;
+  inputProps?: InputHTMLAttributes<HTMLInputElement>;
 }
 
 export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
@@ -41,6 +42,7 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     max,
     adornmentAction,
     disabled,
+    type = InputE.Regular,
   } = props;
 
   const handleValueChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -54,66 +56,28 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
     }
   };
 
-  const handleValueDecrease = () => {
-    if (inputValue === null) {
-      return;
-    }
-
-    const parts = step.split('.');
-
-    let decimalPlaces;
-    if (parts.length === 2) {
-      decimalPlaces = parts[1].length;
-    } else {
-      decimalPlaces = 0;
-    }
-
-    const stepNumber = +step;
-    const rounded = Math.round((+inputValue - stepNumber) / stepNumber) * stepNumber;
-
-    setInputValue(rounded.toFixed(decimalPlaces));
-  };
-
-  const handleValueIncrease = () => {
-    const parts = step.split('.');
-
-    let decimalPlaces;
-    if (parts.length === 2) {
-      decimalPlaces = parts[1].length;
-    } else {
-      decimalPlaces = 0;
-    }
-
-    const stepNumber = +step;
-    const inputNumber = inputValue === null ? 0 : +inputValue;
-    const rounded = Math.round((inputNumber + stepNumber) / stepNumber) * stepNumber;
-
-    setInputValue(rounded.toFixed(decimalPlaces));
-  };
-
   const inputNumeric = inputValue !== null ? +inputValue : null;
 
   return (
-    <Box className={classnames(styles.root, className)}>
-      <Button
-        key="decrease-input-value"
-        variant="outlined"
-        size="small"
-        className={styles.decreaseButton}
-        onClick={handleValueDecrease}
-        disabled={disabled || inputNumeric === null || inputNumeric <= min}
-      >
-        <DecreaseIcon />
-      </Button>
+    <div className={classnames(styles.root, className)}>
       <OutlinedInput
         id={id}
-        endAdornment={
-          <InputAdornment position="end" className={styles.inputAdornment}>
-            <Typography variant="adornment">{currency}</Typography>
-            {adornmentAction}
-          </InputAdornment>
+        startAdornment={
+          type === InputE.Outlined && currency ? (
+            <InputAdornment position="end" className={styles.inputStartAdornment}>
+              <Typography variant="adornment">{currency}</Typography>
+            </InputAdornment>
+          ) : undefined
         }
-        className={inputClassName}
+        endAdornment={
+          type === InputE.Regular && currency ? (
+            <InputAdornment position="end" className={styles.inputEndAdornment}>
+              <Typography variant="adornment">{currency}</Typography>
+              {adornmentAction}
+            </InputAdornment>
+          ) : undefined
+        }
+        className={classnames(inputClassName, { [styles.outlined]: type === InputE.Outlined })}
         inputProps={{ step, min, max }}
         type="number"
         placeholder={placeholder}
@@ -123,16 +87,6 @@ export const ResponsiveInput = memo((props: ResponsiveInputPropsI) => {
         value={inputNumeric === null ? '' : inputValue}
         disabled={disabled}
       />
-      <Button
-        key="increase-input-value"
-        variant="outlined"
-        size="small"
-        className={styles.increaseButton}
-        onClick={handleValueIncrease}
-        disabled={disabled || !!(max && inputNumeric !== null && inputNumeric >= max)}
-      >
-        <IncreaseIcon />
-      </Button>
-    </Box>
+    </div>
   );
 });

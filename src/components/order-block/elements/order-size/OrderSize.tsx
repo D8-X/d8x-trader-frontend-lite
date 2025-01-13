@@ -1,20 +1,23 @@
 import { roundToLotString } from '@d8x/perpetuals-sdk';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { memo, type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address } from 'viem';
 import { useAccount } from 'wagmi';
 
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
-import { ClickAwayListener, Grow, IconButton, MenuItem, MenuList, Paper, Popper, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
+import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
+import { InputE } from 'components/responsive-input/enums';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
+import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { getMaxOrderSizeForTrader } from 'network/network';
 import { defaultCurrencyAtom } from 'store/app.store';
 import { orderBlockAtom } from 'store/order-block.store';
 import {
   perpetualStaticInfoAtom,
+  poolTokenBalanceAtom,
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -26,7 +29,8 @@ import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency'
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useMinPositionString } from '../../hooks/useMinPositionString';
-import { OrderSizeSlider } from './components/OrderSizeSlider';
+import { Slider } from './elements/slider/Slider';
+import { TokenSelect } from './elements/token-select/TokenSelect';
 import {
   currencyMultiplierAtom,
   inputValueAtom,
@@ -58,6 +62,7 @@ export const OrderSize = memo(() => {
   const [selectedCurrency, setSelectedCurrency] = useAtom(selectedCurrencyAtom);
   const [maxOrderSize, setMaxOrderSize] = useAtom(maxTraderOrderSizeAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -69,14 +74,12 @@ export const OrderSize = memo(() => {
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
 
-  const [openCurrencySelector, setOpenCurrencySelector] = useState(false);
-
-  const fetchedMaxSizes = useRef(false);
-  const anchorRef = useRef<HTMLDivElement>(null);
+  const fetchedMaxSizesRef = useRef(false);
   const maxOrderSizeDefinedRef = useRef(false);
   const maxOrderSizeRetriesCountRef = useRef(0);
   const maxOrderSizeRequestRef = useRef(false);
   const triggerBalancesUpdateRef = useRef(triggerBalancesUpdate);
+  const perpetualIdRef = useRef(selectedPerpetual?.id);
 
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
 
@@ -125,18 +128,6 @@ export const OrderSize = memo(() => {
     setInputFromOrderSize(orderSize);
   }, [orderSize, setInputFromOrderSize]);
 
-  const currencyOptions = useMemo(() => {
-    if (!selectedPool || !selectedPerpetual) {
-      return [];
-    }
-
-    const currencies = [selectedPerpetual.baseCurrency, selectedPerpetual.quoteCurrency];
-    if (!currencies.includes(selectedPool.settleSymbol)) {
-      currencies.push(selectedPool.settleSymbol);
-    }
-    return currencies;
-  }, [selectedPool, selectedPerpetual]);
-
   const orderSizeStep = useMemo(() => {
     if (perpetualStaticInfo) {
       if (currencyMultiplier === 1) {
@@ -153,7 +144,7 @@ export const OrderSize = memo(() => {
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
-      if (!traderAPI || fetchedMaxSizes.current) {
+      if (!traderAPI || fetchedMaxSizesRef.current || selectedPerpetual?.state !== 'NORMAL') {
         return;
       }
 
@@ -161,12 +152,11 @@ export const OrderSize = memo(() => {
       if (!symbol) {
         return;
       }
-
-      fetchedMaxSizes.current = true;
+      fetchedMaxSizesRef.current = true;
       const data = await getMaxOrderSizeForTrader(_chainId, traderAPI, _address, symbol).catch((err) => {
         console.error(err);
       });
-      fetchedMaxSizes.current = false;
+      fetchedMaxSizesRef.current = false;
       if (!data?.data) {
         return;
       }
@@ -179,12 +169,12 @@ export const OrderSize = memo(() => {
       }
       return maxAmount < _lotSizeBC ? 0 : +roundToLotString(maxAmount, _lotSizeBC);
     },
-    [traderAPI]
+    [traderAPI, selectedPerpetual]
   );
 
   const refetchMaxOrderSize = useCallback(
     (userAddress: Address, needValueCleanUp: boolean) => {
-      if (maxOrderSizeRequestRef.current) {
+      if (maxOrderSizeRequestRef.current && maxOrderSize !== 0 && maxOrderSize !== undefined) {
         return;
       }
 
@@ -197,6 +187,7 @@ export const OrderSize = memo(() => {
       }
 
       maxOrderSizeRequestRef.current = true;
+      perpetualIdRef.current = perpetualStaticInfo.id;
 
       fetchMaxOrderSize(
         chainId,
@@ -206,8 +197,10 @@ export const OrderSize = memo(() => {
         orderBlock === OrderBlockE.Long
       )
         .then((result) => {
-          setMaxOrderSize(result !== undefined && !isNaN(result) ? result * 0.995 : 10_000);
-          maxOrderSizeDefinedRef.current = result !== undefined && !isNaN(result);
+          if (perpetualIdRef.current === perpetualStaticInfo.id) {
+            setMaxOrderSize(result !== undefined && !isNaN(result) ? result * 0.995 : 10_000);
+            maxOrderSizeDefinedRef.current = result !== undefined && !isNaN(result) && result !== 0; // also refetch if we get a 0, to be sure
+          }
         })
         .catch((error) => {
           console.error(error);
@@ -217,7 +210,7 @@ export const OrderSize = memo(() => {
           maxOrderSizeRequestRef.current = false;
         });
     },
-    [isSDKConnected, chainId, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize]
+    [isSDKConnected, chainId, perpetualStaticInfo, orderBlock, fetchMaxOrderSize, setMaxOrderSize, maxOrderSize]
   );
 
   useEffect(() => {
@@ -225,6 +218,8 @@ export const OrderSize = memo(() => {
       setMaxOrderSize(undefined);
       return;
     }
+
+    fetchedMaxSizesRef.current = false; // Reset on address change or chainId change
 
     let needValueCleanUp = true;
     if (triggerBalancesUpdateRef.current !== triggerBalancesUpdate) {
@@ -256,33 +251,40 @@ export const OrderSize = memo(() => {
     return () => {
       clearInterval(intervalId);
       maxOrderSizeRetriesCountRef.current = 0;
+      maxOrderSizeRequestRef.current = false;
     };
-  }, [refetchMaxOrderSize, address, triggerBalancesUpdate, setMaxOrderSize]);
+  }, [refetchMaxOrderSize, address, triggerBalancesUpdate, setMaxOrderSize, chainId]);
 
-  const handleCurrencyChangeToggle = () => {
-    setOpenCurrencySelector((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event: Event) => {
-    if (anchorRef.current?.contains(event.target as HTMLElement)) {
-      return;
+  const settleSymbol = useMemo(() => {
+    if (!selectedPool || !selectedPerpetual) {
+      return '';
     }
 
-    setOpenCurrencySelector(false);
-  };
+    if (
+      !selectedPool?.settleSymbol ||
+      selectedPool.settleSymbol === selectedPerpetual.quoteCurrency ||
+      selectedPool.settleSymbol === selectedPerpetual.baseCurrency
+    ) {
+      return '';
+    }
 
-  const handleCurrencySelect = (
-    _event: MouseEvent<HTMLAnchorElement> | MouseEvent<HTMLLIElement>,
-    currency: string
-  ) => {
-    setSelectedCurrency(currency);
-    setOpenCurrencySelector(false);
-  };
+    return selectedPool.settleSymbol;
+  }, [selectedPool, selectedPerpetual]);
 
   return (
-    <>
-      <div className={styles.root}>
+    <div className={styles.root}>
+      <div className={styles.manualBlock}>
         <div className={styles.labelHolder}>
+          <div className={styles.walletBalance}>
+            <Typography variant="bodySmallPopup" className={styles.infoText}>
+              {t('pages.trade.order-block.info.balance')}:
+            </Typography>
+            <TooltipMobile tooltip={selectedPool?.settleTokenAddr ? selectedPool.settleTokenAddr.toString() : '...'}>
+              <Typography variant="bodySmallSB" className={styles.infoTextTooltip}>
+                {formatToCurrency(poolTokenBalance, selectedPool?.settleSymbol)}
+              </Typography>
+            </TooltipMobile>
+          </div>
           <InfoLabelBlock
             title={t('pages.trade.order-block.order-size.title')}
             content={
@@ -299,71 +301,59 @@ export const OrderSize = memo(() => {
             }
           />
         </div>
+        <TokenSelect />
+      </div>
+      <div className={styles.inputBlock}>
         <ResponsiveInput
           id="order-size"
           inputValue={inputValue}
           setInputValue={onInputChange}
           handleInputBlur={handleInputBlur}
           currency={
-            <span onClick={handleCurrencyChangeToggle} className={styles.currencyLabel}>
-              {selectedCurrency}
-            </span>
+            <DynamicLogo
+              logoName={selectedCurrency.toLowerCase()}
+              className={styles.dynamicLogo}
+              width={24}
+              height={24}
+            />
           }
           step={orderSizeStep}
           min={0}
           max={maxOrderSizeCurrent !== undefined ? roundMaxOrderSize(maxOrderSizeCurrent) : undefined}
           className={styles.inputHolder}
-          adornmentAction={
-            <div ref={anchorRef}>
-              <IconButton
-                aria-label="change currency"
-                onClick={handleCurrencyChangeToggle}
-                edge="start"
-                size="small"
-                className={styles.selector}
-              >
-                {openCurrencySelector ? <ArrowDropUp /> : <ArrowDropDown />}
-              </IconButton>
-              <Popper
-                sx={{
-                  zIndex: 1,
-                }}
-                open={openCurrencySelector}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin: placement === 'bottom' ? 'left top' : 'left bottom',
-                    }}
-                  >
-                    <Paper>
-                      <ClickAwayListener onClickAway={handleClose}>
-                        <MenuList id="split-button-menu" autoFocusItem className={styles.menuItems}>
-                          {currencyOptions.map((option) => (
-                            <MenuItem
-                              key={option}
-                              selected={option === selectedCurrency}
-                              onClick={(event) => handleCurrencySelect(event, option)}
-                            >
-                              {option}
-                            </MenuItem>
-                          ))}
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </div>
-          }
+          type={InputE.Outlined}
         />
+        <div className={styles.actionIconsHolder}>
+          {selectedPerpetual && selectedCurrency !== selectedPerpetual.quoteCurrency && (
+            <DynamicLogo
+              logoName={selectedPerpetual?.quoteCurrency.toLowerCase() ?? ''}
+              width={24}
+              height={24}
+              className={styles.currencyIcon}
+              onClick={() => setSelectedCurrency(selectedPerpetual.quoteCurrency)}
+            />
+          )}
+          {selectedPerpetual && selectedCurrency !== selectedPerpetual.baseCurrency && (
+            <DynamicLogo
+              logoName={selectedPerpetual?.baseCurrency.toLowerCase() ?? ''}
+              width={24}
+              height={24}
+              className={styles.currencyIcon}
+              onClick={() => setSelectedCurrency(selectedPerpetual.baseCurrency)}
+            />
+          )}
+          {selectedPool && selectedCurrency !== selectedPool.settleSymbol && (
+            <DynamicLogo
+              logoName={settleSymbol.toLowerCase()}
+              width={24}
+              height={24}
+              className={styles.currencyIcon}
+              onClick={() => setSelectedCurrency(selectedPool.settleSymbol)}
+            />
+          )}
+        </div>
       </div>
-      <OrderSizeSlider />
-    </>
+      <Slider />
+    </div>
   );
 });

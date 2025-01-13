@@ -9,6 +9,12 @@
   padding-left: 3 * $d8x-spacing;
   padding-right: 3 * $d8x-spacing;
   border-radius: 2 * $d8x-spacing;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+    border-color: transparent;
+  }
 
   &.fullWidth {
     width: 100%;

@@ -1,4 +1,5 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   cursor: pointer;
@@ -8,9 +9,10 @@
 }
 
 .actionIcon {
-  color: var(--d8x-color-action-icon);
-  transition: opacity linear 200ms;
+  @include transition(opacity);
+
   position: relative;
+  color: var(--d8x-color-action-icon);
   bottom: 2px;
 
   &:hover {
@@ -19,5 +21,5 @@
 }
 
 .refreshLabel {
-  color: var(--d8x-color-action);
+  color: var(--d8x-color-action-icon);
 }

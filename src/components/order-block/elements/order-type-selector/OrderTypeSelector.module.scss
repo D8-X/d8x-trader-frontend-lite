@@ -1,37 +1,48 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   display: flex;
-  justify-content: center;
-  gap: $d8x-spacing * 8;
-  margin-top: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 4;
+  justify-content: flex-start;
+  gap: $d8x-spacing * 4;
+}
 
-  button {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
-    padding-bottom: $d8x-spacing;
-    padding-top: 2 * $d8x-spacing;
+.type {
+  @include transition(color);
+
+  position: relative;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  padding-bottom: $d8x-spacing;
+  padding-top: 2 * $d8x-spacing;
+  color: var(--d8x-color-text-label-two);
+
+  &::after {
+    @include transition(opacity);
+
+    content: ' ';
+    position: absolute;
+    left: -($d8x-spacing * 0.5);
+    right: -($d8x-spacing * 1);
+    bottom: -($d8x-spacing * 3.5);
+    top: inherit;
+    border-bottom: 2px solid var(--d8x-color-action);
+    opacity: 0;
   }
-}
 
-.selected {
-  color: var(--d8x-color-action);
-  background-color: var(--d8x-color-action-secondary);
-}
-
-@media screen and ($d8x-breakpoint-height-max-md) {
-  .root {
-    margin-bottom: 4 * $d8x-spacing;
+  &:hover {
+    color: var(--d8x-color-action);
+    cursor: pointer;
   }
-}
 
-@media screen and ($d8x-breakpoint-max-xs) {
-  .root {
-    button {
-      font-size: 14px;
-      max-height: 40px;
+  &.selected {
+    color: var(--d8x-color-action);
+    user-select: none;
+    pointer-events: none;
+
+    &::after {
+      opacity: 1;
     }
   }
 }

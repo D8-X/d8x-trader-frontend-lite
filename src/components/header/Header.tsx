@@ -1,18 +1,28 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useReadContracts } from 'wagmi';
+import { useAccount, useChainId, useReadContracts } from 'wagmi';
+import { INVALID_PERPETUAL_STATES } from 'appConstants';
 
 import { Menu } from '@mui/icons-material';
-import { Button, Divider, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Button, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
+import CloseIcon from 'assets/icons/new/close.svg?react';
+import { OneClickTradingButton } from 'components/wallet-connect-button/OneClickTradingButton';
+import { OwltoButton } from 'components/wallet-connect-button/OwltoButton';
+import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
+import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
+import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 
 import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
 import { DepositModal } from 'components/deposit-modal/DepositModal';
 import { LanguageSwitcher } from 'components/language-switcher/LanguageSwitcher';
+import { collateralsAtom } from 'components/market-select-modal/collaterals.store';
 import { Separator } from 'components/separator/Separator';
+import { ThemeSwitcher } from 'components/theme-switcher/ThemeSwitcher';
 import { WalletConnectButtonHolder } from 'components/wallet-connect-button/WalletConnectButtonHolder';
 import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
 import { web3AuthConfig } from 'config';
@@ -25,6 +35,7 @@ import {
   gasTokenSymbolAtom,
   oracleFactoryAddrAtom,
   perpetualsAtom,
+  allPerpetualsAtom,
   poolsAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
@@ -39,14 +50,10 @@ import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { isEnabledChain } from 'utils/isEnabledChain';
-
-import { collateralsAtom } from './elements/market-select/collaterals.store';
-import { SettingsBlock } from './elements/settings-block/SettingsBlock';
-import { SettingsButton } from './elements/settings-button/SettingsButton';
+import { isDisabledPool } from 'utils/isDisabledPool';
 
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { TraderInterface } from '@d8x/perpetuals-sdk';
 
 interface HeaderPropsI {
   /**
@@ -63,19 +70,20 @@ const MAX_RETRIES = 3;
 
 export const Header = memo(({ window }: HeaderPropsI) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
-  const isTabletScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isUpToLargeScreen = useMediaQuery(theme.breakpoints.down('lg'));
+  const isUpToTabletScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const isUpToMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { t } = useTranslation();
 
-  const { chain, chainId, address, isConnected, isReconnecting, isConnecting } = useAccount();
-
+  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const chainId = useChainId();
   const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
   const setPools = useSetAtom(poolsAtom);
   const setCollaterals = useSetAtom(collateralsAtom);
   const setPerpetuals = useSetAtom(perpetualsAtom);
+  const setAllPerpetuals = useSetAtom(allPerpetualsAtom);
   const setPositions = useSetAtom(positionsAtom);
   const setOracleFactoryAddr = useSetAtom(oracleFactoryAddrAtom);
   const setProxyAddr = useSetAtom(proxyAddrAtom);
@@ -97,6 +105,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const poolTokenBalanceDefinedRef = useRef(false);
   const poolTokenBalanceRetriesCountRef = useRef(0);
 
+  const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
+  const isBridgeShownOnPage = useBridgeShownOnPage();
+  const isOwltoEnabled = isOwltoButtonEnabled(chainId);
+  const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
+
   // fetch the settle ccy fx -> save to atom
 
   const setExchangeInfo = useCallback(
@@ -107,30 +120,26 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       }
 
       const pools = data.pools
-        .filter((pool) => pool.isRunning)
+        .filter((pool) => pool.isRunning && pool.perpetuals.length > 0)
         .map((pool) => {
-          let poolId = 0;
-          if (traderAPI) {
-            try {
-              poolId = traderAPI.getPoolIdFromSymbol(pool.poolSymbol);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-
+          const poolId = Math.floor(pool.perpetuals[0].id / 100_000);
           return {
             ...pool,
             poolId,
           };
-        });
+        })
+        .filter(({ poolId }) => !isDisabledPool(chainId, poolId));
       setPools(pools);
 
-      setCollaterals(pools.map((pool) => pool.poolSymbol));
+      setCollaterals(pools.map((pool) => pool.settleSymbol));
 
       const perpetuals: PerpetualDataI[] = [];
-      data.pools.forEach((pool) => {
-        perpetuals.push(
-          ...pool.perpetuals.map((perpetual) => {
+
+      pools.forEach((pool) => {
+        // Map over the pool.perpetuals array and filter out INVALID and INITIALIZING perpetuals
+        const validPerpetuals = pool.perpetuals
+          .filter((perpetual) => !INVALID_PERPETUAL_STATES.includes(perpetual.state))
+          .map((perpetual) => {
             const symbol = createSymbol({
               poolSymbol: pool.poolSymbol,
               baseCurrency: perpetual.baseCurrency,
@@ -139,7 +148,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
             let isPredictionMarket = false;
             try {
               const sInfo = traderAPI?.getPerpetualStaticInfo(symbol);
-              isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarket(sInfo);
+              isPredictionMarket = sInfo !== undefined && TraderInterface.isPredictionMarketStatic(sInfo);
             } catch {
               // skip
             }
@@ -150,15 +159,22 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               quoteCurrency: perpetual.quoteCurrency,
               symbol,
               isPredictionMarket,
+              state: perpetual.state,
             };
-          })
-        );
+          });
+
+        // Push the valid perpetuals into the perpetuals array
+        perpetuals.push(...validPerpetuals);
       });
-      setPerpetuals(perpetuals);
+      const filteredPerpetuals = perpetuals.filter(
+        (perpetual) => perpetual.state === 'NORMAL' || perpetual.isPredictionMarket
+      );
+      setPerpetuals(filteredPerpetuals);
+      setAllPerpetuals(perpetuals);
       setOracleFactoryAddr(data.oracleFactoryAddr);
       setProxyAddr(data.proxyAddr);
     },
-    [setPools, setCollaterals, setPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
+    [chainId, setPools, setCollaterals, setPerpetuals, setAllPerpetuals, setOracleFactoryAddr, setProxyAddr, traderAPI]
   );
 
   useEffect(() => {
@@ -181,11 +197,13 @@ export const Header = memo(({ window }: HeaderPropsI) => {
     }
   }, [triggerPositionsUpdate, setPositions, chainId, address]);
 
+  const location = useLocation();
+
   useEffect(() => {
-    if (traderAPI && Number(traderAPI.chainId) === getEnabledChainId(chainId)) {
+    if (traderAPI && Number(traderAPI.chainId) === getEnabledChainId(chainId, location.hash)) {
       traderAPIRef.current = traderAPI;
     }
-  }, [traderAPI, chainId]);
+  }, [traderAPI, chainId, location]);
 
   useEffect(() => {
     if (exchangeRequestRef.current) {
@@ -201,7 +219,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       while (retries < MAX_RETRIES) {
         try {
           let currentTraderAPI = null;
-          const enabledChainId = getEnabledChainId(chainId);
+          const enabledChainId = getEnabledChainId(chainId, location.hash);
           if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId) === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
@@ -210,7 +228,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           retries = MAX_RETRIES;
         } catch (error) {
           console.error(error);
-          console.log(`ExchangeInfo attempt ${retries + 1} failed: ${error}`);
+          console.info(`ExchangeInfo attempt ${retries + 1} failed: ${error}`);
           retries++;
           if (retries === MAX_RETRIES) {
             // Throw the error if max retries reached
@@ -225,7 +243,11 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       .finally(() => {
         exchangeRequestRef.current = false;
       });
-  }, [chainId, setExchangeInfo]);
+
+    return () => {
+      exchangeRequestRef.current = false;
+    };
+  }, [chainId, setExchangeInfo, location]);
 
   const {
     data: poolTokenBalance,
@@ -323,15 +345,25 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const drawer = (
     <>
-      <Typography
-        variant="h6"
-        sx={{ my: 2, textAlign: 'center' }}
-        onClick={handleDrawerToggle}
-        className={styles.drawerLogoHolder}
-      >
-        <LogoWithText width={86} height={20} />
-      </Typography>
-      <Divider />
+      <div className={styles.headerContainer}>
+        <div className={styles.menuTitle}>Menu</div>
+        {
+          <Button variant="outlined" className={styles.closeButton} onClick={handleDrawerToggle}>
+            <CloseIcon width="24px" height="24px" />
+          </Button>
+        }
+      </div>
+      <Separator />
+      {isUpToTabletScreen && (
+        <>
+          <div className={styles.settingButtonsHolderMobile}>
+            {!isSignedInSocially && <OneClickTradingButton />}
+            {isOwltoEnabled && isBridgeShownOnPage && <OwltoButton />}
+            <ThemeSwitcher />
+            <LanguageSwitcher isMini={true} />
+          </div>
+        </>
+      )}
       <nav className={styles.navMobileWrapper} onClick={handleDrawerToggle}>
         {availablePages.map((page) => (
           <NavLink
@@ -344,22 +376,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
           </NavLink>
         ))}
       </nav>
-      {isTabletScreen && (
-        <>
-          <Divider />
-          <div className={styles.settings}>
-            <SettingsBlock />
-          </div>
-          <div className={styles.languageSwitcher}>
-            <LanguageSwitcher />
-          </div>
-        </>
-      )}
-      <div className={styles.closeAction}>
-        <Button onClick={handleDrawerToggle} variant="secondary" size="small">
-          {t('common.info-modal.close')}
-        </Button>
-      </div>
     </>
   );
 
@@ -374,10 +390,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               <div className={styles.leftSide}>
                 <Typography variant="h6" component="div" className={styles.mainLogoHolder}>
                   <a href="/" className={styles.logoLink}>
-                    <LogoWithText width={86} height={20} />
+                    <LogoWithText width={60} height={13.95} />
                   </a>
                 </Typography>
-                {!isSmallScreen && (
+                {!isUpToLargeScreen && (
                   <nav className={styles.navWrapper}>
                     {availablePages.map((page) => (
                       <NavLink
@@ -392,8 +408,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                   </nav>
                 )}
               </div>
-              {(!isMobileScreen || !isConnected) && (
-                <Typography variant="h6" component="div" className={styles.walletConnect}>
+              {(!isUpToMobileScreen || !isConnected) && (
+                <div className={styles.walletConnect}>
                   {web3AuthConfig.isEnabled && !isConnected && (
                     <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
                       <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
@@ -405,24 +421,28 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                       <WalletConnectedButtons />
                     </>
                   )}
-                </Typography>
+                </div>
               )}
-              {!isTabletScreen && <SettingsButton />}
-              {isSmallScreen && (
+              {!isUpToTabletScreen && (
+                <div className={styles.settingButtonsHolder}>
+                  <ThemeSwitcher />
+                  <LanguageSwitcher isMini={true} />
+                </div>
+              )}
+              {isUpToMobileScreen && isConnected && (
+                <div className={styles.mobileButtonsBlock}>
+                  <div className={styles.mobileWalletButtons}>
+                    <WalletConnectButtonHolder />
+                    <WalletConnectedButtons mobile={true} />
+                  </div>
+                </div>
+              )}
+              {isUpToLargeScreen && (
                 <Button onClick={handleDrawerToggle} variant="primary" className={styles.menuButton}>
                   <Menu />
                 </Button>
               )}
             </Toolbar>
-            {isMobileScreen && isConnected && (
-              <div className={styles.mobileButtonsBlock}>
-                <Separator />
-                <div className={styles.mobileWalletButtons}>
-                  <WalletConnectButtonHolder />
-                  <WalletConnectedButtons />
-                </div>
-              </div>
-            )}
             {isConnected && <DepositModal />}
           </PageAppBar>
           <nav>
@@ -439,8 +459,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                 display: { md: 'block', lg: 'none' },
                 '& .MuiDrawer-paper': {
                   boxSizing: 'border-box',
-                  width: isMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,
-                  backgroundColor: 'var(--d8x-color-background)',
+                  width: isUpToMobileScreen ? '100%' : DRAWER_WIDTH_FOR_TABLETS,
+                  backgroundColor: 'var(--d8x-modal-background-color)',
                 },
               }}
             >

@@ -13,26 +13,31 @@
 
 .buttonsHolder {
   display: flex;
-  gap: $d8x-spacing * 4;
-  height: 48px;
+  gap: $d8x-spacing * 2 + 2;
+  height: 40px;
+
 }
 
 .connectWalletButton {
-  min-width: 195px;
-  height: 48px;
+  height: 40px;
 }
 
 .chainButton {
   display: flex;
   align-items: center;
   border-color: transparent;
-  min-width: 48px;
-  height: 48px;
+  min-width: 40px;
+  height: 40px;
   padding: 0;
 
   img {
-    width: 32px;
-    height: 32px;
+    width: 20px;
+    height: 20px;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
   }
 }
 
@@ -59,7 +64,7 @@
   .connectWalletButton {
     padding-left: 20px;
     padding-right: 20px;
-    min-width: 48px;
+    min-width: 40px;
   }
 }
 
@@ -76,7 +81,7 @@
 @media screen and ($d8x-breakpoint-max-xs) {
   .addressButton {
     padding: 0;
-    min-width: 48px;
+    min-width: 40px;
 
     svg {
       height: 26px;

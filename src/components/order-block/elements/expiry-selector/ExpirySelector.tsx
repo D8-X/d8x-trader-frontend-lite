@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChangeEvent, memo, useState } from 'react';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
+import { Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
 
 import { expireDaysAtom, orderTypeAtom } from 'store/order-block.store';
 import { ExpiryE, OrderTypeE } from 'types/enums';
@@ -43,12 +43,12 @@ export const ExpirySelector = memo(() => {
   }
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.expiryOptions}>
-        {Object.values(ExpiryE).map((key) => (
+    <div className={styles.root}>
+      <div className={styles.expiryOptions}>
+        {[ExpiryE['30D'], ExpiryE['90D'], ExpiryE['180D']].map((key) => (
           <Button
             key={key}
-            variant="outlined"
+            variant="secondary"
             className={classnames({ [styles.selected]: Number(key) === expireDays })}
             onClick={() => {
               setExpireDays(Number(key));
@@ -58,18 +58,19 @@ export const ExpirySelector = memo(() => {
             {key}
           </Button>
         ))}
-      </Box>
-      <OutlinedInput
-        type="number"
-        inputProps={{ min: MIN_EXPIRE, max: MAX_EXPIRE, step: 1 }}
-        endAdornment={
-          <InputAdornment position="end">
-            <Typography variant="adornment">D</Typography>
-          </InputAdornment>
-        }
-        onChange={handleInputChange}
-        value={inputValue}
-      />
-    </Box>
+        <OutlinedInput
+          type="number"
+          inputProps={{ min: MIN_EXPIRE, max: MAX_EXPIRE, step: 1 }}
+          className={styles.input}
+          endAdornment={
+            <InputAdornment position="end">
+              <Typography variant="adornment">D</Typography>
+            </InputAdornment>
+          }
+          onChange={handleInputChange}
+          value={inputValue}
+        />
+      </div>
+    </div>
   );
 });

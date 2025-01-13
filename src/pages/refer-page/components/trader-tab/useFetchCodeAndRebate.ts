@@ -33,6 +33,10 @@ export const useFetchCodeAndRebate = () => {
       return;
     }
     fetchMyCodeSelection();
+
+    return () => {
+      activeCodeRequestRef.current = false;
+    };
   }, [fetchMyCodeSelection]);
 
   const fetchCodeRebate = useCallback(() => {
@@ -55,6 +59,10 @@ export const useFetchCodeAndRebate = () => {
       return;
     }
     fetchCodeRebate();
+
+    return () => {
+      rebateRateRequestRef.current = false;
+    };
   }, [fetchCodeRebate]);
 
   const fetchCodeAndRebate = useCallback(() => {

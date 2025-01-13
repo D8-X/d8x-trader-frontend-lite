@@ -1,57 +1,64 @@
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useEffect, useState } from 'react';
 
 import { CircularProgress } from '@mui/material';
 
 import { Container } from 'components/container/Container';
 import { Helmet } from 'components/helmet/Helmet';
 import { MaintenanceWrapper } from 'components/maintenance-wrapper/MaintenanceWrapper';
-import { useFetchOpenRewards } from 'pages/refer-page/components/trader-tab/useFetchOpenRewards';
-import { poolsAtom, traderAPIAtom } from 'store/pools.store';
-import { isEnabledChain } from 'utils/isEnabledChain';
+import { poolsAtom } from 'store/pools.store';
 
 import { AccountValue } from './components/AccountValue/AccountValue';
 import { AssetsBlock } from './components/AssetsBlock/AssetsBlock';
-import { fetchPortfolioAtom } from './store/fetchPortfolio';
+import { useFetchCalculations } from './hooks/useFetchCalculations';
+import { accountValueAtom } from './store/portfolio.store';
+import { totalReferralRewardsAtom } from './store/fetchTotalReferralsRewards';
+import { totalMarginAtom, totalUnrealizedPnLAtom } from './store/fetchUnrealizedPnL';
+import { poolShareTokensUSDBalanceAtom } from './store/fetchPoolShare';
+import { syntheticPositionUSDAtom } from './store/fetchStrategySyntheticPosition';
+import { poolTokensUSDBalanceAtom } from './store/fetchPoolTokensUSDBalance';
 
 import styles from './PortfolioPage.module.scss';
 
 export const PortfolioPage = () => {
-  const { address, chainId } = useAccount();
-
-  const { openRewards } = useFetchOpenRewards();
+  useFetchCalculations();
 
   const pools = useAtomValue(poolsAtom);
-  const traderAPI = useAtomValue(traderAPIAtom);
-  const fetchPortfolio = useSetAtom(fetchPortfolioAtom);
+  const totalMargin = useAtomValue(totalMarginAtom);
+  const totalUnrealizedPnL = useAtomValue(totalUnrealizedPnLAtom);
+  const poolShareTokensUSDBalance = useAtomValue(poolShareTokensUSDBalanceAtom);
+  const syntheticPositionUSD = useAtomValue(syntheticPositionUSDAtom);
+  const totalReferralRewards = useAtomValue(totalReferralRewardsAtom);
+  const poolTokensUSDBalance = useAtomValue(poolTokensUSDBalanceAtom);
+  const setAccountValue = useSetAtom(accountValueAtom);
 
   const [isLoading, setLoading] = useState(true);
 
-  const requestSentRef = useRef(false);
-
   useEffect(() => {
-    if (
-      requestSentRef.current ||
-      !traderAPI ||
-      !address ||
-      !isEnabledChain(chainId) ||
-      !pools.length ||
-      pools.some(({ poolId }) => poolId === 0)
-    ) {
+    if (!pools.length || pools.some(({ poolId }) => poolId === 0)) {
       return;
     }
 
-    requestSentRef.current = true;
+    const accountValue =
+      poolTokensUSDBalance +
+      (totalMargin || 0) +
+      (totalUnrealizedPnL || 0) +
+      (poolShareTokensUSDBalance || 0) +
+      (syntheticPositionUSD || 0) +
+      (totalReferralRewards || 0);
 
-    fetchPortfolio(address!, chainId, openRewards)
-      .then()
-      .catch(console.error)
-      .finally(() => {
-        requestSentRef.current = false;
-        setLoading(false);
-      });
-  }, [openRewards, traderAPI, address, chainId, pools, fetchPortfolio]);
+    setLoading(false);
+    setAccountValue(accountValue);
+  }, [
+    pools,
+    totalMargin,
+    totalUnrealizedPnL,
+    poolShareTokensUSDBalance,
+    syntheticPositionUSD,
+    totalReferralRewards,
+    poolTokensUSDBalance,
+    setAccountValue,
+  ]);
 
   if (isLoading) {
     return (

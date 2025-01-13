@@ -55,7 +55,7 @@ export const OpenOrderBlock = ({ headers, order, handleOrderCancel }: OpenOrderB
     <Box className={styles.root}>
       <Box className={styles.headerWrapper}>
         <Box className={styles.leftSection}>
-          <Typography variant="bodySmall" component="p">
+          <Typography variant="fourteen" component="p">
             {t('pages.trade.orders-table.order-block-mobile.symbol')}
           </Typography>
           <Typography variant="bodySmall" component="p" className={styles.symbol}>

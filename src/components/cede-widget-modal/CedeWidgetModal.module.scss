@@ -8,17 +8,6 @@
   background-color: var(--d8x-color-background);
 }
 
-.closeButton {
-  width: 150px;
-}
-
-.buttonsBlock {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $d8x-spacing * 2;
-}
-
 @media screen and ($d8x-breakpoint-max-xs) {
   .dialogContent {
     gap: 2 * $d8x-spacing;
@@ -39,10 +28,5 @@
         }
       }
     }
-  }
-
-  .closeButton {
-    width: 100%;
-    height: 50px;
   }
 }

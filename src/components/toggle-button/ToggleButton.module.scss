@@ -1,0 +1,49 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.root {
+  @include transition(background-color, 150ms);
+
+  display: inline-block;
+  position: relative;
+  background-color: var(--d8x-toggle-background);
+  width: 36px;
+  height: 20px;
+  border-radius: 99px;
+
+  .handle {
+    @include transition(transform, 150ms);
+
+    position: absolute;
+    inset: 3px 0 3px 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--d8x-toggle-handle-background);
+
+    &::after {
+      @include transition(all, 150ms);
+
+      content: '';
+      position: absolute;
+      inset: 4px 0 3px 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--d8x-toggle-background);
+    }
+  }
+
+  &.active {
+    background-color: var(--d8x-toggle-background-active);
+
+    .handle {
+      transform: translateX(100%);
+
+      &::after {
+        transform: translateX(0);
+        background-color: var(--d8x-toggle-background-active);
+      }
+    }
+  }
+}

@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
 import { totalEstimatedEarningsAtom } from 'pages/portfolio-page/store/fetchEarnings';
-import { accountValueAtom, totalOpenRewardsAtom } from 'pages/portfolio-page/store/fetchPortfolio';
+import { accountValueAtom } from 'pages/portfolio-page/store/portfolio.store';
 import { poolShareTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolShare';
 import { poolTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolTokensUSDBalance';
 import { syntheticPositionUSDAtom } from 'pages/portfolio-page/store/fetchStrategySyntheticPosition';
 import { leverageAtom, totalMarginAtom, totalUnrealizedPnLAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
+import { totalReferralRewardsAtom } from 'pages/portfolio-page/store/fetchTotalReferralsRewards';
 
 import styles from './AccountValue.module.scss';
 
@@ -23,7 +24,7 @@ export const AccountValue = () => {
   const totalUnrealizedPnL = useAtomValue(totalUnrealizedPnLAtom);
   const syntheticPositionUSD = useAtomValue(syntheticPositionUSDAtom);
   const totalEstimatedEarnings = useAtomValue(totalEstimatedEarningsAtom);
-  const totalReferralRewards = useAtomValue(totalOpenRewardsAtom);
+  const totalReferralRewards = useAtomValue(totalReferralRewardsAtom);
   const accountValue = useAtomValue(accountValueAtom);
 
   return (
@@ -53,14 +54,15 @@ export const AccountValue = () => {
         </div>
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.perps.margin-total')}</div>
-          <div className={styles.detailsValue}>${formatCurrency(totalMargin)}</div>
+          <div className={styles.detailsValue}>${formatCurrency(totalMargin || 0)}</div>
         </div>
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.perps.unrealized')}</div>
           <div className={styles.detailsValue}>
-            {totalUnrealizedPnL < 0
-              ? '-$' + formatCurrency(Math.abs(totalUnrealizedPnL))
-              : '$' + formatCurrency(totalUnrealizedPnL)}
+            {totalUnrealizedPnL !== null &&
+              (totalUnrealizedPnL < 0
+                ? '-$' + formatCurrency(Math.abs(totalUnrealizedPnL))
+                : '$' + formatCurrency(totalUnrealizedPnL))}
           </div>
         </div>
         <div className={styles.detailsLine}>
@@ -73,7 +75,7 @@ export const AccountValue = () => {
         <div className={styles.separator} />
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.vault.assets')}</div>
-          <div className={styles.detailsValue}>${formatCurrency(poolShareTokensUSDBalance)}</div>
+          <div className={styles.detailsValue}>${formatCurrency(poolShareTokensUSDBalance || 0)}</div>
         </div>
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.vault.total')}</div>

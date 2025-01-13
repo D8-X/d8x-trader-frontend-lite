@@ -48,21 +48,14 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <div className={styles.dialogRoot}>
-        <Typography variant="h5" className={styles.title}>
-          {t('pages.refer.trader-tab.title3')}
-        </Typography>
-        <OutlinedInput
-          placeholder={t('pages.refer.trader-tab.enter-code')}
-          value={codeInputValue}
-          onChange={handleCodeChange}
-          className={styles.input}
-        />
-        <Typography variant="bodyTiny" className={styles.infoText}>
-          {t('pages.refer.trader-tab.instructions')}
-        </Typography>
-        <div className={styles.actionButtonsContainer}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      onCloseClick={onClose}
+      dialogContentClassName={styles.content}
+      dialogTitle={t('pages.refer.trader-tab.title3')}
+      footerActions={
+        <>
           <Button variant="secondary" className={styles.cancelButton} onClick={onClose}>
             {t('pages.refer.trader-tab.cancel')}
           </Button>
@@ -71,8 +64,18 @@ export const EnterCodeDialog = ({ isOpen, onClose, onCodeApplySuccess }: EnterCo
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.trader-tab.code-not-found')}
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.trader-tab.use-code')}
           </Button>
-        </div>
-      </div>
+        </>
+      }
+    >
+      <OutlinedInput
+        placeholder={t('pages.refer.trader-tab.enter-code')}
+        value={codeInputValue}
+        onChange={handleCodeChange}
+        className={styles.input}
+      />
+      <Typography variant="bodyTiny" className={styles.infoText}>
+        {t('pages.refer.trader-tab.instructions')}
+      </Typography>
     </Dialog>
   );
 };

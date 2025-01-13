@@ -1,6 +1,6 @@
 import classnames from 'classnames';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount } from 'wagmi';
@@ -10,18 +10,15 @@ import { Table as MuiTable, TableBody, TableContainer, TableHead, TablePaginatio
 import { EmptyRow } from 'components/table/empty-row/EmptyRow';
 import { useFilter } from 'components/table/filter-modal/useFilter';
 import { FilterModal } from 'components/table/filter-modal/FilterModal';
+import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
 import { getComparator, stableSort } from 'helpers/tableSort';
-import { getTradesHistory } from 'network/history';
-import { collateralToSettleConversionAtom, openOrdersAtom, perpetualsAtom, tradesHistoryAtom } from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
-import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { TradeHistoryBlock } from './elements/trade-history-block/TradeHistoryBlock';
 import { TradeHistoryRow } from './elements/TradeHistoryRow';
-
-import { SortableHeaders } from '../table/sortable-header/SortableHeaders';
+import { useTradesHistory } from './hooks/useTradesHistory';
 
 import styles from './TradeHistoryTable.module.scss';
 
@@ -30,13 +27,9 @@ const MIN_WIDTH_FOR_TABLE = 788;
 export const TradeHistoryTable = memo(() => {
   const { t } = useTranslation();
 
-  const [tradesHistory, setTradesHistory] = useAtom(tradesHistoryAtom);
-  const perpetuals = useAtomValue(perpetualsAtom);
-  const openOrders = useAtomValue(openOrdersAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
-  const c2s = useAtomValue(collateralToSettleConversionAtom);
 
-  const { address, isConnected, chainId } = useAccount();
+  const { address } = useAccount();
   const { width, ref } = useResizeDetector();
 
   const [page, setPage] = useState(0);
@@ -44,35 +37,11 @@ export const TradeHistoryTable = memo(() => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof TradeHistoryWithSymbolDataI>('timestamp');
 
-  const updateTradesHistoryRef = useRef(false);
-
-  const refreshTradesHistory = useCallback(() => {
-    if (updateTradesHistoryRef.current) {
-      return;
-    }
-    if (!address || !isConnected || !isEnabledChain(chainId)) {
-      setTradesHistory([]);
-      return;
-    }
-
-    updateTradesHistoryRef.current = true;
-    getTradesHistory(chainId, address)
-      .then((data) => {
-        setTradesHistory(data.length > 0 ? data : []);
-      })
-      .catch(console.error)
-      .finally(() => {
-        updateTradesHistoryRef.current = false;
-      });
-  }, [chainId, address, isConnected, setTradesHistory]);
+  const { tradesHistory, refreshTradesHistory } = useTradesHistory();
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.TRADE_HISTORY]: refreshTradesHistory }));
   }, [refreshTradesHistory, setTableRefreshHandlers]);
-
-  useEffect(() => {
-    refreshTradesHistory();
-  }, [openOrders, refreshTradesHistory]);
 
   const tradeHistoryHeaders: TableHeaderI<TradeHistoryWithSymbolDataI>[] = useMemo(
     () => [
@@ -81,6 +50,7 @@ export const TradeHistoryTable = memo(() => {
         label: t('pages.trade.history-table.table-header.time'),
         align: AlignE.Left,
         fieldType: FieldTypeE.Date,
+        hidden: true,
       },
       {
         field: 'symbol',
@@ -93,24 +63,36 @@ export const TradeHistoryTable = memo(() => {
         label: t('pages.trade.history-table.table-header.side'),
         align: AlignE.Left,
         fieldType: FieldTypeE.String,
+        hidden: true,
+      },
+      {
+        field: 'quantity',
+        label: t('pages.trade.history-table.table-header.quantity'),
+        align: AlignE.Left,
+        fieldType: FieldTypeE.Number,
+      },
+      {
+        field: 'price',
+        label: `${t('pages.trade.history-table.table-header.price')}/${t(
+          'pages.trade.history-table.table-header.fee'
+        )}`,
+        // label: t('pages.trade.history-table.table-header.price'),
+        align: AlignE.Left,
+        fieldType: FieldTypeE.Number,
       },
       {
         field: 'price',
         label: t('pages.trade.history-table.table-header.price'),
         align: AlignE.Right,
         fieldType: FieldTypeE.Number,
-      },
-      {
-        field: 'quantity',
-        label: t('pages.trade.history-table.table-header.quantity'),
-        align: AlignE.Right,
-        fieldType: FieldTypeE.Number,
+        hidden: true,
       },
       {
         field: 'fee',
         label: t('pages.trade.history-table.table-header.fee'),
         align: AlignE.Right,
         fieldType: FieldTypeE.Number,
+        hidden: true,
       },
       {
         field: 'realizedPnl',
@@ -122,20 +104,7 @@ export const TradeHistoryTable = memo(() => {
     [t]
   );
 
-  const tradesHistoryWithSymbol: TradeHistoryWithSymbolDataI[] = useMemo(() => {
-    return tradesHistory.map((tradeHistory) => {
-      const perpetual = perpetuals.find(({ id }) => id === tradeHistory.perpetualId);
-      const settleSymbol = perpetual?.poolName ? c2s.get(perpetual?.poolName)?.settleSymbol ?? '' : '';
-      return {
-        ...tradeHistory,
-        symbol: perpetual ? `${perpetual.baseCurrency}/${perpetual.quoteCurrency}/${settleSymbol}` : '',
-        settleSymbol,
-        perpetual: perpetual ?? null,
-      };
-    });
-  }, [tradesHistory, perpetuals, c2s]);
-
-  const { filter, setFilter, filteredRows } = useFilter(tradesHistoryWithSymbol, tradeHistoryHeaders);
+  const { filter, setFilter, filteredRows } = useFilter(tradesHistory, tradeHistoryHeaders);
 
   const visibleRows = useMemo(
     () =>
@@ -148,6 +117,8 @@ export const TradeHistoryTable = memo(() => {
     [address, filteredRows, order, orderBy, page, rowsPerPage]
   );
 
+  const onlyTableHeaders = tradeHistoryHeaders.filter(({ hidden }) => !hidden);
+
   return (
     <div className={styles.root} ref={ref}>
       {width && width >= MIN_WIDTH_FOR_TABLE && (
@@ -156,7 +127,7 @@ export const TradeHistoryTable = memo(() => {
             <TableHead className={styles.tableHead}>
               <TableRow>
                 <SortableHeaders<TradeHistoryWithSymbolDataI>
-                  headers={tradeHistoryHeaders}
+                  headers={onlyTableHeaders}
                   order={order}
                   orderBy={orderBy}
                   setOrder={setOrder}
@@ -167,15 +138,11 @@ export const TradeHistoryTable = memo(() => {
             <TableBody className={styles.tableBody}>
               {address &&
                 visibleRows.map((tradeHistory) => (
-                  <TradeHistoryRow
-                    key={tradeHistory.orderId}
-                    headers={tradeHistoryHeaders}
-                    tradeHistory={tradeHistory}
-                  />
+                  <TradeHistoryRow key={tradeHistory.orderId} headers={onlyTableHeaders} tradeHistory={tradeHistory} />
                 ))}
               {(!address || tradesHistory.length === 0) && (
                 <EmptyRow
-                  colSpan={tradeHistoryHeaders.length}
+                  colSpan={onlyTableHeaders.length}
                   text={
                     !address
                       ? t('pages.trade.history-table.table-content.connect')

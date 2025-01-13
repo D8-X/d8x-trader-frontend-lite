@@ -24,6 +24,7 @@
 .contentBlock {
   display: flex;
   padding-top: 32px;
+  gap: $d8x-spacing * 8;
 
   @include media-tablet {
     flex-direction: column;

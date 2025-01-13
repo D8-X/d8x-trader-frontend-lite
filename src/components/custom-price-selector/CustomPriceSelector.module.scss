@@ -1,110 +1,84 @@
 @import '~styles/theme/theme.scss';
 
 .root {
+  flex: 1;
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: $d8x-spacing * 2;
-  margin-bottom: $d8x-spacing * 4;
-  transition: margin-bottom 0.4s ease-in;
+  padding: $d8x-spacing * 3;
+  border-radius: $d8x-border-radius;
+  background-color: transparent;
 
-  &.hidden {
-    margin-bottom: 0;
-    max-height: 30px;
+  .active,
+  &:focus,
+  &:focus-within,
+  &:hover {
+    border: 1px solid var(--d8x-color-action);
+    padding: calc(3 * $d8x-spacing - 1px);
+  }
+
+  &.inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: $d8x-spacing * 3 0;
+
+    .active,
+    &:focus,
+    &:focus-within,
+    &:hover {
+      border: none;
+      padding: $d8x-spacing * 3 0;
+    }
   }
 }
 
 .labelHolder {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.inputHolder {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: $d8x-spacing * 3;
-  transition: margin-bottom 0.3s ease-in;
-
-  &.hidden {
-    margin-bottom: 0;
-  }
-}
-
-.customPriceInput {
-  opacity: 1;
-  transition: opacity 0.3s ease-in;
-
-  &.hidden {
-    opacity: 0;
-    cursor: pointer;
-    user-select: none;
-    pointer-events: none;
-  }
-
-  :global(.MuiOutlinedInput-input) {
-    padding: 2 * $d8x-spacing 10px;
-  }
-}
-
-.priceOptions {
+  gap: $d8x-spacing * 2;
   width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  gap: $d8x-spacing;
-  flex-wrap: wrap;
-  transition: height 0.3s ease-in;
-  overflow-y: hidden;
-  height: 30px;
-  margin-bottom: 2 * $d8x-spacing;
+}
 
-  &.hidden {
-    height: 0;
+.responsiveInput {
+  flex: 1;
+
+  :global(.MuiInputBase-root) {
+    width: 120px;
   }
+}
 
-  :global(.MuiButtonGroup-root) {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: $d8x-spacing;
-  }
-
-  :global(.MuiButtonBase-root) {
-    flex: 1;
-    border-radius: 8px;
-    min-width: inherit;
-    padding: $d8x-spacing 0 0.5 * $d8x-spacing;
-
-    &.selected {
-      border: 1px solid transparent;
-      background-color: var(--d8x-color-action);
-      color: var(--d8x-color-text-secondary);
+.inline {
+  .responsiveInput {
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--d8x-color-action);
     }
   }
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {
-  .priceOptions {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    gap: $d8x-spacing;
-    flex-wrap: wrap;
+  .root {
+    padding: 2 * $d8x-spacing;
 
-    :global(.MuiButtonBase-root) {
-      min-width: 48px;
-      max-height: 35px;
+    .active,
+    &:focus,
+    &:focus-within,
+    &:hover {
+      padding: calc(2 * $d8x-spacing - 1px);
     }
   }
-}
 
-@media screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-max-xs),
-  screen and ($d8x-breakpoint-height-max-md) and ($d8x-breakpoint-min-lg) {
-  .root {
-    margin-bottom: 0;
-    margin-top: 0;
-  }
-
-  .labelHolder {
-    margin-bottom: $d8x-spacing * 2;
-  }
-
-  .priceOptions {
-    :global(.MuiButtonBase-root) {
-      max-height: 30px;
+  .responsiveInput {
+    :global(.MuiInputBase-root) {
+      width: 140px;
     }
   }
 }

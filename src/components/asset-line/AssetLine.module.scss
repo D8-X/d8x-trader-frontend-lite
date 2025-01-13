@@ -12,6 +12,11 @@
   align-items: center;
   gap: $d8x-spacing * 2;
   flex: 1;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .text {

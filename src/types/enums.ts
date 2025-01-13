@@ -31,6 +31,11 @@ export enum OrderValueTypeE {
   None = 'none',
 }
 
+export enum YesNoE {
+  Yes = 'yes',
+  No = 'no',
+}
+
 export enum OrderBlockPositionE {
   Left = 'left',
   Right = 'right',
@@ -137,7 +142,7 @@ export enum ReferralDialogActionE {
 export enum AssetTypeE {
   All = 'all',
   Crypto = 'crypto',
-  Prediction = 'prediction',
+  Prediction = 'polymarket',
   Fx = 'fx',
   Metal = 'metal',
 }

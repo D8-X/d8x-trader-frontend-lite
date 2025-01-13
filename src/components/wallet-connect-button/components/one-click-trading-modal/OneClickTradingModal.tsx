@@ -1,12 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { useAccount, useBalance, usePublicClient, useSendTransaction, useWalletClient } from 'wagmi';
 
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { Button, CircularProgress, Typography } from '@mui/material';
 
 import { hasDelegate } from 'blockchain-api/contract-interactions/hasDelegate';
 import { removeDelegate } from 'blockchain-api/contract-interactions/removeDelegate';
@@ -16,7 +16,6 @@ import { getStorageKey } from 'blockchain-api/getStorageKey';
 import { Dialog } from 'components/dialog/Dialog';
 import { ExtractOctPKModal } from 'components/extract-pk-modal/ExtractOctPKModal';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
-import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getDelegateKey } from 'helpers/getDelegateKey';
 import { activatedOneClickTradingAtom, delegateAddressAtom, tradingClientAtom } from 'store/app.store';
@@ -28,6 +27,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { FundingModal } from '../funding-modal/FundingModal';
 
 import styles from './OneClickTradingModal.module.scss';
+import { Separator } from '../../../separator/Separator';
 
 const DELEGATE_INDEX = 1; // to be emitted with setDelegate
 
@@ -250,7 +250,9 @@ export const OneClickTradingModal = () => {
     }
   }, [address, walletClient, storageKey, activatedOneClickTrading, setTradingClient]);
 
-  const handleClose = () => setOneClickModalOpen(false);
+  const handleClose = useCallback(() => {
+    setOneClickModalOpen(false);
+  }, [setOneClickModalOpen]);
 
   if (!isEnabledChain(chainId)) {
     return null;
@@ -258,149 +260,142 @@ export const OneClickTradingModal = () => {
 
   return (
     <>
-      <Dialog open={isOneClickModalOpen} onClose={handleClose}>
-        <Box className={styles.dialogContent}>
-          <Typography variant="h4" className={styles.title}>
-            {t('common.settings.one-click-modal.title')}
-          </Typography>
-          <Typography variant="bodyMedium">{t('common.settings.one-click-modal.description')}</Typography>
-        </Box>
-        <Separator />
-        <Box className={styles.dialogContent}>
-          {isLoading && isDelegated === null ? (
-            <div className={styles.spinnerContainer}>
-              <CircularProgress />
-            </div>
-          ) : (
-            <>
-              <Typography variant="h6">
-                {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
-              </Typography>
-              {isDelegated ? (
-                <div>
-                  <div className={styles.infoLine}>
-                    <div className={styles.infoTitle}>
-                      {t('common.settings.one-click-modal.manage-delegate.status.title')}
-                    </div>
-                    <div>
-                      {activatedOneClickTrading
-                        ? t('common.settings.one-click-modal.manage-delegate.status.active')
-                        : t('common.settings.one-click-modal.manage-delegate.status.inactive')}
-                    </div>
-                  </div>
-                  {delegateAddress && (
-                    <div className={styles.infoLine}>
-                      <div className={styles.infoTitle}>
-                        {t('common.settings.one-click-modal.manage-delegate.address')}
-                      </div>
-                      <div className={styles.address}>{delegateAddress}</div>
-                    </div>
-                  )}
-                  {delegateBalance && (
-                    <div className={styles.infoLine}>
-                      <div className={styles.infoTitle}>
-                        {t('common.settings.one-click-modal.manage-delegate.amount')}
-                      </div>
-                      <div>
-                        {delegateBalance.formatted} {delegateBalance?.symbol}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Typography variant="bodyMedium">
-                  {t('common.settings.one-click-modal.create-delegate.description')}
-                </Typography>
-              )}
-            </>
-          )}
-        </Box>
-        <div className={styles.dialogContent}>
-          {!isLoading && isDelegated === false && (
-            <div className={styles.actionButtonsContainer}>
-              <GasDepositChecker
-                address={walletClient?.account.address}
-                multiplier={2n}
-                className={styles.actionButton}
-              >
-                <Button
-                  variant="primary"
-                  className={styles.actionButton}
-                  onClick={handleCreate}
-                  disabled={!proxyAddr || isActionLoading}
-                >
-                  {isActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-                  {t(`common.settings.one-click-modal.create-delegate.create`)}
-                </Button>
-              </GasDepositChecker>
-            </div>
-          )}
-          {!isLoading && isDelegated === true && (
-            <>
+      <Dialog
+        open={isOneClickModalOpen}
+        onClose={handleClose}
+        onCloseClick={handleClose}
+        dialogTitle={t('common.settings.one-click-modal.title')}
+        dialogContentClassName={styles.dialogContent}
+        footerActions={
+          <>
+            {!isLoading && isDelegated === false && (
               <div className={styles.actionButtonsContainer}>
-                {activatedOneClickTrading ? (
+                <GasDepositChecker
+                  address={walletClient?.account.address}
+                  multiplier={2n}
+                  className={styles.actionButton}
+                >
                   <Button
                     variant="primary"
                     className={styles.actionButton}
-                    onClick={() => setActivatedOneClickTrading(false)}
-                    disabled={isActionLoading}
-                  >
-                    {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    className={styles.actionButton}
-                    onClick={handleActivate}
+                    onClick={handleCreate}
                     disabled={!proxyAddr || isActionLoading}
                   >
-                    {isActivateActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-                    {t(`common.settings.one-click-modal.manage-delegate.activate`)}
+                    {isActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                    {t(`common.settings.one-click-modal.create-delegate.create`)}
                   </Button>
-                )}
-                <Button
-                  variant="primary"
-                  className={styles.actionButton}
-                  onClick={handleRemove}
-                  disabled={!proxyAddr || isActionLoading}
-                >
-                  {isRemoveActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-                  {t(`common.settings.one-click-modal.manage-delegate.remove`)}
-                </Button>
-                {activatedOneClickTrading && (
+                </GasDepositChecker>
+              </div>
+            )}
+            {!isLoading && isDelegated === true && (
+              <>
+                <div className={styles.actionButtonsContainer}>
+                  {activatedOneClickTrading ? (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={() => setActivatedOneClickTrading(false)}
+                      disabled={isActionLoading}
+                    >
+                      {t(`common.settings.one-click-modal.manage-delegate.deactivate`)}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={handleActivate}
+                      disabled={!proxyAddr || isActionLoading}
+                    >
+                      {isActivateActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                      {t(`common.settings.one-click-modal.manage-delegate.activate`)}
+                    </Button>
+                  )}
                   <Button
                     variant="primary"
                     className={styles.actionButton}
-                    onClick={handleFund}
-                    disabled={isActionLoading}
+                    onClick={handleRemove}
+                    disabled={!proxyAddr || isActionLoading}
                   >
-                    {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                    {isRemoveActionLoading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                    {t(`common.settings.one-click-modal.manage-delegate.remove`)}
                   </Button>
-                )}
-              </div>
-              <div className={styles.actionButtonsContainer}>
-                {activatedOneClickTrading && (
-                  <Button
-                    onClick={() => setExtractPKModalOpen(true)}
-                    variant="primary"
-                    className={styles.actionButton}
-                    disabled={isActionLoading}
-                  >
-                    {t('common.account-modal.extract-pk-button')}
-                  </Button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+                  {activatedOneClickTrading && (
+                    <Button
+                      variant="primary"
+                      className={styles.actionButton}
+                      onClick={handleFund}
+                      disabled={isActionLoading}
+                    >
+                      {t(`common.settings.one-click-modal.manage-delegate.fund`)}
+                    </Button>
+                  )}
+                </div>
+                <div className={styles.actionButtonsContainer}>
+                  {activatedOneClickTrading && (
+                    <Button
+                      onClick={() => setExtractPKModalOpen(true)}
+                      variant="primary"
+                      className={styles.actionButton}
+                      disabled={isActionLoading}
+                    >
+                      {t('common.account-modal.extract-pk-button')}
+                    </Button>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        }
+      >
+        <Typography variant="bodyMedium">{t('common.settings.one-click-modal.description')}</Typography>
         <Separator />
-        <Box className={styles.dialogContent}>
-          <Box className={styles.closeButtonContainer}>
-            <Button variant="secondary" className={styles.cancelButton} onClick={handleClose}>
-              {t('common.info-modal.close')}
-            </Button>
-          </Box>
-        </Box>
+        {isLoading && isDelegated === null ? (
+          <div className={styles.spinnerContainer}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <Typography variant="h6">
+              {t(`common.settings.one-click-modal.${isDelegated ? 'manage' : 'create'}-delegate.title`)}
+            </Typography>
+            {isDelegated ? (
+              <div>
+                <div className={styles.infoLine}>
+                  <div className={styles.infoTitle}>
+                    {t('common.settings.one-click-modal.manage-delegate.status.title')}
+                  </div>
+                  <div>
+                    {activatedOneClickTrading
+                      ? t('common.settings.one-click-modal.manage-delegate.status.active')
+                      : t('common.settings.one-click-modal.manage-delegate.status.inactive')}
+                  </div>
+                </div>
+                {delegateAddress && (
+                  <div className={styles.infoLine}>
+                    <div className={styles.infoTitle}>
+                      {t('common.settings.one-click-modal.manage-delegate.address')}
+                    </div>
+                    <div className={styles.address}>{delegateAddress}</div>
+                  </div>
+                )}
+                {delegateBalance && (
+                  <div className={styles.infoLine}>
+                    <div className={styles.infoTitle}>
+                      {t('common.settings.one-click-modal.manage-delegate.amount')}
+                    </div>
+                    <div>
+                      {delegateBalance.formatted} {delegateBalance?.symbol}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Typography variant="bodyMedium">
+                {t('common.settings.one-click-modal.create-delegate.description')}
+              </Typography>
+            )}
+          </>
+        )}
       </Dialog>
 
       {activatedOneClickTrading && (

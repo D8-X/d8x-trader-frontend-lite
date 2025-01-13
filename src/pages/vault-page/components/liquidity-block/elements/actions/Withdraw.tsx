@@ -1,4 +1,5 @@
 import { PROXY_ABI } from '@d8x/perpetuals-sdk';
+import classnames from 'classnames';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +32,6 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
-import classNames from 'classnames';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -287,7 +287,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
                         </span>
                       }
                     >
-                      <span className={classNames(styles.tooltip)}>(or USDA)</span>
+                      <span className={classnames(styles.tooltip)}>(or USDA)</span>
                     </TooltipMobile>
                   </>
                 )}

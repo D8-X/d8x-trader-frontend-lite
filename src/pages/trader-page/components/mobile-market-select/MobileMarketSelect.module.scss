@@ -1,0 +1,32 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: flex;
+  justify-content: space-between;
+  gap: 2 * $d8x-spacing;
+  width: 100%;
+}
+
+.chartToggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--d8x-color-background-items);
+  border: 1px solid var(--d8x-market-select-border-color);
+  border-radius: $d8x-border-radius-large;
+  padding: 2 * $d8x-spacing;
+}
+
+.viewChart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2 * $d8x-spacing;
+}
+
+.viewChartIcon {
+  width: 24px;
+  height: 24px;
+}

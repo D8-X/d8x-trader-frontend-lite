@@ -1,0 +1,22 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2 * $d8x-spacing;
+
+  :global(.MuiButtonBase-root) {
+    padding: $d8x-spacing * 2;
+    min-width: 1px;
+    height: 32px;
+    font-size: 14px;
+    font-weight: 400;
+
+    &.selected {
+      color: var(--d8x-button-secondary-color-selected);
+      border-color: var(--d8x-button-secondary-border-color-selected);
+      background-color: var(--d8x-button-secondary-background-selected);
+    }
+  }
+}

@@ -67,6 +67,8 @@
             "remove": "减少"
           },
           "close": "关闭仓位",
+          "claim": "领取您的资金",
+          "claim-details": "该市场已结束并正在结算。立即领取您的资金。",
           "share": "分享仓位",
           "add": "增加抵押品",
           "remove": "减少抵押品",
@@ -91,6 +93,9 @@
         "toasts": {
           "submit-close": {
             "title": "确认平仓"
+          },
+          "submit-claim": {
+            "title": "领取资金"
           },
           "submitted": {
             "title": "订单已提交",
@@ -123,6 +128,10 @@
           "trade-executed": {
             "title": "交易已执行",
             "body": "币对"
+          },
+          "trade-failed": {
+            "title": "订单失败",
+            "body": "检查您的滑点设置和钱包余额，然后重试。"
           },
           "order-failed": {
             "title": "订单失败",
@@ -188,6 +197,7 @@
       },
       "history-table": {
         "table-title": "交易历史",
+        "body": "",
         "table-header": {
           "time": "时间",
           "perpetual": "永续",
@@ -199,7 +209,8 @@
         },
         "table-content": {
           "connect": "请连接钱包",
-          "no-open": "无交易历史"
+          "no-open": "目前尚無交易記錄",
+          "no-open-note": "開始交易以查看您的歷史記錄"
         },
         "history-block-mobile": {
           "symbol": "币对"
@@ -226,6 +237,8 @@
           "short": "开空"
         },
         "prediction": {
+          "title": "預測市場",
+          "note": "预测结果并立即开始投注！",
           "yes": "是的",
           "no": "不",
           "bet": "Bet"
@@ -367,7 +380,9 @@
           "validity-checks": "有效性检查",
           "cancel": "取消",
           "confirm": "确认",
-          "estimated-price": "预计开盘价"
+          "estimated-price": "预计开盘价",
+          "prediction-header": "Comparison to Polymarket",
+          "prediction-content": "Your order costs {{predFeeInCC}}. In addition you deposit {{collateralDeposit}} as margin, which you get back if you bet correctly. On Polymarket the same order costs {{costs}}."
         }
       },
       "filter": {
@@ -667,8 +682,11 @@
         "exit-button": "退出策略",
         "confirm-modal": {
           "title": "退出策略",
+          "title-claim": "提款",
           "text": "你确定要离开？",
-          "confirm-button": "退出"
+          "text-claim": "您想提取资金吗？",
+          "confirm-button": "退出",
+          "confirm-button-claim": "提款"
         },
         "toasts": {
           "tx-submitted": {
@@ -686,6 +704,7 @@
         }
       },
       "claim-funds": {
+        "claim-button": "提款",
         "toasts": {
           "tx-submitted": {
             "title": "您的资金已成功领取",
@@ -736,6 +755,8 @@
     "external-service-status": "外部服务状态"
   },
   "common": {
+    "cost-of-order": "订单成本",
+    "potential-return": "潜在回报",
     "change-language": "切换语言",
     "wallet-connect": "连接",
     "account-button": "账户",
@@ -746,8 +767,12 @@
     "address-label": "地址",
     "deposit-gas": "存入燃料",
     "swap-bridge": "Swap/Bridge",
-    "offramp-button": "Deposit from CEX",
+    "offramp-button": "CEX 儲值",
+    "learn-more": "了解更多...",
+    "view-all": "看全部",
     "max": "最大：",
+    "yes": "是的",
+    "no": "不",
     "copied": "已复制",
     "copy-error": "复制到剪贴板时出现错误",
     "page-reload": {
@@ -765,11 +790,6 @@
         "1": "点击",
         "2": "f了解更多信息。"
       }
-    },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "跨链转入",
-      "header-from": "跨链转出"
     },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
@@ -859,8 +879,8 @@
         "crypto": "加密货币",
         "fx": "外汇",
         "all": "所有",
-        "prediction": "预测的过程",
-        "commodity": "大宗商品",
+        "polymarket": "预测市场",
+        "metal": "大宗商品",
         "closed": "休市"
       },
       "search": " 搜索...",

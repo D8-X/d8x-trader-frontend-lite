@@ -1,0 +1,174 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.dialog {
+  :global(.MuiPaper-root) {
+    width: 509px;
+  }
+
+  @include media-phone {
+    &:global(.MuiDialog-root) {
+      :global(.MuiDialog-container) {
+        :global(.MuiPaper-root) {
+          margin: 0;
+          max-height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.actionButton {
+  height: 48px;
+  font-size: 16px;
+}
+
+.customPrices {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4 * $d8x-spacing;
+}
+
+.takeProfit,
+.stopLoss {
+  @include transition(opacity);
+
+  display: flex;
+  flex-direction: column;
+  opacity: 0.2;
+  cursor: pointer;
+
+  .price {
+    display: flex;
+    align-items: center;
+    gap: 2 * $d8x-spacing;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 34px;
+
+    .currencyIcon {
+      margin-top: -$d8x-spacing;
+      width: 26px;
+      height: 26px;
+    }
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  &:hover,
+  &.active {
+    opacity: 1;
+  }
+
+  &.active {
+    pointer-events: none;
+  }
+}
+
+.stopLoss {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.takeProfit {
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.chartHolder {
+  margin-bottom: 4 * $d8x-spacing;
+}
+
+.priceCustomization {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $d8x-spacing;
+  margin-bottom: 2 * $d8x-spacing;
+}
+
+.priceOptions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: $d8x-spacing;
+  flex-wrap: wrap;
+  overflow-y: hidden;
+
+  :global(.MuiButtonGroup-root) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: $d8x-spacing;
+  }
+
+  :global(.MuiButtonBase-root) {
+    flex: 1;
+    padding: 2 * $d8x-spacing 2 * $d8x-spacing;
+    min-width: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    height: inherit;
+
+    &.selected {
+      color: var(--d8x-button-secondary-color-selected);
+      border-color: var(--d8x-button-secondary-border-color-selected);
+      background-color: var(--d8x-button-secondary-background-selected);
+    }
+  }
+}
+
+.responsiveInput {
+  flex: 1;
+}
+
+.input {
+  @include transition(background-color);
+
+  width: 140px;
+  height: 32px;
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    @include transition(border-color);
+  }
+
+  &:global(.Mui-focused),
+  &:hover,
+  &:focus {
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--d8x-color-action);
+    }
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-xs) {
+  .priceOptions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: $d8x-spacing;
+    flex-wrap: wrap;
+    height: auto;
+
+    :global(.MuiButtonBase-root) {
+      min-width: 48px;
+      height: 32px;
+    }
+  }
+
+  .priceCustomization {
+    flex-direction: column;
+    gap: 4 * $d8x-spacing;
+  }
+
+  .responsiveInput {
+    :global(.MuiInputBase-root) {
+      width: 100%;
+    }
+  }
+}

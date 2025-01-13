@@ -84,56 +84,14 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose}>
-      <div className={styles.dialogRoot}>
-        <Typography variant="h5" className={styles.title}>
-          {t('pages.refer.manage-code.title-create')}
-        </Typography>
-        <div className={styles.baseRebateContainer}>
-          <Typography variant="bodySmall" fontWeight={600}>
-            {t('pages.refer.manage-code.commission-rate')}
-          </Typography>
-          <Typography variant="bodySmall" fontWeight={600}>
-            {commissionRate}%
-          </Typography>
-        </div>
-        <div className={styles.paddedContainer}>
-          <SidesRow
-            leftSide={t('pages.refer.manage-code.you-receive')}
-            rightSide={`${sidesRowValues.userRate}%`}
-            rightSideStyles={styles.sidesRowValue}
-          />
-          <SidesRow
-            leftSide={t('pages.refer.manage-code.trader-receives')}
-            rightSide={`${sidesRowValues.traderRate}%`}
-            rightSideStyles={styles.sidesRowValue}
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.kickbackRateInputContainer}>
-          <Typography variant="bodySmall">{t('pages.refer.manage-code.trader-kickback')}</Typography>
-          <OutlinedInput
-            type="text"
-            value={kickbackRateInputValue}
-            inputProps={{ min: 0, max: commissionRate }}
-            onChange={handleKickbackRateChange}
-            className={styles.kickbackInput}
-            endAdornment="%"
-          />
-        </div>
-        <div className={styles.divider} />
-        <div className={styles.codeInputContainer}>
-          <OutlinedInput
-            placeholder={t('pages.refer.trader-tab.enter-a-code')}
-            value={codeInputValue}
-            onChange={handleCodeChange}
-            className={styles.codeInput}
-          />
-        </div>
-        <Typography variant="bodyTiny" component="p" className={styles.infoText}>
-          {t('pages.refer.manage-code.instructions')}
-        </Typography>
-        <div className={styles.dialogActionsContainer}>
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      onCloseClick={onClose}
+      className={styles.dialog}
+      dialogTitle={t('pages.refer.manage-code.title-create')}
+      footerActions={
+        <>
           <Button variant="secondary" onClick={onClose}>
             {t('pages.refer.manage-code.cancel')}
           </Button>
@@ -142,8 +100,53 @@ export const CreateReferrerCodeDialog = ({ isOpen, onClose }: CreateReferrerCode
             {codeState === CodeStateE.CODE_TAKEN && t('pages.refer.manage-code.code-taken')}
             {codeState === CodeStateE.CODE_AVAILABLE && t('pages.refer.manage-code.create-code')}
           </Button>
-        </div>
+        </>
+      }
+    >
+      <div className={styles.baseRebateContainer}>
+        <Typography variant="bodySmall" fontWeight={600}>
+          {t('pages.refer.manage-code.commission-rate')}
+        </Typography>
+        <Typography variant="bodySmall" fontWeight={600}>
+          {commissionRate}%
+        </Typography>
       </div>
+      <div className={styles.paddedContainer}>
+        <SidesRow
+          leftSide={t('pages.refer.manage-code.you-receive')}
+          rightSide={`${sidesRowValues.userRate}%`}
+          rightSideStyles={styles.sidesRowValue}
+        />
+        <SidesRow
+          leftSide={t('pages.refer.manage-code.trader-receives')}
+          rightSide={`${sidesRowValues.traderRate}%`}
+          rightSideStyles={styles.sidesRowValue}
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.kickbackRateInputContainer}>
+        <Typography variant="bodySmall">{t('pages.refer.manage-code.trader-kickback')}</Typography>
+        <OutlinedInput
+          type="text"
+          value={kickbackRateInputValue}
+          inputProps={{ min: 0, max: commissionRate }}
+          onChange={handleKickbackRateChange}
+          className={styles.kickbackInput}
+          endAdornment="%"
+        />
+      </div>
+      <div className={styles.divider} />
+      <div className={styles.codeInputContainer}>
+        <OutlinedInput
+          placeholder={t('pages.refer.trader-tab.enter-a-code')}
+          value={codeInputValue}
+          onChange={handleCodeChange}
+          className={styles.codeInput}
+        />
+      </div>
+      <Typography variant="bodyTiny" component="p" className={styles.infoText}>
+        {t('pages.refer.manage-code.instructions')}
+      </Typography>
     </Dialog>
   );
 };

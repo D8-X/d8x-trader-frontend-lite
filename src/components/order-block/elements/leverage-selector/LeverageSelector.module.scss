@@ -1,11 +1,15 @@
 @import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
 
 .root {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 2 * $d8x-spacing;
+  margin-bottom: 2 * $d8x-spacing;
+  padding: 3 * $d8x-spacing;
+  border-radius: $d8x-border-radius;
+  background-color: var(--d8x-color-background-card-overlay);
 }
 
 .rowOne {
@@ -20,24 +24,37 @@
 .rowTwo {
   display: flex;
   width: 100%;
-  margin-top: 3 * $d8x-spacing;
+  margin-top: 2 * $d8x-spacing;
   justify-content: space-between;
+  gap: $d8x-spacing;
 }
 
-.sliderHolder {
+.buttonsHolder {
+  display: flex;
+  gap: $d8x-spacing;
   width: 100%;
-  margin-left: 9px;
-  margin-right: 8 * $d8x-spacing;
+
+  :global(.MuiButtonBase-root) {
+    padding: 0;
+    width: 45px;
+    min-width: 45px;
+    height: 32px;
+    font-size: 14px;
+    font-weight: 400;
+
+    &.selected {
+      color: var(--d8x-button-secondary-color-selected);
+      border-color: var(--d8x-button-secondary-border-color-selected);
+      background-color: var(--d8x-button-secondary-background-selected);
+    }
+  }
 }
 
 .inputHolder {
   :global(.MuiInputBase-root) {
-    width: 116px;
+    width: 100px;
     padding-right: 0;
-
-    input {
-      width: 45%;
-    }
+    height: 32px;
   }
 
   :global(.MuiInputAdornment-root) {
@@ -46,22 +63,48 @@
   }
 }
 
-@media screen and ($d8x-breakpoint-max-xs) {
-  .root {
-    justify-content: space-between;
+.input {
+  @include transition(background-color);
+
+  width: 45%;
+  font-size: 14px;
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    @include transition(border-color);
   }
 
-  .sliderHolder {
-    display: none;
+  &:global(.Mui-focused),
+  &:hover,
+  &:focus {
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--d8x-color-action);
+    }
+  }
+}
+
+@media screen and ($d8x-breakpoint-max-xs) {
+  .root {
+    padding: 4 * $d8x-spacing;
+    margin-bottom: 3 * $d8x-spacing;
+  }
+
+  .buttonsHolder {
+    :global(.MuiButtonBase-root) {
+      flex: 1;
+      width: auto;
+      min-width: 35px;
+    }
+  }
+
+  .inputHolder {
+    :global(.MuiInputBase-root) {
+      width: 70px;
+    }
   }
 }
 
 @media screen and ($d8x-breakpoint-height-max-md) {
-  .sliderHolder {
+  .buttonsHolder {
     margin-bottom: 4px;
-  }
-
-  .root {
-    margin-top: 2 * $d8x-spacing;
   }
 }

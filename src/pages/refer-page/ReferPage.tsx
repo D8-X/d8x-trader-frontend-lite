@@ -111,6 +111,10 @@ export const ReferPage = () => {
 
   useEffect(() => {
     setReferralCodesRefetchHandler({ handleRefresh: refreshReferralCodes });
+
+    return () => {
+      referralCodesRequestRef.current = false;
+    };
   }, [refreshReferralCodes, setReferralCodesRefetchHandler]);
 
   useEffect(() => {
@@ -128,8 +132,12 @@ export const ReferPage = () => {
       .then(({ data }) => setTokenInfo(data))
       .catch(console.error)
       .finally(() => {
-        isAgencyRequestRef.current = false;
+        tokenInfoRequestRef.current = false;
       });
+
+    return () => {
+      tokenInfoRequestRef.current = false;
+    };
   }, [chainId, setTokenInfo]);
 
   useEffect(() => {
@@ -148,6 +156,10 @@ export const ReferPage = () => {
       .finally(() => {
         isAgencyRequestRef.current = false;
       });
+
+    return () => {
+      isAgencyRequestRef.current = false;
+    };
   }, [chainId, address, tokenBalance, setIsAgency, setCommissionRate]);
 
   useEffect(() => {

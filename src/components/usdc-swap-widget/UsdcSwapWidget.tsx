@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address, erc20Abi } from 'viem';
@@ -33,8 +33,6 @@ export function UsdcSwapWidget() {
   const [inputValue, setInputValue] = useState(`${depositAmount}`);
   const [inAction, setInAction] = useState(false);
 
-  const inputValueChangedRef = useRef(false);
-
   const { data: poolTokenBalance } = useReadContracts({
     allowFailure: false,
     contracts: [
@@ -61,7 +59,6 @@ export function UsdcSwapWidget() {
       setDepositAmount(0);
       setInputValue('');
     }
-    inputValueChangedRef.current = true;
   }, []);
 
   const depositAmountUnits = useMemo(() => {

@@ -6,6 +6,7 @@
   flex-direction: column;
   padding: 6 * $d8x-spacing;
   border-radius: $d8x-border-radius;
+  border: 1px solid var(--d8x-block-border-color);
   background-color: var(--d8x-color-background-items);
   line-height: 1.2;
 }
@@ -15,6 +16,11 @@
 
   .logo {
     margin-bottom: 4 * $d8x-spacing;
+
+    svg {
+      width: 80px;
+      height: 80px;
+    }
   }
 
   .symbol {

@@ -11,9 +11,6 @@ import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 import {
   Button,
   CircularProgress,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Table as MuiTable,
   TableBody,
   TableContainer,
@@ -36,7 +33,13 @@ import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
 import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { clearOpenOrdersAtom, openOrdersAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
+import {
+  cancelOrderIdAtom,
+  clearOpenOrdersAtom,
+  openOrdersAtom,
+  traderAPIAtom,
+  traderAPIBusyAtom,
+} from 'store/pools.store';
 import { tableRefreshHandlersAtom } from 'store/tables.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { AlignE, FieldTypeE, SortOrderE, TableTypeE } from 'types/enums';
@@ -63,6 +66,7 @@ export const OpenOrdersTable = memo(() => {
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const tradingClient = useAtomValue(tradingClientAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
+  const cancelOrderId = useSetAtom(cancelOrderIdAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
   const setTableRefreshHandlers = useSetAtom(tableRefreshHandlersAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
@@ -90,8 +94,8 @@ export const OpenOrdersTable = memo(() => {
   };
 
   const refreshOpenOrders = useCallback(async () => {
-    if (address && traderAPI && isConnected && isEnabledChain(chainId) && isSDKConnected) {
-      if (isAPIBusyRef.current || Number(traderAPI.chainId) !== chainId) {
+    if (address && isConnected && isEnabledChain(chainId) && isSDKConnected) {
+      if (isAPIBusyRef.current) {
         return;
       }
 
@@ -132,6 +136,9 @@ export const OpenOrdersTable = memo(() => {
     setLoading(false);
     refreshOpenOrders().then();
     setLatestOrderSentTimestamp(Date.now());
+    return () => {
+      isAPIBusyRef.current = false;
+    };
   }, [isFetched, setTxHash, refreshOpenOrders, setLatestOrderSentTimestamp]);
 
   useEffect(() => {
@@ -153,6 +160,12 @@ export const OpenOrdersTable = memo(() => {
 
     const cancelEventIdx = receipt.logs.findIndex((log) => log.topics[0] === TOPIC_CANCEL_SUCCESS);
     if (cancelEventIdx >= 0) {
+      const { args } = decodeEventLog({
+        abi: PROXY_ABI as readonly string[],
+        data: receipt.logs[cancelEventIdx].data,
+        topics: receipt.logs[cancelEventIdx].topics,
+      });
+      cancelOrderId((args as unknown as { orderHash: string }).orderHash);
       toast.success(
         <ToastContent
           title={t('pages.trade.orders-table.toasts.order-cancelled.title')}
@@ -196,7 +209,7 @@ export const OpenOrdersTable = memo(() => {
         />
       );
     }
-  }, [receipt, isSuccess, t, chain, txHash]);
+  }, [receipt, isSuccess, t, chain, txHash, cancelOrderId]);
 
   const handleCancelOrderConfirm = () => {
     if (!selectedOrder) {
@@ -207,7 +220,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !tradingClient || !traderAPI || !isEnabledChain(chainId)) {
+    if (isDisconnected || !tradingClient || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -245,6 +258,9 @@ export const OpenOrdersTable = memo(() => {
 
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.OPEN_ORDERS]: refreshOpenOrders }));
+    return () => {
+      isAPIBusyRef.current = false;
+    };
   }, [refreshOpenOrders, setTableRefreshHandlers]);
 
   const openOrdersHeaders: TableHeaderI<OrderWithIdI>[] = useMemo(
@@ -407,27 +423,31 @@ export const OpenOrdersTable = memo(() => {
 
       <FilterModal headers={openOrdersHeaders} filter={filter} setFilter={setFilter} />
       {isEnabledChain(chainId) && (
-        <Dialog open={isCancelModalOpen} className={styles.dialog}>
-          <DialogTitle>{t('pages.trade.orders-table.cancel-modal.title')}</DialogTitle>
-          <DialogContent className={styles.dialogContent}>
-            {t('pages.trade.orders-table.cancel-modal.content')}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeCancelModal} variant="secondary" size="small">
-              {t('pages.trade.orders-table.cancel-modal.back')}
-            </Button>
-            <GasDepositChecker>
-              <Button
-                onClick={handleCancelOrderConfirm}
-                variant="primary"
-                size="small"
-                disabled={loading || requestSent}
-              >
-                {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-                {t('pages.trade.orders-table.cancel-modal.confirm')}
+        <Dialog
+          open={isCancelModalOpen}
+          onCloseClick={closeCancelModal}
+          className={styles.dialog}
+          dialogTitle={t('pages.trade.orders-table.cancel-modal.title')}
+          footerActions={
+            <>
+              <Button onClick={closeCancelModal} variant="secondary" size="small">
+                {t('pages.trade.orders-table.cancel-modal.back')}
               </Button>
-            </GasDepositChecker>
-          </DialogActions>
+              <GasDepositChecker>
+                <Button
+                  onClick={handleCancelOrderConfirm}
+                  variant="primary"
+                  size="small"
+                  disabled={loading || requestSent}
+                >
+                  {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+                  {t('pages.trade.orders-table.cancel-modal.confirm')}
+                </Button>
+              </GasDepositChecker>
+            </>
+          }
+        >
+          {t('pages.trade.orders-table.cancel-modal.content')}
         </Dialog>
       )}
     </div>

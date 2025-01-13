@@ -1,16 +1,12 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
-import { type Address, erc20Abi, formatUnits } from 'viem';
-import { useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import { type Address, erc20Abi, formatUnits, WalletClient } from 'viem';
+import { useAccount, useReadContracts } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
 import { STRATEGY_SYMBOL } from 'appConstants';
-import { claimStrategyFunds } from 'blockchain-api/contract-interactions/claimStrategyFunds';
-import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { traderAPIAtom } from 'store/pools.store';
 import {
@@ -28,7 +24,6 @@ import { Disclaimer } from '../disclaimer/Disclaimer';
 import { EnterStrategy } from '../enter-strategy/EnterStrategy';
 import { ExitStrategy } from '../exit-strategy/ExitStrategy';
 import { Overview } from '../overview/Overview';
-import { useClaimFunds } from './hooks/useClaimFunds';
 
 import styles from './StrategyBlock.module.scss';
 
@@ -36,14 +31,10 @@ const INTERVAL_FOR_DATA_POLLING = 5_000; // Each 5 sec
 const INTERVAL_FREQUENT_POLLING = 2_000; // Each 1 sec
 const MAX_FREQUENT_UPDATES = 15;
 
-export const StrategyBlock = () => {
+export const StrategyBlock = ({ strategyClient }: { strategyClient: WalletClient }) => {
   const { t } = useTranslation();
 
   const { address, chainId, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const { sendTransactionAsync } = useSendTransaction();
-
-  const { isMultisigAddress } = useUserWallet();
 
   const traderAPI = useAtomValue(traderAPIAtom);
   const strategyPool = useAtomValue(strategyPoolAtom);
@@ -53,25 +44,17 @@ export const StrategyBlock = () => {
   const setStrategyPosition = useSetAtom(strategyPositionAtom);
 
   const [frequentUpdates, setFrequentUpdates] = useState(0);
-  const [hadPosition, setHadPosition] = useState(hasPosition);
-  const [refetchBalanceRequestSent, setRefetchBalanceRequestSent] = useState(false);
-  const [triggerClaimFunds, setTriggerClaimFunds] = useState(false);
   const [strategyOpenOrders, setStrategyOpenOrders] = useState<Record<string, OrderI>>({});
 
   const strategyPositionRequestSentRef = useRef(false);
   const openOrdersRequestSentRef = useRef(false);
-  const claimRequestSentRef = useRef(false);
+  const currentState = useRef(5);
 
   const strategyAddress = useMemo(() => {
     return strategyAddresses.find(({ userAddress }) => userAddress === address?.toLowerCase())?.strategyAddress;
   }, [address, strategyAddresses]);
 
-  const {
-    data: strategyAddressBalanceData,
-    refetch: refetchStrategyAddressBalance,
-    isRefetching,
-    isFetched,
-  } = useReadContracts({
+  const { data: strategyAddressBalanceData, refetch: refetchStrategyAddressBalance } = useReadContracts({
     allowFailure: false,
     contracts: [
       {
@@ -93,6 +76,7 @@ export const StrategyBlock = () => {
         isEnabledChain(chainId) &&
         !!strategyPool?.settleTokenAddr &&
         isConnected,
+      refetchInterval: INTERVAL_FOR_DATA_POLLING,
     },
   });
 
@@ -101,28 +85,12 @@ export const StrategyBlock = () => {
     : null;
 
   useEffect(() => {
-    if (isRefetching) {
-      setRefetchBalanceRequestSent(true);
-    } else if (isFetched) {
-      setRefetchBalanceRequestSent(false);
-    }
-  }, [isRefetching, isFetched]);
-
-  const { setTxHash } = useClaimFunds(hasPosition, strategyAddressBalance, refetchStrategyAddressBalance);
-
-  useEffect(() => {
     refetchStrategyAddressBalance().then();
   }, [refetchStrategyAddressBalance, hasPosition]);
 
   const fetchStrategyPosition = useCallback(
     (frequentUpdatesEnabled: boolean) => {
-      if (
-        strategyPositionRequestSentRef.current ||
-        !traderAPI ||
-        !strategyAddress ||
-        !address ||
-        !isEnabledChain(chainId)
-      ) {
+      if (strategyPositionRequestSentRef.current || !strategyAddress || !address || !isEnabledChain(chainId)) {
         return;
       }
 
@@ -159,9 +127,11 @@ export const StrategyBlock = () => {
     getOpenOrders(chainId, null, strategyAddress)
       .then((data) => {
         const updatedOpenOrders: Record<string, OrderI> = {};
-        data.data.map((openOrders) => {
-          openOrders.orderIds?.forEach((orderId, index) => (updatedOpenOrders[orderId] = openOrders.orders[index]));
-        });
+        if (data.data) {
+          data.data.map((openOrders) => {
+            openOrders.orderIds?.forEach((orderId, index) => (updatedOpenOrders[orderId] = openOrders.orders[index]));
+          });
+        }
         setStrategyOpenOrders(updatedOpenOrders);
       })
       .catch((error) => {
@@ -187,6 +157,8 @@ export const StrategyBlock = () => {
 
     return () => {
       clearInterval(intervalId);
+      strategyPositionRequestSentRef.current = false;
+      openOrdersRequestSentRef.current = false;
     };
   }, [fetchStrategyPosition, fetchStrategyOpenOrders, isFrequentUpdates]);
 
@@ -223,85 +195,81 @@ export const StrategyBlock = () => {
     }
   }, [frequentUpdates, enableFrequentUpdates]);
 
-  useEffect(() => {
-    if (
-      hasPosition === false &&
-      hadPosition &&
-      !hasBuyOpenOrder &&
-      !claimRequestSentRef.current &&
-      !refetchBalanceRequestSent &&
-      strategyAddressBalance !== null &&
-      strategyAddressBalance > 0 &&
-      isEnabledChain(chainId) &&
-      traderAPI &&
-      walletClient
-    ) {
-      claimRequestSentRef.current = true;
-      //console.log('claiming funds');
-      claimStrategyFunds(
-        {
-          chainId,
-          walletClient,
-          isMultisigAddress,
-          symbol: STRATEGY_SYMBOL,
-          traderAPI,
-        },
-        sendTransactionAsync
-      )
-        .then(({ hash }) => {
-          if (hash) {
-            setTxHash(hash);
-            //console.log('claiming funds::success');
-          } else {
-            //console.log('claiming funds::no hash');
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error(<ToastContent title={error.shortMessage || error.message} bodyLines={[]} />);
-          setTriggerClaimFunds((prev) => !prev);
-        })
-        .finally(() => {
-          claimRequestSentRef.current = false;
-          setHadPosition(null);
-        });
-    }
-  }, [
-    hasPosition,
-    hadPosition,
-    hasBuyOpenOrder,
-    refetchBalanceRequestSent,
-    strategyAddressBalance,
-    chainId,
-    traderAPI,
-    walletClient,
-    isMultisigAddress,
-    setTxHash,
-    sendTransactionAsync,
-    triggerClaimFunds,
-  ]);
-
-  useEffect(() => {
-    if (
-      !hasPosition &&
-      strategyAddressBalance !== null &&
-      strategyAddressBalance > 0 &&
-      !claimRequestSentRef.current &&
-      !refetchBalanceRequestSent &&
-      !hasSellOpenOrder
-    ) {
-      setHadPosition(true);
-    }
-  }, [hasPosition, hasSellOpenOrder, refetchBalanceRequestSent, strategyAddressBalance]);
-
   // Reset all states
   useEffect(() => {
     setStrategyOpenOrders({});
     setHasPosition(null);
-    setHadPosition(null);
     setFrequentUpdates(0);
     enableFrequentUpdates(false);
   }, [chainId, address, setHasPosition, enableFrequentUpdates]);
+
+  // X(x,y,z,w) := (has position, has open sell, has open buy, has balance) \in [0,1]^4
+  // A(0,0,0,0) -> B(0,0,0,1) (send funds success), A(send funds fails)
+  // B(0,0,0,1) -> B(0,0,0,1) (post order/claim funds fail), C(0,1,0,1) (post order success), A(0,0,0,0) (claim funds success)
+  // C(0,1,0,1) -> B(0,0,0,1) (exec fail), D(1,0,0,1) (exec success)
+  // D(1,0,0,1) -> D(1,0,0,1) (close pos fail), E(1,0,1,1) (close order succs)
+  // E(1,0,1,1) -> D(1,0,0,1) (exec fail), B(0,0,0,1) (exec success)
+  // F(else)    -> A, B, C, D, E (transient state, e.g. waiting for a confirmation or event)
+  // A <-> B-B <-> C -> D-D <-> E -> B
+
+  const prevState = useMemo(() => {
+    if (
+      !hasPosition &&
+      !hasSellOpenOrder &&
+      !hasBuyOpenOrder &&
+      strategyAddressBalance != null &&
+      strategyAddressBalance === 0
+    ) {
+      return 0; // A: can enter
+    } else if (
+      !hasPosition &&
+      !hasSellOpenOrder &&
+      !hasBuyOpenOrder &&
+      strategyAddressBalance != null &&
+      strategyAddressBalance > 0
+    ) {
+      return 1; // B: can enter or exit
+    } else if (
+      !hasPosition &&
+      hasSellOpenOrder &&
+      !hasBuyOpenOrder &&
+      strategyAddressBalance != null &&
+      strategyAddressBalance > 0
+    ) {
+      return 2; // C: trying to enter, has to wait in enter screen
+    } else if (
+      hasPosition &&
+      !hasSellOpenOrder &&
+      !hasBuyOpenOrder &&
+      strategyAddressBalance != null &&
+      strategyAddressBalance > 0
+    ) {
+      return 3; // D: can exit
+    } else if (
+      hasPosition &&
+      !hasSellOpenOrder &&
+      hasBuyOpenOrder &&
+      strategyAddressBalance != null &&
+      strategyAddressBalance > 0
+    ) {
+      return 4; // E: trying to exit, has to wait in exit screen
+    } else {
+      return 5; // F: in between states, has to wait in current screen
+    }
+  }, [hasPosition, hasSellOpenOrder, hasBuyOpenOrder, strategyAddressBalance]);
+
+  useEffect(() => {
+    // if entering and now funded, keep waiting
+    if (currentState.current === 0 && prevState === 1) {
+      return;
+    }
+    // keep current state on transient change
+    if (prevState !== 5) {
+      currentState.current = prevState;
+    }
+  }, [prevState]);
+
+  const showExitScreen = [1, 3, 4].includes(currentState.current);
 
   return (
     <div className={styles.root}>
@@ -312,7 +280,7 @@ export const StrategyBlock = () => {
           textBlocks={[t('pages.strategies.info.text1'), t('pages.strategies.info.text2')]}
         />
         <div className={styles.divider} />
-        {hasPosition === null || strategyAddressBalance === null ? (
+        {currentState.current === 5 || strategyAddressBalance === null ? (
           <div className={styles.emptyBlock}>
             <div className={styles.loaderWrapper}>
               <CircularProgress />
@@ -320,14 +288,18 @@ export const StrategyBlock = () => {
           </div>
         ) : (
           <>
-            {!hasSellOpenOrder && (hasPosition || (!hasPosition && strategyAddressBalance > 0)) && (
+            {showExitScreen && (
               <ExitStrategy
-                isLoading={(!hasPosition && strategyAddressBalance > 0) || hasBuyOpenOrder}
+                isLoading={hasBuyOpenOrder || prevState === 5}
                 hasBuyOpenOrder={hasBuyOpenOrder}
+                strategyClient={strategyClient}
+                strategyAddressBalance={strategyAddressBalance}
+                refetchStrategyAddressBalance={refetchStrategyAddressBalance}
+                strategyAddressBalanceBigint={strategyAddressBalanceData?.[0] ?? 0n}
               />
             )}
-            {((!hasPosition && strategyAddressBalance === 0) || hasSellOpenOrder) && (
-              <EnterStrategy isLoading={hasSellOpenOrder} />
+            {!showExitScreen && (
+              <EnterStrategy isLoading={hasSellOpenOrder || prevState === 5} strategyClient={strategyClient} />
             )}
           </>
         )}

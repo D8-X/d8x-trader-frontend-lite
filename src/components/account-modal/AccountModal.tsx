@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
-import { Button, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { ExtractSocialPKModal } from 'components/extract-pk-modal/ExtractSocialPKModal';
@@ -34,35 +34,39 @@ export const AccountModal = () => {
 
   return (
     <>
-      <Dialog open={isAccountModalOpen} onClose={handleOnClose} className={styles.dialog}>
-        <DialogTitle>{t('common.account-modal.title')}</DialogTitle>
-        <DialogContent className={styles.dialogContent}>
-          <div className={classnames(styles.section, styles.buttons)}>
-            <Button onClick={() => setDepositModalOpen(true)} variant="primary" className={styles.button}>
-              {t('common.account-modal.deposit-button')}
+      <Dialog
+        open={isAccountModalOpen}
+        onClose={handleOnClose}
+        onCloseClick={handleOnClose}
+        className={styles.dialog}
+        dialogTitle={t('common.account-modal.title')}
+        footerActions={
+          <>
+            <Button onClick={handleOnClose} variant="secondary" className={styles.actionButton}>
+              {t('common.info-modal.close')}
             </Button>
-            <Button onClick={() => setWithdrawModalOpen(true)} variant="primary" className={styles.button}>
-              {t('common.account-modal.withdraw-button')}
-            </Button>
-            <Button onClick={() => setExtractPKModalOpen(true)} variant="primary" className={styles.button}>
-              {t('common.account-modal.extract-pk-button')}
-            </Button>
-          </div>
-          <Separator />
-          <div className={styles.section}>
-            <WalletBalances />
-            <Typography variant="bodyTiny" className={styles.noteText}>
-              <Translate i18nKey="common.account-modal.notice-block" values={{ currencyName: gasTokenSymbol }} />
-            </Typography>
-          </div>
-          <Separator />
-        </DialogContent>
-        <DialogActions className={styles.dialogAction}>
-          <Button onClick={handleOnClose} variant="secondary" className={styles.actionButton}>
-            {t('common.info-modal.close')}
+            <Web3AuthDisconnectButton />
+          </>
+        }
+      >
+        <div className={classnames(styles.section, styles.buttons)}>
+          <Button onClick={() => setDepositModalOpen(true)} variant="primary" className={styles.button}>
+            {t('common.account-modal.deposit-button')}
           </Button>
-          <Web3AuthDisconnectButton />
-        </DialogActions>
+          <Button onClick={() => setWithdrawModalOpen(true)} variant="primary" className={styles.button}>
+            {t('common.account-modal.withdraw-button')}
+          </Button>
+          <Button onClick={() => setExtractPKModalOpen(true)} variant="primary" className={styles.button}>
+            {t('common.account-modal.extract-pk-button')}
+          </Button>
+        </div>
+        <Separator />
+        <div className={styles.section}>
+          <WalletBalances />
+          <Typography variant="bodyTiny" className={styles.noteText}>
+            <Translate i18nKey="common.account-modal.notice-block" values={{ currencyName: gasTokenSymbol }} />
+          </Typography>
+        </div>
       </Dialog>
 
       <ExtractSocialPKModal />

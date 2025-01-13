@@ -87,15 +87,16 @@ export async function getPerpetualStaticInfo(
   traderAPI: TraderInterface | null,
   symbol: string
 ): Promise<ValidatedResponseI<PerpetualStaticInfoI>> {
-  if (traderAPI && Number(traderAPI.chainId) === chainId) {
-    // console.log('perpStaticInfo via SDK');
-    const info = traderAPI.getPerpetualStaticInfo(symbol);
-    return { type: 'perpetual-static-info', msg: '', data: info };
+  if (traderAPI) {
+    // console.log('perpStaticInfo via SDK', { chainId, traderAPIChainId: Number(traderAPI.chainId), symbol });
+    if (Number(traderAPI.chainId) === chainId) {
+      const info = traderAPI.getPerpetualStaticInfo(symbol);
+      return { type: 'perpetual-static-info', msg: '', data: info };
+    }
+    throw new Error('ChainId is not correct.');
   } else {
-    // TODO: legacy, remove error when new BEs are live
-    throw new Error(`Unable to fetch perpetual static info for symbol ${symbol}`);
-    // console.log('perpStaticInfo via BE');
-    // return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
+    // console.log('perpStaticInfo via BE', { chainId, symbol });
+    return fetchUrl(`perpetual-static-info?symbol=${symbol}`, chainId);
   }
 }
 
@@ -127,24 +128,26 @@ export function positionRiskOnTrade(
   traderAPI: TraderInterface,
   order: OrderI,
   traderAddr: string,
-  curAccount: MarginAccountI | undefined,
-  tradingFeeTbps: number | undefined
+  signedPositionNotionalBaseCCY: number,
+  tradingFeeTbps: number
 ): Promise<
   ValidatedResponseI<{
     newPositionRisk: MarginAccountI;
     orderCost: number;
     maxLongTrade: number;
     maxShortTrade: number;
+    ammPrice: number;
   }>
 > {
   return traderAPI
-    .positionRiskOnTrade(traderAddr, order, curAccount, undefined, { tradingFeeTbps: tradingFeeTbps })
+    .positionRiskOnTrade(traderAddr, order, signedPositionNotionalBaseCCY, tradingFeeTbps)
     .then((data) => {
       return { type: 'position-risk-on-trade', msg: '', data: data } as ValidatedResponseI<{
         newPositionRisk: MarginAccountI;
         orderCost: number;
         maxLongTrade: number;
         maxShortTrade: number;
+        ammPrice: number;
       }>;
     });
 }
@@ -235,21 +238,20 @@ export function getMaxOrderSizeForTrader(
   symbol: string,
   timestamp?: number
 ): Promise<ValidatedResponseI<MaxOrderSizeResponseI>> {
-  if (traderAPI && Number(traderAPI.chainId) === chainId) {
-    return traderAPI
-      .maxOrderSizeForTrader(traderAddr, symbol)
-      .then(({ buy, sell }) => {
+  if (traderAPI) {
+    if (Number(traderAPI.chainId) === chainId) {
+      // console.log('getMaxOrderSizeForTrader via sdk');
+      return traderAPI.maxOrderSizeForTrader(traderAddr, symbol).then(({ buy, sell }) => {
         return {
           type: 'max-order-size-for-trader',
           msg: '',
-          data: { buy: buy, sell: sell },
+          data: { buy: Math.abs(buy), sell: Math.abs(sell) },
         } as ValidatedResponseI<MaxOrderSizeResponseI>;
-      })
-      .catch((error) => {
-        console.error(error);
-        throw new Error(error);
       });
+    }
+    throw new Error('ChainId is not correct.');
   } else {
+    // console.log('getMaxOrderSizeForTrader via BE');
     const params = new URLSearchParams({
       symbol,
       traderAddr,
@@ -315,26 +317,29 @@ export function getCancelOrder(
   symbol: string,
   orderId: string
 ): Promise<ValidatedResponseI<CancelOrderResponseI>> {
-  if (traderAPI && Number(traderAPI.chainId) === chainId) {
-    const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
-    return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
-      return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-        return {
-          type: 'cancel-order',
-          msg: '',
-          data: {
-            OrderBookAddr: digest.OBContractAddr,
-            abi: cancelABI,
-            digest: digest.digest,
-            priceUpdate: {
-              updateData: submission.priceFeedVaas,
-              publishTimes: submission.timestamps,
-              updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
+  if (traderAPI) {
+    if (Number(traderAPI.chainId) === chainId) {
+      const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
+      return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
+        return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
+          return {
+            type: 'cancel-order',
+            msg: '',
+            data: {
+              OrderBookAddr: digest.OBContractAddr,
+              abi: cancelABI,
+              digest: digest.digest,
+              priceUpdate: {
+                updateData: submission.priceFeedVaas,
+                publishTimes: submission.timestamps,
+                updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
+              },
             },
-          },
-        };
+          };
+        });
       });
-    });
+    }
+    throw new Error('ChainId is not correct.');
   } else {
     return fetch(
       `${getApiUrlByChainId(chainId)}/cancel-order?symbol=${symbol}&orderId=${orderId}`,
@@ -356,9 +361,12 @@ export function getAvailableMargin(
   traderAddr: string
 ): Promise<ValidatedResponseI<{ amount: number }>> {
   if (traderAPI) {
-    return traderAPI.getAvailableMargin(traderAddr, symbol).then((margin) => {
-      return { type: 'available-margin', msg: '', data: { amount: margin } };
-    });
+    if (Number(traderAPI.chainId) === chainId) {
+      return traderAPI.getAvailableMargin(traderAddr, symbol).then((margin) => {
+        return { type: 'available-margin', msg: '', data: { amount: margin } };
+      });
+    }
+    throw new Error('ChainId is not correct.');
   } else {
     return fetch(
       `${getApiUrlByChainId(chainId)}/available-margin?symbol=${symbol}&traderAddr=${traderAddr}`,

@@ -6,6 +6,7 @@
 
 .tab {
   padding: 3 * $d8x-spacing 10 * $d8x-spacing;
+  border: 1px solid var(--d8x-block-border-color);
 
   &:first-child {
     border-radius: $d8x-border-radius 0 0 $d8x-border-radius;

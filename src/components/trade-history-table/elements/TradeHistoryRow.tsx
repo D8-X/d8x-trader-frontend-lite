@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import { format } from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
@@ -5,11 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { TableCell, TableRow, Typography } from '@mui/material';
 
 import { DATETIME_FORMAT } from 'appConstants';
+import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { collateralToSettleConversionAtom } from 'store/pools.store';
 import { OrderSideE } from 'types/enums';
 import type { TableHeaderI, TradeHistoryWithSymbolDataI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
+
+import styles from '../TradeHistoryTable.module.scss';
 
 interface TradeHistoryRowPropsI {
   headers: TableHeaderI<TradeHistoryWithSymbolDataI>[];
@@ -33,42 +37,61 @@ export const TradeHistoryRow = ({ headers, tradeHistory }: TradeHistoryRowPropsI
   return (
     <TableRow key={tradeHistory.transactionHash}>
       <TableCell align={headers[0].align}>
-        <Typography variant="cellSmall">{time}</Typography>
+        <div className={styles.perpetualData}>
+          <div className={styles.iconsHolder}>
+            <div className={styles.baseIcon}>
+              <DynamicLogo logoName={perpetual?.baseCurrency.toLowerCase() ?? ''} width={25} height={25} />
+            </div>
+            <div className={styles.quoteIcon}>
+              <DynamicLogo logoName={perpetual?.quoteCurrency.toLowerCase() ?? ''} width={25} height={25} />
+            </div>
+          </div>
+          <div className={styles.dataHolder}>
+            <Typography variant="cellSmall" className={styles.pair}>
+              {tradeHistory.symbol}
+            </Typography>
+            <Typography variant="cellSmall" className={styles.date}>
+              {time}
+            </Typography>
+          </div>
+        </div>
       </TableCell>
       <TableCell align={headers[1].align}>
-        <Typography variant="cellSmall">{tradeHistory.symbol}</Typography>
+        <div className={styles.quantityData}>
+          <Typography variant="cellSmall" className={styles.quantity}>
+            {perpetual ? formatToCurrency(Math.abs(tradeHistory.quantity), perpetual.baseCurrency, true) : ''}
+          </Typography>
+          <Typography
+            variant="cellSmall"
+            className={classnames(styles.side, {
+              [styles.buy]: tradeHistory.side.indexOf('BUY') > -1,
+              [styles.sell]: tradeHistory.side.indexOf('SELL') > -1,
+            })}
+          >
+            {tradeHistory.side.indexOf('BUY') > -1
+              ? t('pages.trade.positions-table.table-content.buy')
+              : t('pages.trade.positions-table.table-content.sell')}
+          </Typography>
+        </div>
       </TableCell>
       <TableCell align={headers[2].align}>
-        <Typography variant="cellSmall">
-          {tradeHistory.side === 'BUY'
-            ? t('pages.trade.positions-table.table-content.buy')
-            : t('pages.trade.positions-table.table-content.sell')}
-        </Typography>
+        <div className={styles.priceData}>
+          <Typography variant="cellSmall" className={styles.price}>
+            {perpetual ? formatToCurrency(displayPrice, displayCcy, true) : ''}
+          </Typography>
+          <Typography variant="cellSmall" className={styles.fee}>
+            {perpetual
+              ? formatToCurrency(
+                  tradeHistory.fee * (c2s.get(perpetual.poolName)?.value ?? 1),
+                  tradeHistory.settleSymbol,
+                  true
+                )
+              : ''}
+          </Typography>
+        </div>
       </TableCell>
-      {/*<TableCell align={headers[3].align} style={{ display: 'none' }}>
-        <Typography variant="cellSmall">TYPE</Typography>
-      </TableCell>*/}
       <TableCell align={headers[3].align}>
-        <Typography variant="cellSmall">{perpetual ? formatToCurrency(displayPrice, displayCcy, true) : ''}</Typography>
-      </TableCell>
-      <TableCell align={headers[4].align}>
-        <Typography variant="cellSmall">
-          {perpetual ? formatToCurrency(Math.abs(tradeHistory.quantity), perpetual.baseCurrency, true) : ''}
-        </Typography>
-      </TableCell>
-      <TableCell align={headers[5].align}>
-        <Typography variant="cellSmall">
-          {perpetual
-            ? formatToCurrency(
-                tradeHistory.fee * (c2s.get(perpetual.poolName)?.value ?? 1),
-                tradeHistory.settleSymbol,
-                true
-              )
-            : ''}
-        </Typography>
-      </TableCell>
-      <TableCell align={headers[6].align}>
-        <Typography variant="cellSmall" style={{ color: pnlColor }}>
+        <Typography variant="cellSmall" className={styles.realizedProfit} style={{ color: pnlColor }}>
           {perpetual
             ? formatToCurrency(
                 tradeHistory.realizedPnl * (c2s.get(perpetual.poolName)?.value ?? 1),

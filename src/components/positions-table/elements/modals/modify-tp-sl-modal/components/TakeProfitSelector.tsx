@@ -1,28 +1,21 @@
+import classnames from 'classnames';
 import { useAtomValue } from 'jotai';
-import {
-  type ChangeEvent,
-  type Dispatch,
-  memo,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type Dispatch, memo, type SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 
 import { CustomPriceSelector } from 'components/custom-price-selector/CustomPriceSelector';
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { calculateStepSize } from 'helpers/calculateStepSize';
-import { parseSymbol } from 'helpers/parseSymbol';
 import { OrderSideE, OrderValueTypeE, TakeProfitE } from 'types/enums';
 import { MarginAccountWithAdditionalDataI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { mapTakeProfitToNumber } from 'utils/mapTakeProfitToNumber';
 import { traderAPIAtom } from 'store/pools.store';
+
+import styles from './Selectors.module.scss';
 
 interface TakeProfitSelectorPropsI {
   setTakeProfitPrice: Dispatch<SetStateAction<number | null | undefined>>;
@@ -38,10 +31,7 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
   const [takeProfit, setTakeProfit] = useState<TakeProfitE | null>(null);
   const [takeProfitInputPrice, setTakeProfitInputPrice] = useState<number | null | undefined>(undefined);
 
-  const parsedSymbol = parseSymbol(position.symbol);
-
-  const handleTakeProfitPriceChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const takeProfitPriceValue = event.target.value;
+  const handleTakeProfitPriceChange = (takeProfitPriceValue: string) => {
     if (takeProfitPriceValue !== '') {
       setTakeProfitInputPrice(+takeProfitPriceValue);
     } else {
@@ -151,30 +141,41 @@ export const TakeProfitSelector = memo(({ setTakeProfitPrice, position, disabled
   };
 
   return (
-    <CustomPriceSelector<TakeProfitE>
-      id="custom-take-profit-price"
-      label={
-        <InfoLabelBlock
-          title={t('pages.trade.order-block.take-profit.title')}
-          content={
-            <>
-              <Typography>{t('pages.trade.order-block.take-profit.body1')}</Typography>
-              <Typography>{t('pages.trade.order-block.take-profit.body2')}</Typography>
-              <Typography>{t('pages.trade.order-block.take-profit.body3')}</Typography>
-            </>
-          }
-        />
-      }
-      options={Object.values(TakeProfitE)}
-      translationMap={translationMap}
-      handlePriceChange={handleTakeProfitChange}
-      handleInputPriceChange={handleTakeProfitPriceChange}
-      validateInputPrice={validateTakeProfitPrice}
-      selectedInputPrice={takeProfit !== TakeProfitE.None ? takeProfitInputPrice : null}
-      selectedPrice={takeProfit}
-      currency={parsedSymbol?.quoteCurrency}
-      stepSize={stepSize}
-      disabled={disabled}
-    />
+    <div className={styles.root}>
+      <CustomPriceSelector
+        id="custom-take-profit-price"
+        label={
+          <InfoLabelBlock
+            title={t('pages.trade.order-block.take-profit.title')}
+            content={
+              <>
+                <Typography>{t('pages.trade.order-block.take-profit.body1')}</Typography>
+                <Typography>{t('pages.trade.order-block.take-profit.body2')}</Typography>
+                <Typography>{t('pages.trade.order-block.take-profit.body3')}</Typography>
+              </>
+            }
+          />
+        }
+        handleInputPriceChange={handleTakeProfitPriceChange}
+        validateInputPrice={validateTakeProfitPrice}
+        selectedInputPrice={takeProfit !== TakeProfitE.None ? takeProfitInputPrice : null}
+        stepSize={stepSize}
+        disabled={disabled}
+        inline={true}
+      />
+      <div className={styles.priceOptions}>
+        {Object.values(TakeProfitE).map((key) => (
+          <Button
+            key={key}
+            variant="outlined"
+            className={classnames({ [styles.selected]: key === takeProfit })}
+            onClick={() => handleTakeProfitChange(key)}
+            disabled={disabled}
+          >
+            {translationMap[key]}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 });

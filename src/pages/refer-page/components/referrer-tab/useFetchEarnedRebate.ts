@@ -31,6 +31,10 @@ export const useFetchEarnedRebate = () => {
     } else {
       setEarnedRebates([]);
     }
+
+    return () => {
+      earnedRebateRequestRef.current = false;
+    };
   }, [address, chainId]);
 
   return { earnedRebates };

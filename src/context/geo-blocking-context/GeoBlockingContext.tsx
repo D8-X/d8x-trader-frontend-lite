@@ -113,6 +113,9 @@ export const GeoBlockingProvider = memo(({ children }: PropsWithChildren) => {
           ipGeolocationSentRef.current = false;
         });
     }
+    return () => {
+      ipGeolocationSentRef.current = false;
+    };
   }, [isGeoCheckExpired]);
 
   useEffect(() => {

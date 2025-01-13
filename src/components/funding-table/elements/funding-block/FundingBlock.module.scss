@@ -28,16 +28,20 @@
 
 .dataLabel {
   font-weight: 500;
+  font-size: 14px;
 }
 
 .dataValue {
-  color: var(--d8x-color-text-highlight);
+  color: var(--d8x-color-text-label-one);
+  font-size: 14px;
 }
 
 .green {
   color: var(--d8x-color-buy-rgba);
+  font-size: 14px;
 }
 
 .red {
   color: var(--d8x-color-sell-rgba);
+  font-size: 14px;
 }

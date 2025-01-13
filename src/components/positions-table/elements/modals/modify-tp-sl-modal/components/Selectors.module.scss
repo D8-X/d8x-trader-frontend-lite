@@ -1,0 +1,35 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.priceOptions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  gap: $d8x-spacing;
+  flex-wrap: wrap;
+  overflow-y: hidden;
+
+  :global(.MuiButtonGroup-root) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: $d8x-spacing;
+  }
+
+  :global(.MuiButtonBase-root) {
+    flex: 1;
+    border-radius: 8px;
+    min-width: inherit;
+    padding: $d8x-spacing 0 0.5 * $d8x-spacing;
+    height: 32px;
+
+    &.selected {
+      border: 1px solid transparent;
+      background-color: var(--d8x-color-action);
+      color: var(--d8x-color-text-secondary);
+    }
+  }
+}

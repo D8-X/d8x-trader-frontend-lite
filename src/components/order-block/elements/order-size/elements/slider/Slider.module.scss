@@ -1,0 +1,26 @@
+@import '~styles/theme/theme.scss';
+
+.root {
+  margin: 0 10px;
+
+  :global(.MuiSlider-thumb) {
+    background-color: var(--d8x-slider-thumb-background);
+    border: 3px solid var(--d8x-slider-thumb-border-color);
+  }
+
+  :global(.MuiSlider-rail) {
+    opacity: 0.5;
+  }
+
+  @include media-desktop {
+    margin-bottom: 4px;
+  }
+
+  @include media-phone {
+    margin-bottom: 8px;
+
+    :global(.MuiSlider-root) {
+      margin-bottom: 10px;
+    }
+  }
+}

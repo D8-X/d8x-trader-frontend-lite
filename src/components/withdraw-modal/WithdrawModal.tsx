@@ -7,16 +7,7 @@ import { toast } from 'react-toastify';
 import { type Address, erc20Abi, formatUnits, parseEther, parseUnits } from 'viem';
 import { type BaseError, useAccount, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
 
-import {
-  Button,
-  CircularProgress,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Link,
-  OutlinedInput,
-  Typography,
-} from '@mui/material';
+import { Button, CircularProgress, Link, OutlinedInput, Typography } from '@mui/material';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { CurrencySelect } from 'components/currency-selector/CurrencySelect';
@@ -176,82 +167,86 @@ export const WithdrawModal = () => {
   ]);
 
   return (
-    <Dialog open={isWithdrawModalOpen} onClose={handleOnClose} className={styles.dialog}>
-      <DialogTitle>{t('common.withdraw-modal.title')}</DialogTitle>
-      <DialogContent className={styles.dialogContent}>
-        <div className={styles.section}>
-          <CurrencySelect />
+    <Dialog
+      open={isWithdrawModalOpen}
+      onClose={handleOnClose}
+      onCloseClick={handleOnClose}
+      className={styles.dialog}
+      dialogTitle={t('common.withdraw-modal.title')}
+      footerActions={
+        <>
+          <Button onClick={handleOnClose} variant="secondary">
+            {t('common.info-modal.close')}
+          </Button>
+          <Button
+            onClick={handleWithdraw}
+            variant="primary"
+            disabled={!address || !amountValue || +amountValue <= 0 || !isAddressValid || loading}
+          >
+            {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
+            {t('common.withdraw-modal.withdraw-button')}
+          </Button>
+        </>
+      }
+    >
+      <div className={styles.section}>
+        <CurrencySelect />
+      </div>
+      <Separator />
+      <div className={styles.section}>
+        <div className={styles.dataLine}>
+          <div className={styles.label}>{t('common.amount-label')}</div>
+          <ResponsiveInput
+            id="withdraw-amount"
+            className={styles.inputHolder}
+            inputClassName={styles.input}
+            inputValue={amountValue}
+            setInputValue={setAmountValue}
+            currency={selectedCurrency?.settleToken}
+            min={0}
+            max={maxTokenValue}
+          />
+          {maxTokenValue && maxTokenValue > 0 ? (
+            <Typography className={styles.helperText} variant="bodyTiny">
+              {t('common.max')}{' '}
+              <Link
+                onClick={() => {
+                  if (maxTokenValue && maxTokenValue > 0) {
+                    setAmountValue(`${maxTokenValue}`);
+                  }
+                }}
+              >
+                {formatToCurrency(maxTokenValue, selectedCurrency?.settleToken)}
+              </Link>
+            </Typography>
+          ) : null}
         </div>
-        <Separator />
-        <div className={styles.section}>
-          <div className={styles.dataLine}>
-            <div className={styles.label}>{t('common.amount-label')}</div>
-            <ResponsiveInput
-              id="withdraw-amount"
-              className={styles.inputHolder}
-              inputClassName={styles.input}
-              inputValue={amountValue}
-              setInputValue={setAmountValue}
-              currency={selectedCurrency?.settleToken}
-              min={0}
-              max={maxTokenValue}
+      </div>
+      <div className={styles.section}>
+        <div className={styles.dataLine}>
+          <div className={styles.label}>{t('common.address-label')}</div>
+          <div className={styles.inputHolder}>
+            <OutlinedInput
+              id="withdraw-address"
+              type="text"
+              className={styles.input}
+              placeholder="0x..."
+              onChange={handleValueChange}
+              onBlur={handleInputBlur}
+              value={addressValue}
             />
-            {maxTokenValue && maxTokenValue > 0 ? (
-              <Typography className={styles.helperText} variant="bodyTiny">
-                {t('common.max')}{' '}
-                <Link
-                  onClick={() => {
-                    if (maxTokenValue && maxTokenValue > 0) {
-                      setAmountValue(`${maxTokenValue}`);
-                    }
-                  }}
-                >
-                  {formatToCurrency(maxTokenValue, selectedCurrency?.settleToken)}
-                </Link>
+            {!isAddressValid && addressInputTouchedRef.current && (
+              <Typography variant="bodySmall" color="red" component="p" mt={1}>
+                {t('common.withdraw-modal.withdraw-address-error')}
               </Typography>
-            ) : null}
+            )}
           </div>
         </div>
-        <div className={styles.section}>
-          <div className={styles.dataLine}>
-            <div className={styles.label}>{t('common.address-label')}</div>
-            <div className={styles.inputHolder}>
-              <OutlinedInput
-                id="withdraw-address"
-                type="text"
-                className={styles.input}
-                placeholder="0x..."
-                onChange={handleValueChange}
-                onBlur={handleInputBlur}
-                value={addressValue}
-              />
-              {!isAddressValid && addressInputTouchedRef.current && (
-                <Typography variant="bodySmall" color="red" component="p" mt={1}>
-                  {t('common.withdraw-modal.withdraw-address-error')}
-                </Typography>
-              )}
-            </div>
-          </div>
-        </div>
-        <Separator />
-        <div className={styles.section}>
-          <WalletBalances />
-        </div>
-        <Separator />
-      </DialogContent>
-      <DialogActions className={styles.dialogAction}>
-        <Button onClick={handleOnClose} variant="secondary">
-          {t('common.info-modal.close')}
-        </Button>
-        <Button
-          onClick={handleWithdraw}
-          variant="primary"
-          disabled={!address || !amountValue || +amountValue <= 0 || !isAddressValid || loading}
-        >
-          {loading && <CircularProgress size="24px" sx={{ mr: 2 }} />}
-          {t('common.withdraw-modal.withdraw-button')}
-        </Button>
-      </DialogActions>
+      </div>
+      <Separator />
+      <div className={styles.section}>
+        <WalletBalances />
+      </div>
     </Dialog>
   );
 };

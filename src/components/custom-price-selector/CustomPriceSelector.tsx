@@ -1,81 +1,52 @@
 import classnames from 'classnames';
-import { ChangeEvent, ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
-import { Box, Button, InputAdornment, OutlinedInput, Typography } from '@mui/material';
-
-import { genericMemo } from 'helpers/genericMemo';
+import { InputE } from 'components/responsive-input/enums';
+import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 
 import styles from './CustomPriceSelector.module.scss';
 
-interface CustomPriceSelectorPropsI<T extends string> {
+interface CustomPriceSelectorPropsI {
   id: string;
   label: ReactNode;
-  options: T[];
-  translationMap: Record<T, string>;
-  handleInputPriceChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleInputPriceChange: (newValue: string) => void;
   validateInputPrice: () => void;
-  handlePriceChange: (key: T) => void;
   selectedInputPrice: number | null | undefined;
-  selectedPrice: T | null;
-  currency?: string;
   stepSize: string;
   disabled?: boolean;
-  hide?: boolean;
+  inline?: boolean;
+  percentComponent?: ReactNode;
+  className?: string;
 }
 
-function CustomPriceSelectorComponent<T extends string>(props: CustomPriceSelectorPropsI<T>) {
-  const {
-    id,
-    label,
-    options,
-    translationMap,
-    handlePriceChange,
-    handleInputPriceChange,
-    validateInputPrice,
-    selectedInputPrice,
-    selectedPrice,
-    currency,
-    stepSize,
-    disabled = false,
-    hide = false,
-  } = props;
-
-  return (
-    <Box className={classnames(styles.root, { [styles.hidden]: hide })}>
-      <Box className={classnames(styles.labelHolder, { [styles.hidden]: hide })}>
-        {label}
-        <OutlinedInput
-          id={id}
-          className={classnames(styles.customPriceInput, { [styles.hidden]: hide })}
-          endAdornment={
-            <InputAdornment position="end">
-              <Typography variant="adornment">{currency}</Typography>
-            </InputAdornment>
-          }
-          type="number"
-          value={selectedInputPrice != null ? selectedInputPrice : ''}
-          placeholder="-"
-          onChange={handleInputPriceChange}
-          onBlur={validateInputPrice}
-          inputProps={{ step: stepSize, min: 0 }}
-          disabled={disabled}
-        />
-      </Box>
-      <Box className={classnames(styles.priceOptions, { [styles.hidden]: hide })}>
-        {options.map((key) => (
-          <Button
-            key={key}
-            variant="outlined"
-            className={classnames({ [styles.selected]: key === selectedPrice })}
-            onClick={() => handlePriceChange(key)}
-            disabled={disabled}
-          >
-            {translationMap[key]}
-          </Button>
-        ))}
-      </Box>
-    </Box>
-  );
-}
-
-export const CustomPriceSelector = genericMemo(CustomPriceSelectorComponent);
+export const CustomPriceSelector = ({
+  id,
+  label,
+  handleInputPriceChange,
+  validateInputPrice,
+  selectedInputPrice,
+  stepSize,
+  disabled = false,
+  inline = false,
+  percentComponent,
+  className,
+}: CustomPriceSelectorPropsI) => (
+  <div className={classnames(styles.root, className, { [styles.inline]: inline })}>
+    <div className={styles.labelHolder}>{label}</div>
+    <div className={styles.inputHolder}>
+      <ResponsiveInput
+        id={id}
+        className={styles.responsiveInput}
+        inputValue={selectedInputPrice != null ? selectedInputPrice : ''}
+        placeholder="-"
+        step={stepSize}
+        min={0}
+        setInputValue={handleInputPriceChange}
+        handleInputBlur={validateInputPrice}
+        disabled={disabled}
+        type={inline ? InputE.Regular : InputE.Outlined}
+      />
+      {percentComponent}
+    </div>
+  </div>
+);

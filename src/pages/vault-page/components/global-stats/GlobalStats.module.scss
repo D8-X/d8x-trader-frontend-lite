@@ -3,7 +3,7 @@
 .statContainer {
   flex: 1;
   padding: $d8x-spacing * 2 $d8x-spacing * 3;
-  border-radius: 8px;
+  border-radius: $d8x-spacing * 2;
   background-color: var(--d8x-color-background-items);
   line-height: 1.2;
 }

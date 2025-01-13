@@ -5,7 +5,6 @@ import { useAccount } from 'wagmi';
 
 import { Typography } from '@mui/material';
 
-import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
 import {
   collateralToSettleConversionAtom,
@@ -42,6 +41,9 @@ export const InfoBlock = memo(() => {
   const { chainId } = useAccount();
 
   const feeInCC = useMemo(() => {
+    if (orderInfo?.isPredictionMarket && orderInfo?.tradingFee && selectedPerpetual?.collToQuoteIndexPrice) {
+      return (orderSize * orderInfo.tradingFee) / selectedPerpetual.collToQuoteIndexPrice;
+    }
     if (!orderInfo?.tradingFee || !selectedPerpetual?.collToQuoteIndexPrice || !selectedPerpetual?.indexPrice) {
       return undefined;
     }
@@ -49,14 +51,6 @@ export const InfoBlock = memo(() => {
       (orderSize * orderInfo.tradingFee * selectedPerpetual.indexPrice) / selectedPerpetual.collToQuoteIndexPrice / 1e4
     );
   }, [orderSize, orderInfo, selectedPerpetual]);
-
-  const feePct = useMemo(() => {
-    if (orderInfo?.tradingFee) {
-      return (
-        (orderInfo.tradingFee * 0.01) / (1 + (orderInfo.stopLossPrice ? 1 : 0) + (orderInfo.takeProfitPrice ? 1 : 0))
-      );
-    }
-  }, [orderInfo]);
 
   const feeReduction = useMemo(() => {
     if (orderInfo?.baseFee && orderInfo?.tradingFee !== undefined && orderInfo?.tradingFee !== null) {
@@ -129,40 +123,9 @@ export const InfoBlock = memo(() => {
     <div className={styles.root}>
       <div className={styles.row}>
         <Typography variant="bodySmallPopup" className={styles.infoText}>
-          {t('pages.trade.order-block.info.order-size')}
+          {orderInfo?.isPredictionMarket ? t('common.cost-of-order') : t('pages.trade.order-block.info.fees')}
         </Typography>
-        <Typography variant="bodySmallSB" className={styles.infoText}>
-          {orderSize}
-        </Typography>
-      </div>
-      <div className={styles.row}>
-        <Typography variant="bodySmallPopup" className={styles.infoText}>
-          {t('pages.trade.order-block.info.balance')}
-        </Typography>
-        <TooltipMobile tooltip={selectedPool?.settleTokenAddr ? selectedPool.settleTokenAddr.toString() : '...'}>
-          <Typography variant="bodySmallSB" className={styles.infoTextTooltip}>
-            {formatToCurrency(poolTokenBalance, selectedPool?.settleSymbol)}
-          </Typography>
-        </TooltipMobile>
-      </div>
-      <div className={styles.row}>
-        <Typography variant="bodySmallPopup" className={styles.infoText}>
-          {t('pages.trade.order-block.info.approx-deposit')}
-        </Typography>
-        <Typography variant="bodySmallSB" className={styles.infoText}>
-          {approxDepositFromWallet === undefined || !selectedPool
-            ? '-'
-            : formatToCurrency(
-                approxDepositFromWallet * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
-                selectedPool.settleSymbol
-              )}
-        </Typography>
-      </div>
-      <div className={styles.row}>
-        <Typography variant="bodySmallPopup" className={styles.infoText}>
-          {t('pages.trade.order-block.info.fees')}
-        </Typography>
-        <Typography variant="bodySmallSB" className={styles.infoText}>
+        <Typography variant="bodySmallPopup" className={styles.infoTextNumber}>
           {feeReduction !== undefined && feeReduction > 0 && feeInCC !== undefined ? (
             <>
               <span style={{ textDecoration: 'line-through' }}>
@@ -191,9 +154,6 @@ export const InfoBlock = memo(() => {
                     feeInCC * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
                     selectedPool.settleSymbol
                   )}{' '}
-              {'('}
-              {formatToCurrency(feePct, '%', false, 3)}
-              {')'}
             </>
           )}
         </Typography>
@@ -202,7 +162,7 @@ export const InfoBlock = memo(() => {
         <Typography variant="bodySmallPopup" className={styles.infoText}>
           {t('pages.trade.order-block.info.execution-fees')}
         </Typography>
-        <Typography variant="bodySmallSB" className={styles.infoText}>
+        <Typography variant="bodySmallPopup" className={styles.infoTextNumber}>
           {perpetualStaticInfo && selectedPool
             ? formatToCurrency(
                 perpetualStaticInfo.referralRebate * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
@@ -216,9 +176,36 @@ export const InfoBlock = memo(() => {
           <Typography variant="bodySmallPopup" className={styles.infoText}>
             {t('pages.trade.order-block.info.gas')}
           </Typography>
-          <Typography variant="bodySmallSB" className={styles.infoText}>
+          <Typography variant="bodySmallPopup" className={styles.infoTextNumber}>
             {'77% '}
             {t('pages.trade.order-block.info.rebate')}
+          </Typography>
+        </div>
+      )}
+      {orderInfo?.isPredictionMarket != true && (
+        <div className={styles.row}>
+          <Typography variant="bodySmallPopup" className={styles.infoText}>
+            {t('pages.trade.order-block.info.approx-deposit')}
+          </Typography>
+          <Typography variant="bodySmallPopup" className={styles.infoTextNumber}>
+            {approxDepositFromWallet === undefined || !selectedPool
+              ? '-'
+              : formatToCurrency(
+                  approxDepositFromWallet * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
+                  selectedPool.settleSymbol
+                )}
+          </Typography>
+        </div>
+      )}
+      {orderInfo?.isPredictionMarket === true && (
+        <div className={styles.row}>
+          <Typography variant="bodySmallPopup" className={styles.infoText}>
+            {t('common.potential-return')}
+          </Typography>
+          <Typography variant="bodySmallPopup" className={styles.infoTextNumber}>
+            {approxDepositFromWallet === undefined || !selectedPool
+              ? '-'
+              : formatToCurrency(orderSize, selectedPool.settleSymbol)}
           </Typography>
         </div>
       )}

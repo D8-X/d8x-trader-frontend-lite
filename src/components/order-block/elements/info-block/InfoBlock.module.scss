@@ -1,9 +1,10 @@
 @import '~styles/theme/theme.scss';
 
 .root {
-  padding: 8px;
-  border-radius: 4px;
-  background-color: var(--d8x-color-background-order-block-info);
+  padding: 0 3 * $d8x-spacing 3 * $d8x-spacing;
+  border-radius: $d8x-border-radius;
+  background-color: var(--d8x-color-background-card-overlay);
+  margin-bottom: 4 * $d8x-spacing;
 }
 
 .row {
@@ -11,13 +12,19 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: calc($d8x-spacing);
+  margin-top: calc($d8x-spacing * 3);
   color: var(--d8x-color-text-order-block-info);
 }
 
 .infoText {
   font-size: 12px;
-  line-height: 16px;
+  line-height: 15px;
+}
+
+.infoTextNumber {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 600;
 }
 
 .infoTextTooltip {

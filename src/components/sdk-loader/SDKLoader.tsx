@@ -9,6 +9,7 @@ import { collateralToSettleConversionAtom, poolsAtom, traderAPIAtom, traderAPIBu
 import { sdkConnectedAtom } from 'store/vault-pools.store';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { useLocation } from 'react-router-dom';
 
 export const SDKLoader = memo(() => {
   const { isConnected, chainId } = useAccount();
@@ -27,6 +28,9 @@ export const SDKLoader = memo(() => {
   const setCollToSettleConversion = useSetAtom(collateralToSettleConversionAtom);
 
   const loadingAPIRef = useRef(false);
+  const location = useLocation();
+
+  const chainIdFromUrl = parseInt(location.hash.split('__')[1]?.split('=')[1], 10);
 
   useEffect(() => {
     if (walletClient && isSuccess && !activatedOneClickTrading) {
@@ -65,7 +69,7 @@ export const SDKLoader = memo(() => {
           setTraderAPI(newTraderAPI);
         })
         .catch((e) => {
-          console.log('error loading SDK', e);
+          console.error('error loading SDK', e);
         });
     },
     [setTraderAPI, setSDKConnected]
@@ -88,10 +92,12 @@ export const SDKLoader = memo(() => {
     loadingAPIRef.current = true;
 
     let chainIdForSDK: number;
-    if (!isEnabledChain(chainId)) {
-      chainIdForSDK = config.enabledChains[0];
-    } else {
+    if (!isNaN(chainIdFromUrl) && isEnabledChain(chainIdFromUrl) && chainId === undefined) {
+      chainIdForSDK = chainIdFromUrl;
+    } else if (isEnabledChain(chainId)) {
       chainIdForSDK = chainId;
+    } else {
+      chainIdForSDK = config.enabledChains[0];
     }
 
     loadSDK(publicClient, chainIdForSDK)
@@ -101,7 +107,11 @@ export const SDKLoader = memo(() => {
         loadingAPIRef.current = false;
         setAPIBusy(false);
       });
-  }, [isConnected, publicClient, chainId, loadSDK, unloadSDK, setAPIBusy]);
+
+    return () => {
+      loadingAPIRef.current = false;
+    };
+  }, [isConnected, publicClient, chainId, loadSDK, unloadSDK, setAPIBusy, chainIdFromUrl]);
 
   useEffect(() => {
     if (isConnected && traderAPI && pools.length > 0) {

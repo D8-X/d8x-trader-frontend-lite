@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useMemo, useRef } from 'react';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { createSymbol } from 'helpers/createSymbol';
 import { getPerpetualStaticInfo } from 'network/network';
@@ -9,6 +10,7 @@ import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 export const PerpetualInfoFetcher = () => {
   const { chainId } = useAccount();
+  const location = useLocation();
 
   const setPerpetualStaticInfo = useSetAtom(perpetualStaticInfoAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
@@ -18,7 +20,7 @@ export const PerpetualInfoFetcher = () => {
   const requestSentRef = useRef(false);
 
   const symbol = useMemo(() => {
-    if (selectedPool && selectedPerpetual) {
+    if (selectedPool?.poolSymbol && selectedPerpetual?.baseCurrency && selectedPerpetual?.quoteCurrency) {
       return createSymbol({
         baseCurrency: selectedPerpetual.baseCurrency,
         quoteCurrency: selectedPerpetual.quoteCurrency,
@@ -26,10 +28,10 @@ export const PerpetualInfoFetcher = () => {
       });
     }
     return '';
-  }, [selectedPool, selectedPerpetual]);
+  }, [selectedPool?.poolSymbol, selectedPerpetual?.baseCurrency, selectedPerpetual?.quoteCurrency]);
 
   useEffect(() => {
-    if (requestSentRef.current || !traderAPI) {
+    if (requestSentRef.current) {
       return;
     }
 
@@ -40,7 +42,7 @@ export const PerpetualInfoFetcher = () => {
 
     requestSentRef.current = true;
 
-    getPerpetualStaticInfo(getEnabledChainId(chainId), traderAPI, symbol)
+    getPerpetualStaticInfo(getEnabledChainId(chainId, location.hash), traderAPI, symbol)
       .then(({ data }) => {
         if (data.error) {
           throw new Error(data.error);
@@ -55,7 +57,11 @@ export const PerpetualInfoFetcher = () => {
       .finally(() => {
         requestSentRef.current = false;
       });
-  }, [chainId, symbol, setPerpetualStaticInfo, traderAPI]);
+
+    return () => {
+      requestSentRef.current = false;
+    };
+  }, [chainId, symbol, setPerpetualStaticInfo, traderAPI, location]);
 
   return null;
 };

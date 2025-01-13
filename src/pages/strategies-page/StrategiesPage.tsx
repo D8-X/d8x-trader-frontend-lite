@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { STRATEGY_BASE_CURRENCY, STRATEGY_POOL_SYMBOL, STRATEGY_QUOTE_CURRENCY, STRATEGY_SYMBOL } from 'appConstants';
 import { Container } from 'components/container/Container';
@@ -13,6 +14,7 @@ import {
   strategyPerpetualStatsAtom,
   strategyPoolAtom,
   perpetualStrategyStaticInfoAtom,
+  activeStrategyWalletAtom,
 } from 'store/strategies.store';
 import { getPerpetualStaticInfo } from 'network/network';
 
@@ -25,9 +27,11 @@ import styles from './StrategiesPage.module.scss';
 
 export const StrategiesPage = () => {
   const { address, chainId } = useAccount();
+  const location = useLocation();
 
   const pools = useAtomValue(poolsAtom);
   const strategyAddresses = useAtomValue(strategyAddressesAtom);
+  const activeStrategyWallet = useAtomValue(activeStrategyWalletAtom);
   const allPerpetualStatistics = useAtomValue(allPerpetualStatisticsPrimitiveAtom);
   const setStrategyPool = useSetAtom(strategyPoolAtom);
   const setStrategyPerpetual = useSetAtom(strategyPerpetualAtom);
@@ -70,7 +74,7 @@ export const StrategiesPage = () => {
   }, [allPerpetualStatistics, setStrategyPerpetualStats]);
 
   useEffect(() => {
-    if (requestSentRef.current || !traderAPI) {
+    if (requestSentRef.current) {
       return;
     }
 
@@ -81,7 +85,7 @@ export const StrategiesPage = () => {
 
     requestSentRef.current = true;
 
-    getPerpetualStaticInfo(getEnabledChainId(chainId), traderAPI, STRATEGY_SYMBOL)
+    getPerpetualStaticInfo(getEnabledChainId(chainId, location.hash), traderAPI, STRATEGY_SYMBOL)
       .then(({ data }) => {
         if (data.error) {
           throw new Error(data.error);
@@ -96,7 +100,11 @@ export const StrategiesPage = () => {
       .finally(() => {
         requestSentRef.current = false;
       });
-  }, [chainId, setStrategyPerpetualStaticInfo, traderAPI]);
+
+    return () => {
+      requestSentRef.current = false;
+    };
+  }, [chainId, setStrategyPerpetualStaticInfo, traderAPI, location]);
 
   return (
     <>
@@ -104,8 +112,14 @@ export const StrategiesPage = () => {
       <div className={styles.root}>
         <MaintenanceWrapper>
           <Container className={styles.container}>
-            {address && strategyAddresses.some(({ userAddress }) => userAddress === address.toLowerCase()) ? (
-              <StrategyBlock />
+            {activeStrategyWallet != null &&
+            address &&
+            strategyAddresses.some(
+              ({ userAddress, strategyAddress }) =>
+                userAddress === address.toLowerCase() &&
+                strategyAddress.toLowerCase() === activeStrategyWallet.account?.address?.toLowerCase()
+            ) ? (
+              <StrategyBlock strategyClient={activeStrategyWallet} />
             ) : (
               <ConnectBlock />
             )}

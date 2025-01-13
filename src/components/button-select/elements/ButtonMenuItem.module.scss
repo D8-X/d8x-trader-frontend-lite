@@ -1,0 +1,13 @@
+@import '~styles/theme/theme.scss';
+
+.menuItem {
+  font-size: 12px;
+  color: var(--d8x-button-select-color);
+  border-radius: $d8x-border-radius-medium;
+  padding: 2 * $d8x-spacing;
+  min-width: 177px;
+
+  &.selected {
+    background-color: var(--d8x-button-select-background);
+  }
+}

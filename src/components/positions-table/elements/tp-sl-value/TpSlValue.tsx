@@ -51,6 +51,14 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
 
   const parsedSymbol = parseSymbol(position.symbol);
 
+  const isPredictionMarket = useMemo(() => {
+    try {
+      return !!perpetualStaticInfo && TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
+    } catch {
+      // skip
+    }
+  }, [perpetualStaticInfo]);
+
   const openOrdersData: OpenOrdersDataI = useMemo(() => {
     const ordersData = {
       takeProfit: {
@@ -60,14 +68,6 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
         ...defaultOpenOrdersData.stopLoss,
       },
     };
-
-    let isPredictionMarket = false;
-    try {
-      isPredictionMarket = !!perpetualStaticInfo && TraderInterface.isPredictionMarket(perpetualStaticInfo);
-    } catch {
-      // skip
-    }
-
     if (position.takeProfit.valueType !== OrderValueTypeE.None) {
       ordersData.takeProfit.className = styles.tpValue;
       if (TEXTUAL_VALUE_TYPES.includes(position.takeProfit.valueType)) {
@@ -91,7 +91,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
         ordersData.stopLoss.value = formatToCurrency(
           isPredictionMarket && position.stopLoss.fullValue !== undefined
             ? calculateProbability(position.stopLoss.fullValue, position.side === OrderSideE.Sell)
-            : position.takeProfit.fullValue,
+            : position.stopLoss.fullValue,
           isPredictionMarket ? '%' : parsedSymbol?.quoteCurrency,
           true
         );
@@ -99,7 +99,7 @@ export const TpSlValue = memo(({ position, handleTpSlModify }: TpSlValuePropsI) 
     }
 
     return ordersData;
-  }, [t, position, parsedSymbol, perpetualStaticInfo]);
+  }, [t, position, parsedSymbol, isPredictionMarket]);
 
   return (
     <div className={styles.root}>

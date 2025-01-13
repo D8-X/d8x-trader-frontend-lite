@@ -5,7 +5,7 @@ import { getPositionRisk } from 'network/network';
 import { collateralToSettleConversionAtom, traderAPIAtom } from 'store/pools.store';
 
 import type { PoolValueI } from '../types/types';
-import { poolUsdPriceAtom } from './fetchPortfolio';
+import { poolUsdPriceAtom } from './fetchTotalReferralsRewards';
 
 export interface UnrealizedPnLListAtomI {
   symbol: string;
@@ -14,23 +14,28 @@ export interface UnrealizedPnLListAtomI {
 }
 
 export const leverageAtom = atom(0);
-export const totalMarginAtom = atom(0);
-export const totalUnrealizedPnLAtom = atom(0);
+export const totalMarginAtom = atom<number | null>(null);
+export const totalUnrealizedPnLAtom = atom<number | null>(null);
 export const unrealizedPnLListAtom = atom<UnrealizedPnLListAtomI[]>([]);
 
 export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: Address, chainId: number) => {
-  const traderAPI = get(traderAPIAtom);
-  if (!traderAPI) {
+  const poolUsdPrice = get(poolUsdPriceAtom);
+  if (Object.keys(poolUsdPrice).length === 0) {
     return;
   }
 
+  const traderAPI = get(traderAPIAtom);
   const { data } = await getPositionRisk(chainId, traderAPI, userAddress, Date.now());
+
   if (!data) {
+    set(leverageAtom, 0);
+    set(totalMarginAtom, null);
+    set(totalUnrealizedPnLAtom, null);
+    set(unrealizedPnLListAtom, []);
     return;
   }
 
   const c2s = get(collateralToSettleConversionAtom);
-  const poolUsdPrice = get(poolUsdPriceAtom);
   const activePositions = data.filter(({ side }) => side !== 'CLOSED');
 
   const unrealizedPnLReduced: Record<string, PoolValueI> = {};
@@ -66,5 +71,4 @@ export const fetchUnrealizedPnLAtom = atom(null, async (get, set, userAddress: A
       value: unrealizedPnLReduced[key].value,
     }))
   );
-  return { totalCollateralCC, totalUnrealizedPnl };
 });

@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useAccount } from 'wagmi';
+import { useLocation } from 'react-router-dom';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { parseSymbol } from 'helpers/parseSymbol';
@@ -87,6 +88,7 @@ export function useWsMessageHandler() {
   const { t } = useTranslation();
 
   const { address, chainId } = useAccount();
+  const location = useLocation();
 
   const setWebSocketReady = useSetAtom(webSocketReadyAtom);
   const setMainWsLatestMessageTime = useSetAtom(mainWsLatestMessageTimeAtom);
@@ -202,7 +204,7 @@ export function useWsMessageHandler() {
           return;
         }
         // refresh open orders
-        getOpenOrders(getEnabledChainId(chainId), traderAPI, address)
+        getOpenOrders(getEnabledChainId(chainId, location.hash), traderAPI, address)
           .then(({ data }) => {
             if (data?.length > 0) {
               data.map(setOpenOrders);
@@ -276,6 +278,7 @@ export function useWsMessageHandler() {
       address,
       traderAPI,
       t,
+      location,
     ]
   );
 }

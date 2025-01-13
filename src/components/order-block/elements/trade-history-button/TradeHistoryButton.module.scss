@@ -1,0 +1,43 @@
+@import '~styles/theme/theme.scss';
+@import '~styles/theme/utils.scss';
+
+.root {
+  position: relative;
+  display: none;
+
+  @include media-desktop {
+    display: inline-block;
+  }
+}
+
+.paper {
+  width: 300px;
+  background-color: transparent;
+  border-radius: $d8x-border-radius;
+  box-shadow: 0 2px 10px var(--d8x-color-box-shadow);
+}
+
+.iconButton {
+  color: var(--d8x-color-text-secondary);
+  background-color: transparent;
+  padding: 0;
+  min-width: 34px;
+  height: 34px;
+
+  .icon {
+    @include transition(color);
+
+    color: var(--d8x-color-icon-theme);
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover,
+  &.active {
+    border-color: var(--d8x-button-primary-border-color);
+
+    .icon {
+      color: var(--d8x-color-action);
+    }
+  }
+}

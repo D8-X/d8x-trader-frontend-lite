@@ -67,6 +67,8 @@
             "remove": "Entfernen"
           },
           "close": "Position schliessen",
+          "claim": "Geld abheben",
+          "claim-details": "Dieser Markt ist beendet und wird abgerechnet. Heben Sie jetzt Ihre Gelder ab.",
           "share": "Position teilen",
           "add": "Sicherheit hinzufügen",
           "remove": "Sicherheit entfernen",
@@ -91,6 +93,9 @@
         "toasts": {
           "submit-close": {
             "title": "Abschicken der Schliess Order"
+          },
+          "submit-claim": {
+            "title": "Einfordern von Geldern"
           },
           "submitted": {
             "title": "Order abgeschickt",
@@ -123,6 +128,10 @@
           "trade-executed": {
             "title": "Handel ausgeführt",
             "body": "Symbol"
+          },
+          "trade-failed": {
+            "title": "Order fehlgeschlagen",
+            "body": "Überprüf die Slippage Einstellungen und das Wallet Guthaben und versuche es erneut."
           },
           "order-failed": {
             "title": "Order fehlgeschlagen",
@@ -188,6 +197,7 @@
       },
       "history-table": {
         "table-title": "Handelshistorie",
+        "body": "",
         "table-header": {
           "time": "Zeit",
           "perpetual": "Perpetual",
@@ -199,7 +209,8 @@
         },
         "table-content": {
           "connect": "Verbinden Sie Ihre Wallet",
-          "no-open": "Keine Handelshistorie vorhanden"
+          "no-open": "Keine Handelshistorie vorhanden",
+          "no-open-note": "Beginnen Sie mit dem Handel, um Ihren Verlauf anzuzeigen"
         },
         "history-block-mobile": {
           "symbol": "Symbol"
@@ -226,6 +237,8 @@
           "short": "Short"
         },
         "prediction": {
+          "title": "Prognosemarkt",
+          "note": "Sagen Sie das Ergebnis voraus und fangen Sie jetzt an, darauf zu wetten!",
           "yes": "Ja",
           "no": "Nein",
           "bet": "Wette"
@@ -367,7 +380,9 @@
           "validity-checks": "Gültigkeitsprüfungen",
           "cancel": "Stornieren",
           "confirm": "Bestätigen",
-          "estimated-price": "Geschätzer Einstiegspreis"
+          "estimated-price": "Geschätzer Einstiegspreis",
+          "prediction-header": "Comparison to Polymarket",
+          "prediction-content": "Your order costs {{predFeeInCC}}. In addition you deposit {{collateralDeposit}} as margin, which you get back if you bet correctly. On Polymarket the same order costs {{costs}}."
         }
       },
       "filter": {
@@ -667,8 +682,11 @@
         "exit-button": "Beenden",
         "confirm-modal": {
           "title": "Strategie beenden",
+          "title-claim": "Abheben",
           "text": "Sie sind sicher, dass Sie beenden wollen?",
-          "confirm-button": "beenden"
+          "text-claim": "Sind Sie sicher, dass Sie Ihr Geld abheben möchten?",
+          "confirm-button": "Beenden",
+          "confirm-button-claim": "Abheben"
         },
         "toasts": {
           "tx-submitted": {
@@ -686,6 +704,7 @@
         }
       },
       "claim-funds": {
+        "claim-button": "Abheben",
         "toasts": {
           "tx-submitted": {
             "title": "Ihr Geld ist erfolgreich eingegangen",
@@ -736,6 +755,8 @@
     "external-service-status": "Status externer Services"
   },
   "common": {
+    "cost-of-order": "Kosten",
+    "potential-return": "Möglicher Return",
     "change-language": "Sprache wechseln",
     "wallet-connect": "Verbinden",
     "account-button": "Konto",
@@ -746,8 +767,12 @@
     "address-label": "Adresse",
     "deposit-gas": "Gas deponieren",
     "swap-bridge": "Swap/Bridge",
-    "offramp-button": "Deposit from CEX",
+    "offramp-button": "Anzahlung ab CEX",
+    "learn-more": "Mehr erfahren...",
+    "view-all": "Alle ansehen",
     "max": "Max:",
+    "yes": "Ja",
+    "no": "Nein",
     "copied": "Kopiert",
     "copy-error": "Beim Kopieren in die Zwischenablage ist ein Fehler aufgetreten",
     "page-reload": {
@@ -765,11 +790,6 @@
         "1": "Klick",
         "2": "für mehr Informationen."
       }
-    },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
     },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
@@ -859,8 +879,8 @@
         "crypto": "Krypto",
         "fx": "Devisen",
         "all": "Alle",
-        "prediction": "Vorhersage",
-        "commodity": "Rohstoffe",
+        "polymarket": "Vorhersage",
+        "metal": "Rohstoffe",
         "closed": "Geschlossen"
       },
       "search": "Suchen...",

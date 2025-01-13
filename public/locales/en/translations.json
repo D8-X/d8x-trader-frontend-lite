@@ -67,6 +67,8 @@
             "remove": "Remove"
           },
           "close": "Close position",
+          "claim": "Claim funds",
+          "claim-details": "This market ended and is being settled. Claim your funds now.",
           "share": "Share position",
           "add": "Add collateral",
           "remove": "Remove collateral",
@@ -91,6 +93,9 @@
         "toasts": {
           "submit-close": {
             "title": "Submitting Closing Order"
+          },
+          "submit-claim": {
+            "title": "Claiming Funds"
           },
           "submitted": {
             "title": "Order Submitted",
@@ -123,6 +128,10 @@
           "trade-executed": {
             "title": "Trade executed",
             "body": "Symbol"
+          },
+          "trade-failed": {
+            "title": "Trade failed",
+            "body": "Check your slippage settings and wallet balance and try again."
           },
           "order-failed": {
             "title": "Order failed",
@@ -188,6 +197,7 @@
       },
       "history-table": {
         "table-title": "Trade History",
+        "body": "",
         "table-header": {
           "time": "Time",
           "perpetual": "Perpetual",
@@ -199,7 +209,8 @@
         },
         "table-content": {
           "connect": "Please connect your wallet",
-          "no-open": "No trade history"
+          "no-open": "No Trading History Yet",
+          "no-open-note": "Start trading to view your history"
         },
         "history-block-mobile": {
           "symbol": "Symbol"
@@ -226,6 +237,8 @@
           "short": "Short"
         },
         "prediction": {
+          "title": "Prediction Market",
+          "note": "Predict the outcome and start betting on it now!",
           "yes": "Yes",
           "no": "No",
           "bet": "Bet"
@@ -367,7 +380,9 @@
           "validity-checks": "Validity checks",
           "cancel": "Cancel",
           "confirm": "Confirm",
-          "estimated-price": "Estimated entry price"
+          "estimated-price": "Estimated entry price",
+          "prediction-header": "Comparison to Polymarket",
+          "prediction-content": "Your order costs {{predFeeInCC}}. In addition you deposit {{collateralDeposit}} as margin, which you get back if you bet correctly. On Polymarket the same order costs {{costs}}."
         }
       },
       "filter": {
@@ -667,8 +682,11 @@
         "exit-button": "Exit strategy",
         "confirm-modal": {
           "title": "Exit strategy",
+          "title-claim": "Claim funds",
           "text": "Are you sure you want to exit?",
-          "confirm-button": "Exit"
+          "text-claim": "Are you sure you want to claim your funds?",
+          "confirm-button": "Exit",
+          "confirm-button-claim": "Claim"
         },
         "toasts": {
           "tx-submitted": {
@@ -686,6 +704,7 @@
         }
       },
       "claim-funds": {
+        "claim-button": "Claim",
         "toasts": {
           "tx-submitted": {
             "title": "Your funds are successfully claimed",
@@ -736,6 +755,8 @@
     "external-service-status": "External service status"
   },
   "common": {
+    "cost-of-order": "Cost of order",
+    "potential-return": "Potential return",
     "change-language": "Change Language",
     "wallet-connect": "Connect",
     "account-button": "Account",
@@ -747,7 +768,11 @@
     "deposit-gas": "Deposit gas",
     "swap-bridge": "Swap/Bridge",
     "offramp-button": "Deposit from CEX",
+    "learn-more": "Learn more...",
+    "view-all": "View all",
     "max": "Max:",
+    "yes": "Yes",
+    "no": "No",
     "copied": "Copied",
     "copy-error": "An error appeared with copy to clipboard",
     "page-reload": {
@@ -765,11 +790,6 @@
         "1": "Visit",
         "2": "for more information."
       }
-    },
-    "li-fi-widget": {
-      "button-title": "LI.FI widget",
-      "header-to": "Bridge in",
-      "header-from": "Bridge out"
     },
     "owlto-bridge": "OWLTO bridge",
     "pagination": {
@@ -859,8 +879,8 @@
         "crypto": "Crypto",
         "fx": "FX",
         "all": "All",
-        "prediction": "Prediction",
-        "commodity": "Commodity",
+        "polymarket": "Prediction",
+        "metal": "Commodity",
         "closed": "Closed"
       },
       "search": "Search...",

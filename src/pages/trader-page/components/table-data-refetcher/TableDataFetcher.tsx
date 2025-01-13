@@ -9,9 +9,11 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { getOpenOrders, getPositionRisk } from 'network/network';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import {
+  cancelOrderIdAtom,
   clearOpenOrdersAtom,
   clearPositionsAtom,
   executeOrderAtom,
+  failOrderIdAtom,
   fundingListAtom,
   openOrdersAtom,
   positionsAtom,
@@ -34,8 +36,10 @@ export const TableDataFetcher = memo(() => {
 
   const latestOrderSentTimestamp = useAtomValue(latestOrderSentTimestampAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
+  const cancelledOrderIds = useAtomValue(cancelOrderIdAtom);
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const [executedOrders, setOrderExecuted] = useAtom(executeOrderAtom);
+  const [failedOrderIds, setOrderFailed] = useAtom(failOrderIdAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const clearPositions = useSetAtom(clearPositionsAtom);
@@ -108,18 +112,39 @@ export const TableDataFetcher = memo(() => {
                 ]}
               />
             );
+          } else if (
+            !executedOrders.has(order.id) &&
+            !cancelledOrderIds.has(order.id) &&
+            !failedOrderIds.has(order.id)
+          ) {
+            setOrderFailed(order.id);
+            toast.error(
+              <ToastContent
+                title={t('pages.trade.positions-table.toasts.trade-failed.title')}
+                bodyLines={[
+                  {
+                    label: t('pages.trade.positions-table.toasts.trade-executed.body'),
+                    value: order.symbol,
+                  },
+                  {
+                    label: t('pages.trade.positions-table.toasts.trade-failed.body'),
+                    value: '',
+                  },
+                ]}
+              />
+            );
           }
         }
       }
     },
-    [executedOrders, t, openOrders, traderAPI, setOrderExecuted]
+    [executedOrders, failedOrderIds, cancelledOrderIds, t, openOrders, traderAPI, setOrderExecuted, setOrderFailed]
   );
 
   useEffect(() => {
     if (Date.now() - lastFetch < INTERVAL_FOR_TICKER_FAST) {
       return;
     }
-    if ((fastTicker > 0 || slowTicker > 0) && traderAPI && isEnabledChain(chainId) && address) {
+    if ((fastTicker > 0 || slowTicker > 0) && isEnabledChain(chainId) && address) {
       setLastFetch(Date.now());
       setTriggerBalancesUpdate((prevValue) => !prevValue);
       getOpenOrders(chainId, traderAPI, address)
