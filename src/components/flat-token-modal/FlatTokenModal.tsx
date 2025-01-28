@@ -58,14 +58,16 @@ export const FlatTokenModal = () => {
         .then(({ hash }) => {
           setTxHash(hash);
         })
-        .catch((e) => {
+        .catch((error) => {
+          let msg = (error?.message ?? error) as string;
+          msg = msg.length > 30 ? `${msg.slice(0, 25)}...` : msg;
           toast.error(
             <ToastContent
               title={`Something went wrong`}
               bodyLines={[
                 {
                   label: 'Error',
-                  value: e,
+                  value: msg,
                 },
               ]}
             />
