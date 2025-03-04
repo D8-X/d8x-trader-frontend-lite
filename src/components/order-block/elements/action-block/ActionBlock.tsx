@@ -410,13 +410,14 @@ export const ActionBlock = memo(() => {
       return;
     }
     setLatestOrderSentTimestamp(Date.now());
+    const symbol = orderInfo?.symbol?.split('-')?.slice(0, -1)?.join('-');
     toast.success(
       <ToastContent
         title={t('pages.trade.action-block.toasts.order-submitted.title')}
         bodyLines={[
           {
             label: t('pages.trade.action-block.toasts.order-submitted.body'),
-            value: orderInfo?.symbol,
+            value: symbol,
           },
           {
             label: '',
@@ -435,6 +436,9 @@ export const ActionBlock = memo(() => {
       />
     );
   }, [isSuccess, txHash, chain, orderInfo?.symbol, setLatestOrderSentTimestamp, t]);
+
+  const splitSymbol = selectedPool?.settleSymbol?.split('-');
+  const userSymbol = `${splitSymbol?.[0]}-${splitSymbol?.[1]}-${flatToken?.isFlatToken ? flatToken.registeredSymbol : splitSymbol?.[2]}`;
 
   const handleOrderConfirm = () => {
     if (
@@ -482,10 +486,11 @@ export const ActionBlock = memo(() => {
                   setShowReviewOrderModal(false);
                   // order was sent
                   clearInputsData();
+                  const shortSymbol = `${parsedOrders[0].symbol.split('-')[0]}-${parsedOrders[0].symbol.split('-')[1]}`;
                   toast.success(
                     <ToastContent
                       title={t('pages.trade.action-block.toasts.processed.title')}
-                      bodyLines={[{ label: 'Symbol', value: parsedOrders[0].symbol }]}
+                      bodyLines={[{ label: 'Symbol', value: shortSymbol }]}
                     />
                   );
                   setTxHash(tx.hash);
@@ -673,6 +678,9 @@ export const ActionBlock = memo(() => {
 
   const isValiditySuccess = [ValidityCheckE.GoodToGo, ValidityCheckE.Closed].includes(validityCheckType);
 
+  const userColl = userSymbol?.split('-')[2];
+  const userPx = flatToken?.isFlatToken && flatToken?.compositePrice ? flatToken.compositePrice : 1;
+
   return (
     <div className={styles.root}>
       {[ValidityCheckButtonE.NoFunds, ValidityCheckButtonE.NoEnoughGas].includes(validityCheckButtonType) && (
@@ -744,8 +752,10 @@ export const ActionBlock = memo(() => {
                   rightSide={
                     isOrderValid && collateralDeposit >= 0 && selectedPool
                       ? formatToCurrency(
-                          collateralDeposit * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
-                          selectedPool.settleSymbol
+                          collateralDeposit *
+                            (c2s.get(selectedPool.poolSymbol)?.value ?? 1) *
+                            (flatToken?.isFlatToken && flatToken?.compositePrice ? flatToken?.compositePrice : 1),
+                          userSymbol?.split('-')[2]
                         )
                       : '-'
                   }
@@ -760,7 +770,7 @@ export const ActionBlock = memo(() => {
                   }
                   rightSide={
                     isOrderValid && poolTokenBalance && poolTokenBalance >= 0
-                      ? formatToCurrency(poolTokenBalance, selectedPool?.settleSymbol)
+                      ? formatToCurrency(poolTokenBalance * userPx, userColl)
                       : '-'
                   }
                   rightSideStyles={styles.rightSide}
@@ -874,8 +884,9 @@ export const ActionBlock = memo(() => {
                     isOrderValid && collateralDeposit >= 0 && selectedPool
                       ? formatToCurrency(
                           Math.max(collateralDeposit - (predFeeInCC ?? 0), 0) *
-                            (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
-                          selectedPool.settleSymbol
+                            (c2s.get(selectedPool.poolSymbol)?.value ?? 1) *
+                            userPx,
+                          userColl
                         )
                       : '-'
                   }
@@ -889,9 +900,7 @@ export const ActionBlock = memo(() => {
                     </Typography>
                   }
                   rightSide={
-                    predFeeInCC && selectedPool
-                      ? formatToCurrency(predFeeInCC, selectedPool.settleSymbol, false, 2)
-                      : '-'
+                    predFeeInCC && userSymbol ? formatToCurrency(predFeeInCC * userPx, userColl, false, 2) : '-'
                   }
                   rightSideStyles={styles.rightSide}
                 />
@@ -939,8 +948,8 @@ export const ActionBlock = memo(() => {
                   rightSide={
                     isOrderValid && newPositionRisk && newPositionRisk.collateralCC >= 0 && selectedPool
                       ? formatToCurrency(
-                          newPositionRisk.collateralCC * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
-                          selectedPool.settleSymbol
+                          newPositionRisk.collateralCC * (c2s.get(selectedPool.poolSymbol)?.value ?? 1) * userPx,
+                          userColl
                         )
                       : '-'
                   }

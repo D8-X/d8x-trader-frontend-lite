@@ -185,7 +185,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
             })
               .then(({ hash }) => {
                 setTxHash(hash);
-                setSymbolForTx(selectedPosition.symbol);
+                setSymbolForTx(selectedPosition.symbol.split('-').slice(0, -1).join('-'));
                 orderSubmitted(walletClient.chain.id, data.data.orderIds).then().catch(console.error);
                 toast.success(
                   <ToastContent title={t('pages.trade.positions-table.toasts.submit-close.title')} bodyLines={[]} />

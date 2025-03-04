@@ -107,7 +107,7 @@ export const TableDataFetcher = memo(() => {
                 bodyLines={[
                   {
                     label: t('pages.trade.positions-table.toasts.trade-executed.body'),
-                    value: order.symbol,
+                    value: order.symbol.split('-').slice(0, -1).join('-'),
                   },
                 ]}
               />
@@ -124,7 +124,7 @@ export const TableDataFetcher = memo(() => {
                 bodyLines={[
                   {
                     label: t('pages.trade.positions-table.toasts.trade-executed.body'),
-                    value: order.symbol,
+                    value: order.symbol.split('-').slice(0, -1).join('-'),
                   },
                   {
                     label: t('pages.trade.positions-table.toasts.trade-failed.body'),
