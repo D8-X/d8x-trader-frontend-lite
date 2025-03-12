@@ -63,10 +63,10 @@ export const SDKLoader = memo(() => {
       if (config.httpRPC[_chainId] && config.httpRPC[_chainId] !== '') {
         configSDK.nodeURL = config.httpRPC[_chainId];
         provider = new JsonRpcProvider(configSDK.nodeURL);
-        // console.log('config rpc');
+        console.log('custom rpc:', config.httpRPC[_chainId]);
       } else {
         provider = clientToProvider(_publicClient);
-        // console.log('user rpc');
+        console.log('wagmi rpc:', _publicClient.transport.name);
       }
 
       const newTraderAPI = new TraderInterface(configSDK);
