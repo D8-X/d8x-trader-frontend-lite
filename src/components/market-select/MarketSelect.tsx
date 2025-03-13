@@ -197,6 +197,10 @@ export const MarketSelect = memo(() => {
           console.log('perp', selectedPerpetual.baseCurrency, 'volume', vol);
           setPerpetualVolume(vol);
         })
+        .catch((e) => {
+          // rate limit?
+          console.log(e);
+        })
         .finally(() => {
           graphQueryRef.current = false;
         });
