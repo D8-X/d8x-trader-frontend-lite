@@ -1,6 +1,6 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ import {
   perpetualStatisticsAtom,
   poolsAtom,
   selectedPerpetualAtom,
+  selectedPerpetualVolumeAtom,
   selectedPoolAtom,
   traderAPIAtom,
 } from 'store/pools.store';
@@ -38,6 +39,7 @@ import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { switchChain } from 'utils/switchChain';
 
 import styles from './MarketSelect.module.scss';
+import { getPerpetualVolume } from 'network/graph';
 
 export const MarketSelect = memo(() => {
   const { t } = useTranslation();
@@ -59,6 +61,8 @@ export const MarketSelect = memo(() => {
   const urlChangesAppliedRef = useRef(false);
   const poolsLoadedRef = useRef(false);
   const chainIdFromUrl = parseInt(location.hash.split('__')[1]?.split('=')[1], 10);
+
+  const setPerpetualVolume = useSetAtom(selectedPerpetualVolumeAtom);
 
   const markets = useMarkets();
 
@@ -183,6 +187,21 @@ export const MarketSelect = memo(() => {
       });
     }
   }, [selectedPool, selectedPerpetual, setPerpetualStatistics]);
+
+  const graphQueryRef = useRef(false);
+  useEffect(() => {
+    if (chainId && selectedPerpetual && !graphQueryRef.current) {
+      graphQueryRef.current = true;
+      getPerpetualVolume(chainId, selectedPerpetual.id)
+        .then((vol) => {
+          console.log('perp', selectedPerpetual.baseCurrency, 'volume', vol);
+          setPerpetualVolume(vol);
+        })
+        .finally(() => {
+          graphQueryRef.current = false;
+        });
+    }
+  }, [chainId, selectedPerpetual, setPerpetualVolume]);
 
   let midPriceClass = styles.positive;
   if (perpetualStatistics?.midPriceDiff != null) {
