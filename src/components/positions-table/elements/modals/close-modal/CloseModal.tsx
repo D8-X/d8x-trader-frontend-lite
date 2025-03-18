@@ -121,7 +121,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
               (selectedPosition?.side === OrderSideE.Buy ? 1 : -1) *
               selectedPosition.positionNotionalBaseCCY +
             selectedPosition.unrealizedPnlQuoteCCY;
-          setEstimatedPnL(estimPnL);
+          setEstimatedPnL(estimPnL / data.data.newPositionRisk.collToQuoteConversion); // in cc
         })
         .catch((error) => {
           console.error('Error calculating PnL:', error);
@@ -379,7 +379,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         />
         <SidesRow
           leftSide={t('pages.trade.positions-table.modify-modal.pos-details.unrealized')}
-          rightSide={formatToCurrency(estimatedPnL, parsedSymbol?.quoteCurrency, true)}
+          rightSide={estimatedPnL !== null ? formatToCurrency(estimatedPnL * userPrice, userSymbol, true) : '-'}
           rightSideStyles={estimatedPnL === null || estimatedPnL > 0 ? styles.pnlPositive : styles.pnlNegative}
         />
       </div>
