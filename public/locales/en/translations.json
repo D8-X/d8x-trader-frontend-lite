@@ -83,7 +83,7 @@
             "leverage": "Leverage:",
             "liq-price": "Liquidation price:",
             "side": "Side:",
-            "unrealized": "Unrealized PnL:",
+            "unrealized": "Estimated realized PnL:",
             "close-tp-sl": "Close related TP/SL orders?"
           },
           "cancel": "Cancel",
@@ -351,7 +351,7 @@
           "pass": "Passed",
           "fail": "Failed",
           "button-no-address": "Connect wallet",
-          "button-no-funds": "Deposit",
+          "button-no-funds": "Insufficient funds",
           "button-no-amount": "Order size too small",
           "button-no-limit": "Set limit price",
           "button-no-trigger": "Set trigger price"
@@ -933,6 +933,7 @@
     },
     "deposit-modal": {
       "title": "Deposit",
+      "title-web3wallet": "Ensure you have enough funds in your wallet",
       "important-notice": {
         "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
         "0": "Important: you use one-click trading. Only deposit GAS into your delegate wallet and collateral into your main wallet. Ensure you check the deposit address for each currency below.",
@@ -942,7 +943,7 @@
         "4": "to this address.",
         "5": "Send over <bold>{{chainName}}</bold>."
       },
-      "deposit-note": "Make sure to deposit sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
+      "deposit-note": "Make sure you have sufficient <bold>{{currencyName}}</bold> for gas and sufficient collateral currency.",
       "done-button": "Done",
       "convert": {
         "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",

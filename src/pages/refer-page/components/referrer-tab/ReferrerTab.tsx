@@ -42,7 +42,7 @@ export const ReferrerTab = memo(() => {
       const [userPrice, userSymbol] =
         !!flatToken && pool.poolId === flatToken.poolId && !!flatToken.registeredSymbol
           ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-          : [1, pool.poolSymbol];
+          : [1, pool.settleSymbol];
 
       totalEarnedCommission.push({
         symbol: userSymbol,

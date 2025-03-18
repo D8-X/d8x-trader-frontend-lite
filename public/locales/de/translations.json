@@ -47,6 +47,8 @@
         "table-content": {
           "buy": "KAUFEN",
           "sell": "VERKAUFEN",
+          "liquidate-sell": "LIQUIDATE_SELL",
+          "liquidate-buy": "LIQUIDATE_BUY",
           "modify": "Modifizieren",
           "connect": "Verbinden Sie Ihre Wallet",
           "no-open": "Keine offenen Positionen",
@@ -81,7 +83,7 @@
             "leverage": "Hebel:",
             "liq-price": "Liq. Preis:",
             "side": "Seite:",
-            "unrealized": "Nicht realisierter PnL",
+            "unrealized": "Geschätzter realisierter PnL:",
             "close-tp-sl": "Verbundene TP/SL Orders schliessen?"
           },
           "cancel": "Abbrechen",
@@ -931,6 +933,7 @@
     },
     "deposit-modal": {
       "title": "Einzahlen",
+      "title-web3wallet": "Sie brauchen genug Geld in Ihrer Wallet",
       "important-notice": {
         "full": "Wichtiger Hinweis: Senden Sie nur <bold>{{currencyName}}</bold> (Token-Adresse: <bold>{{currencyContractAddress}}</bold) an diese Adresse. Senden Sie nur über <bold>{{chainName}}</bold>.",
         "0": "Wichtig: Sie haben One-Click Handel aktiviert. Senden sie NUR gas in ihr Delegiertenkonto und Sicherheitstokens in ihre normale Wallet.",
@@ -940,7 +943,7 @@
         "4": "an diese Adresse. ",
         "5": "Senden Sie nur über <bold>{{chainName}}</bold>."
       },
-      "deposit-note": "Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens eine Sicherheit hinterlegen.",
+      "deposit-note": "Stellen Sie sicher, dass Sie ausreichend <bold>{{currencyName}}</bold> für Gas und mindestens eine Sicherheit haben.",
       "done-button": "Gemacht",
       "convert": {
         "text": "Konvertieren Sie Ihr <bold>{{fromCurrency}}</bold> ohne Slippage in <bold>{{toCurrency}}</bold>:",

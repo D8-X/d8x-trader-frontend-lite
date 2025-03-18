@@ -84,7 +84,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
   const [userPrice, userSymbol] =
     !!flatToken && poolByPosition?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-      : [1, poolByPosition?.poolSymbol];
+      : [1, poolByPosition?.settleSymbol];
 
   const { settleTokenBalance, settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
 

@@ -49,7 +49,7 @@ export const TraderTab = () => {
       const [userPrice, userSymbol] =
         !!flatToken && pool.poolId === flatToken.poolId && !!flatToken.registeredSymbol
           ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-          : [1, pool.poolSymbol];
+          : [1, pool.settleSymbol];
 
       earnedRebatesByPools.push({
         symbol: userSymbol,

@@ -47,6 +47,8 @@
         "table-content": {
           "buy": "买入",
           "sell": "卖出",
+          "liquidate-sell": "LIQUIDATE_SELL",
+          "liquidate-buy": "LIQUIDATE_BUY",
           "modify": "调整",
           "connect": "请连接钱包",
           "no-open": "无持仓",
@@ -81,7 +83,7 @@
             "leverage": "杠杆",
             "liq-price": "强平价",
             "side": "涨跌",
-            "unrealized": "未实现盈亏",
+            "unrealized": "盈亏",
             "close-tp-sl": "关闭相关止盈/止损订单吗？"
           },
           "cancel": "取消",
@@ -931,6 +933,7 @@
     },
     "deposit-modal": {
       "title": "存款",
+      "title-web3wallet": "确保你的钱包有资金",
       "important-notice": {
         "full": "重要通知：只发送 <bold>{{currencyName}}</bold> (代币地址: <bold>{{currencyContractAddress}}</bold) 到这个地址。通过 <bold>{{chainName}}</bold>发送。",
         "0": "重要提示：您使用一键交易。仅将 GAS 存入您的委托钱包，并将抵押品存入您的主钱包。请务必检查以下每种货币的存款地址。",

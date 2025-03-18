@@ -71,7 +71,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const [userPrice, userSymbol] =
     !!flatToken && selectedPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-      : [1, selectedPool?.poolSymbol ?? ''];
+      : [1, selectedPool?.settleSymbol ?? ''];
 
   const shareSymbol = `d${selectedPool?.settleSymbol}`;
 
