@@ -47,6 +47,8 @@
         "table-content": {
           "buy": "买入",
           "sell": "卖出",
+          "liquidate-sell": "LIQUIDATE_SELL",
+          "liquidate-buy": "LIQUIDATE_BUY",
           "modify": "调整",
           "connect": "请连接钱包",
           "no-open": "无持仓",
@@ -81,7 +83,7 @@
             "leverage": "杠杆",
             "liq-price": "强平价",
             "side": "涨跌",
-            "unrealized": "未实现盈亏",
+            "unrealized": "盈亏",
             "close-tp-sl": "关闭相关止盈/止损订单吗？"
           },
           "cancel": "取消",

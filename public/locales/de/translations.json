@@ -47,6 +47,8 @@
         "table-content": {
           "buy": "KAUFEN",
           "sell": "VERKAUFEN",
+          "liquidate-sell": "LIQUIDATE_SELL",
+          "liquidate-buy": "LIQUIDATE_BUY",
           "modify": "Modifizieren",
           "connect": "Verbinden Sie Ihre Wallet",
           "no-open": "Keine offenen Positionen",
@@ -81,7 +83,7 @@
             "leverage": "Hebel:",
             "liq-price": "Liq. Preis:",
             "side": "Seite:",
-            "unrealized": "Nicht realisierter PnL",
+            "unrealized": "Geschätzter realisierter PnL:",
             "close-tp-sl": "Verbundene TP/SL Orders schliessen?"
           },
           "cancel": "Abbrechen",

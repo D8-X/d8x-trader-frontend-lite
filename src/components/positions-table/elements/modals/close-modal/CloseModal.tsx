@@ -18,12 +18,18 @@ import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { orderDigest } from 'network/network';
+import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { orderSubmitted } from 'network/broker';
 import { tradingClientAtom } from 'store/app.store';
-import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { collateralToSettleConversionAtom, proxyAddrAtom, traderAPIAtom, flatTokenAtom } from 'store/pools.store';
+import { orderInfoAtom, latestOrderSentTimestampAtom } from 'store/order-block.store';
+import {
+  collateralToSettleConversionAtom,
+  poolFeeAtom,
+  proxyAddrAtom,
+  traderAPIAtom,
+  flatTokenAtom,
+} from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -57,12 +63,15 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
 
   const { isMultisigAddress } = useUserWallet();
   const { settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
+  const orderInfo = useAtomValue(orderInfoAtom);
+  const poolFee = useAtomValue(poolFeeAtom);
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address>();
   const [symbolForTx, setSymbolForTx] = useState('');
   const [closeOpenOrders, setCloseOpenOrders] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [estimatedPnL, setEstimatedPnL] = useState<number | null>(null);
 
   const requestSentRef = useRef(false);
 
@@ -75,6 +84,51 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     hash: txHash,
     query: { enabled: !!address && !!txHash },
   });
+
+  useEffect(() => {
+    if (!selectedPosition) return;
+
+    const closeOrderReview: OrderI = {
+      symbol: selectedPosition.symbol,
+      side: selectedPosition.side === OrderSideE.Buy ? OrderSideE.Sell : OrderSideE.Buy,
+      type: OrderTypeE.Market.toUpperCase(),
+      quantity: selectedPosition.positionNotionalBaseCCY,
+      leverage: 0,
+      reduceOnly: true,
+      executionTimestamp: Math.floor(Date.now() / 1000 - 10 - 200),
+      deadline: Math.floor(Date.now() / 1000 + 60 * 60 * 24),
+    };
+
+    if (chain?.id && traderAPI && address && orderInfo && poolFee) {
+      let isPredictionMarket = false;
+      try {
+        isPredictionMarket = traderAPI?.isPredictionMarket(selectedPosition.symbol);
+      } catch {
+        // skip
+      }
+
+      positionRiskOnTrade(
+        chain?.id,
+        traderAPI,
+        closeOrderReview,
+        address,
+        (selectedPosition?.positionNotionalBaseCCY ?? 0) * (selectedPosition?.side === OrderSideE.Buy ? 1 : -1),
+        isPredictionMarket && orderInfo.tradingFee ? orderInfo.tradingFee * 1e5 : poolFee
+      )
+        .then((data) => {
+          const estimPnL =
+            (data.data.ammPrice - selectedPosition.markPrice) *
+              (selectedPosition?.side === OrderSideE.Buy ? 1 : -1) *
+              selectedPosition.positionNotionalBaseCCY +
+            selectedPosition.unrealizedPnlQuoteCCY;
+          setEstimatedPnL(estimPnL);
+        })
+        .catch((error) => {
+          console.error('Error calculating PnL:', error);
+          setEstimatedPnL(null);
+        });
+    }
+  }, [chain?.id, traderAPI, address, orderInfo, poolFee, selectedPosition]);
 
   useEffect(() => {
     if (!isFetched || !txHash) {
@@ -325,10 +379,8 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         />
         <SidesRow
           leftSide={t('pages.trade.positions-table.modify-modal.pos-details.unrealized')}
-          rightSide={formatToCurrency(selectedPosition?.unrealizedPnlQuoteCCY, parsedSymbol?.quoteCurrency, true)}
-          rightSideStyles={
-            selectedPosition && selectedPosition.unrealizedPnlQuoteCCY > 0 ? styles.pnlPositive : styles.pnlNegative
-          }
+          rightSide={formatToCurrency(estimatedPnL, parsedSymbol?.quoteCurrency, true)}
+          rightSideStyles={estimatedPnL === null || estimatedPnL > 0 ? styles.pnlPositive : styles.pnlNegative}
         />
       </div>
       {hasTpSl && (

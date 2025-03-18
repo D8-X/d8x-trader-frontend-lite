@@ -83,7 +83,7 @@
             "leverage": "Leverage:",
             "liq-price": "Liquidation price:",
             "side": "Side:",
-            "unrealized": "Unrealized PnL:",
+            "unrealized": "Estimated realized PnL:",
             "close-tp-sl": "Close related TP/SL orders?"
           },
           "cancel": "Cancel",
