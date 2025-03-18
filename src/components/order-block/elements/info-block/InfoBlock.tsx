@@ -43,7 +43,7 @@ export const InfoBlock = memo(() => {
   const [userPrice, userSymbol] =
     !!flatToken && selectedPool?.poolId === flatToken.poolId
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol ?? flatToken.supportedTokens[0].symbol]
-      : [1, selectedPool?.poolSymbol];
+      : [1, selectedPool?.settleSymbol];
 
   const { chainId } = useAccount();
 

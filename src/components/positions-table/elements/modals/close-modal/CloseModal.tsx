@@ -311,7 +311,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const [userPrice, userSymbol] =
     !!flatToken && poolByPosition?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-      : [1, poolByPosition?.poolSymbol ?? ''];
+      : [1, poolByPosition?.settleSymbol ?? ''];
 
   return (
     <Dialog

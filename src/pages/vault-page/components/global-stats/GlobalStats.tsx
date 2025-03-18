@@ -41,7 +41,7 @@ export const GlobalStats = () => {
   const [userPrice, userSymbol] =
     !!flatToken && selectedPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-      : [1, selectedPool?.poolSymbol ?? ''];
+      : [1, selectedPool?.settleSymbol ?? ''];
 
   useEffect(() => {
     if (!selectedPool?.poolSymbol) {
