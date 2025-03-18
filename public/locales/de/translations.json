@@ -933,7 +933,7 @@
     },
     "deposit-modal": {
       "title": "Einzahlen",
-      "title-web3wallet": "Zu wenig Geld in Ihrer Wallet",
+      "title-web3wallet": "Sie brauchen genug Geld in Ihrer Wallet",
       "important-notice": {
         "full": "Wichtiger Hinweis: Senden Sie nur <bold>{{currencyName}}</bold> (Token-Adresse: <bold>{{currencyContractAddress}}</bold) an diese Adresse. Senden Sie nur über <bold>{{chainName}}</bold>.",
         "0": "Wichtig: Sie haben One-Click Handel aktiviert. Senden sie NUR gas in ihr Delegiertenkonto und Sicherheitstokens in ihre normale Wallet.",

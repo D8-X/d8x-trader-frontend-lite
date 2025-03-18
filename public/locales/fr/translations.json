@@ -933,7 +933,7 @@
     },
     "deposit-modal": {
       "title": "Déposez",
-      "title-web3wallet": "Pas assez de fonds dans votre portefeuille",
+      "title-web3wallet": "Vous avez besoin de fonds suffisants dans votre portefeuille",
       "important-notice": {
         "full": "Avis important : envoyez uniquement <bold>{{currencyName}}</bold> (adresse du token: <bold>{{currencyContractAddress}}</bold) à cette adresse. Envoyez par <bold>{{chainName}}</bold>.",
         "0": "Important : vous utilisez le trading en un clic. Déposez uniquement du GAS dans votre portefeuille délégué et des garanties dans votre portefeuille principal. Assurez-vous de vérifier l'adresse de dépôt pour chaque devise ci-dessous.",

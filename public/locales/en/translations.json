@@ -933,7 +933,7 @@
     },
     "deposit-modal": {
       "title": "Deposit",
-      "title-web3wallet": "Insufficient funds in your wallet",
+      "title-web3wallet": "Ensure you have enough funds in your wallet",
       "important-notice": {
         "full": "Important notice: send only <bold>{{currencyName}}</bold> (token address: <bold>{{currencyContractAddress}}</bold) to this address. Send over <bold>{{chainName}}</bold>.",
         "0": "Important: you use one-click trading. Only deposit GAS into your delegate wallet and collateral into your main wallet. Ensure you check the deposit address for each currency below.",
@@ -943,7 +943,7 @@
         "4": "to this address.",
         "5": "Send over <bold>{{chainName}}</bold>."
       },
-      "deposit-note": "Make sure you have sufficient <bold>{{currencyName}}</bold> for gas and at least one collateral.",
+      "deposit-note": "Make sure you have sufficient <bold>{{currencyName}}</bold> for gas and sufficient collateral currency.",
       "done-button": "Done",
       "convert": {
         "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
