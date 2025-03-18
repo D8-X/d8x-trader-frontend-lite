@@ -933,6 +933,7 @@
     },
     "deposit-modal": {
       "title": "Depósito",
+      "title-web3wallet": "Fondos insuficientes en su billetera",
       "important-notice": {
         "full": "Aviso importante: envíe solo <bold>{{currencyName}}</bold> (dirección del token: <bold>{{currencyContractAddress}}</bold) a esta dirección. Envíe por <bold>{{chainName}}</bold>.",
         "0": "Importante: utiliza operaciones con un solo clic. Solo deposite GAS en su billetera delegada y garantía en su billetera principal. Asegúrese de verificar la dirección de depósito para cada moneda a continuación.",

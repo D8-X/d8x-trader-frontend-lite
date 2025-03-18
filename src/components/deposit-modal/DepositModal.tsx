@@ -75,10 +75,12 @@ export const DepositModal = () => {
     ) {
       setTitle('Get Test Tokens');
       setDepositModalOpen(true);
+    } else if (!isSignedInSocially) {
+      setTitle(t('common.deposit-modal.title-web3wallet'));
     } else {
       setTitle(t('common.deposit-modal.title'));
     }
-  }, [chainId, poolTokenBalance, gasTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t]);
+  }, [chainId, poolTokenBalance, gasTokenBalance, hasEnoughGasForFee, setDepositModalOpen, t, isSignedInSocially]);
 
   if (!isEnabledChain(chainId)) {
     return null;
