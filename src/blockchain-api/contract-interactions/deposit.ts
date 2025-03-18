@@ -1,4 +1,4 @@
-import { floatToDecN, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
@@ -29,7 +29,7 @@ export async function deposit(
     args: [
       traderAPI.getPerpetualStaticInfo(symbol).id,
       traderAddr,
-      floatToDecN(amount, decimals),
+      floatToABK64x64(amount),
       pxUpdate.submission.priceFeedVaas,
       pxUpdate.submission.timestamps,
     ],

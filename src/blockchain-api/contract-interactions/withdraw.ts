@@ -1,4 +1,4 @@
-import { floatToDec18, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
@@ -25,7 +25,7 @@ export async function withdraw(
     args: [
       traderAPI.getPerpetualStaticInfo(symbol).id,
       traderAddr,
-      floatToDec18(amount), // dToken always has 18 dec
+      floatToABK64x64(amount),
       pxUpdate.submission.priceFeedVaas,
       pxUpdate.submission.timestamps,
     ],
