@@ -48,6 +48,8 @@
           "buy": "COMPRA",
           "sell": "VENTA",
           "modify": "Modificar",
+          "liquidate-sell": "LIQUIDATE_SELL",
+          "liquidate-buy": "LIQUIDATE_BUY",
           "connect": "Por favor conecte su cartera",
           "no-open": "No hay posiciones abiertas",
           "multiple": "multiples",
@@ -81,7 +83,7 @@
             "leverage": "Apalancamiento:",
             "liq-price": "Precio de Liquidación",
             "side": "Dirección:",
-            "unrealized": "PnL no realizado:",
+            "unrealized": "PnL:",
             "close-tp-sl": "¿Cerrar órdenes TP/SL asociadas?"
           },
           "cancel": "Cancelar",
@@ -931,6 +933,7 @@
     },
     "deposit-modal": {
       "title": "Depósito",
+      "title-web3wallet": "Necesitas tener fondos suficientes en tu billetera",
       "important-notice": {
         "full": "Aviso importante: envíe solo <bold>{{currencyName}}</bold> (dirección del token: <bold>{{currencyContractAddress}}</bold) a esta dirección. Envíe por <bold>{{chainName}}</bold>.",
         "0": "Importante: utiliza operaciones con un solo clic. Solo deposite GAS en su billetera delegada y garantía en su billetera principal. Asegúrese de verificar la dirección de depósito para cada moneda a continuación.",
