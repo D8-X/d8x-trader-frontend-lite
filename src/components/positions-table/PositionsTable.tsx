@@ -203,6 +203,7 @@ export const PositionsTable = () => {
       {
         field: 'unrealizedPnlQuoteCCY',
         label: t('pages.trade.positions-table.table-header.pnl'),
+        tooltip: t('pages.trade.positions-table.table-header.pnl-tooltip'),
         align: AlignE.Right,
         fieldType: FieldTypeE.Number,
       },

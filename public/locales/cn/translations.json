@@ -42,6 +42,7 @@
           "margin": "本金",
           "pnl": "未实现盈亏",
           "tp-sl": "止盈/止损",
+          "pnl-tooltip": "Unrealized PnL = (Mark Price - Entry Price) * Position Size - Unpaid accumulated funding; with Position Size >0 if long and <0 if short.",
           "tp-sl-tooltip": "如果标记价格达到此栏显示的价格，市场单（买入仓位的止损单；卖出仓位的止盈单）将会执行。如果中间价加上或减去影响您订单的价格(滑点)达到此栏显示的价格，限价单（买入仓位的止盈单，卖出仓位的止损单）将会执行。"
         },
         "table-content": {
