@@ -62,8 +62,7 @@ export const MaintenanceWrapper = ({ children }: PropsWithChildren) => {
     }
     const foundStatus = maintenanceStatuses.find((status) => status.chainId === chain.id);
     if (foundStatus) {
-      return false; //TODO: remove this and comment next line in.
-      //return foundStatus.isMaintenance;
+      return foundStatus.isMaintenance;
     }
     return false;
   }, [chain, maintenanceStatuses]);
