@@ -39,7 +39,6 @@ export const TradeHistoryTable = memo(() => {
 
   const { tradesHistory, refreshTradesHistory } = useTradesHistory();
 
-  console.log('tradesHistory', tradesHistory);
   useEffect(() => {
     setTableRefreshHandlers((prev) => ({ ...prev, [TableTypeE.TRADE_HISTORY]: refreshTradesHistory }));
   }, [refreshTradesHistory, setTableRefreshHandlers]);
