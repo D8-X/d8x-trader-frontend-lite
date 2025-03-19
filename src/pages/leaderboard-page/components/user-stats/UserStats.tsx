@@ -65,7 +65,6 @@ export const UserStats = ({
       );
     }
 
-    console.log('activeTab', activeTab);
     return (
       <div className={styles.statsContainer}>
         <div className={`${styles.stat} ${activeTab === LeaderboardTabIdE.Weekly ? styles.activeTabStat : ''}`}>
