@@ -288,3 +288,5 @@ export const collateralToSettleConversionAtom = atom(
 
 export const flatTokenAtom = atom<FlatTokenI | undefined>(undefined);
 export const selectedStableAtom = atom<Address | undefined>(undefined);
+
+export const selectedPerpetualVolumeAtom = atom(0);

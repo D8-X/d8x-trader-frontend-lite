@@ -7,7 +7,7 @@ import type { StatDataI } from 'components/stats-line/types';
 import { StatsLine } from 'components/stats-line/StatsLine';
 import { calculateProbability } from 'helpers/calculateProbability';
 import { orderBlockAtom } from 'store/order-block.store';
-import { perpetualStaticInfoAtom, perpetualStatisticsAtom } from 'store/pools.store';
+import { perpetualStaticInfoAtom, perpetualStatisticsAtom, selectedPerpetualVolumeAtom } from 'store/pools.store';
 import { OrderBlockE } from 'types/enums';
 import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -18,6 +18,7 @@ export const PerpetualStats = () => {
   const orderBlock = useAtomValue(orderBlockAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const perpetualVolume = useAtomValue(selectedPerpetualVolumeAtom);
 
   const [[displayIndexPrice, displayMarkPrice], displayCcy] = useMemo(() => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
@@ -63,16 +64,17 @@ export const PerpetualStats = () => {
       },
       {
         id: 'openInterestBC',
-        label: t('pages.trade.stats.open-interest'),
-        tooltip: t('pages.trade.stats.open-interest-tooltip'),
-        value: perpetualStatistics
-          ? abbreviateNumber(perpetualStatistics.openInterestBC) + perpetualStatistics.baseCurrency
-          : '--',
-        numberOnly: perpetualStatistics ? abbreviateNumber(perpetualStatistics.openInterestBC) : '--',
-        currencyOnly: perpetualStatistics ? perpetualStatistics.baseCurrency : '',
+        label: 'Volume', // t('pages.trade.stats.open-interest'),
+        tooltip: 'Traded volume in the last 24 hours', // t('pages.trade.stats.open-interest-tooltip'),
+        value: abbreviateNumber(perpetualVolume) + 'USD',
+        //  perpetualStatistics
+        //   ? abbreviateNumber(perpetualStatistics.openInterestBC) + perpetualStatistics.baseCurrency
+        //   : '--',
+        numberOnly: abbreviateNumber(perpetualVolume), // perpetualStatistics ? abbreviateNumber(perpetualStatistics.openInterestBC) : '--',
+        currencyOnly: 'USD', // perpetualStatistics ? perpetualStatistics.baseCurrency : '',
       },
     ],
-    [t, perpetualStatistics, displayIndexPrice, displayMarkPrice, displayCcy]
+    [t, perpetualStatistics, perpetualVolume, displayIndexPrice, displayMarkPrice, displayCcy]
   );
 
   return <StatsLine items={items} />;
