@@ -42,6 +42,7 @@
           "margin": "Marge",
           "pnl": "G et P",
           "tp-sl": "TP/SL",
+          "pnl-tooltip": "Unrealized PnL = (Mark Price - Entry Price) * Position Size - Unpaid accumulated funding; with Position Size >0 if long and <0 if short.",
           "tp-sl-tooltip": "SL pour les positions d'ACHAT et TP pour les positions de VENTE (c'est-à-dire les ordres Stop-market) sont exécutés si le prix de repère atteint le prix indiqué dans cette colonne. Les ordres TP pour les positions d'ACHAT et les ordres SL pour les positions de VENTE (c'est-à-dire les ordres limités) sont exécutés si le prix moyen plus/moins l'impact sur le prix de votre ordre atteint le prix indiqué dans cette colonne."
         },
         "table-content": {

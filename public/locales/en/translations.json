@@ -41,6 +41,7 @@
           "liq-price": "Liq. Price",
           "margin": "Margin",
           "pnl": "Unr. PnL",
+          "pnl-tooltip": "Unrealized PnL = (Mark Price - Entry Price) * Position Size - Unpaid accumulated funding; with Position Size >0 if long and <0 if short.",
           "tp-sl": "TP/SL",
           "tp-sl-tooltip": "SL for BUY positions and TP for SELL positions (i.e., Stop-market orders) are executed if the mark price reaches the price shown in this column. TP for BUY positions and SL orders for SELL positions (i.e., Limit orders) are executed if the mid price plus/minus the price impact of your order reaches the price shown in this column."
         },

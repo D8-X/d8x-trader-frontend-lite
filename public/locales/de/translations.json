@@ -42,6 +42,7 @@
           "margin": "Margin",
           "pnl": "Unr. GuV",
           "tp-sl": "TP/SL",
+          "pnl-tooltip": "Unrealized PnL = (Mark Price - Entry Price) * Position Size - Unpaid accumulated funding; with Position Size >0 if long and <0 if short.",
           "tp-sl-tooltip": "SL für KAUFEN-Positionen und TP für VERKAUFEN-Positionen (d.h. Stop-Market-Orders) werden ausgeführt, wenn der Mark-Preis den in dieser Spalte angezeigten Preis erreicht. TP für KAUFEN-Positionen und SL-Orders für VERKAUFEN-Positionen (d.h. Limit-Orders) werden ausgeführt, wenn der Mid-Preis, plus/minus der Preisauswirkung Ihrer Order, den in dieser Spalte angezeigten Preis erreicht."
         },
         "table-content": {
