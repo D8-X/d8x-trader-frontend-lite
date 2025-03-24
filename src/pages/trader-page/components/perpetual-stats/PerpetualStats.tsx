@@ -11,6 +11,7 @@ import { perpetualStaticInfoAtom, perpetualStatisticsAtom } from 'store/pools.st
 import { OrderBlockE } from 'types/enums';
 import { abbreviateNumber } from 'utils/abbreviateNumber';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { useOpenInterest } from './useOpenInterest';
 
 export const PerpetualStats = () => {
   const { t } = useTranslation();
@@ -18,6 +19,9 @@ export const PerpetualStats = () => {
   const orderBlock = useAtomValue(orderBlockAtom);
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+
+  // Get enhanced open interest with Coingecko fallback
+  const openInterest = useOpenInterest(perpetualStatistics);
 
   const [[displayIndexPrice, displayMarkPrice], displayCcy] = useMemo(() => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
@@ -43,7 +47,6 @@ export const PerpetualStats = () => {
         tooltip: t('pages.trade.stats.mark-price-tooltip'),
         value: displayCcy ? formatToCurrency(displayMarkPrice, displayCcy, true) : '--',
         numberOnly: perpetualStatistics ? formatToCurrency(displayMarkPrice, '', true, undefined, true) : '--',
-        // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
         id: 'indexPrice',
@@ -51,7 +54,6 @@ export const PerpetualStats = () => {
         tooltip: t('pages.trade.stats.index-price-tooltip'),
         value: displayCcy ? formatToCurrency(displayIndexPrice, displayCcy, true) : '--',
         numberOnly: displayCcy ? formatToCurrency(displayIndexPrice, '', true, undefined, true) : '--',
-        // currencyOnly: perpetualStatistics ? perpetualStatistics.quoteCurrency : '--',
       },
       {
         id: 'fundingRate',
@@ -65,14 +67,12 @@ export const PerpetualStats = () => {
         id: 'openInterestBC',
         label: t('pages.trade.stats.open-interest'),
         tooltip: t('pages.trade.stats.open-interest-tooltip'),
-        value: perpetualStatistics
-          ? abbreviateNumber(perpetualStatistics.openInterestBC) + perpetualStatistics.baseCurrency
-          : '--',
-        numberOnly: perpetualStatistics ? abbreviateNumber(perpetualStatistics.openInterestBC) : '--',
+        value: perpetualStatistics ? abbreviateNumber(openInterest) + perpetualStatistics.baseCurrency : '--',
+        numberOnly: perpetualStatistics ? abbreviateNumber(openInterest) : '--',
         currencyOnly: perpetualStatistics ? perpetualStatistics.baseCurrency : '',
       },
     ],
-    [t, perpetualStatistics, displayIndexPrice, displayMarkPrice, displayCcy]
+    [t, perpetualStatistics, displayIndexPrice, displayMarkPrice, displayCcy, openInterest]
   );
 
   return <StatsLine items={items} />;
