@@ -230,7 +230,7 @@ export const ActionBlock = memo(() => {
             maxShort = 0;
           }
         }
-        console.log({ posRiskAfter: data.data, maxLong, maxShort, position, mainOrder });
+        // console.log({ posRiskAfter: data.data, maxLong, maxShort, position, mainOrder });
         setMaxOrderSize({ maxBuy: maxLong, maxSell: maxShort });
         setPerpetualPrice(data.data.ammPrice);
       })
@@ -606,7 +606,7 @@ export const ActionBlock = memo(() => {
         return ValidityCheckE.SlippageTooLarge;
       }
     }
-    // size check
+    // lvg check
     let isTooLarge;
     if (orderInfo.orderType === OrderTypeE.Market) {
       if (orderInfo.orderBlock === OrderBlockE.Long) {
