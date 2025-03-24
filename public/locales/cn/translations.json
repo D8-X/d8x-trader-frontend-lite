@@ -341,6 +341,7 @@
         "validity": {
           "closed": "订单将在市场开盘时执行",
           "order-too-large": "订单过大，导致订单失败",
+          "lvg-too-large": "订单过大，导致订单失败",
           "order-too-small": "订单过小，导致订单失败",
           "position-too-small": "仓位过小，导致订单失败 (min.: {{minAmount}})",
           "below-min-position": "警告：订单小于仓位",

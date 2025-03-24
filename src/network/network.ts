@@ -439,3 +439,49 @@ export async function getAllTimeLeaderboardEntries(): Promise<AllTimeLeaderboard
   }
   return data.json();
 }
+
+// Interface for contract data
+interface CoingeckoContractI {
+  ticker_id: string;
+  contract_specs: {
+    contract_type: string;
+    contract_price_currency: string;
+    contract_price: number;
+    contract_collateral_currency: string;
+  };
+  base_currency: string;
+  target_currency: string;
+  last_price: number;
+  base_volume: number;
+  target_volume: number;
+  base_volume_30d: number;
+  target_volume_30d: number;
+  high: number;
+  low: number;
+  product_type: string;
+  open_interest: number;
+  index_price: number;
+  index_name: string;
+  index_currency: string;
+  start_timestamp: number;
+  end_timestamp: number;
+  funding_rate: number;
+  next_funding_rate: number;
+  next_funding_rate_timestamp: number;
+}
+
+// Response interface for Coingecko data
+export interface CoingeckoDataResponseI {
+  chain_id: number;
+  timestamp: number;
+  contracts: CoingeckoContractI[];
+}
+
+export async function getCoingeckoData(chainId: number): Promise<CoingeckoDataResponseI> {
+  const data = await fetch(`https://drip.d8x.xyz/coingecko/contracts?chain_id=${chainId}`, getRequestOptions());
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+}

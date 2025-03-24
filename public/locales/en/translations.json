@@ -341,6 +341,7 @@
         "validity": {
           "closed": "Orders won't be executed until market opens",
           "order-too-large": "Order will fail: order size is too large",
+          "lvg-too-large": "Order will fail: leverage is too high",
           "order-too-small": "Order will fail: order size is too small",
           "position-too-small": "Order will fail: resulting position too small (min.: {{minAmount}})",
           "below-min-position": "Warning: order size below minimal position size",

@@ -341,6 +341,7 @@
         "validity": {
           "closed": "Orders werden erst ausgeführt wenn der Markt wieder offen ist",
           "order-too-large": "Order wird scheitern: Ordergrösse ist zu gross",
+          "lvg-too-large": "Order wird scheitern: Hebeleinstellung ist zu gross",
           "order-too-small": "Order wird scheitern: Ordergrösse ist zu klein",
           "position-too-small": "Order wird scheitern: Die resultierende Position ist zu klein (min.: {{minAmount}})",
           "below-min-position": "Warnung: Ordergrösse ist kleiner als die minimale Positionsgrösse",
