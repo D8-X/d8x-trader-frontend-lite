@@ -22,7 +22,8 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
       !chainId ||
       !isEnabledChain(chainId) ||
       !perpetualStatistics.baseCurrency ||
-      !perpetualStatistics.quoteCurrency
+      !perpetualStatistics.quoteCurrency ||
+      !perpetualStatistics.poolName
     ) {
       return;
     }
