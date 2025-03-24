@@ -128,7 +128,7 @@ enum ValidityCheckE {
   Undefined = 'undefined',
   GoodToGo = 'good-to-go',
   SlippageTooLarge = 'slippage-too-large',
-  OrderTooLarge = 'order-too-large',
+  LeverageTooLarge = 'lvg-too-large',
 }
 
 enum ValidityCheckButtonE {
@@ -608,13 +608,15 @@ export const ActionBlock = memo(() => {
     }
     // size check
     let isTooLarge;
-    if (orderInfo.orderBlock === OrderBlockE.Long) {
-      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxBuy);
-    } else {
-      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxSell);
+    if (orderInfo.orderType === OrderTypeE.Market) {
+      if (orderInfo.orderBlock === OrderBlockE.Long) {
+        isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxBuy);
+      } else {
+        isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxSell);
+      }
     }
     if (isTooLarge) {
-      return ValidityCheckE.OrderTooLarge;
+      return ValidityCheckE.LeverageTooLarge;
     }
     return ValidityCheckE.GoodToGo;
   }, [

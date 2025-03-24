@@ -341,6 +341,7 @@
         "validity": {
           "closed": "Órdenes son ejecutadas sólo cuando el mercado abra",
           "order-too-large": "El tamaño de la orden es muy grande",
+          "lvg-too-large": "El apalancamiento de la orden es muy alto",
           "order-too-small": "El tamaño de la orden es muy pequeno",
           "position-too-small": "El tamaño de la posicion es muy pequeno (min.: {{minAmount}})",
           "below-min-position": "Cuidado: El tamaño de la orden esta debajo del tamaño minimo para una posición",
