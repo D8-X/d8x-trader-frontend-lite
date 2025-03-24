@@ -60,13 +60,7 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
     return () => {
       isRequestSent.current = false;
     };
-  }, [
-    chainId,
-    perpetualStatistics?.baseCurrency,
-    perpetualStatistics?.quoteCurrency,
-    perpetualStatistics?.poolName,
-    perpetualStatistics,
-  ]);
+  }, [chainId, perpetualStatistics]);
 
   // Return 24h max OI if available, otherwise fall back to perpetualStatistics OI measure
   return openInterest !== null ? openInterest : perpetualStatistics?.openInterestBC || 0;
