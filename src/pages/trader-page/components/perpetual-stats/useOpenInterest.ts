@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { getCoingeckoData } from 'network/network';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { config } from 'config';
+
 import type { PerpetualStatisticsI } from 'types/types';
 
 export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null) => {
@@ -16,11 +18,14 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
       return;
     }
 
+    const chainIdForOI = isEnabledChain(chainId) ? chainId : config.enabledChains[0];
+    console.log('chainIdForOI ', chainIdForOI);
+
     // Skip if request already in progress or missing required data
     if (
       isRequestSent.current ||
-      !chainId ||
-      !isEnabledChain(chainId) ||
+      !chainIdForOI ||
+      !isEnabledChain(chainIdForOI) ||
       !perpetualStatistics.baseCurrency ||
       !perpetualStatistics.quoteCurrency ||
       !perpetualStatistics.poolName
@@ -30,7 +35,7 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
 
     isRequestSent.current = true;
 
-    getCoingeckoData(chainId)
+    getCoingeckoData(chainIdForOI)
       .then((data) => {
         // Get 24h open interest from backend
         const basePart = perpetualStatistics.baseCurrency;
