@@ -128,6 +128,7 @@ enum ValidityCheckE {
   Undefined = 'undefined',
   GoodToGo = 'good-to-go',
   SlippageTooLarge = 'slippage-too-large',
+  OrderTooLarge = 'order-too-large',
 }
 
 enum ValidityCheckButtonE {
@@ -229,6 +230,7 @@ export const ActionBlock = memo(() => {
             maxShort = 0;
           }
         }
+        console.log({ posRiskAfter: data.data, maxLong, maxShort, position, mainOrder });
         setMaxOrderSize({ maxBuy: maxLong, maxSell: maxShort });
         setPerpetualPrice(data.data.ammPrice);
       })
@@ -603,6 +605,16 @@ export const ActionBlock = memo(() => {
       if (isSlippageTooLarge && !isPredictionMarket) {
         return ValidityCheckE.SlippageTooLarge;
       }
+    }
+    // size check
+    let isTooLarge;
+    if (orderInfo.orderBlock === OrderBlockE.Long) {
+      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxBuy);
+    } else {
+      isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxSell);
+    }
+    if (isTooLarge) {
+      return ValidityCheckE.OrderTooLarge;
     }
     return ValidityCheckE.GoodToGo;
   }, [
