@@ -42,11 +42,11 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
 
   return (
     <TableRow className={`${styles.row} ${isUserRow ? styles.userRow : ''}`}>
-      <TableCell className={styles.rankCell} align="center">
+      <TableCell className={styles.rankCell} align="left">
         <Typography variant="body2">{entry.rank !== undefined ? entry.rank : '-'}</Typography>
       </TableCell>
 
-      <TableCell className={styles.addressCell}>
+      <TableCell className={styles.addressCell} align="left">
         <Typography
           variant="body2"
           noWrap
@@ -64,11 +64,16 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
       </TableCell>
 
       {isWeekly ? (
-        <TableCell className={styles.pnlCell} align="right">
-          <Typography variant="body2" className={getPnlClass(entry.pnl)}>
-            {formatPnl(entry.pnl)}
-          </Typography>
-        </TableCell>
+        <>
+          <TableCell className={styles.pnlCell} align="right">
+            <Typography variant="body2" className={getPnlClass(entry.pnl)}>
+              {formatPnl(entry.pnl)}
+            </Typography>
+          </TableCell>
+          <TableCell className={styles.volCell} align="right">
+            <Typography variant="body2">{entry.vol !== undefined ? `$${entry.vol.toFixed(2)}` : '-'}</Typography>
+          </TableCell>
+        </>
       ) : (
         <TableCell className={styles.pointsCell} align="right">
           <Typography variant="body2">{entry.points !== undefined ? entry.points.toLocaleString() : '-'}</Typography>
