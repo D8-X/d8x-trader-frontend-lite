@@ -33,7 +33,7 @@ import 'core-js/es/string';
 
 import styles from './App.module.scss';
 
-const INACTIVE_DELAY = 300_000; // 5 minutes
+const INACTIVE_DELAY = 1_800_000; // 30 minutes
 
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
