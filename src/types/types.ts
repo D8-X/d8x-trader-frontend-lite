@@ -560,11 +560,12 @@ export interface FlatTokenI {
 // Leaderboard interfaces
 export interface WeeklyLeaderboardEntryI {
   rank?: number;
-  trader?: string; // Address of the trader (in old format)
-  address?: string; // Address of the trader (in new format)
+  trader?: string;
+  address?: string;
   pnl: number;
   numWeeks?: number;
   points?: number;
+  vol?: number;
 }
 
 export interface WeeklyLeaderboardResponseI {

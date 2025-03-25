@@ -12,6 +12,29 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  table {
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  th, td {
+    &:first-child {
+      width: 10%;
+    }
+
+    &:nth-child(2) {
+      width: 45%;
+    }
+
+    &:nth-child(3) {
+      width: 22.5%;
+    }
+
+    &:nth-child(4) {
+      width: 22.5%;
+    }
+  }
 }
 
 .tableHead {

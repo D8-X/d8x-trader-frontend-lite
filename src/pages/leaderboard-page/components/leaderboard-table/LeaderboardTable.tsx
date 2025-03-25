@@ -57,7 +57,7 @@ export const LeaderboardTable = ({
       {
         id: 'rank',
         label: 'Rank',
-        align: AlignE.Center,
+        align: AlignE.Left,
         fieldType: FieldTypeE.Number,
       },
       {
@@ -69,12 +69,20 @@ export const LeaderboardTable = ({
     ];
 
     if (isWeekly) {
-      baseHeaders.push({
-        id: 'pnl',
-        label: 'PNL',
-        align: AlignE.Right,
-        fieldType: FieldTypeE.Number,
-      });
+      baseHeaders.push(
+        {
+          id: 'pnl',
+          label: 'PNL',
+          align: AlignE.Right,
+          fieldType: FieldTypeE.Number,
+        },
+        {
+          id: 'vol',
+          label: 'Volume',
+          align: AlignE.Right,
+          fieldType: FieldTypeE.Number,
+        }
+      );
     } else {
       baseHeaders.push({
         id: 'points',
