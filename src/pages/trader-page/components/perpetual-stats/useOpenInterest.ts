@@ -19,7 +19,6 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
     }
 
     const chainIdForOI = isEnabledChain(chainId) ? chainId : config.enabledChains[0];
-    console.log('chainIdForOI ', chainIdForOI);
 
     // Skip if request already in progress or missing required data
     if (
