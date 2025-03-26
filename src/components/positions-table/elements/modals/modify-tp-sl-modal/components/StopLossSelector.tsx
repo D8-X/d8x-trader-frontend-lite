@@ -64,8 +64,16 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   }, [position, traderAPI]);
 
   const minStopLossPrice = useMemo(() => {
-    if (entryPrice && position.side === OrderSideE.Sell) {
-      return isPredictionMarket ? Math.max(0.000000001, liqPrice) : entryPrice;
+    if (entryPrice && position.markPrice && position.side === OrderSideE.Sell) {
+      if (isPredictionMarket) {
+        return Math.max(0.000000001, liqPrice);
+      } else {
+        if (position.markPrice <= entryPrice) {
+          return position.markPrice;
+        } else {
+          return entryPrice;
+        }
+      }
     } else if (position.side === OrderSideE.Buy) {
       return Math.max(0.000000001, liqPrice);
     }
@@ -73,9 +81,13 @@ export const StopLossSelector = memo(({ setStopLossPrice, position, disabled }: 
   }, [position, entryPrice, liqPrice, isPredictionMarket]);
 
   const maxStopLossPrice = useMemo(() => {
-    if (entryPrice && position.side === OrderSideE.Buy) {
-      return entryPrice;
-    } else if (position.side === OrderSideE.Sell) {
+    if (entryPrice && position.markPrice && position.side === OrderSideE.Buy) {
+      if (position.markPrice >= entryPrice) {
+        return position.markPrice;
+      } else {
+        return entryPrice;
+      }
+    } else if (entryPrice && position.markPrice && position.side === OrderSideE.Sell) {
       return isPredictionMarket ? entryPrice : liqPrice;
     }
   }, [position, entryPrice, liqPrice, isPredictionMarket]);
