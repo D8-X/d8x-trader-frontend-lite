@@ -20,8 +20,25 @@ export const PerpetualStats = () => {
   const perpetualStatistics = useAtomValue(perpetualStatisticsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
 
+  const propsOI = useMemo(() => {
+    const basePart = perpetualStatistics?.baseCurrency;
+    const quotePart = perpetualStatistics?.quoteCurrency;
+    const collateralPart = perpetualStatistics?.poolName;
+    if (basePart && quotePart && collateralPart) {
+      return {
+        contractSymbol: `${basePart}-${quotePart}-${collateralPart}`,
+        currentOI: perpetualStatistics?.openInterestBC ?? 0,
+      };
+    }
+  }, [
+    perpetualStatistics?.baseCurrency,
+    perpetualStatistics?.quoteCurrency,
+    perpetualStatistics?.poolName,
+    perpetualStatistics?.openInterestBC,
+  ]);
+
   // Get enhanced open interest with Coingecko fallback
-  const openInterest = useOpenInterest(perpetualStatistics);
+  const openInterest = useOpenInterest(propsOI);
 
   const [[displayIndexPrice, displayMarkPrice], displayCcy] = useMemo(() => {
     if (!!perpetualStatistics && !!perpetualStaticInfo) {
