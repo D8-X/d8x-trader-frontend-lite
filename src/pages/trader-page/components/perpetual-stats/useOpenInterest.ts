@@ -4,16 +4,14 @@ import { getCoingeckoData } from 'network/network';
 import { isEnabledChain } from 'utils/isEnabledChain';
 import { config } from 'config';
 
-import type { PerpetualStatisticsI } from 'types/types';
-
-export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null) => {
+export const useOpenInterest = (props: { contractSymbol: string; currentOI: number } | undefined) => {
   const [openInterest, setOpenInterest] = useState<number | null>(null);
   const { chainId } = useAccount();
   const isRequestSent = useRef(false);
 
   useEffect(() => {
     // Clear open interest if no statistics
-    if (!perpetualStatistics) {
+    if (!props) {
       setOpenInterest(null);
       return;
     }
@@ -21,30 +19,18 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
     const chainIdForOI = isEnabledChain(chainId) ? chainId : config.enabledChains[0];
 
     // Skip if request already in progress or missing required data
-    if (
-      isRequestSent.current ||
-      !chainIdForOI ||
-      !isEnabledChain(chainIdForOI) ||
-      !perpetualStatistics.baseCurrency ||
-      !perpetualStatistics.quoteCurrency ||
-      !perpetualStatistics.poolName
-    ) {
+    if (isRequestSent.current || !chainIdForOI || !isEnabledChain(chainIdForOI) || !props) {
       return;
     }
 
     isRequestSent.current = true;
-
     getCoingeckoData(chainIdForOI)
       .then((data) => {
         // Get 24h open interest from backend
-        const basePart = perpetualStatistics.baseCurrency;
-        const quotePart = perpetualStatistics.quoteCurrency;
-        const collateralPart = perpetualStatistics.poolName;
-
         // Find selected perpetual contract
         const matchingContract = data.contracts.find((contract) => {
           const ticker = contract.ticker_id;
-          return ticker.startsWith(`${basePart}-${quotePart}-${collateralPart}`);
+          return ticker.startsWith(props.contractSymbol);
         });
 
         if (matchingContract) {
@@ -65,8 +51,8 @@ export const useOpenInterest = (perpetualStatistics: PerpetualStatisticsI | null
     return () => {
       isRequestSent.current = false;
     };
-  }, [chainId, perpetualStatistics]);
+  }, [chainId, props]);
 
   // Return 24h max OI if available, otherwise fall back to perpetualStatistics OI measure
-  return openInterest !== null ? openInterest : perpetualStatistics?.openInterestBC || 0;
+  return openInterest !== null ? openInterest : props?.currentOI || 0;
 };
