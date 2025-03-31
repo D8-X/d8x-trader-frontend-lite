@@ -80,6 +80,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
 
   const isAPIBusyRef = useRef(isAPIBusy);
   const requestSentRef = useRef(false);
+  const lastApiCallTime = useRef(0);
 
   const [userPrice, userSymbol] =
     !!flatToken && poolByPosition?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
@@ -308,7 +309,14 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     }
 
     if (modifyType === ModifyTypeE.Remove) {
+      const now = Date.now();
+      if (now - lastApiCallTime.current < 3000) {
+        return;
+      }
+
+      lastApiCallTime.current = now;
       setAPIBusy(true);
+
       getAvailableMargin(chainId, traderAPI, selectedPosition.symbol, address)
         .then(({ data }) => {
           setAvailableMargin(data.amount < 0 ? 0 : data.amount * 0.99);
@@ -379,7 +387,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (!selectedPosition || selectedPosition.liquidationPrice[0] <= 0) {
       return '-';
     }
-
+    console.log('newPositionRisk', newPositionRisk);
     if (modifyType === ModifyTypeE.Add || modifyType === ModifyTypeE.Remove) {
       if (!newPositionRisk || newPositionRisk.liquidationPrice[0] <= 0) {
         return '-';
