@@ -387,7 +387,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
     if (!selectedPosition || selectedPosition.liquidationPrice[0] <= 0) {
       return '-';
     }
-    console.log('newPositionRisk', newPositionRisk);
     if (modifyType === ModifyTypeE.Add || modifyType === ModifyTypeE.Remove) {
       if (!newPositionRisk || newPositionRisk.liquidationPrice[0] <= 0) {
         return '-';
