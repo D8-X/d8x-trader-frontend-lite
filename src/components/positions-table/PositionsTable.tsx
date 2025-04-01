@@ -277,16 +277,20 @@ export const PositionsTable = () => {
         const stopLossOrders = filteredOpenOrders.filter(
           (openOrder) =>
             openOrder.type === OpenOrderTypeE.StopLimit &&
+            // define SL for long positions, accounting for the possibility to move SL into profit if the price is above the entry price
             ((openOrder.side === OrderSideE.Sell &&
               openOrder.limitPrice !== undefined &&
               openOrder.limitPrice === 0 &&
               openOrder.stopPrice &&
-              openOrder.stopPrice <= position.entryPrice) ||
+              ((position.entryPrice > position.markPrice && openOrder.stopPrice <= position.entryPrice) ||
+                (position.entryPrice <= position.markPrice && openOrder.stopPrice <= position.markPrice))) ||
+              // define SL for short positions, accounting for the possibility to move SL into profit if the price is below the entry price
               (openOrder.side === OrderSideE.Buy &&
                 openOrder.limitPrice !== undefined &&
                 openOrder.limitPrice === Number.POSITIVE_INFINITY &&
                 openOrder.stopPrice &&
-                openOrder.stopPrice >= position.entryPrice))
+                ((position.entryPrice > position.markPrice && openOrder.stopPrice >= position.markPrice) ||
+                  (position.entryPrice <= position.markPrice && openOrder.stopPrice >= position.entryPrice))))
         );
         let stopLossValueType = OrderValueTypeE.None;
         let stopLossFullValue;
