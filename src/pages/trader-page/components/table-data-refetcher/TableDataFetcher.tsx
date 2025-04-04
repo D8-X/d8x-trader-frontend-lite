@@ -23,6 +23,8 @@ import {
 } from 'store/pools.store';
 import type { PerpetualOpenOrdersI } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
+import { isExecuted } from 'blockchain-api/isExecuted';
+import { Address } from 'viem';
 
 const MAX_FETCH_COUNT = 20;
 const MAX_FETCH_TIME = 40_000; // 40 sec
@@ -117,22 +119,29 @@ export const TableDataFetcher = memo(() => {
             !cancelledOrderIds.has(order.id) &&
             !failedOrderIds.has(order.id)
           ) {
-            setOrderFailed(order.id);
-            toast.error(
-              <ToastContent
-                title={t('pages.trade.positions-table.toasts.trade-failed.title')}
-                bodyLines={[
-                  {
-                    label: t('pages.trade.positions-table.toasts.trade-executed.body'),
-                    value: order.symbol.split('-').slice(0, -1).join('-'),
-                  },
-                  {
-                    label: t('pages.trade.positions-table.toasts.trade-failed.body'),
-                    value: '',
-                  },
-                ]}
-              />
-            );
+            const proxyAddr = traderAPI?.getProxyAddress() as Address;
+            if (proxyAddr) {
+              isExecuted(proxyAddr, order.id).then(({ isCancelled }) => {
+                if (!isCancelled) {
+                  setOrderFailed(order.id);
+                  toast.error(
+                    <ToastContent
+                      title={t('pages.trade.positions-table.toasts.trade-failed.title')}
+                      bodyLines={[
+                        {
+                          label: t('pages.trade.positions-table.toasts.trade-executed.body'),
+                          value: order.symbol.split('-').slice(0, -1).join('-'),
+                        },
+                        {
+                          label: t('pages.trade.positions-table.toasts.trade-failed.body'),
+                          value: '',
+                        },
+                      ]}
+                    />
+                  );
+                }
+              });
+            }
           }
         }
       }

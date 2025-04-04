@@ -610,7 +610,7 @@
         "initiate": {
           "title": "1. Initier le retrait de {{poolSymbol}}",
           "info1": "Indiquez le montant de {{shareSymbol}} que vous souhaitez échanger contre {{poolSymbol}}.",
-          "info2": "Après 24 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool.",
+          "info2": "Après 24 heures, ce montant peut être converti en {{poolSymbol}} et peut être retiré du pool. Pendant cette période, vous ne pouvez pas transférer votre token {{shareSymbol}}.",
           "button": "Initier le retrait",
           "validity-empty": "-",
           "validity-no-address": "Connectez le portefeuille",

@@ -610,7 +610,7 @@
         "initiate": {
           "title": "1. Iniciar retiro de {{poolSymbol}}",
           "info1": "Ingresa el monto de {{shareSymbol} que quieres intercambiar por {{poolSymbol}}.",
-          "info2": "Despues de 24 horas, este monto puede ser convertido a {{poolSymbol}} y removido de las reservas.",
+          "info2": "Despues de 24 horas, este monto puede ser convertido a {{poolSymbol}} y removido de las reservas. Durante este tiempo no puedes transferir tu token {{shareSymbol}}.",
           "button": "Iniciar Retiro",
           "validity-empty": "-",
           "validity-no-address": "Conectar cartera",
