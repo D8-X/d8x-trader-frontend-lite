@@ -272,7 +272,9 @@ export const Initiate = memo(() => {
               <Typography>
                 {t('pages.vault.withdraw.initiate.info1', { poolSymbol: userSymbol, shareSymbol })}
               </Typography>
-              <Typography>{t('pages.vault.withdraw.initiate.info2', { poolSymbol: userSymbol })}</Typography>
+              <Typography>
+                {t('pages.vault.withdraw.initiate.info2', { poolSymbol: userSymbol, shareSymbol })}
+              </Typography>
             </>
           }
         />

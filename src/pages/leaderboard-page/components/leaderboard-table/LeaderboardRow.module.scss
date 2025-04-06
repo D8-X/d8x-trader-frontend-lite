@@ -42,8 +42,6 @@
   width: 100px;
 }
 
-
-
 .pointsCell {
   text-align: right;
   font-weight: 500;
@@ -60,4 +58,9 @@
 
 .negative {
   color: var(--d8x-color-text-sell) !important;
+}
+
+.oiCell {
+  padding: 16px;
+  color: var(--d8x-color-text-main);
 }

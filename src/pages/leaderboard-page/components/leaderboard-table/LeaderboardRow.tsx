@@ -40,6 +40,8 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
 
   const isWeekly = isWeeklyEntry(entry);
 
+  console.log(entry.timeWeightedOI);
+
   return (
     <TableRow className={`${styles.row} ${isUserRow ? styles.userRow : ''}`}>
       <TableCell className={styles.rankCell} align="left">
@@ -72,6 +74,11 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
           </TableCell>
           <TableCell className={styles.volCell} align="right">
             <Typography variant="body2">{entry.vol !== undefined ? `$${entry.vol.toFixed(2)}` : '-'}</Typography>
+          </TableCell>
+          <TableCell className={styles.volCell} align="right">
+            <Typography variant="body2">
+              {entry.timeWeightedOI !== undefined ? `$${parseFloat(entry.timeWeightedOI).toFixed(2)}` : '-'}
+            </Typography>
           </TableCell>
         </>
       ) : (

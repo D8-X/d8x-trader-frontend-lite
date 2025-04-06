@@ -561,11 +561,13 @@ export interface FlatTokenI {
 export interface WeeklyLeaderboardEntryI {
   rank?: number;
   trader?: string;
+  pnl?: number;
+  vol?: number;
+  timeWeightedOI?: string;
+  score?: string;
   address?: string;
-  pnl: number;
   numWeeks?: number;
   points?: number;
-  vol?: number;
 }
 
 export interface WeeklyLeaderboardResponseI {
@@ -584,6 +586,7 @@ export interface AllTimeLeaderboardEntryI {
   pnl: number;
   numWeeks: number;
   points: number;
+  timeWeightedOI?: string;
 }
 
 export interface AllTimeLeaderboardResponseI {
