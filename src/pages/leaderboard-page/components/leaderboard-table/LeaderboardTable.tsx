@@ -81,6 +81,12 @@ export const LeaderboardTable = ({
           label: 'Volume',
           align: AlignE.Right,
           fieldType: FieldTypeE.Number,
+        },
+        {
+          id: 'timeWeightedOI',
+          label: 'OI',
+          align: AlignE.Right,
+          fieldType: FieldTypeE.String,
         }
       );
     } else {

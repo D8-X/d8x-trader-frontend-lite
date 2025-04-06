@@ -610,7 +610,7 @@
         "initiate": {
           "title": "1. 发起{{poolSymbol}}的提现",
           "info1": "设置您想要兑换{{poolSymbol}}的{{shareSymbol}数量。",
-          "info2": "24小时后，该金额可以转换为MATIC并从流动性池中提取。 ",
+          "info2": "24小时后，该金额可以转换为MATIC并从流动性池中提取。 在此期间您无法转移您的{{shareSymbol}}。",
           "button": "发起提现",
           "validity-no-address": "连接钱包",
           "validity-empty": "-",

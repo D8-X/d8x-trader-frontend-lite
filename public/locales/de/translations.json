@@ -610,7 +610,7 @@
         "initiate": {
           "title": "1. Auszahlung von {{poolSymbol}} einleiten",
           "info1": "Geben Sie die Menge an {{shareSymbol}} an, die Sie gegen {{poolSymbol}} eintauschen möchten.",
-          "info2": "Nach 24 Stunden kann dieser Betrag in {{poolSymbol}} umgewandelt und aus dem Pool abgehoben werden.",
+          "info2": "Nach 24 Stunden kann dieser Betrag in {{poolSymbol}} umgewandelt und aus dem Pool abgehoben werden. Während dieser Zeit können Sie Ihren {{shareSymbol}} nicht übertragen.",
           "button": "Auszahlung initialisieren",
           "validity-empty": "-",
           "validity-no-address": "Brieftasche verbinden",
