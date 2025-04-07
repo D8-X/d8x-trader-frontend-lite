@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -16,6 +16,7 @@ import { getTxnLink } from 'helpers/getTxnLink';
 import { flatTokenAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
+  sdkConnectedAtom,
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
   userAmountAtom,
@@ -40,17 +41,19 @@ enum ValidityCheckInitiateE {
 export const Initiate = memo(() => {
   const { t } = useTranslation();
 
-  const { address, chain } = useAccount();
+  const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const liqProvTool = useAtomValue(traderAPIAtom);
-  const userAmount = useAtomValue(userAmountAtom);
   const withdrawals = useAtomValue(withdrawalsAtom);
   const dCurrencyPrice = useAtomValue(dCurrencyPriceAtom);
   const flatToken = useAtomValue(flatTokenAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
+  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
+  const [userAmount, setUserAmount] = useAtom(userAmountAtom);
 
   const [initiateAmount, setInitiateAmount] = useState(0);
   const [requestSent, setRequestSent] = useState(false);
@@ -67,6 +70,15 @@ export const Initiate = memo(() => {
       : selectedPool?.poolSymbol;
 
   const shareSymbol = `d${selectedPool?.settleSymbol}`;
+
+  useEffect(() => {
+    setUserAmount(null);
+    if (selectedPool?.poolSymbol && liqProvTool && isSDKConnected && address && isEnabledChain(chainId)) {
+      liqProvTool.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
+        setUserAmount(amount);
+      });
+    }
+  }, [selectedPool?.poolSymbol, liqProvTool, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
 
   const handleInputCapture = useCallback((orderSizeValue: string) => {
     if (orderSizeValue) {
