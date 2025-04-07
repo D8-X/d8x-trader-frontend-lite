@@ -1,9 +1,9 @@
 import { PROXY_ABI, type TraderInterface, floatToDecN } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 
 export async function addLiquidity(
@@ -20,7 +20,7 @@ export async function addLiquidity(
   }
   const amountCC = await traderAPI.fetchCollateralToSettlementConversion(symbol).then((c2s) => amount / c2s);
   const amountParsed = BigInt(floatToDecN(amountCC, decimals).toString());
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
     address: traderAPI.getProxyAddress() as Address,
@@ -28,17 +28,17 @@ export async function addLiquidity(
     functionName: 'addLiquidity',
     args: [poolId, amountParsed],
     account,
-    gasPrice: gasPrice,
+    ...feesPerGas,
   };
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
 
-  const writeParams: WriteContractParameters = {
+  const baseParams = {
     ...estimateParams,
     chain: walletClient.chain,
     account,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then((tx) => ({ hash: tx }));
+  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }

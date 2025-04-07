@@ -1,9 +1,9 @@
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { WriteContractParameters, Address, WalletClient, EstimateContractGasParameters } from 'viem';
+import type { Address, WalletClient, EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { orderSubmitted } from 'network/broker';
 import { MethodE } from 'types/enums';
 import type { OrderI, OrderDigestI } from 'types/types';
@@ -34,7 +34,7 @@ export async function postOrder(
     : scOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
 
   const chain = walletClient.chain;
-  const gasPrice = await getGasPrice(chain.id);
+  const feesPerGas = await getFeesPerGas(chain.id);
 
   // if (brokerData.OrderBookAddr !== traderAPI.getOrderBookAddress(orders[0].symbol)) {
   //   console.log({
@@ -49,20 +49,18 @@ export async function postOrder(
     abi: LOB_ABI,
     functionName: 'postOrders',
     args: [clientOrders as never[], signatures],
-    account: walletClient.account,
-    gasPrice,
+    ...feesPerGas,
   };
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 150n) / 100n)
     .catch(() => getGasLimit({ chainId: chain.id, method: MethodE.Interact }) * BigInt(orders.length));
-
-  const writeParams: WriteContractParameters = {
+  const baseParams = {
     ...estimateParams,
-    chain,
     account: walletClient.account,
+    chain,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then((tx) => {
+  return walletClient.writeContract(baseParams).then((tx) => {
     // success submitting order to the node - inform backend
     orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
     return { hash: tx, orderIds: brokerData.orderIds };

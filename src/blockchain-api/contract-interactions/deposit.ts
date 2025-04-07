@@ -1,9 +1,9 @@
 import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 import type { CollateralChangePropsI } from 'types/types';
 
@@ -20,7 +20,7 @@ export async function deposit(
     throw new Error(`no settlement token information found for symbol ${symbol}`);
   }
   const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
     address: traderAPI.getProxyAddress() as Address,
@@ -33,19 +33,18 @@ export async function deposit(
       pxUpdate.submission.priceFeedVaas,
       pxUpdate.submission.timestamps,
     ],
-    gasPrice,
     value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
     account: walletClient.account,
+    ...feesPerGas,
   };
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-
-  const writeParams: WriteContractParameters = {
+  const baseParams = {
     ...estimateParams,
     chain: walletClient.chain,
     account: walletClient.account,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then((tx) => ({ hash: tx }));
+  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }

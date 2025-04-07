@@ -4,7 +4,6 @@ import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import {
   type Address,
   type WalletClient,
-  type WriteContractParameters,
   type EstimateContractGasParameters,
   PrivateKeyAccount,
   zeroAddress,
@@ -12,7 +11,8 @@ import {
 import { estimateGas, estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { MethodE } from 'types/enums';
 
@@ -27,27 +27,29 @@ export async function removeDelegate(
     throw new Error('account not connected');
   }
   // remove delegate
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
     address: proxyAddr as Address,
     abi: PROXY_ABI,
     functionName: 'setDelegate',
     args: [zeroAddress, 0],
-    gasPrice,
     account,
+    ...feesPerGas,
   };
   const gasLimitRemove = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
 
-  const writeParams: WriteContractParameters = {
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
     ...estimateParams,
+    account: account,
     chain: walletClient.chain,
-    account,
     gas: gasLimitRemove,
   };
-  const tx = await walletClient.writeContract(writeParams);
+
+  const tx = await walletClient.writeContract(baseParams);
 
   // reclaim delegate funds
   if (account !== delegateAccount.address) {
@@ -56,9 +58,10 @@ export async function removeDelegate(
       to: account,
       value: 1n,
       account: delegateAccount,
-      gasPrice,
+      ...feesPerGas,
     }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-
+    const gasPrice =
+      feesPerGas?.gasPrice ?? 0n + feesPerGas?.maxFeePerGas ?? 0n + feesPerGas?.maxPriorityFeePerGas ?? 0;
     if (gasLimit && 2n * gasLimit * gasPrice < balance) {
       await sendTransactionAsync({
         account: delegateAccount,
