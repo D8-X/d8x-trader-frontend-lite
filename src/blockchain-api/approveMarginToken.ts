@@ -121,11 +121,10 @@ export async function approveMarginToken({
     // Create base params (shared between legacy and EIP-1559)
     const baseParams = {
       ...estimateParams,
-      account: account,
       chain: walletClient.chain,
+      account: account,
       gas: gasLimit,
     };
-
     return walletClient.writeContract(baseParams).then(async (tx) => {
       await waitForTransactionReceipt(wagmiConfig, {
         hash: tx,

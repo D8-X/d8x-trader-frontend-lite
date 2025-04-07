@@ -34,16 +34,11 @@ export async function addLiquidity(
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
 
-  // Create base params (shared between legacy and EIP-1559)
   const baseParams = {
-    address: traderAPI.getProxyAddress() as Address,
-    abi: PROXY_ABI,
-    functionName: 'addLiquidity',
-    args: [poolId, amountParsed],
-    account: walletClient.account || null,
+    ...estimateParams,
     chain: walletClient.chain,
+    account,
     gas: gasLimit,
-    ...feesPerGas,
   };
   return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }

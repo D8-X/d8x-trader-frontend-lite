@@ -39,7 +39,6 @@ export async function registerFlatToken({
     throw new Error('Account not connected');
   }
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
-
   const shouldConfirm = confirm ?? true;
   const estimateRegisterParams: EstimateContractGasParameters = {
     address: flatTokenAddr,
@@ -59,7 +58,6 @@ export async function registerFlatToken({
     chain: walletClient.chain,
     gas: gasLimit,
   };
-
   return walletClient.writeContract(baseParams).then(async (tx) => {
     if (shouldConfirm) {
       await waitForTransactionReceipt(wagmiConfig, {

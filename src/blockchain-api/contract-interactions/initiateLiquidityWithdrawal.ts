@@ -36,8 +36,8 @@ export async function initiateLiquidityWithdrawal(
   // Create base params (shared between legacy and EIP-1559)
   const baseParams = {
     ...estimateParams,
-    account: account,
     chain: walletClient.chain,
+    account,
     gas: gasLimit,
   };
   return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));

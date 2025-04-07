@@ -33,10 +33,9 @@ export async function executeLiquidityWithdrawal(
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
   const baseParams = {
     ...estimateParams,
-    account: account,
     chain: walletClient.chain,
+    account,
     gas: gasLimit,
   };
-
   return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }

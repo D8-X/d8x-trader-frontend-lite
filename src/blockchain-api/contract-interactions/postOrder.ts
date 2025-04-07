@@ -51,16 +51,17 @@ export async function postOrder(
     args: [clientOrders as never[], signatures],
     ...feesPerGas,
   };
-  const gas = await estimateContractGas(walletClient, estimateParams)
-    .then((g) => (g * 150n) / 100n)
+  const gasLimit = await estimateContractGas(walletClient, estimateParams)
+    .then((gas) => (gas * 150n) / 100n)
     .catch(() => getGasLimit({ chainId: chain.id, method: MethodE.Interact }) * BigInt(orders.length));
-  const txParams = {
+  const baseParams = {
     ...estimateParams,
     account: walletClient.account,
     chain,
-    gas,
+    gas: gasLimit,
   };
-  return walletClient.writeContract(txParams).then((tx) => {
+  return walletClient.writeContract(baseParams).then((tx) => {
+    // success submitting order to the node - inform backend
     orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
     return { hash: tx, orderIds: brokerData.orderIds };
   });

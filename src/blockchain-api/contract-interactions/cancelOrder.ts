@@ -28,14 +28,14 @@ export async function cancelOrder(
     account: walletClient.account,
     ...feesPerGas,
   };
-  const gas = await estimateContractGas(walletClient, estimateParams)
-    .then((g) => (g * 130n) / 100n)
+  const gasLimit = await estimateContractGas(walletClient, estimateParams)
+    .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  const txParams = {
+  const baseParams = {
     ...estimateParams,
     chain: walletClient.chain,
     account: walletClient.account,
-    gas,
+    gas: gasLimit,
   };
-  return walletClient.writeContract(txParams).then((tx) => ({ hash: tx }));
+  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }
