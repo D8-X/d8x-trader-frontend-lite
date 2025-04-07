@@ -1,10 +1,10 @@
 import { waitForTransactionReceipt } from '@wagmi/core';
-import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { getGasPrice } from '../getGasPrice';
 import { wagmiConfig } from '../wagmi/wagmiClient';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from '../constants';
 import { flatTokenAbi } from './flatTokenAbi';
@@ -14,7 +14,17 @@ interface RegisterFlatTokenPropsI {
   flatTokenAddr: Address;
   userTokenAddr: Address;
   isMultisigAddress: boolean | null;
-  gasPrice?: bigint;
+  feesPerGas?:
+    | {
+        maxFeePerGas: bigint;
+        maxPriorityFeePerGas: bigint;
+        gasPrice: undefined;
+      }
+    | {
+        gasPrice: bigint;
+        maxFeePerGas: undefined;
+        maxPriorityFeePerGas: undefined;
+      };
   confirm?: boolean;
 }
 
@@ -23,33 +33,32 @@ export async function registerFlatToken({
   flatTokenAddr,
   userTokenAddr,
   isMultisigAddress,
-  gasPrice,
   confirm,
 }: RegisterFlatTokenPropsI) {
   if (!walletClient.account?.address) {
     throw new Error('Account not connected');
   }
-  const gasPx = gasPrice ?? (await getGasPrice(walletClient.chain?.id));
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
   const shouldConfirm = confirm ?? true;
   const estimateRegisterParams: EstimateContractGasParameters = {
     address: flatTokenAddr,
     abi: flatTokenAbi,
     functionName: 'registerAccount',
     args: [userTokenAddr],
-    gasPrice: gasPx,
     account: walletClient.account,
+    ...feesPerGas,
   };
   const gasLimit = await estimateContractGas(walletClient, estimateRegisterParams).catch(() =>
     getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
   );
-
-  const writeParams: WriteContractParameters = {
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
     ...estimateRegisterParams,
+    account: walletClient.account || null,
     chain: walletClient.chain,
-    account: walletClient.account,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then(async (tx) => {
+  return walletClient.writeContract(baseParams).then(async (tx) => {
     if (shouldConfirm) {
       await waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
