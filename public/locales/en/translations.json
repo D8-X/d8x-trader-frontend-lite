@@ -901,7 +901,8 @@
         "all": "All",
         "polymarket": "Prediction",
         "metal": "Commodity",
-        "closed": "Closed"
+        "closed": "Closed",
+        "equity": "Equity"
       },
       "search": "Search...",
       "perpetual": {

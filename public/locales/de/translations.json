@@ -901,7 +901,8 @@
         "all": "Alle",
         "polymarket": "Vorhersage",
         "metal": "Rohstoffe",
-        "closed": "Geschlossen"
+        "closed": "Geschlossen",
+        "equity": "Aktien"
       },
       "search": "Suchen...",
       "perpetual": {

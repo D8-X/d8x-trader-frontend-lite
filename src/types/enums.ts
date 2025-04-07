@@ -146,6 +146,7 @@ export enum AssetTypeE {
   Prediction = 'polymarket',
   Fx = 'fx',
   Metal = 'metal',
+  Equity = 'equity',
 }
 
 export enum FieldTypeE {

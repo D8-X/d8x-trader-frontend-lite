@@ -24,6 +24,7 @@ export const CurrencyBadge = ({ assetType, label, className, withPoint }: Curren
         [styles.fx]: assetType === AssetTypeE.Fx,
         [styles.commodity]: assetType === AssetTypeE.Metal,
         [styles.withPoint]: withPoint,
+        [styles.equity]: assetType === AssetTypeE.Equity,
       })}
     >
       {label}

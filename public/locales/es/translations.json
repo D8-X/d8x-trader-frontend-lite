@@ -901,7 +901,8 @@
         "all": "Todos",
         "polymarket": "Predicción",
         "metal": "Productos Basicos",
-        "closed": "Cerrado"
+        "closed": "Cerrado",
+        "equity": "Acciones"
       },
       "search": "Buscar...",
       "perpetual": {
