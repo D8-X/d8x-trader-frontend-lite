@@ -4,7 +4,6 @@ import { type SendTransactionMutateAsync } from '@wagmi/core/query';
 import {
   type Address,
   type WalletClient,
-  type WriteContractParameters,
   type EstimateContractGasParameters,
   PrivateKeyAccount,
   zeroAddress,
@@ -12,7 +11,6 @@ import {
 import { estimateGas, estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
@@ -29,7 +27,6 @@ export async function removeDelegate(
     throw new Error('account not connected');
   }
   // remove delegate
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
@@ -37,8 +34,8 @@ export async function removeDelegate(
     abi: PROXY_ABI,
     functionName: 'setDelegate',
     args: [zeroAddress, 0],
-    gasPrice,
     account,
+    ...feesPerGas,
   };
   const gasLimitRemove = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
@@ -46,73 +43,33 @@ export async function removeDelegate(
 
   // Create base params (shared between legacy and EIP-1559)
   const baseParams = {
-    address: proxyAddr as Address,
-    abi: PROXY_ABI,
-    functionName: 'setDelegate',
-    args: [zeroAddress, 0],
+    ...estimateParams,
     account: account,
     chain: walletClient.chain,
     gas: gasLimitRemove,
   };
 
-  // Determine which transaction type to use
-  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
-    // EIP-1559 transaction
-    const eip1559Params: WriteContractParameters = {
-      ...baseParams,
-      maxFeePerGas: feesPerGas.maxFeePerGas,
-      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
-    };
+  const tx = await walletClient.writeContract(baseParams);
 
-    const tx = await walletClient.writeContract(eip1559Params);
-
-    // reclaim delegate funds
-    if (account !== delegateAccount.address) {
-      const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
-      const gasLimit = await estimateGas(walletClient, {
-        to: account,
-        value: 1n,
+  // reclaim delegate funds
+  if (account !== delegateAccount.address) {
+    const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
+    const gasLimit = await estimateGas(walletClient, {
+      to: account,
+      value: 1n,
+      account: delegateAccount,
+      ...feesPerGas,
+    }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
+    const gasPrice =
+      feesPerGas?.gasPrice ?? 0n + feesPerGas?.maxFeePerGas ?? 0n + feesPerGas?.maxPriorityFeePerGas ?? 0;
+    if (gasLimit && 2n * gasLimit * gasPrice < balance) {
+      await sendTransactionAsync({
         account: delegateAccount,
-        gasPrice,
-      }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-
-      if (gasLimit && 2n * gasLimit * gasPrice < balance) {
-        await sendTransactionAsync({
-          account: delegateAccount,
-          to: account,
-          value: balance - 2n * gasLimit * gasPrice,
-          chainId: walletClient.chain?.id,
-        });
-      }
-    }
-    return { hash: tx };
-  } else {
-    // Legacy transaction
-    const legacyParams: WriteContractParameters = {
-      ...baseParams,
-      gasPrice,
-    };
-
-    const tx = await walletClient.writeContract(legacyParams);
-    // reclaim delegate funds
-    if (account !== delegateAccount.address) {
-      const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
-      const gasLimit = await estimateGas(walletClient, {
         to: account,
-        value: 1n,
-        account: delegateAccount,
-        gasPrice,
-      }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-
-      if (gasLimit && 2n * gasLimit * gasPrice < balance) {
-        await sendTransactionAsync({
-          account: delegateAccount,
-          to: account,
-          value: balance - 2n * gasLimit * gasPrice,
-          chainId: walletClient.chain?.id,
-        });
-      }
+        value: balance - 2n * gasLimit * gasPrice,
+        chainId: walletClient.chain?.id,
+      });
     }
-    return { hash: tx };
   }
+  return { hash: tx };
 }

@@ -1,9 +1,8 @@
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { WriteContractParameters, Address, WalletClient, EstimateContractGasParameters } from 'viem';
+import type { Address, WalletClient, EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { orderSubmitted } from 'network/broker';
 import { MethodE } from 'types/enums';
@@ -35,7 +34,6 @@ export async function postOrder(
     : scOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
 
   const chain = walletClient.chain;
-  const gasPrice = await getGasPrice(chain.id);
   const feesPerGas = await getFeesPerGas(chain.id);
 
   // if (brokerData.OrderBookAddr !== traderAPI.getOrderBookAddress(orders[0].symbol)) {
@@ -51,47 +49,19 @@ export async function postOrder(
     abi: LOB_ABI,
     functionName: 'postOrders',
     args: [clientOrders as never[], signatures],
-    account: walletClient.account,
-    gasPrice,
+    ...feesPerGas,
   };
-  const gasLimit = await estimateContractGas(walletClient, estimateParams)
-    .then((gas) => (gas * 150n) / 100n)
+  const gas = await estimateContractGas(walletClient, estimateParams)
+    .then((g) => (g * 150n) / 100n)
     .catch(() => getGasLimit({ chainId: chain.id, method: MethodE.Interact }) * BigInt(orders.length));
-
-  // Create base params (shared between legacy and EIP-1559)
-  const baseParams = {
-    address: traderAPI.getOrderBookAddress(orders[0].symbol) as Address,
-    abi: LOB_ABI,
-    functionName: 'postOrders',
-    args: [clientOrders as never[], signatures],
+  const txParams = {
+    ...estimateParams,
     account: walletClient.account,
     chain,
-    gas: gasLimit,
+    gas,
   };
-
-  // Determine which transaction type to use
-  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
-    // EIP-1559 transaction
-    const eip1559Params: WriteContractParameters = {
-      ...baseParams,
-      maxFeePerGas: feesPerGas.maxFeePerGas,
-      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
-    };
-
-    return walletClient.writeContract(eip1559Params).then((tx) => {
-      orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
-      return { hash: tx, orderIds: brokerData.orderIds };
-    });
-  } else {
-    // Legacy transaction
-    const legacyParams: WriteContractParameters = {
-      ...baseParams,
-      gasPrice,
-    };
-
-    return walletClient.writeContract(legacyParams).then((tx) => {
-      orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
-      return { hash: tx, orderIds: brokerData.orderIds };
-    });
-  }
+  return walletClient.writeContract(txParams).then((tx) => {
+    orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
+    return { hash: tx, orderIds: brokerData.orderIds };
+  });
 }

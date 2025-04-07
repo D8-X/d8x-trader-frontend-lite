@@ -1,9 +1,8 @@
 import { PROXY_ABI, type TraderInterface, floatToDecN } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 
@@ -21,7 +20,6 @@ export async function addLiquidity(
   }
   const amountCC = await traderAPI.fetchCollateralToSettlementConversion(symbol).then((c2s) => amount / c2s);
   const amountParsed = BigInt(floatToDecN(amountCC, decimals).toString());
-  const gasPrice = await getGasPrice(walletClient.chain?.id);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
@@ -30,7 +28,7 @@ export async function addLiquidity(
     functionName: 'addLiquidity',
     args: [poolId, amountParsed],
     account,
-    gasPrice: gasPrice,
+    ...feesPerGas,
   };
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
@@ -45,25 +43,7 @@ export async function addLiquidity(
     account: walletClient.account || null,
     chain: walletClient.chain,
     gas: gasLimit,
+    ...feesPerGas,
   };
-
-  // Determine which transaction type to use
-  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
-    // EIP-1559 transaction
-    const eip1559Params: WriteContractParameters = {
-      ...baseParams,
-      maxFeePerGas: feesPerGas.maxFeePerGas,
-      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
-    };
-
-    return walletClient.writeContract(eip1559Params).then((tx) => ({ hash: tx }));
-  } else {
-    // Legacy transaction
-    const legacyParams: WriteContractParameters = {
-      ...baseParams,
-      gasPrice,
-    };
-
-    return walletClient.writeContract(legacyParams).then((tx) => ({ hash: tx }));
-  }
+  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }
