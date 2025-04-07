@@ -13,6 +13,7 @@ import { estimateContractGas } from 'viem/actions';
 import { MaxUint256 } from 'appConstants';
 
 import { getGasPrice } from './getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { wagmiConfig } from './wagmi/wagmiClient';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { MethodE } from 'types/enums';
@@ -77,6 +78,7 @@ export async function approveMarginToken({
       throw new Error('account not connected');
     }
     const gasPrice = await getGasPrice(walletClient.chain?.id);
+    const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
     let [tokenAddress, spender] = [settleTokenAddr as Address, proxyAddr as Address];
 
@@ -119,18 +121,47 @@ export async function approveMarginToken({
       getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
     );
 
-    const writeParams: WriteContractParameters = {
-      ...estimateParams,
-      chain: walletClient.chain,
+    // Create base params (shared between legacy and EIP-1559)
+    const baseParams = {
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [spender, BigInt(MaxUint256)],
       account: account,
+      chain: walletClient.chain,
       gas: gasLimit,
     };
-    return walletClient.writeContract(writeParams).then(async (tx) => {
-      await waitForTransactionReceipt(wagmiConfig, {
-        hash: tx,
-        timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+
+    // Determine which transaction type to use
+    if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
+      // EIP-1559 transaction
+      const eip1559Params: WriteContractParameters = {
+        ...baseParams,
+        maxFeePerGas: feesPerGas.maxFeePerGas,
+        maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
+      };
+
+      return walletClient.writeContract(eip1559Params).then(async (tx) => {
+        await waitForTransactionReceipt(wagmiConfig, {
+          hash: tx,
+          timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        });
+        return { hash: tx };
       });
-      return { hash: tx };
-    });
+    } else {
+      // Legacy transaction
+      const legacyParams: WriteContractParameters = {
+        ...baseParams,
+        gasPrice,
+      };
+
+      return walletClient.writeContract(legacyParams).then(async (tx) => {
+        await waitForTransactionReceipt(wagmiConfig, {
+          hash: tx,
+          timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        });
+        return { hash: tx };
+      });
+    }
   }
 }

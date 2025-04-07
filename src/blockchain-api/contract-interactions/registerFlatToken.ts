@@ -5,6 +5,7 @@ import { estimateContractGas } from 'viem/actions';
 import { getGasPrice } from '../getGasPrice';
 import { wagmiConfig } from '../wagmi/wagmiClient';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from '../constants';
 import { flatTokenAbi } from './flatTokenAbi';
@@ -30,6 +31,8 @@ export async function registerFlatToken({
     throw new Error('Account not connected');
   }
   const gasPx = gasPrice ?? (await getGasPrice(walletClient.chain?.id));
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
+
   const shouldConfirm = confirm ?? true;
   const estimateRegisterParams: EstimateContractGasParameters = {
     address: flatTokenAddr,
@@ -42,20 +45,50 @@ export async function registerFlatToken({
   const gasLimit = await estimateContractGas(walletClient, estimateRegisterParams).catch(() =>
     getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
   );
-
-  const writeParams: WriteContractParameters = {
-    ...estimateRegisterParams,
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
+    address: flatTokenAddr,
+    abi: flatTokenAbi,
+    functionName: 'registerAccount',
+    args: [userTokenAddr],
+    account: walletClient.account || null,
     chain: walletClient.chain,
-    account: walletClient.account,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then(async (tx) => {
-    if (shouldConfirm) {
-      await waitForTransactionReceipt(wagmiConfig, {
-        hash: tx,
-        timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
-      });
-    }
-    return { hash: tx };
-  });
+
+  // Determine which transaction type to use
+  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
+    // EIP-1559 transaction
+    const eip1559Params: WriteContractParameters = {
+      ...baseParams,
+      maxFeePerGas: feesPerGas.maxFeePerGas,
+      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
+    };
+
+    return walletClient.writeContract(eip1559Params).then(async (tx) => {
+      if (shouldConfirm) {
+        await waitForTransactionReceipt(wagmiConfig, {
+          hash: tx,
+          timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        });
+      }
+      return { hash: tx };
+    });
+  } else {
+    // Legacy transaction
+    const legacyParams: WriteContractParameters = {
+      ...baseParams,
+      gasPrice,
+    };
+
+    return walletClient.writeContract(legacyParams).then(async (tx) => {
+      if (shouldConfirm) {
+        await waitForTransactionReceipt(wagmiConfig, {
+          hash: tx,
+          timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        });
+      }
+      return { hash: tx };
+    });
+  }
 }

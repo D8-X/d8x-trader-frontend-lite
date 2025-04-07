@@ -4,6 +4,7 @@ import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { MethodE } from 'types/enums';
 import { type CancelOrderResponseI } from 'types/types';
 
@@ -30,11 +31,37 @@ export async function cancelOrder(
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
 
-  const writeParams: WriteContractParameters = {
-    ...estimateParams,
+  const gasPrice = await getGasPrice(walletClient.chain?.id);
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
+
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
+    address: data.OrderBookAddr as Address,
+    abi: LOB_ABI,
+    functionName: 'cancelOrder',
+    args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
+    account: walletClient.account || null,
     chain: walletClient.chain,
-    account: walletClient.account,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then((tx) => ({ hash: tx }));
+
+  // Determine which transaction type to use
+  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
+    // EIP-1559 transaction
+    const eip1559Params: WriteContractParameters = {
+      ...baseParams,
+      maxFeePerGas: feesPerGas.maxFeePerGas,
+      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
+    };
+
+    return walletClient.writeContract(eip1559Params).then((tx) => ({ hash: tx }));
+  } else {
+    // Legacy transaction
+    const legacyParams: WriteContractParameters = {
+      ...baseParams,
+      gasPrice,
+    };
+
+    return walletClient.writeContract(legacyParams).then((tx) => ({ hash: tx }));
+  }
 }

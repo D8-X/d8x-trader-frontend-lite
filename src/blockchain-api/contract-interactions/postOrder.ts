@@ -4,6 +4,7 @@ import { estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { orderSubmitted } from 'network/broker';
 import { MethodE } from 'types/enums';
 import type { OrderI, OrderDigestI } from 'types/types';
@@ -35,6 +36,7 @@ export async function postOrder(
 
   const chain = walletClient.chain;
   const gasPrice = await getGasPrice(chain.id);
+  const feesPerGas = await getFeesPerGas(chain.id);
 
   // if (brokerData.OrderBookAddr !== traderAPI.getOrderBookAddress(orders[0].symbol)) {
   //   console.log({
@@ -56,15 +58,40 @@ export async function postOrder(
     .then((gas) => (gas * 150n) / 100n)
     .catch(() => getGasLimit({ chainId: chain.id, method: MethodE.Interact }) * BigInt(orders.length));
 
-  const writeParams: WriteContractParameters = {
-    ...estimateParams,
-    chain,
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
+    address: traderAPI.getOrderBookAddress(orders[0].symbol) as Address,
+    abi: LOB_ABI,
+    functionName: 'postOrders',
+    args: [clientOrders as never[], signatures],
     account: walletClient.account,
+    chain,
     gas: gasLimit,
   };
-  return walletClient.writeContract(writeParams).then((tx) => {
-    // success submitting order to the node - inform backend
-    orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
-    return { hash: tx, orderIds: brokerData.orderIds };
-  });
+
+  // Determine which transaction type to use
+  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
+    // EIP-1559 transaction
+    const eip1559Params: WriteContractParameters = {
+      ...baseParams,
+      maxFeePerGas: feesPerGas.maxFeePerGas,
+      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
+    };
+
+    return walletClient.writeContract(eip1559Params).then((tx) => {
+      orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
+      return { hash: tx, orderIds: brokerData.orderIds };
+    });
+  } else {
+    // Legacy transaction
+    const legacyParams: WriteContractParameters = {
+      ...baseParams,
+      gasPrice,
+    };
+
+    return walletClient.writeContract(legacyParams).then((tx) => {
+      orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
+      return { hash: tx, orderIds: brokerData.orderIds };
+    });
+  }
 }

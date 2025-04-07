@@ -13,6 +13,8 @@ import { estimateGas, estimateContractGas } from 'viem/actions';
 
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { MethodE } from 'types/enums';
 
@@ -28,6 +30,7 @@ export async function removeDelegate(
   }
   // remove delegate
   const gasPrice = await getGasPrice(walletClient.chain?.id);
+  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   const estimateParams: EstimateContractGasParameters = {
     address: proxyAddr as Address,
@@ -41,32 +44,75 @@ export async function removeDelegate(
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
 
-  const writeParams: WriteContractParameters = {
-    ...estimateParams,
+  // Create base params (shared between legacy and EIP-1559)
+  const baseParams = {
+    address: proxyAddr as Address,
+    abi: PROXY_ABI,
+    functionName: 'setDelegate',
+    args: [zeroAddress, 0],
+    account: account,
     chain: walletClient.chain,
-    account,
     gas: gasLimitRemove,
   };
-  const tx = await walletClient.writeContract(writeParams);
 
-  // reclaim delegate funds
-  if (account !== delegateAccount.address) {
-    const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
-    const gasLimit = await estimateGas(walletClient, {
-      to: account,
-      value: 1n,
-      account: delegateAccount,
-      gasPrice,
-    }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
+  // Determine which transaction type to use
+  if (feesPerGas && 'maxFeePerGas' in feesPerGas && 'maxPriorityFeePerGas' in feesPerGas) {
+    // EIP-1559 transaction
+    const eip1559Params: WriteContractParameters = {
+      ...baseParams,
+      maxFeePerGas: feesPerGas.maxFeePerGas,
+      maxPriorityFeePerGas: feesPerGas.maxPriorityFeePerGas,
+    };
 
-    if (gasLimit && 2n * gasLimit * gasPrice < balance) {
-      await sendTransactionAsync({
-        account: delegateAccount,
+    const tx = await walletClient.writeContract(eip1559Params);
+
+    // reclaim delegate funds
+    if (account !== delegateAccount.address) {
+      const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
+      const gasLimit = await estimateGas(walletClient, {
         to: account,
-        value: balance - 2n * gasLimit * gasPrice,
-        chainId: walletClient.chain?.id,
-      });
+        value: 1n,
+        account: delegateAccount,
+        gasPrice,
+      }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
+
+      if (gasLimit && 2n * gasLimit * gasPrice < balance) {
+        await sendTransactionAsync({
+          account: delegateAccount,
+          to: account,
+          value: balance - 2n * gasLimit * gasPrice,
+          chainId: walletClient.chain?.id,
+        });
+      }
     }
+    return { hash: tx };
+  } else {
+    // Legacy transaction
+    const legacyParams: WriteContractParameters = {
+      ...baseParams,
+      gasPrice,
+    };
+
+    const tx = await walletClient.writeContract(legacyParams);
+    // reclaim delegate funds
+    if (account !== delegateAccount.address) {
+      const { value: balance } = await getBalance(wagmiConfig, { address: delegateAccount.address });
+      const gasLimit = await estimateGas(walletClient, {
+        to: account,
+        value: 1n,
+        account: delegateAccount,
+        gasPrice,
+      }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
+
+      if (gasLimit && 2n * gasLimit * gasPrice < balance) {
+        await sendTransactionAsync({
+          account: delegateAccount,
+          to: account,
+          value: balance - 2n * gasLimit * gasPrice,
+          chainId: walletClient.chain?.id,
+        });
+      }
+    }
+    return { hash: tx };
   }
-  return { hash: tx };
 }
