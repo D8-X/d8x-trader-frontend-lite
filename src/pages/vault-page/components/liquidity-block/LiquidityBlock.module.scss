@@ -10,7 +10,7 @@
 }
 
 .infoBlock {
-  padding-left: $d8x-spacing * 8;
+  padding-left: 0;
   padding-top: $d8x-spacing * 4;
   width: 274px;
 }
@@ -28,6 +28,35 @@
 .text {
   margin-top: $d8x-spacing * 4;
   margin-bottom: $d8x-spacing * 4;
+}
+
+.withdrawContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1rem;
+  width: 100%;
+  
+  .infoBlock {
+    flex: 1;
+  }
+  
+  .verticalSeparator {
+    width: 1px;
+    background-color: var(--d8x-color-separator-border);
+    margin: 0 3 rem;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    
+    .verticalSeparator {
+      display: none;
+      height: 1px;
+      width: 100%;
+      margin: 3rem 0;
+    }
+  }
 }
 
 @media screen and ($d8x-breakpoint-max-sm) {
