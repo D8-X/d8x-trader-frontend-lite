@@ -497,6 +497,22 @@ export const ActionBlock = memo(() => {
                   );
                   setTxHash(tx.hash);
                 })
+                .catch((error) => {
+                  console.error(error);
+
+                  // Extract just the main error statement without the detailed explanation
+                  const errorMessage = error.message || 'Unknown error';
+                  // Match the pattern "ErrorType: Main message."
+                  const mainError = errorMessage.split('\n')[0].trim();
+
+                  toast.error(
+                    <ToastContent title="Failed to submit order" bodyLines={[{ label: '', value: mainError }]} />
+                  ); // ensure we can trade again
+                  // ensure we can trade again
+                  requestSentRef.current = false;
+                  setRequestSent(false);
+                  setShowReviewOrderModal(false);
+                })
                 .finally(() => {
                   // ensure we can trade again - but modal is left open if user rejects txn
                   requestSentRef.current = false;

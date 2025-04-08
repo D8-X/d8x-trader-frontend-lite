@@ -5,11 +5,11 @@ import { GetBalanceReturnType, getGasPrice as getGasPriceWagmi } from '@wagmi/co
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { traderAPIAtom } from 'store/pools.store';
 import { MethodE } from 'types/enums';
+import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
@@ -90,7 +90,8 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     if (chain?.id && address && isConnected) {
-      getGasPrice(chain.id).then((proposedGasPrice) => {
+      getFeesPerGas(chain.id).then(({ gasPrice: gasPx, maxFeePerGas, maxPriorityFeePerGas }) => {
+        const proposedGasPrice = (gasPx ?? 0n) + (maxFeePerGas ?? 0n) + (maxPriorityFeePerGas ?? 0n);
         if (!proposedGasPrice) {
           getGasPriceWagmi(wagmiConfig, { chainId: chain.id }).then((gasPriceFromWagmi) => {
             setGasPrice(gasPriceFromWagmi);
