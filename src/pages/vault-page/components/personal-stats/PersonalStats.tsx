@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { memo, useState, useMemo, useEffect } from 'react';
-//  import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount } from 'wagmi';
 
@@ -24,14 +24,15 @@ const MIN_WIDTH_FOR_TABLE = 768;
 interface WithdrawalHistoryI {
   id: string;
   action: string;
+  rawDate: Date;
   date: string;
   poolShareTokenPrice: number;
-  lp_tokens_dec: number;
+  lp_tokens_dec: number | string;
   sh_tokens_dec: number;
 }
 
 export const PersonalStats = memo(() => {
-  //const { t } = useTranslation();
+  const { t } = useTranslation();
   const { width, ref } = useResizeDetector();
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
   const [orderBy, setOrderBy] = useState<keyof WithdrawalHistoryI>('date');
@@ -62,7 +63,7 @@ export const PersonalStats = memo(() => {
         fieldType: FieldTypeE.String,
       },
       {
-        field: 'date',
+        field: 'rawDate',
         label: 'Date',
         align: AlignE.Left,
         fieldType: FieldTypeE.String,
@@ -115,27 +116,106 @@ export const PersonalStats = memo(() => {
   const withdrawalHistory: WithdrawalHistoryI[] = useMemo(() => {
     return lpActionHistory.map((item, index) => {
       // Determine action type without nested ternary
-      let action = item.event_type;
-      if (item.event_type === 'share_token_p2p_transfer') {
-        action = item.sh_tokens_dec < 0 ? 'Withdraw Request' : 'Deposit';
+      let action;
+      switch (item.event_type) {
+        case 'liquidity_added':
+          action = t('pages.vault.toast.added');
+          break;
+        case 'liquidity_removed':
+          action = t('pages.vault.toast.withdrawn');
+          break;
+        case 'share_token_p2p_transfer':
+          action = t('pages.vault.toast.transfered');
+          break;
+        default:
+          action = item.event_type;
       }
+
+      const lpTokens = item.event_type === 'share_token_p2p_transfer' ? '-' : Number(item.lp_tokens_dec);
+      const rawDate = new Date(item.created_at);
 
       return {
         id: `${index}-${item.tx_hash.substring(0, 8)}`,
         action,
-        date: new Date(item.created_at).toLocaleString(),
+        rawDate,
+        date: rawDate.toLocaleString(),
         poolShareTokenPrice: item.price_cc,
-        lp_tokens_dec: item.lp_tokens_dec,
-        sh_tokens_dec: Math.abs(item.sh_tokens_dec),
+        lp_tokens_dec: lpTokens,
+        sh_tokens_dec: -item.sh_tokens_dec,
       };
     });
-  }, [lpActionHistory]);
+  }, [lpActionHistory, t]);
 
   // Sort the data
   const sortedHistory = useMemo(
     () => stableSort(withdrawalHistory, getComparator(order, orderBy)),
     [withdrawalHistory, order, orderBy]
   );
+
+  // Pre-compute table content to avoid nested ternaries
+  let tableContent;
+  if (isLoading) {
+    tableContent = (
+      <TableRow>
+        <td colSpan={withdrawalHeaders.length} className={styles.loadingCell}>
+          Loading history...
+        </td>
+      </TableRow>
+    );
+  } else if (sortedHistory.length > 0) {
+    tableContent = sortedHistory.map((item) => (
+      <TableRow key={item.id} className={styles.tableRow}>
+        <td className={styles.cellLeft}>{item.action}</td>
+        <td className={styles.cellLeft}>{item.date}</td>
+        <td className={styles.cellRight}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</td>
+        <td className={styles.cellRight}>
+          {typeof item.lp_tokens_dec === 'string'
+            ? item.lp_tokens_dec
+            : formatToCurrency(item.lp_tokens_dec, userSymbol)}
+        </td>
+        <td className={styles.cellRight}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</td>
+      </TableRow>
+    ));
+  } else {
+    tableContent = <EmptyRow colSpan={withdrawalHeaders.length} text="No withdrawal history found" />;
+  }
+
+  // Similarly for mobile view
+  let mobileContent;
+  if (isLoading) {
+    mobileContent = <div className={styles.loading}>Loading history...</div>;
+  } else if (sortedHistory.length > 0) {
+    mobileContent = sortedHistory.map((item) => (
+      <div key={item.id} className={styles.block}>
+        <div className={styles.blockRow}>
+          <div className={styles.blockLabel}>Action:</div>
+          <div className={styles.blockValue}>{item.action}</div>
+        </div>
+        <div className={styles.blockRow}>
+          <div className={styles.blockLabel}>Date:</div>
+          <div className={styles.blockValue}>{item.date}</div>
+        </div>
+        <div className={styles.blockRow}>
+          <div className={styles.blockLabel}>Pool Share Price:</div>
+          <div className={styles.blockValue}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</div>
+        </div>
+        <div className={styles.blockRow}>
+          <div className={styles.blockLabel}>LP Tokens:</div>
+          <div className={styles.blockValue}>
+            {typeof item.lp_tokens_dec === 'string'
+              ? item.lp_tokens_dec
+              : formatToCurrency(item.lp_tokens_dec, userSymbol)}
+          </div>
+        </div>
+        <div className={styles.blockRow}>
+          <div className={styles.blockLabel}>Share Tokens:</div>
+          <div className={styles.blockValue}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</div>
+        </div>
+      </div>
+    ));
+  } else {
+    mobileContent = <div className={styles.noData}>No withdrawal history found</div>;
+  }
 
   return (
     <div className={styles.root} ref={ref}>
@@ -153,64 +233,11 @@ export const PersonalStats = memo(() => {
                 />
               </TableRow>
             </TableHead>
-            <TableBody className={styles.tableBody}>
-              {isLoading ? (
-                <TableRow>
-                  <td colSpan={withdrawalHeaders.length} className={styles.loadingCell}>
-                    Loading history...
-                  </td>
-                </TableRow>
-              ) : sortedHistory.length > 0 ? (
-                sortedHistory.map((item) => (
-                  <TableRow key={item.id} className={styles.tableRow}>
-                    <td className={styles.cellLeft}>{item.action}</td>
-                    <td className={styles.cellLeft}>{item.date}</td>
-                    <td className={styles.cellRight}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</td>
-                    <td className={styles.cellRight}>{formatToCurrency(item.lp_tokens_dec, userSymbol)}</td>
-                    <td className={styles.cellRight}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</td>
-                  </TableRow>
-                ))
-              ) : (
-                <EmptyRow colSpan={withdrawalHeaders.length} text="No withdrawal history found" />
-              )}
-            </TableBody>
+            <TableBody className={styles.tableBody}>{tableContent}</TableBody>
           </MuiTable>
         </TableContainer>
       )}
-      {(!width || width < MIN_WIDTH_FOR_TABLE) && (
-        <div className={styles.blocksHolder}>
-          {isLoading ? (
-            <div className={styles.loading}>Loading history...</div>
-          ) : sortedHistory.length > 0 ? (
-            sortedHistory.map((item) => (
-              <div key={item.id} className={styles.block}>
-                <div className={styles.blockRow}>
-                  <div className={styles.blockLabel}>Action:</div>
-                  <div className={styles.blockValue}>{item.action}</div>
-                </div>
-                <div className={styles.blockRow}>
-                  <div className={styles.blockLabel}>Date:</div>
-                  <div className={styles.blockValue}>{item.date}</div>
-                </div>
-                <div className={styles.blockRow}>
-                  <div className={styles.blockLabel}>Pool Share Price:</div>
-                  <div className={styles.blockValue}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</div>
-                </div>
-                <div className={styles.blockRow}>
-                  <div className={styles.blockLabel}>LP Tokens:</div>
-                  <div className={styles.blockValue}>{formatToCurrency(item.lp_tokens_dec, userSymbol)}</div>
-                </div>
-                <div className={styles.blockRow}>
-                  <div className={styles.blockLabel}>Share Tokens:</div>
-                  <div className={styles.blockValue}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className={styles.noData}>No withdrawal history found</div>
-          )}
-        </div>
-      )}
+      {(!width || width < MIN_WIDTH_FOR_TABLE) && <div className={styles.blocksHolder}>{mobileContent}</div>}
     </div>
   );
 });

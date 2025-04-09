@@ -653,7 +653,8 @@
         "error-initiating": {
           "title": "Erreur lors de l'initiation du retrait",
           "body": "Raison"
-        }
+        },
+        "transfered": "Transfert"
       }
     },
     "strategies": {

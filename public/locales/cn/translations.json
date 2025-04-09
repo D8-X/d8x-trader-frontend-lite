@@ -653,7 +653,8 @@
         "error-initiating": {
           "title": "发起提现时发生错误",
           "body": "原因"
-        }
+        },
+        "transfered": "股票 转移"
       }
     },
     "strategies": {

@@ -653,7 +653,8 @@
         "error-initiating": {
           "title": "Error initiating withdrawal",
           "body": "Reason"
-        }
+        },
+        "transfered": "Poolshares transfered"
       }
     },
     "strategies": {
