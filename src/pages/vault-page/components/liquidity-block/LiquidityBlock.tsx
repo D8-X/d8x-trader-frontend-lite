@@ -53,11 +53,7 @@ export const LiquidityBlock = memo(() => {
         <Separator className={styles.separator} />
         {liquidityType === LiquidityTypeE.Add && <Add />}
         {liquidityType === LiquidityTypeE.Withdraw && <Withdraw withdrawOn={withdrawOn} />}
-        {liquidityType === LiquidityTypeE.Info && (
-          <Box className={styles.infoBlock}>
-            <PersonalStats withdrawOn={withdrawOn} />
-          </Box>
-        )}
+        {liquidityType === LiquidityTypeE.Info && <PersonalStats />}
       </Box>
     </Box>
   );

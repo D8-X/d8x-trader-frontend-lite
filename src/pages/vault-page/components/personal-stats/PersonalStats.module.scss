@@ -1,44 +1,98 @@
 @import '~styles/theme/theme.scss';
 
 .root {
-  display: grid;
-  gap: 1rem;
+  width: 100%;
+}
 
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 4rem;
+.tableHolder {
+  border-radius: $d8x-border-radius;
+  overflow: hidden;
+}
 
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
+.withBackground {
+  background-color: var(--d8x-color-background-items);
+  box-shadow: var(--d8x-shadow);
+}
+
+.tableHead {
+  background-color: var(--d8x-color-background-table-head);
+  
+  th {
+    padding: $d8x-spacing * 1.5;
+    font-weight: 600;
+    color: var(--d8x-color-text-label);
+  }
+}
+
+.tableBody {
+  .tableRow {
+    border-bottom: 1px solid var(--d8x-color-divider);
+    
+    &:hover {
+      background-color: var(--d8x-color-background-hover);
     }
-
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
+  }
+  
+  td {
+    padding: $d8x-spacing * 1.5;
+    color: var(--d8x-color-text);
+    
+    &.cellLeft {
+      text-align: left;
+    }
+    
+    &.cellRight {
+      text-align: right;
     }
   }
 }
 
-.statContainer {
-  margin-top: $d8x-spacing * 4;
-  text-align: left;
+.footer {
+  padding: $d8x-spacing;
+  border-top: 1px solid var(--d8x-color-divider);
+  margin-top: -1px;
+  color: var(--d8x-color-text-label);
+  font-size: 14px;
 }
 
-.statLabel {
+.noData {
   display: flex;
-  justify-content: flex-start;
-  color: var(--d8x-color-text-label-two);
-  white-space: nowrap;
-  margin-bottom: $d8x-spacing * 0.5;
-  font-size: 12px;
+  justify-content: center;
+  align-items: center;
+  padding: $d8x-spacing * 3;
+  color: var(--d8x-color-text-label);
 }
 
-.statValue {
-  display: block;
-  color: var(--d8x-color-text-highlight);
+.blocksHolder {
+  display: flex;
+  flex-direction: column;
+  gap: $d8x-spacing * 2;
+}
+
+.block {
+  background-color: var(--d8x-color-background-items);
+  border-radius: $d8x-border-radius;
+  padding: $d8x-spacing * 2;
+  box-shadow: var(--d8x-shadow);
+}
+
+.blockRow {
+  display: flex;
+  justify-content: space-between;
+  padding: $d8x-spacing 0;
+  border-bottom: 1px solid var(--d8x-color-divider);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.blockLabel {
+  color: var(--d8x-color-text-label);
+  font-weight: 500;
+}
+
+.blockValue {
+  color: var(--d8x-color-text);
   font-weight: 600;
-  white-space: nowrap;
 }
