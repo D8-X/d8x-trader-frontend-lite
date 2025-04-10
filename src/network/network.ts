@@ -503,6 +503,8 @@ export interface LpActionHistoryItemI {
   sh_tokens_dec: number;
   price_cc: number;
   tx_hash: string;
+  shareSymbol?: string;
+  userSymbol?: string;
 }
 
 export async function getLpActionHistory(

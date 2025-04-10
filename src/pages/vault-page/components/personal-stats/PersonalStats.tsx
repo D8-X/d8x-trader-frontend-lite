@@ -29,6 +29,8 @@ interface WithdrawalHistoryI {
   poolShareTokenPrice: number;
   lp_tokens_dec: number | string;
   sh_tokens_dec: number;
+  shareSymbol: string;
+  userSymbol: string;
 }
 
 export const PersonalStats = memo(() => {
@@ -46,13 +48,7 @@ export const PersonalStats = memo(() => {
   console.log(pools);
   const { chainId, address } = useAccount();
 
-  const shareSymbol = `d${selectedPool?.settleSymbol}`;
-
-  const [userSymbol] =
-    !!flatToken && selectedPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
-      ? [flatToken.registeredSymbol]
-      : [selectedPool?.poolSymbol ?? ''];
-
+  console.log('flattoken', flatToken);
   // Define the table headers
   const withdrawalHeaders: TableHeaderI<WithdrawalHistoryI>[] = useMemo(
     () => [
@@ -93,28 +89,56 @@ export const PersonalStats = memo(() => {
   // Fetch LP action history when component mounts or when address/pools change
   useEffect(() => {
     const fetchLpActionHistory = async () => {
-      if (!address || !pools.length || !chainId) return;
+      if (!address || !pools.length || !chainId) {
+        setLpActionHistory([]); // Clear history when requirements aren't met
+        return;
+      }
 
       setIsLoading(true);
       try {
-        // Get history for the selected pool
-        if (selectedPool?.poolSymbol) {
-          const history = await getLpActionHistory(chainId, address, selectedPool.poolSymbol);
-          setLpActionHistory(history);
-        }
+        // Create an array of promises for all pools
+        const historyPromises = pools.map((pool) => getLpActionHistory(chainId, address, pool.poolSymbol));
+
+        // Wait for all requests to complete
+        const allHistoryResults = await Promise.all(historyPromises);
+
+        // Combine all results into a single array
+        const combinedHistory = allHistoryResults.flat().map((historyItem) => {
+          // Find the pool that matches the item's pool_id
+          const matchingPool = pools.find((pool) => pool.poolId === historyItem.pool_id);
+
+          // Create shareSymbol and userSymbol
+          const shareSymbol = matchingPool ? `d${matchingPool.settleSymbol}` : '';
+          const userSymbol =
+            matchingPool && !!flatToken && matchingPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
+              ? flatToken.registeredSymbol
+              : matchingPool?.settleSymbol || '';
+
+          return {
+            ...historyItem,
+            shareSymbol,
+            userSymbol,
+          };
+        });
+
+        // Set the combined history
+        setLpActionHistory(combinedHistory);
       } catch (error) {
         console.error('Error fetching LP action history:', error);
+        setLpActionHistory([]); // Reset to empty array on error
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchLpActionHistory();
-  }, [address, chainId, pools, selectedPool?.poolSymbol]);
+  }, [address, chainId, pools, selectedPool?.poolSymbol, flatToken]);
 
   // Map the LP action history to withdrawal history format
   const withdrawalHistory: WithdrawalHistoryI[] = useMemo(() => {
     return lpActionHistory.map((item, index) => {
+      const txId = item.tx_hash ? item.tx_hash.substring(0, 8) : `unknown-${index}`;
+
       // Determine action type without nested ternary
       let action;
       switch (item.event_type) {
@@ -134,14 +158,19 @@ export const PersonalStats = memo(() => {
       const lpTokens = item.event_type === 'share_token_p2p_transfer' ? '-' : Number(item.lp_tokens_dec);
       const rawDate = new Date(item.created_at);
 
+      const shareSymbol = item.shareSymbol || '';
+      const userSymbol = item.userSymbol || '';
+
       return {
-        id: `${index}-${item.tx_hash.substring(0, 8)}`,
+        id: `${index}-${txId}`,
         action,
         rawDate,
         date: rawDate.toLocaleString(),
         poolShareTokenPrice: item.price_cc,
         lp_tokens_dec: lpTokens,
         sh_tokens_dec: -item.sh_tokens_dec,
+        shareSymbol: shareSymbol,
+        userSymbol: userSymbol,
       };
     });
   }, [lpActionHistory, t]);
@@ -171,9 +200,9 @@ export const PersonalStats = memo(() => {
         <td className={styles.cellRight}>
           {typeof item.lp_tokens_dec === 'string'
             ? item.lp_tokens_dec
-            : formatToCurrency(item.lp_tokens_dec, userSymbol)}
+            : formatToCurrency(item.lp_tokens_dec, item.userSymbol)}
         </td>
-        <td className={styles.cellRight}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</td>
+        <td className={styles.cellRight}>{formatToCurrency(item.sh_tokens_dec, item.shareSymbol)}</td>
       </TableRow>
     ));
   } else {
@@ -187,29 +216,32 @@ export const PersonalStats = memo(() => {
   } else if (sortedHistory.length > 0) {
     mobileContent = sortedHistory.map((item) => (
       <div key={item.id} className={styles.block}>
-        <div className={styles.blockRow}>
-          <div className={styles.blockLabel}>Action:</div>
-          <div className={styles.blockValue}>{item.action}</div>
-        </div>
-        <div className={styles.blockRow}>
-          <div className={styles.blockLabel}>Date:</div>
-          <div className={styles.blockValue}>{item.date}</div>
-        </div>
-        <div className={styles.blockRow}>
-          <div className={styles.blockLabel}>Pool Share Price:</div>
-          <div className={styles.blockValue}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</div>
-        </div>
-        <div className={styles.blockRow}>
-          <div className={styles.blockLabel}>LP Tokens:</div>
-          <div className={styles.blockValue}>
-            {typeof item.lp_tokens_dec === 'string'
-              ? item.lp_tokens_dec
-              : formatToCurrency(item.lp_tokens_dec, userSymbol)}
+        <div className={styles.headerWrapper}>
+          <div className={styles.leftSection}>
+            <div className={styles.blockHighlight}>{item.action}</div>
           </div>
         </div>
-        <div className={styles.blockRow}>
-          <div className={styles.blockLabel}>Share Tokens:</div>
-          <div className={styles.blockValue}>{formatToCurrency(item.sh_tokens_dec, shareSymbol)}</div>
+        <div className={styles.dataWrapper}>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Date:</div>
+            <div className={styles.blockValue}>{item.date}</div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Pool Share Price:</div>
+            <div className={styles.blockValue}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>LP Tokens:</div>
+            <div className={styles.blockValue}>
+              {typeof item.lp_tokens_dec === 'string'
+                ? item.lp_tokens_dec
+                : formatToCurrency(item.lp_tokens_dec, item.userSymbol)}
+            </div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Share Tokens:</div>
+            <div className={styles.blockValue}>{formatToCurrency(item.sh_tokens_dec, item.shareSymbol)}</div>
+          </div>
         </div>
       </div>
     ));
