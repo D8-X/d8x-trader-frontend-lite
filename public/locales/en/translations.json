@@ -654,7 +654,7 @@
           "title": "Error initiating withdrawal",
           "body": "Reason"
         },
-        "transfered": "Poolshares transfered"
+        "transfered": "Poolshares transferred"
       }
     },
     "strategies": {
@@ -759,7 +759,7 @@
           },
           "vault": {
             "title": "Earn details",
-            "assets": "Assets",
+            "assets": "Assets in wallet",
             "assets-pool": "Assets in pools",
             "earnings-pool": "Earnings per pool",
             "total": "..of which estim. earnings"
