@@ -91,7 +91,7 @@ export const useFetchCalculations = () => {
   }, [address, traderAPI, poolUsdPrice, pools, fetchPoolShare]);
 
   useEffect(() => {
-    if (!address || fetchPoolTokensUSDBalanceRef.current) {
+    if (!address || fetchPoolTokensUSDBalanceRef.current || Object.keys(poolUsdPrice).length === 0 || !pools.length) {
       return;
     }
 

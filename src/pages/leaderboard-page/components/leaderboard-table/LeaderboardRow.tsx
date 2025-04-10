@@ -40,8 +40,6 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
 
   const isWeekly = isWeeklyEntry(entry);
 
-  console.log(entry.timeWeightedOI);
-
   return (
     <TableRow className={`${styles.row} ${isUserRow ? styles.userRow : ''}`}>
       <TableCell className={styles.rankCell} align="left">

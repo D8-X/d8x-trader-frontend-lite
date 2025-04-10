@@ -2,7 +2,6 @@ import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@mui/material';
 
-import { totalEstimatedEarningsAtom } from 'pages/portfolio-page/store/fetchEarnings';
 import { accountValueAtom } from 'pages/portfolio-page/store/portfolio.store';
 import { poolShareTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolShare';
 import { poolTokensUSDBalanceAtom } from 'pages/portfolio-page/store/fetchPoolTokensUSDBalance';
@@ -23,7 +22,6 @@ export const AccountValue = () => {
   const totalMargin = useAtomValue(totalMarginAtom);
   const totalUnrealizedPnL = useAtomValue(totalUnrealizedPnLAtom);
   const syntheticPositionUSD = useAtomValue(syntheticPositionUSDAtom);
-  const totalEstimatedEarnings = useAtomValue(totalEstimatedEarningsAtom);
   const totalReferralRewards = useAtomValue(totalReferralRewardsAtom);
   const accountValue = useAtomValue(accountValueAtom);
 
@@ -76,10 +74,6 @@ export const AccountValue = () => {
         <div className={styles.detailsLine}>
           <div>{t('pages.portfolio.account-value.details.vault.assets')}</div>
           <div className={styles.detailsValue}>${formatCurrency(poolShareTokensUSDBalance || 0)}</div>
-        </div>
-        <div className={styles.detailsLine}>
-          <div>{t('pages.portfolio.account-value.details.vault.total')}</div>
-          <div className={styles.detailsValue}>${formatCurrency(totalEstimatedEarnings)}</div>
         </div>
       </div>
       {syntheticPositionUSD !== null && (

@@ -8,7 +8,6 @@ export async function getFeesPerGas(chainId?: number) {
   try {
     // Get the fee data using wagmi: eip1559
     const feeData = await estimateFeesPerGasWagmi(wagmiConfig, { chainId, type: 'eip1559' });
-    console.log('feeData eip1559', feeData);
     return {
       gasPrice: undefined,
       maxFeePerGas: (feeData.maxFeePerGas * multiplierMaxFeePerGas) / 100n,
@@ -17,7 +16,6 @@ export async function getFeesPerGas(chainId?: number) {
   } catch (error) {
     // Get the fee data using wagmi: legacy
     const feeData = await estimateFeesPerGasWagmi(wagmiConfig, { chainId, type: 'legacy' });
-    console.log('feeData legacy', feeData);
     return {
       gasPrice: (feeData.gasPrice * multiplierMaxFeePerGas) / 100n,
       maxFeePerGas: undefined,

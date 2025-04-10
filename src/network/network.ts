@@ -32,6 +32,14 @@ function getApiUrlByChainId(chainId: number) {
   return config.apiUrl[chainId] || urlByFirstEnabledChainId || config.apiUrl.default;
 }
 
+function getHistoryUrlByChainId(chainId: number) {
+  const urlByFirstEnabledChainId = config.historyUrl[config.enabledChains[0]];
+  if (!isEnabledChain(chainId)) {
+    return urlByFirstEnabledChainId || config.historyUrl.default;
+  }
+  return config.historyUrl[chainId] || urlByFirstEnabledChainId || config.historyUrl.default;
+}
+
 const fetchUrl = async (url: string, chainId: number) => {
   const data = await fetch(`${getApiUrlByChainId(chainId)}/${url}`, getRequestOptions());
   if (!data.ok) {
@@ -479,6 +487,35 @@ export interface CoingeckoDataResponseI {
 
 export async function getCoingeckoData(chainId: number): Promise<CoingeckoDataResponseI> {
   const data = await fetch(`https://drip.d8x.xyz/coingecko/contracts?chain_id=${chainId}`, getRequestOptions());
+  if (!data.ok) {
+    console.error({ data });
+    throw new Error(data.statusText);
+  }
+  return data.json();
+}
+
+// Interface for LP action history items
+export interface LpActionHistoryItemI {
+  created_at: string;
+  pool_id: number;
+  lp_tokens_dec: number;
+  event_type: string;
+  sh_tokens_dec: number;
+  price_cc: number;
+  tx_hash: string;
+  shareSymbol?: string;
+  userSymbol?: string;
+}
+
+export async function getLpActionHistory(
+  chainId: number,
+  lpAddr: string,
+  poolSymbol: string
+): Promise<LpActionHistoryItemI[]> {
+  const data = await fetch(
+    `${getHistoryUrlByChainId(chainId)}/lp-actions?lpAddr=${lpAddr}&poolSymbol=${poolSymbol}`,
+    getRequestOptions()
+  );
   if (!data.ok) {
     console.error({ data });
     throw new Error(data.statusText);

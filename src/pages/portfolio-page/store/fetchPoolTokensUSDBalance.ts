@@ -12,43 +12,50 @@ export const poolTokensUSDBalanceAtom = atom(0);
 
 export const fetchPoolTokensUSDBalanceAtom = atom(null, async (get, set, userAddress: Address) => {
   const poolUsdPrice = get(poolUsdPriceAtom);
-  if (Object.keys(poolUsdPrice).length === 0) {
-    set(poolTokensUSDBalanceAtom, 0);
+  if (Object.keys(poolUsdPrice).length === 0 || !userAddress) {
     return;
   }
 
-  const pools = get(poolsAtom);
-  const c2s = get(collateralToSettleConversionAtom);
-  const flatToken = get(flatTokenAtom);
+  try {
+    const pools = get(poolsAtom);
+    if (!pools.length) return;
 
-  const [poolTokensBalances, poolTokensDecimals] = await Promise.all([
-    multicall(wagmiConfig, {
-      contracts: pools.map((pool) => ({
-        address: pool.settleTokenAddr as Address,
-        abi: flatTokenAbi,
-        functionName: flatToken?.poolId === pool.poolId ? 'effectiveBalanceOf' : 'balanceOf',
-        args: [userAddress],
-      })),
-    }),
-    multicall(wagmiConfig, {
-      contracts: pools.map((pool) => ({
-        address: pool.settleTokenAddr as Address,
-        abi: erc20Abi,
-        functionName: 'decimals',
-      })),
-    }),
-  ]);
+    const c2s = get(collateralToSettleConversionAtom);
+    const flatToken = get(flatTokenAtom);
 
-  const poolTokensUSDBalance = poolTokensBalances.reduce((acc, balance, index) => {
-    if (balance.result && poolTokensDecimals[index].result) {
-      // eslint-disable-next-line
-      // @ts-ignore
-      const tokenBalance = Number(balance.result) / 10 ** poolTokensDecimals[index].result;
-      const px = c2s.get(pools[index].poolSymbol)?.value ?? 1;
-      return acc + (tokenBalance / px) * poolUsdPrice[pools[index].poolSymbol].collateral; // SC to CC to USD
+    const [poolTokensBalances, poolTokensDecimals] = await Promise.all([
+      multicall(wagmiConfig, {
+        contracts: pools.map((pool) => ({
+          address: pool.settleTokenAddr as Address,
+          abi: flatTokenAbi,
+          functionName: flatToken?.poolId === pool.poolId ? 'effectiveBalanceOf' : 'balanceOf',
+          args: [userAddress],
+        })),
+      }),
+      multicall(wagmiConfig, {
+        contracts: pools.map((pool) => ({
+          address: pool.settleTokenAddr as Address,
+          abi: erc20Abi,
+          functionName: 'decimals',
+        })),
+      }),
+    ]);
+
+    const poolTokensUSDBalance = poolTokensBalances.reduce((acc, balance, index) => {
+      if (balance.result && poolTokensDecimals[index].result) {
+        // eslint-disable-next-line
+        // @ts-ignore
+        const tokenBalance = Number(balance.result) / 10 ** poolTokensDecimals[index].result;
+        const px = c2s.get(pools[index].poolSymbol)?.value ?? 1;
+        return acc + (tokenBalance / px) * poolUsdPrice[pools[index].poolSymbol].collateral; // SC to CC to USD
+      }
+      return acc;
+    }, 0);
+
+    if (poolTokensUSDBalance > 0) {
+      set(poolTokensUSDBalanceAtom, poolTokensUSDBalance);
     }
-    return acc;
-  }, 0);
-
-  set(poolTokensUSDBalanceAtom, poolTokensUSDBalance);
+  } catch (error) {
+    console.error('Error calculating pool tokens USD balance:', error);
+  }
 });
