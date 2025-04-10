@@ -536,7 +536,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "Tus Datos",
+        "title": "Historial",
         "amount": {
           "title": "Cantidad",
           "info": "Cantidad de {{shareSymbol} que te pertenece."

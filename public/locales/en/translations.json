@@ -536,7 +536,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "Your stats",
+        "title": "Earn History",
         "amount": {
           "title": "Amount",
           "info": "Amount of {{shareSymbol}} you own."

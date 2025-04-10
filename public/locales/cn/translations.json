@@ -536,7 +536,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "数据统计",
+        "title": "交易历史",
         "amount": {
           "title": "数量",
           "info": "您拥有的{{shareSymbol}数量。"
