@@ -24,7 +24,7 @@ export const AccountValue = () => {
   const syntheticPositionUSD = useAtomValue(syntheticPositionUSDAtom);
   const totalReferralRewards = useAtomValue(totalReferralRewardsAtom);
   const accountValue = useAtomValue(accountValueAtom);
-  console.log('poolTokensUSDBalance', poolTokensUSDBalance);
+
   return (
     <div className={styles.sideBlock}>
       <Typography variant="h5" className={styles.title}>

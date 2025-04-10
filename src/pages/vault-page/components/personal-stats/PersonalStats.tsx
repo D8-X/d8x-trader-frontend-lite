@@ -45,12 +45,9 @@ export const PersonalStats = memo(() => {
   const selectedPool = useAtomValue(selectedPoolAtom);
 
   const pools = useAtomValue(poolsAtom);
-  console.log(pools);
   const { chainId, address } = useAccount();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  console.log('flattoken', flatToken);
 
   // Define the table headers
   const withdrawalHeaders: TableHeaderI<WithdrawalHistoryI>[] = useMemo(
