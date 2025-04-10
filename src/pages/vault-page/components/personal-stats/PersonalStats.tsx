@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useResizeDetector } from 'react-resize-detector';
 import { useAccount } from 'wagmi';
 
-import { Table as MuiTable, TableBody, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Table as MuiTable, TableBody, TableContainer, TableHead, TableRow, TablePagination } from '@mui/material';
 import classnames from 'classnames';
 
 import { flatTokenAtom, selectedPoolAtom, poolsAtom } from 'store/pools.store';
@@ -37,7 +37,7 @@ export const PersonalStats = memo(() => {
   const { t } = useTranslation();
   const { width, ref } = useResizeDetector();
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
-  const [orderBy, setOrderBy] = useState<keyof WithdrawalHistoryI>('date');
+  const [orderBy, setOrderBy] = useState<keyof WithdrawalHistoryI>('rawDate');
   const [lpActionHistory, setLpActionHistory] = useState<LpActionHistoryItemI[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -47,8 +47,11 @@ export const PersonalStats = memo(() => {
   const pools = useAtomValue(poolsAtom);
   console.log(pools);
   const { chainId, address } = useAccount();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   console.log('flattoken', flatToken);
+
   // Define the table headers
   const withdrawalHeaders: TableHeaderI<WithdrawalHistoryI>[] = useMemo(
     () => [
@@ -181,6 +184,11 @@ export const PersonalStats = memo(() => {
     [withdrawalHistory, order, orderBy]
   );
 
+  // Then right before the return statement, add:
+  const paginatedHistory = useMemo(() => {
+    return sortedHistory.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [sortedHistory, page, rowsPerPage]);
+
   // Pre-compute table content to avoid nested ternaries
   let tableContent;
   if (isLoading) {
@@ -191,8 +199,8 @@ export const PersonalStats = memo(() => {
         </td>
       </TableRow>
     );
-  } else if (sortedHistory.length > 0) {
-    tableContent = sortedHistory.map((item) => (
+  } else if (paginatedHistory.length > 0) {
+    tableContent = paginatedHistory.map((item) => (
       <TableRow key={item.id} className={styles.tableRow}>
         <td className={styles.cellLeft}>{item.action}</td>
         <td className={styles.cellLeft}>{item.date}</td>
@@ -213,8 +221,8 @@ export const PersonalStats = memo(() => {
   let mobileContent;
   if (isLoading) {
     mobileContent = <div className={styles.loading}>Loading history...</div>;
-  } else if (sortedHistory.length > 0) {
-    mobileContent = sortedHistory.map((item) => (
+  } else if (paginatedHistory.length > 0) {
+    mobileContent = paginatedHistory.map((item) => (
       <div key={item.id} className={styles.block}>
         <div className={styles.headerWrapper}>
           <div className={styles.leftSection}>
@@ -270,6 +278,23 @@ export const PersonalStats = memo(() => {
         </TableContainer>
       )}
       {(!width || width < MIN_WIDTH_FOR_TABLE) && <div className={styles.blocksHolder}>{mobileContent}</div>}
+      {sortedHistory.length > 5 && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+          <TablePagination
+            component="div"
+            count={sortedHistory.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 20]}
+            labelRowsPerPage={t('common.pagination.per-page')}
+          />
+        </div>
+      )}
     </div>
   );
 });
