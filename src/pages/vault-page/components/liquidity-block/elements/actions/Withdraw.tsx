@@ -79,12 +79,28 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
   const shareSymbol = `d${selectedPool?.settleSymbol}`;
 
+  const balanceReqRef = useRef(false);
+
   useEffect(() => {
-    setUserAmount(null);
-    if (selectedPool?.poolSymbol && liqProvTool && isSDKConnected && address && isEnabledChain(chainId)) {
-      liqProvTool.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
-        setUserAmount(amount);
-      });
+    if (
+      !balanceReqRef.current &&
+      selectedPool?.poolSymbol &&
+      liqProvTool &&
+      isSDKConnected &&
+      address &&
+      isEnabledChain(chainId)
+    ) {
+      setUserAmount(null);
+      balanceReqRef.current = true;
+      liqProvTool
+        .getPoolShareTokenBalance(address, selectedPool.poolSymbol)
+        .then((amount) => {
+          setUserAmount(amount);
+        })
+        .catch((e) => console.error(e))
+        .finally(() => {
+          balanceReqRef.current = false;
+        });
     }
   }, [selectedPool?.poolSymbol, liqProvTool, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
 
