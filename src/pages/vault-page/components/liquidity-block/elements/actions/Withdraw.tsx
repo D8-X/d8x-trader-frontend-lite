@@ -19,6 +19,7 @@ import { getTxnLink } from 'helpers/getTxnLink';
 import { collateralToSettleConversionAtom, flatTokenAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
+  sdkConnectedAtom,
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
   userAmountAtom,
@@ -49,12 +50,11 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const { t } = useTranslation();
 
   const { data: walletClient } = useWalletClient();
-  const { address, chain } = useAccount();
+  const { address, chain, chainId } = useAccount();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const liqProvTool = useAtomValue(traderAPIAtom);
   const dCurrencyPrice = useAtomValue(dCurrencyPriceAtom);
-  const userAmount = useAtomValue(userAmountAtom);
   const withdrawals = useAtomValue(withdrawalsAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
   const flatToken = useAtomValue(flatTokenAtom);
@@ -68,12 +68,41 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
   const requestSentRef = useRef(false);
 
+  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const isSDKConnected = useAtomValue(sdkConnectedAtom);
+  const [userAmount, setUserAmount] = useAtom(userAmountAtom);
+
   const [userPrice, userSymbol] =
     !!flatToken && selectedPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
       ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
       : [1, selectedPool?.settleSymbol ?? ''];
 
   const shareSymbol = `d${selectedPool?.settleSymbol}`;
+
+  const balanceReqRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      !balanceReqRef.current &&
+      selectedPool?.poolSymbol &&
+      liqProvTool &&
+      isSDKConnected &&
+      address &&
+      isEnabledChain(chainId)
+    ) {
+      setUserAmount(null);
+      balanceReqRef.current = true;
+      liqProvTool
+        .getPoolShareTokenBalance(address, selectedPool.poolSymbol)
+        .then((amount) => {
+          setUserAmount(amount);
+        })
+        .catch((e) => console.error(e))
+        .finally(() => {
+          balanceReqRef.current = false;
+        });
+    }
+  }, [selectedPool?.poolSymbol, liqProvTool, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
 
   const { data: openRequests, refetch: refetchOnChainStatus } = useReadContract({
     address: liqProvTool?.getProxyAddress() as Address,

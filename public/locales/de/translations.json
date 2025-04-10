@@ -536,7 +536,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "Ihre Statistiken",
+        "title": "Historie",
         "amount": {
           "title": "Anzahl",
           "info": "Anzahl {{shareSymbol}} die Sie besitzen."
@@ -653,7 +653,8 @@
         "error-initiating": {
           "title": "Fehler beim der Einleitung der Liquiditätsentnahme",
           "body": "Grund"
-        }
+        },
+        "transfered": "Poolshares übertragen"
       }
     },
     "strategies": {
@@ -739,7 +740,7 @@
     },
     "portfolio": {
       "perpetuals": "Perpetuals",
-      "vault": "Liquiditätspools",
+      "vault": "Liquidität",
       "account-value": {
         "main-title": "Ihr Konto",
         "title": "Konto Wert",
@@ -757,7 +758,7 @@
             "referral": "Verdienst durch Empfehlungen"
           },
           "vault": {
-            "title": "Liquiditätspools",
+            "title": "Liquidität",
             "assets": "Vermögenswerte",
             "assets-pool": "Vermögenswerte in Pools",
             "earnings-pool": "Einnahmen pro Pool",

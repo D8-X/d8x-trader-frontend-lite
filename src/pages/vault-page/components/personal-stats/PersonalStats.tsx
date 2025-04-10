@@ -1,191 +1,297 @@
-import { useAtom, useAtomValue } from 'jotai';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { memo, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useResizeDetector } from 'react-resize-detector';
 import { useAccount } from 'wagmi';
 
-import { Box, Typography } from '@mui/material';
+import { Table as MuiTable, TableBody, TableContainer, TableHead, TableRow, TablePagination } from '@mui/material';
+import classnames from 'classnames';
 
-import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
-import { getEarnings } from 'network/history';
-import { collateralToSettleConversionAtom, flatTokenAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
-import {
-  sdkConnectedAtom,
-  triggerUserStatsUpdateAtom,
-  userAmountAtom,
-  withdrawalOnChainAtom,
-  withdrawalsAtom,
-} from 'store/vault-pools.store';
-import { isEnabledChain } from 'utils/isEnabledChain';
-import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
+import { flatTokenAtom, selectedPoolAtom, poolsAtom } from 'store/pools.store';
+import { formatToCurrency } from 'utils/formatToCurrency';
+import { EmptyRow } from 'components/table/empty-row/EmptyRow';
+import { SortableHeaders } from 'components/table/sortable-header/SortableHeaders';
+import { getComparator, stableSort } from 'helpers/tableSort';
+import { AlignE, FieldTypeE, SortOrderE } from 'types/enums';
+import type { TableHeaderI } from 'types/types';
+import { getLpActionHistory, type LpActionHistoryItemI } from 'network/network';
 
 import styles from './PersonalStats.module.scss';
 
-interface PersonalStatsPropsI {
-  withdrawOn: string;
+const MIN_WIDTH_FOR_TABLE = 768;
+
+// Define the data structure for the table
+interface WithdrawalHistoryI {
+  id: string;
+  action: string;
+  rawDate: Date;
+  date: string;
+  poolShareTokenPrice: number;
+  lp_tokens_dec: number | string;
+  sh_tokens_dec: number;
+  shareSymbol: string;
+  userSymbol: string;
 }
 
-export const PersonalStats = memo(({ withdrawOn }: PersonalStatsPropsI) => {
+export const PersonalStats = memo(() => {
   const { t } = useTranslation();
+  const { width, ref } = useResizeDetector();
+  const [order, setOrder] = useState<SortOrderE>(SortOrderE.Desc);
+  const [orderBy, setOrderBy] = useState<keyof WithdrawalHistoryI>('rawDate');
+  const [lpActionHistory, setLpActionHistory] = useState<LpActionHistoryItemI[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { address, chainId } = useAccount();
-
-  const selectedPool = useAtomValue(selectedPoolAtom);
-  const withdrawals = useAtomValue(withdrawalsAtom);
-  const traderAPI = useAtomValue(traderAPIAtom);
-  const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
-  const isSDKConnected = useAtomValue(sdkConnectedAtom);
-  const hasOpenRequestOnChain = useAtomValue(withdrawalOnChainAtom);
-  const c2s = useAtomValue(collateralToSettleConversionAtom);
   const flatToken = useAtomValue(flatTokenAtom);
-  const [userAmount, setUserAmount] = useAtom(userAmountAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
 
-  const [estimatedEarnings, setEstimatedEarnings] = useState<number | null>(null);
+  const pools = useAtomValue(poolsAtom);
+  const { chainId, address } = useAccount();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const earningsRequestSentRef = useRef(false);
+  // Define the table headers
+  const withdrawalHeaders: TableHeaderI<WithdrawalHistoryI>[] = useMemo(
+    () => [
+      {
+        field: 'action',
+        label: 'Action',
+        align: AlignE.Left,
+        fieldType: FieldTypeE.String,
+      },
+      {
+        field: 'rawDate',
+        label: 'Date',
+        align: AlignE.Left,
+        fieldType: FieldTypeE.String,
+      },
+      {
+        field: 'poolShareTokenPrice',
+        label: 'Pool Share Price',
+        align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
+      },
+      {
+        field: 'lp_tokens_dec',
+        label: 'LP Tokens',
+        align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
+      },
+      {
+        field: 'sh_tokens_dec',
+        label: 'Share Tokens',
+        align: AlignE.Right,
+        fieldType: FieldTypeE.Number,
+      },
+    ],
+    []
+  );
 
-  const [userPrice, userSymbol] =
-    !!flatToken && selectedPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
-      ? [flatToken.compositePrice ?? 1, flatToken.registeredSymbol]
-      : [1, selectedPool?.poolSymbol ?? ''];
-
+  // Fetch LP action history when component mounts or when address/pools change
   useEffect(() => {
-    setUserAmount(null);
-    if (selectedPool?.poolSymbol && traderAPI && isSDKConnected && address && isEnabledChain(chainId)) {
-      traderAPI.getPoolShareTokenBalance(address, selectedPool.poolSymbol).then((amount) => {
-        setUserAmount(amount);
-      });
-    }
-  }, [selectedPool?.poolSymbol, traderAPI, isSDKConnected, address, chainId, triggerUserStatsUpdate, setUserAmount]);
+    const fetchLpActionHistory = async () => {
+      if (!address || !pools.length || !chainId) {
+        setLpActionHistory([]); // Clear history when requirements aren't met
+        return;
+      }
 
-  useEffect(() => {
-    if (!selectedPool?.poolSymbol || !address || !isEnabledChain(chainId)) {
-      setEstimatedEarnings(null);
-      return;
-    }
+      setIsLoading(true);
+      try {
+        // Create an array of promises for all pools
+        const historyPromises = pools.map((pool) => getLpActionHistory(chainId, address, pool.poolSymbol));
 
-    if (earningsRequestSentRef.current) {
-      return;
-    }
+        // Wait for all requests to complete
+        const allHistoryResults = await Promise.all(historyPromises);
 
-    earningsRequestSentRef.current = true;
+        // Combine all results into a single array
+        const combinedHistory = allHistoryResults.flat().map((historyItem) => {
+          // Find the pool that matches the item's pool_id
+          const matchingPool = pools.find((pool) => pool.poolId === historyItem.pool_id);
 
-    getEarnings(chainId, address, selectedPool.poolSymbol)
-      .then(({ earnings }) => setEstimatedEarnings(earnings < -0.0000000001 ? earnings : Math.max(earnings, 0)))
-      .catch((error) => {
-        console.error(error);
-        setEstimatedEarnings(null);
-      })
-      .finally(() => {
-        earningsRequestSentRef.current = false;
-      });
+          // Create shareSymbol and userSymbol
+          const shareSymbol = matchingPool ? `d${matchingPool.settleSymbol}` : '';
+          const userSymbol =
+            matchingPool && !!flatToken && matchingPool?.poolId === flatToken.poolId && !!flatToken.registeredSymbol
+              ? flatToken.registeredSymbol
+              : matchingPool?.settleSymbol || '';
 
-    return () => {
-      earningsRequestSentRef.current = false;
+          return {
+            ...historyItem,
+            shareSymbol,
+            userSymbol,
+          };
+        });
+
+        // Set the combined history
+        setLpActionHistory(combinedHistory);
+      } catch (error) {
+        console.error('Error fetching LP action history:', error);
+        setLpActionHistory([]); // Reset to empty array on error
+      } finally {
+        setIsLoading(false);
+      }
     };
-  }, [chainId, address, selectedPool?.poolSymbol, triggerUserStatsUpdate]);
 
-  const shareSymbol = `d${selectedPool?.settleSymbol}`;
+    fetchLpActionHistory();
+  }, [address, chainId, pools, selectedPool?.poolSymbol, flatToken]);
+
+  // Map the LP action history to withdrawal history format
+  const withdrawalHistory: WithdrawalHistoryI[] = useMemo(() => {
+    return lpActionHistory.map((item, index) => {
+      const txId = item.tx_hash ? item.tx_hash.substring(0, 8) : `unknown-${index}`;
+
+      // Determine action type without nested ternary
+      let action;
+      switch (item.event_type) {
+        case 'liquidity_added':
+          action = t('pages.vault.toast.added');
+          break;
+        case 'liquidity_removed':
+          action = t('pages.vault.toast.withdrawn');
+          break;
+        case 'share_token_p2p_transfer':
+          action = t('pages.vault.toast.transfered');
+          break;
+        default:
+          action = item.event_type;
+      }
+
+      const lpTokens = item.event_type === 'share_token_p2p_transfer' ? '-' : Number(item.lp_tokens_dec);
+      const rawDate = new Date(item.created_at);
+
+      const shareSymbol = item.shareSymbol || '';
+      const userSymbol = item.userSymbol || '';
+
+      return {
+        id: `${index}-${txId}`,
+        action,
+        rawDate,
+        date: rawDate.toLocaleString(),
+        poolShareTokenPrice: item.price_cc,
+        lp_tokens_dec: lpTokens,
+        sh_tokens_dec: -item.sh_tokens_dec,
+        shareSymbol: shareSymbol,
+        userSymbol: userSymbol,
+      };
+    });
+  }, [lpActionHistory, t]);
+
+  // Sort the data
+  const sortedHistory = useMemo(
+    () => stableSort(withdrawalHistory, getComparator(order, orderBy)),
+    [withdrawalHistory, order, orderBy]
+  );
+
+  // Then right before the return statement, add:
+  const paginatedHistory = useMemo(() => {
+    return sortedHistory.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  }, [sortedHistory, page, rowsPerPage]);
+
+  // Pre-compute table content to avoid nested ternaries
+  let tableContent;
+  if (isLoading) {
+    tableContent = (
+      <TableRow>
+        <td colSpan={withdrawalHeaders.length} className={styles.loadingCell}>
+          Loading history...
+        </td>
+      </TableRow>
+    );
+  } else if (paginatedHistory.length > 0) {
+    tableContent = paginatedHistory.map((item) => (
+      <TableRow key={item.id} className={styles.tableRow}>
+        <td className={styles.cellLeft}>{item.action}</td>
+        <td className={styles.cellLeft}>{item.date}</td>
+        <td className={styles.cellRight}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</td>
+        <td className={styles.cellRight}>
+          {typeof item.lp_tokens_dec === 'string'
+            ? item.lp_tokens_dec
+            : formatToCurrency(item.lp_tokens_dec, item.userSymbol)}
+        </td>
+        <td className={styles.cellRight}>{formatToCurrency(item.sh_tokens_dec, item.shareSymbol)}</td>
+      </TableRow>
+    ));
+  } else {
+    tableContent = <EmptyRow colSpan={withdrawalHeaders.length} text="No withdrawal history found" />;
+  }
+
+  // Similarly for mobile view
+  let mobileContent;
+  if (isLoading) {
+    mobileContent = <div className={styles.loading}>Loading history...</div>;
+  } else if (paginatedHistory.length > 0) {
+    mobileContent = paginatedHistory.map((item) => (
+      <div key={item.id} className={styles.block}>
+        <div className={styles.headerWrapper}>
+          <div className={styles.leftSection}>
+            <div className={styles.blockHighlight}>{item.action}</div>
+          </div>
+        </div>
+        <div className={styles.dataWrapper}>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Date:</div>
+            <div className={styles.blockValue}>{item.date}</div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Pool Share Price:</div>
+            <div className={styles.blockValue}>{formatToCurrency(item.poolShareTokenPrice, 'USD')}</div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>LP Tokens:</div>
+            <div className={styles.blockValue}>
+              {typeof item.lp_tokens_dec === 'string'
+                ? item.lp_tokens_dec
+                : formatToCurrency(item.lp_tokens_dec, item.userSymbol)}
+            </div>
+          </div>
+          <div className={styles.blockRow}>
+            <div className={styles.blockLabel}>Share Tokens:</div>
+            <div className={styles.blockValue}>{formatToCurrency(item.sh_tokens_dec, item.shareSymbol)}</div>
+          </div>
+        </div>
+      </div>
+    ));
+  } else {
+    mobileContent = <div className={styles.noData}>No withdrawal history found</div>;
+  }
 
   return (
-    <Box className={styles.root}>
-      <Box className={styles.leftColumn}>
-        <Box key="amount" className={styles.statContainer}>
-          <Box className={styles.statLabel}>
-            <InfoLabelBlock
-              title={t('pages.vault.personal-stats.amount.title')}
-              content={<Typography>{t('pages.vault.personal-stats.amount.info', { shareSymbol })}</Typography>}
-            />
-          </Box>
-          <Typography variant="bodyMedium" className={styles.statValue}>
-            {userAmount !== null
-              ? formatToCurrency(userAmount, shareSymbol, true, Math.min(valueToFractionDigits(userAmount), 5))
-              : '--'}
-          </Typography>
-        </Box>
-        <Box key="estimatedEarnings" className={styles.statContainer}>
-          <Box className={styles.statLabel}>
-            <InfoLabelBlock
-              title={t('pages.vault.personal-stats.earnings.title')}
-              content={
-                <>
-                  <Typography>{t('pages.vault.personal-stats.earnings.info1')}</Typography>
-                  <Typography>
-                    {t('pages.vault.personal-stats.earnings.info2', { poolSymbol: userSymbol, shareSymbol })}
-                  </Typography>
-                </>
-              }
-            />
-          </Box>
-          <Typography variant="bodyMedium" className={styles.statValue}>
-            {estimatedEarnings !== null && selectedPool
-              ? formatToCurrency(
-                  estimatedEarnings * (c2s.get(selectedPool.poolSymbol)?.value ?? 1) * userPrice,
-                  userSymbol,
-                  true,
-                  Math.min(
-                    valueToFractionDigits(
-                      estimatedEarnings * (c2s.get(selectedPool.poolSymbol)?.value ?? 1) * userPrice
-                    ),
-                    5
-                  )
-                )
-              : '--'}
-          </Typography>
-        </Box>
-      </Box>
-      <Box className={styles.rightColumn}>
-        <Box key="withdrawalInitiated" className={styles.statContainer}>
-          <Box className={styles.statLabel}>
-            <InfoLabelBlock
-              title={t('pages.vault.personal-stats.initiated.title')}
-              content={
-                <Typography>{t('pages.vault.personal-stats.initiated.info1', { poolSymbol: userSymbol })}</Typography>
-              }
-            />
-          </Box>
-          <Typography variant="bodyMedium" className={styles.statValue}>
-            {(withdrawals && withdrawals.length > 0) || hasOpenRequestOnChain ? 'Yes' : 'No'}
-          </Typography>
-        </Box>
-        <Box key="withdrawalAmount" className={styles.statContainer}>
-          <Box className={styles.statLabel}>
-            <InfoLabelBlock
-              title={t('pages.vault.personal-stats.withdrawal-amount.title')}
-              content={
-                <>
-                  <Typography>
-                    {t('pages.vault.personal-stats.withdrawal-amount.info1', {
-                      shareSymbol,
-                    })}
-                  </Typography>
-                  <Typography>{t('pages.vault.personal-stats.withdrawal-amount.info2')}</Typography>
-                </>
-              }
-            />
-          </Box>
-          <Typography variant="bodyMedium" className={styles.statValue}>
-            {withdrawals && withdrawals.length > 0
-              ? formatToCurrency(withdrawals[withdrawals.length - 1].shareAmount, shareSymbol)
-              : 'N/A'}
-          </Typography>
-        </Box>
-        <Box key="withdrawalDate" className={styles.statContainer}>
-          <Box className={styles.statLabel}>
-            <InfoLabelBlock
-              title={t('pages.vault.personal-stats.date.title')}
-              content={
-                <>
-                  <Typography>{t('pages.vault.personal-stats.date.info1')}</Typography>
-                  <Typography>{t('pages.vault.personal-stats.date.info2')}</Typography>
-                </>
-              }
-            />
-          </Box>
-          <Typography variant="bodyMedium" className={styles.statValue}>
-            {withdrawOn}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+    <div className={styles.root} ref={ref}>
+      {width && width >= MIN_WIDTH_FOR_TABLE && (
+        <TableContainer className={classnames(styles.tableHolder, styles.withBackground)}>
+          <MuiTable>
+            <TableHead className={styles.tableHead}>
+              <TableRow>
+                <SortableHeaders<WithdrawalHistoryI>
+                  headers={withdrawalHeaders}
+                  order={order}
+                  orderBy={orderBy}
+                  setOrder={setOrder}
+                  setOrderBy={setOrderBy}
+                />
+              </TableRow>
+            </TableHead>
+            <TableBody className={styles.tableBody}>{tableContent}</TableBody>
+          </MuiTable>
+        </TableContainer>
+      )}
+      {(!width || width < MIN_WIDTH_FOR_TABLE) && <div className={styles.blocksHolder}>{mobileContent}</div>}
+      {sortedHistory.length > 5 && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+          <TablePagination
+            component="div"
+            count={sortedHistory.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[5, 10, 20]}
+            labelRowsPerPage={t('common.pagination.per-page')}
+          />
+        </div>
+      )}
+    </div>
   );
 });

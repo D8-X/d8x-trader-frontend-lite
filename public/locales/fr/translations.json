@@ -536,7 +536,7 @@
     },
     "vault": {
       "personal-stats": {
-        "title": "Vos statistiques",
+        "title": "Historique",
         "amount": {
           "title": "Montant",
           "info": "Montant de {{shareSymbol}} que vous possédez."
@@ -653,7 +653,8 @@
         "error-initiating": {
           "title": "Erreur lors de l'initiation du retrait",
           "body": "Raison"
-        }
+        },
+        "transfered": "Transfert"
       }
     },
     "strategies": {
