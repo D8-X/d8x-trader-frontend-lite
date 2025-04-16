@@ -223,7 +223,7 @@ export const ActionBlock = memo(() => {
         const initialMarginRate = orderInfo.isPredictionMarket
           ? pmInitialMarginRate(orderInfo.orderBlock === OrderBlockE.Long ? 1 : -1, data.data.newPositionRisk.markPrice)
           : perpetualStaticInfo?.initialMarginRate;
-        if (initialMarginRate && data.data.newPositionRisk.leverage > Math.floor(1 / initialMarginRate)) {
+        if (initialMarginRate && data.data.newPositionRisk.leverage > 1 / initialMarginRate) {
           if (orderInfo.orderBlock === OrderBlockE.Long) {
             maxLong = 0;
           } else {
@@ -621,18 +621,6 @@ export const ActionBlock = memo(() => {
       if (isSlippageTooLarge && !isPredictionMarket) {
         return ValidityCheckE.SlippageTooLarge;
       }
-    }
-    // lvg check
-    let isTooLarge;
-    if (orderInfo.orderType === OrderTypeE.Market) {
-      if (orderInfo.orderBlock === OrderBlockE.Long) {
-        isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxBuy);
-      } else {
-        isTooLarge = orderInfo.size > Math.abs(maxOrderSize.maxSell);
-      }
-    }
-    if (isTooLarge) {
-      return ValidityCheckE.LeverageTooLarge;
     }
     return ValidityCheckE.GoodToGo;
   }, [
