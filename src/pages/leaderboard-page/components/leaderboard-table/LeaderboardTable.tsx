@@ -50,13 +50,13 @@ export const LeaderboardTable = ({
   onPageSizeChange,
 }: LeaderboardTablePropsI) => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
-  const [orderBy, setOrderBy] = useState<string | number>('rank');
+  const [orderBy, setOrderBy] = useState<string | number>(isWeekly ? 'volumeRank' : 'rank');
 
   const headers = useMemo(() => {
     const baseHeaders: ColumnHeaderI[] = [
       {
-        id: 'rank',
-        label: 'Rank',
+        id: isWeekly ? 'volumeRank' : 'rank',
+        label: isWeekly ? 'Volume Rank' : 'Rank',
         align: AlignE.Left,
         fieldType: FieldTypeE.Number,
       },

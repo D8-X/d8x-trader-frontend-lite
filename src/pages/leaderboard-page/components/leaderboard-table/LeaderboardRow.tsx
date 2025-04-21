@@ -43,7 +43,7 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
   return (
     <TableRow className={`${styles.row} ${isUserRow ? styles.userRow : ''}`}>
       <TableCell className={styles.rankCell} align="left">
-        <Typography variant="body2">{entry.rank !== undefined ? entry.rank : '-'}</Typography>
+        <Typography variant="body2">{isWeekly ? (entry.volumeRank ?? '-') : (entry.rank ?? '-')}</Typography>
       </TableCell>
 
       <TableCell className={styles.addressCell} align="left">

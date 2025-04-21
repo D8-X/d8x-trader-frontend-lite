@@ -41,8 +41,18 @@ export const LeaderboardPage = () => {
       const data = await getWeeklyLeaderboardEntries();
       // Handle API response format with 'leaderBoard' field (weekly endpoint specific)
       if (data && data.leaderBoard && Array.isArray(data.leaderBoard)) {
-        setAllWeeklyEntries(data.leaderBoard);
-        setWeeklyEntries(data.leaderBoard.slice(page * pageSize, (page + 1) * pageSize));
+        // Sort by volume (descending) and assign new ranks
+        const sortedByVolume = [...data.leaderBoard]
+          .sort((a, b) => (b.vol || 0) - (a.vol || 0))
+          .map((entry, index) => ({
+            ...entry,
+            volumeRank: index + 1,
+          }));
+
+        setAllWeeklyEntries(sortedByVolume);
+        setWeeklyEntries(sortedByVolume.slice(page * pageSize, (page + 1) * pageSize));
+        console.log('sortedByVolume', sortedByVolume);
+        console.log('weeklyEntries', weeklyEntries);
       } else {
         console.error('Weekly leaderboard API returned unexpected data format:', data);
         setAllWeeklyEntries([]);
