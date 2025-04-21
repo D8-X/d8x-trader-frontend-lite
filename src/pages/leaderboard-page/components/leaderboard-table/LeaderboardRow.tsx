@@ -71,7 +71,11 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
               <Typography variant="body2" className={getPnlClass(entry.pnl)}>
                 {formatPnl(entry.pnl)}
               </Typography>
-              {entry.isHighestPnL && <EmojiEventsIcon sx={{ color: 'gold', fontSize: '1rem' }} />}
+              {entry.isLowestPnL && (
+                <>
+                  <span style={{ fontSize: '16px' }}>🐻</span>
+                </>
+              )}
             </div>
           </TableCell>
           <TableCell className={styles.volCell} align="right">

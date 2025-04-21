@@ -570,7 +570,7 @@ export interface WeeklyLeaderboardEntryI {
   points?: number;
   volumeRank?: number;
   isHighestOI?: boolean;
-  isHighestPnL?: boolean;
+  isLowestPnL?: boolean;
 }
 
 export interface WeeklyLeaderboardResponseI {

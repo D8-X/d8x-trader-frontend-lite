@@ -51,13 +51,13 @@ export const LeaderboardPage = () => {
 
         // Find highest OI and PnL
         const highestOI = Math.max(...sortedByVolume.map((entry) => parseFloat(entry.timeWeightedOI || '0')));
-        const highestPnL = Math.max(...sortedByVolume.map((entry) => entry.pnl || 0));
+        const lowestPnL = Math.min(...sortedByVolume.map((entry) => entry.pnl || 0));
 
         // Mark entries with highest values
         const entriesWithCrowns = sortedByVolume.map((entry) => ({
           ...entry,
           isHighestOI: parseFloat(entry.timeWeightedOI || '0') === highestOI,
-          isHighestPnL: (entry.pnl || 0) === highestPnL,
+          isLowestPnL: (entry.pnl || 0) === lowestPnL,
         }));
 
         setAllWeeklyEntries(entriesWithCrowns);
