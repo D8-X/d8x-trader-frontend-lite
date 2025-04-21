@@ -1,6 +1,7 @@
 // src/pages/leaderboard-page/components/user-stats/UserStats.tsx
 import { Typography, CircularProgress, Box, Chip } from '@mui/material';
 import { InfoOutlined, AccessTime, AllInclusive, CalendarMonth } from '@mui/icons-material';
+import { useAccount } from 'wagmi';
 
 import { UserLeaderboardStatsI } from 'types/types';
 import { LeaderboardTabIdE } from '../../constants';
@@ -29,7 +30,8 @@ export const UserStats = ({
   allTimeAsOfDate,
   activeTab,
 }: UserStatsPropsI) => {
-  const isConnected = !!weeklyStats || !!allTimeStats;
+  const { isConnected: isWalletConnected } = useAccount();
+  const isConnected = isWalletConnected;
 
   // Helper function to determine the PNL class
   const getPnlClass = (pnl?: number) => {
@@ -124,7 +126,7 @@ export const UserStats = ({
             </div>
             <div className={styles.statItem}>
               <Typography variant="body2" className={styles.statItemLabel}>
-                PNL
+                Points
               </Typography>
               <Typography variant="h5" className={`${styles.statValueLarge}`}>
                 {allTimeStats?.points} Points
