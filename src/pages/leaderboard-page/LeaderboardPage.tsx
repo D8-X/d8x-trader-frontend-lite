@@ -20,28 +20,24 @@ export const LeaderboardPage = () => {
   const { t } = useTranslation();
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState<LeaderboardTabIdE>(LeaderboardTabIdE.Weekly);
-  const [weeklyEntries, setWeeklyEntries] = useState<WeeklyLeaderboardEntryI[]>([]);
-  const [allTimeEntries, setAllTimeEntries] = useState<AllTimeLeaderboardEntryI[]>([]);
+  const [allWeeklyEntries, setAllWeeklyEntries] = useState<WeeklyLeaderboardEntryI[]>([]);
+  const [allAllTimeEntries, setAllAllTimeEntries] = useState<AllTimeLeaderboardEntryI[]>([]);
   const [weeklyUserStats, setWeeklyUserStats] = useState<UserLeaderboardStatsI | null>(null);
   const [allTimeUserStats, setAllTimeUserStats] = useState<UserLeaderboardStatsI | null>(null);
   const [isLoadingWeekly, setIsLoadingWeekly] = useState(false);
   const [isLoadingAllTime, setIsLoadingAllTime] = useState(false);
   const [isUserStatsLoading, setIsUserStatsLoading] = useState(true);
-  const [allWeeklyEntries, setAllWeeklyEntries] = useState<WeeklyLeaderboardEntryI[]>([]);
-  const [allAllTimeEntries, setAllAllTimeEntries] = useState<AllTimeLeaderboardEntryI[]>([]);
   const [weeklyPage, setWeeklyPage] = useState(0);
   const [allTimePage, setAllTimePage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [allTimeAsOfDate, setAllTimeAsOfDate] = useState<string | null>(null);
 
   // Fetch weekly leaderboard data
-  const fetchWeeklyLeaderboardData = async (page = 0) => {
+  const fetchWeeklyLeaderboardData = async () => {
     setIsLoadingWeekly(true);
     try {
       const data = await getWeeklyLeaderboardEntries();
-      // Handle API response format with 'leaderBoard' field (weekly endpoint specific)
       if (data && data.leaderBoard && Array.isArray(data.leaderBoard)) {
-        // Sort by volume (descending) and assign new ranks
         const sortedByVolume = [...data.leaderBoard]
           .sort((a, b) => (b.vol || 0) - (a.vol || 0))
           .map((entry, index) => ({
@@ -49,11 +45,9 @@ export const LeaderboardPage = () => {
             volumeRank: index + 1,
           }));
 
-        // Find highest OI and PnL
         const highestOI = Math.max(...sortedByVolume.map((entry) => parseFloat(entry.timeWeightedOI || '0')));
         const lowestPnL = Math.min(...sortedByVolume.map((entry) => entry.pnl || 0));
 
-        // Mark entries with highest values
         const entriesWithCrowns = sortedByVolume.map((entry) => ({
           ...entry,
           isHighestOI: parseFloat(entry.timeWeightedOI || '0') === highestOI,
@@ -61,29 +55,24 @@ export const LeaderboardPage = () => {
         }));
 
         setAllWeeklyEntries(entriesWithCrowns);
-        setWeeklyEntries(entriesWithCrowns.slice(page * pageSize, (page + 1) * pageSize));
       } else {
         console.error('Weekly leaderboard API returned unexpected data format:', data);
         setAllWeeklyEntries([]);
-        setWeeklyEntries([]);
       }
     } catch (error) {
       console.error('Error fetching weekly leaderboard data:', error);
       setAllWeeklyEntries([]);
-      setWeeklyEntries([]);
     } finally {
       setIsLoadingWeekly(false);
     }
   };
 
   // Fetch all-time leaderboard data
-  const fetchAllTimeLeaderboardData = async (page = 0) => {
+  const fetchAllTimeLeaderboardData = async () => {
     setIsLoadingAllTime(true);
     try {
       const data = await getAllTimeLeaderboardEntries();
-      // Handle API response format with 'board' field instead of 'entries'
       if (data && data.board && Array.isArray(data.board)) {
-        // Sort by points (descending) and assign ranks
         const sortedEntries = [...data.board]
           .sort((a, b) => (b.points || 0) - (a.points || 0))
           .map((entry, index) => ({
@@ -91,81 +80,64 @@ export const LeaderboardPage = () => {
             rank: index + 1,
           }));
         setAllAllTimeEntries(sortedEntries);
-        setAllTimeEntries(sortedEntries.slice(page * pageSize, (page + 1) * pageSize));
         setAllTimeAsOfDate(data.asOfDate);
       } else {
         console.error('All-time leaderboard API returned unexpected data format:', data);
         setAllAllTimeEntries([]);
-        setAllTimeEntries([]);
       }
     } catch (error) {
       console.error('Error fetching all-time leaderboard data:', error);
       setAllAllTimeEntries([]);
-      setAllTimeEntries([]);
     } finally {
       setIsLoadingAllTime(false);
     }
   };
 
+  // Fetch data when tab changes
+  useEffect(() => {
+    if (activeTab === LeaderboardTabIdE.Weekly) {
+      fetchWeeklyLeaderboardData();
+    } else {
+      fetchAllTimeLeaderboardData();
+    }
+  }, [activeTab]);
+
   // Effect to extract user stats from leaderboard data when user is connected
   useEffect(() => {
-    if (!address) {
+    if (address) {
+      setIsUserStatsLoading(true);
+      if (activeTab === LeaderboardTabIdE.Weekly) {
+        const userEntry = allWeeklyEntries.find((entry) => entry.address?.toLowerCase() === address.toLowerCase());
+        if (userEntry) {
+          setWeeklyUserStats({
+            rank: userEntry.rank || 0,
+            trader: userEntry.trader || userEntry.address || address,
+            pnl: userEntry.pnl || 0,
+          });
+        } else {
+          setWeeklyUserStats(null);
+        }
+      } else {
+        const userEntry = allAllTimeEntries.find((entry) => entry.address?.toLowerCase() === address.toLowerCase());
+        if (userEntry) {
+          setAllTimeUserStats({
+            rank: userEntry.rank || 0,
+            trader: userEntry.address || address,
+            points: userEntry.points || 0,
+            numWeeks: userEntry.numWeeks || 0,
+            pnl: userEntry.pnl || 0,
+          });
+        } else {
+          setAllTimeUserStats(null);
+        }
+      }
+      setIsUserStatsLoading(false);
+    } else {
       setWeeklyUserStats(null);
       setAllTimeUserStats(null);
       setIsUserStatsLoading(false);
-      return;
     }
-
-    setIsUserStatsLoading(true);
-
-    // Find weekly stats
-    if (allWeeklyEntries.length > 0) {
-      const userEntry = allWeeklyEntries.find(
-        (entry) =>
-          entry.trader?.toLowerCase() === address.toLowerCase() ||
-          entry.address?.toLowerCase() === address.toLowerCase()
-      );
-
-      if (userEntry) {
-        setWeeklyUserStats({
-          rank: userEntry.rank || 0,
-          trader: userEntry.trader || userEntry.address || address,
-          pnl: userEntry.pnl || 0,
-        });
-      } else {
-        setWeeklyUserStats({
-          rank: 0,
-          trader: address,
-          pnl: 0,
-        });
-      }
-    }
-
-    // Find all-time stats
-    if (allAllTimeEntries.length > 0) {
-      const userEntry = allAllTimeEntries.find((entry) => entry.address?.toLowerCase() === address.toLowerCase());
-
-      if (userEntry) {
-        setAllTimeUserStats({
-          rank: userEntry.rank || 0,
-          trader: userEntry.address || address,
-          points: userEntry.points || 0,
-          numWeeks: userEntry.numWeeks,
-          pnl: userEntry.pnl || 0,
-        });
-      } else {
-        setAllTimeUserStats({
-          rank: 0,
-          trader: address,
-          points: 0,
-          numWeeks: 0,
-          pnl: 0,
-        });
-      }
-    }
-
-    setIsUserStatsLoading(false);
-  }, [address, allWeeklyEntries, allAllTimeEntries]);
+  }, [address, activeTab, allWeeklyEntries, allAllTimeEntries]);
 
   // Handle tab change
   const handleTabChange = (tab: LeaderboardTabIdE) => {
@@ -175,35 +147,24 @@ export const LeaderboardPage = () => {
   // Handle page change for weekly leaderboard
   const handleWeeklyPageChange = (page: number) => {
     setWeeklyPage(page);
-    setWeeklyEntries(allWeeklyEntries.slice(page * pageSize, (page + 1) * pageSize));
   };
 
   // Handle page change for all-time leaderboard
   const handleAllTimePageChange = (page: number) => {
     setAllTimePage(page);
-    setAllTimeEntries(allAllTimeEntries.slice(page * pageSize, (page + 1) * pageSize));
   };
 
   // Handle page size change for weekly leaderboard
   const handleWeeklyPageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
-    setWeeklyPage(0); // Reset to first page
-    setWeeklyEntries(allWeeklyEntries.slice(0, newPageSize));
+    setWeeklyPage(0);
   };
 
   // Handle page size change for all-time leaderboard
   const handleAllTimePageSizeChange = (newPageSize: number) => {
     setPageSize(newPageSize);
-    setAllTimePage(0); // Reset to first page
-    setAllTimeEntries(allAllTimeEntries.slice(0, newPageSize));
+    setAllTimePage(0);
   };
-
-  // Initial data fetch
-  useEffect(() => {
-    fetchWeeklyLeaderboardData();
-    fetchAllTimeLeaderboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <MaintenanceWrapper>
@@ -233,7 +194,7 @@ export const LeaderboardPage = () => {
           </div>
           {activeTab === LeaderboardTabIdE.Weekly ? (
             <LeaderboardTable
-              entries={weeklyEntries}
+              entries={allWeeklyEntries}
               isLoading={isLoadingWeekly}
               isWeekly={true}
               paginationMetadata={{
@@ -249,7 +210,7 @@ export const LeaderboardPage = () => {
             />
           ) : (
             <LeaderboardTable
-              entries={allTimeEntries}
+              entries={allAllTimeEntries}
               isLoading={isLoadingAllTime}
               isWeekly={false}
               paginationMetadata={{

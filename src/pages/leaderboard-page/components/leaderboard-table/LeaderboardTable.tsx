@@ -15,15 +15,27 @@ import {
 
 import { AllTimeLeaderboardEntryI, PaginationMetadataI, WeeklyLeaderboardEntryI } from '../../../../types/types';
 import { SortableHeaders } from '../../../../components/table/sortable-header/SortableHeaders';
-import { getComparator, stableSort } from '../../../../helpers/tableSort';
+import { stableSort } from '../../../../helpers/tableSort';
 import { AlignE, FieldTypeE, SortOrderE } from '../../../../types/enums';
 
 import { LeaderboardRow } from './LeaderboardRow';
 
 import styles from './LeaderboardTable.module.scss';
 
-// Using a more specific prop type for the entries based on whether it's weekly or all-time
-type LeaderboardEntryT = WeeklyLeaderboardEntryI | AllTimeLeaderboardEntryI;
+// Define a more specific type for our entries that includes all possible fields
+type LeaderboardEntryT = {
+  rank?: number;
+  trader?: string;
+  address?: string;
+  pnl?: number;
+  vol?: number;
+  timeWeightedOI?: string;
+  points?: number;
+  numWeeks?: number;
+  volumeRank?: number;
+  isHighestOI?: boolean;
+  isLowestPnL?: boolean;
+};
 
 interface LeaderboardTablePropsI {
   entries: LeaderboardEntryT[];
@@ -34,8 +46,8 @@ interface LeaderboardTablePropsI {
   onPageSizeChange?: (pageSize: number) => void;
 }
 
-interface ColumnHeaderI {
-  id: keyof WeeklyLeaderboardEntryI | keyof AllTimeLeaderboardEntryI;
+interface TableHeaderI<T> {
+  field: keyof T;
   label: string;
   align: AlignE;
   fieldType: FieldTypeE;
@@ -50,18 +62,18 @@ export const LeaderboardTable = ({
   onPageSizeChange,
 }: LeaderboardTablePropsI) => {
   const [order, setOrder] = useState<SortOrderE>(SortOrderE.Asc);
-  const [orderBy, setOrderBy] = useState<string | number>(isWeekly ? 'volumeRank' : 'rank');
+  const [orderBy, setOrderBy] = useState<keyof LeaderboardEntryT>('rank');
 
   const headers = useMemo(() => {
-    const baseHeaders: ColumnHeaderI[] = [
+    const baseHeaders: TableHeaderI<LeaderboardEntryT>[] = [
       {
-        id: isWeekly ? 'volumeRank' : 'rank',
+        field: isWeekly ? 'volumeRank' : 'rank',
         label: isWeekly ? 'Volume Rank' : 'Rank',
         align: AlignE.Left,
         fieldType: FieldTypeE.Number,
       },
       {
-        id: isWeekly ? 'trader' : 'address',
+        field: isWeekly ? 'trader' : 'address',
         label: 'Address',
         align: AlignE.Left,
         fieldType: FieldTypeE.String,
@@ -71,27 +83,27 @@ export const LeaderboardTable = ({
     if (isWeekly) {
       baseHeaders.push(
         {
-          id: 'pnl',
+          field: 'pnl',
           label: 'PNL',
           align: AlignE.Right,
           fieldType: FieldTypeE.Number,
         },
         {
-          id: 'vol',
+          field: 'vol',
           label: 'Volume',
           align: AlignE.Right,
           fieldType: FieldTypeE.Number,
         },
         {
-          id: 'timeWeightedOI',
+          field: 'timeWeightedOI',
           label: 'OI',
           align: AlignE.Right,
-          fieldType: FieldTypeE.String,
+          fieldType: FieldTypeE.Number,
         }
       );
     } else {
       baseHeaders.push({
-        id: 'points',
+        field: 'points',
         label: 'Points',
         align: AlignE.Right,
         fieldType: FieldTypeE.Number,
@@ -105,8 +117,35 @@ export const LeaderboardTable = ({
   const sortedEntries = useMemo(() => {
     if (!entries?.length) return [];
 
-    return stableSort(entries, getComparator(order, orderBy));
-  }, [entries, order, orderBy]);
+    const sorted = stableSort(entries, (a: LeaderboardEntryT, b: LeaderboardEntryT) => {
+      if (orderBy === 'timeWeightedOI') {
+        const aValue = parseFloat(a.timeWeightedOI || '0');
+        const bValue = parseFloat(b.timeWeightedOI || '0');
+        return order === SortOrderE.Desc ? bValue - aValue : aValue - bValue;
+      }
+      const aValue = a[orderBy];
+      const bValue = b[orderBy];
+      if (aValue === undefined || bValue === undefined) return 0;
+
+      if (order === SortOrderE.Desc) {
+        if (bValue > aValue) return 1;
+        if (bValue < aValue) return -1;
+        return 0;
+      } else {
+        if (aValue > bValue) return 1;
+        if (aValue < bValue) return -1;
+        return 0;
+      }
+    });
+
+    if (paginationMetadata) {
+      const start = paginationMetadata.currentPage * paginationMetadata.pageSize;
+      const end = start + paginationMetadata.pageSize;
+      return sorted.slice(start, end);
+    }
+
+    return sorted;
+  }, [entries, order, orderBy, paginationMetadata]);
 
   // Style for the table container to make it more readable
   const tableContainerStyles = {
