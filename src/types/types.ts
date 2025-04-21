@@ -568,6 +568,9 @@ export interface WeeklyLeaderboardEntryI {
   address?: string;
   numWeeks?: number;
   points?: number;
+  volumeRank?: number;
+  isHighestOI?: boolean;
+  isLowestPnL?: boolean;
 }
 
 export interface WeeklyLeaderboardResponseI {
