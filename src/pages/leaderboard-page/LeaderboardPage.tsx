@@ -49,10 +49,19 @@ export const LeaderboardPage = () => {
             volumeRank: index + 1,
           }));
 
-        setAllWeeklyEntries(sortedByVolume);
-        setWeeklyEntries(sortedByVolume.slice(page * pageSize, (page + 1) * pageSize));
-        console.log('sortedByVolume', sortedByVolume);
-        console.log('weeklyEntries', weeklyEntries);
+        // Find highest OI and PnL
+        const highestOI = Math.max(...sortedByVolume.map((entry) => parseFloat(entry.timeWeightedOI || '0')));
+        const highestPnL = Math.max(...sortedByVolume.map((entry) => entry.pnl || 0));
+
+        // Mark entries with highest values
+        const entriesWithCrowns = sortedByVolume.map((entry) => ({
+          ...entry,
+          isHighestOI: parseFloat(entry.timeWeightedOI || '0') === highestOI,
+          isHighestPnL: (entry.pnl || 0) === highestPnL,
+        }));
+
+        setAllWeeklyEntries(entriesWithCrowns);
+        setWeeklyEntries(entriesWithCrowns.slice(page * pageSize, (page + 1) * pageSize));
       } else {
         console.error('Weekly leaderboard API returned unexpected data format:', data);
         setAllWeeklyEntries([]);
