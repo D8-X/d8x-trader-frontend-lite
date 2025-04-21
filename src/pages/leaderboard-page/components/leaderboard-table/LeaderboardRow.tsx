@@ -1,6 +1,7 @@
 // src/pages/leaderboard-page/components/leaderboard-table/LeaderboardRow.tsx
 import { TableCell, TableRow, Typography } from '@mui/material';
 import { useAccount } from 'wagmi';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
 import { AllTimeLeaderboardEntryI, WeeklyLeaderboardEntryI } from 'types/types';
 
@@ -43,7 +44,7 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
   return (
     <TableRow className={`${styles.row} ${isUserRow ? styles.userRow : ''}`}>
       <TableCell className={styles.rankCell} align="left">
-        <Typography variant="body2">{entry.rank !== undefined ? entry.rank : '-'}</Typography>
+        <Typography variant="body2">{isWeekly ? (entry.volumeRank ?? '-') : (entry.rank ?? '-')}</Typography>
       </TableCell>
 
       <TableCell className={styles.addressCell} align="left">
@@ -66,17 +67,27 @@ export const LeaderboardRow = ({ entry }: LeaderboardRowPropsI) => {
       {isWeekly ? (
         <>
           <TableCell className={styles.pnlCell} align="right">
-            <Typography variant="body2" className={getPnlClass(entry.pnl)}>
-              {formatPnl(entry.pnl)}
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+              <Typography variant="body2" className={getPnlClass(entry.pnl)}>
+                {formatPnl(entry.pnl)}
+              </Typography>
+              {entry.isLowestPnL && (
+                <>
+                  <span style={{ fontSize: '16px' }}>🐻</span>
+                </>
+              )}
+            </div>
           </TableCell>
           <TableCell className={styles.volCell} align="right">
             <Typography variant="body2">{entry.vol !== undefined ? `$${entry.vol.toFixed(2)}` : '-'}</Typography>
           </TableCell>
           <TableCell className={styles.volCell} align="right">
-            <Typography variant="body2">
-              {entry.timeWeightedOI !== undefined ? `$${parseFloat(entry.timeWeightedOI).toFixed(2)}` : '-'}
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+              <Typography variant="body2">
+                {entry.timeWeightedOI !== undefined ? `$${parseFloat(entry.timeWeightedOI).toFixed(2)}` : '-'}
+              </Typography>
+              {entry.isHighestOI && <EmojiEventsIcon sx={{ color: 'gold', fontSize: '1rem' }} />}
+            </div>
           </TableCell>
         </>
       ) : (
