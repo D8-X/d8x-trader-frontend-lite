@@ -10,7 +10,7 @@ interface DynamicLogoPropsI extends SVGProps<SVGElement> {
   logoName?: string;
 }
 
-const IMAGES_URL = 'https://raw.githubusercontent.com/D8-X/sync-hub/refs/heads/main/assets/';
+const IMAGES_URL = 'https://d8-x.github.io/sync-hub/assets/';
 
 const fetchedLogos: Record<string, string | null> = {};
 
