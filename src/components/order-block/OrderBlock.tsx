@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import type { PythMetadata } from '@d8x/perpetuals-sdk';
 
 import { ArrowForward } from '@mui/icons-material';
 import { Card, CardContent, Link } from '@mui/material';
@@ -44,6 +45,7 @@ export const OrderBlock = memo(() => {
   const { chainId, isConnected } = useAccount();
 
   const [predictionQuestion, setPredictionQuestion] = useState<PredictionMarketMetaDataI>();
+  const [pythMetadata, setPythMetadata] = useState<PythMetadata>();
   const [isPredictionModalOpen, setPredictionModalOpen] = useState(false);
 
   const isPredictionMarket = useMemo(() => {
@@ -77,6 +79,26 @@ export const OrderBlock = memo(() => {
       .fetchPrdMktMetaData(`${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`)
       .then((value) => {
         setPredictionQuestion(value as never as PredictionMarketMetaDataI);
+      });
+  }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
+
+  useEffect(() => {
+    if (isPredictionMarket || !traderAPI) {
+      setPythMetadata(undefined);
+      return;
+    }
+    if (!selectedPerpetual || !selectedPool) {
+      setPythMetadata(undefined);
+      return;
+    }
+    traderAPI
+      .fetchPythMetaData(`${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`)
+      .then((value) => {
+        setPythMetadata(value);
+      })
+      .catch((e) => {
+        // nothing wrong, just no data
+        console.log(e);
       });
   }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
 
@@ -124,6 +146,27 @@ export const OrderBlock = memo(() => {
               dialogTitle={predictionQuestion.question}
             >
               {predictionQuestion.description}
+            </Dialog>
+          </>
+        )}
+        {!isPredictionMarket && pythMetadata && (
+          <>
+            <div className={styles.predictionQuestion}>
+              {pythMetadata.attributes.display_symbol} (
+              <span onClick={() => setPredictionModalOpen(true)} className={styles.learnMore}>
+                {t('common.learn-more')}
+              </span>
+              )
+            </div>
+
+            <Dialog
+              open={isPredictionModalOpen}
+              onClose={handlePredictionModalClose}
+              onCloseClick={handlePredictionModalClose}
+              className={styles.dialog}
+              dialogTitle={pythMetadata.attributes.display_symbol}
+            >
+              {pythMetadata.attributes.description}
             </Dialog>
           </>
         )}
