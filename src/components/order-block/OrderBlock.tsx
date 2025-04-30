@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import type { PythMetadata } from '@d8x/perpetuals-sdk';
 
 import { ArrowForward } from '@mui/icons-material';
 import { Card, CardContent, Link } from '@mui/material';
@@ -44,6 +45,7 @@ export const OrderBlock = memo(() => {
   const { chainId, isConnected } = useAccount();
 
   const [predictionQuestion, setPredictionQuestion] = useState<PredictionMarketMetaDataI>();
+  const [pythMetadata, setPythMetadata] = useState<PythMetadata>();
   const [isPredictionModalOpen, setPredictionModalOpen] = useState(false);
 
   const isPredictionMarket = useMemo(() => {
@@ -80,9 +82,32 @@ export const OrderBlock = memo(() => {
       });
   }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
 
+  useEffect(() => {
+    if (isPredictionMarket || !traderAPI) {
+      setPythMetadata(undefined);
+      return;
+    }
+    if (!selectedPerpetual || !selectedPool) {
+      setPythMetadata(undefined);
+      return;
+    }
+    traderAPI
+      .fetchPythMetaData(`${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`)
+      .then((value) => {
+        setPythMetadata(value);
+      })
+      .catch((e) => {
+        // nothing wrong, just no data
+        console.log(e);
+        setPythMetadata(undefined);
+      });
+  }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
+
   const handlePredictionModalClose = useCallback(() => {
     setPredictionModalOpen(false);
   }, []);
+
+  console.log(pythMetadata);
 
   return (
     <Card className={styles.root}>
@@ -127,6 +152,17 @@ export const OrderBlock = memo(() => {
             </Dialog>
           </>
         )}
+        {!isPredictionMarket &&
+          pythMetadata &&
+          (pythMetadata.attributes.asset_type === 'Equity' ||
+            pythMetadata.attributes.asset_type === 'Commodities' ||
+            pythMetadata.attributes.asset_type === 'Metal') && (
+            <>
+              <div className={styles.predictionQuestion}>
+                {pythMetadata?.attributes?.description ? pythMetadata.attributes.description.split('/')[0] : ''}
+              </div>
+            </>
+          )}
         <OrderSelector />
       </CardContent>
       <CardContent className={styles.card}>
