@@ -40,6 +40,10 @@ export const Filters = memo(() => {
       label: t('common.select.market.equity'),
       value: AssetTypeE.Equity,
     },
+    {
+      label: t('common.select.market.commodities'),
+      value: AssetTypeE.Commodity,
+    },
   ];
 
   const handleClick = (value: AssetTypeE) => {

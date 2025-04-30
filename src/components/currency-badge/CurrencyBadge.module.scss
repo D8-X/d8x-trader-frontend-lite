@@ -29,6 +29,11 @@
     background-color: var(--d8x-badge-fx-background);
   }
 
+  &.metal {
+    color: var(--d8x-badge-commodity-color);
+    background-color: var(--d8x-badge-commodity-background);
+  }
+
   &.commodity {
     color: var(--d8x-badge-commodity-color);
     background-color: var(--d8x-badge-commodity-background);

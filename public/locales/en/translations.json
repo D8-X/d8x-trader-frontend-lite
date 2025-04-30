@@ -902,6 +902,7 @@
         "all": "All",
         "polymarket": "Prediction",
         "metal": "Commodity",
+        "commodities": "Commodity",
         "closed": "Closed",
         "equity": "Equity"
       },
