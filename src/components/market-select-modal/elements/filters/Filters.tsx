@@ -33,11 +33,6 @@ export const Filters = memo(() => {
       value: AssetTypeE.Fx,
     },
     {
-      label: t('common.select.market.metal'),
-      value: AssetTypeE.Metal,
-    },
-
-    {
       label: t('common.select.market.commodities'),
       value: AssetTypeE.Commodity,
     },

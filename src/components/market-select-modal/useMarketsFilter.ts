@@ -6,6 +6,7 @@ import { searchFilterAtom } from './elements/search-input/SearchInput';
 import { assetTypeFilterAtom, collateralFilterAtom } from './collaterals.store';
 import { PerpetualWithPoolAndMarketI } from './types';
 import { flatTokenAtom } from 'store/pools.store';
+import { AssetTypeE } from 'types/enums';
 
 export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolAndMarketI>[]) => {
   const collateralFilter = useAtomValue(collateralFilterAtom);
@@ -30,6 +31,14 @@ export const useMarketsFilter = (markets: SelectItemI<PerpetualWithPoolAndMarket
 
     if (assetTypeFilter === null) {
       return collateralFiltered;
+    }
+
+    if (assetTypeFilter === AssetTypeE.Commodity) {
+      return collateralFiltered.filter(
+        (market) =>
+          market.item.marketData?.assetType === AssetTypeE.Commodity ||
+          market.item.marketData?.assetType === AssetTypeE.Metal
+      );
     }
 
     return collateralFiltered.filter((market) => assetTypeFilter === market.item.marketData?.assetType);
