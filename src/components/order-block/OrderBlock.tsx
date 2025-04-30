@@ -99,12 +99,15 @@ export const OrderBlock = memo(() => {
       .catch((e) => {
         // nothing wrong, just no data
         console.log(e);
+        setPythMetadata(undefined);
       });
   }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
 
   const handlePredictionModalClose = useCallback(() => {
     setPredictionModalOpen(false);
   }, []);
+
+  console.log(pythMetadata);
 
   return (
     <Card className={styles.root}>
@@ -149,27 +152,17 @@ export const OrderBlock = memo(() => {
             </Dialog>
           </>
         )}
-        {!isPredictionMarket && pythMetadata && (
-          <>
-            <div className={styles.predictionQuestion}>
-              {pythMetadata.attributes.display_symbol} (
-              <span onClick={() => setPredictionModalOpen(true)} className={styles.learnMore}>
-                {t('common.learn-more')}
-              </span>
-              )
-            </div>
-
-            <Dialog
-              open={isPredictionModalOpen}
-              onClose={handlePredictionModalClose}
-              onCloseClick={handlePredictionModalClose}
-              className={styles.dialog}
-              dialogTitle={pythMetadata.attributes.display_symbol}
-            >
-              {pythMetadata.attributes.description}
-            </Dialog>
-          </>
-        )}
+        {!isPredictionMarket &&
+          pythMetadata &&
+          (pythMetadata.attributes.asset_type === 'Equity' ||
+            pythMetadata.attributes.asset_type === 'Commodities' ||
+            pythMetadata.attributes.asset_type === 'Metal') && (
+            <>
+              <div className={styles.predictionQuestion}>
+                {pythMetadata?.attributes?.description ? pythMetadata.attributes.description.split('/')[0] : ''}
+              </div>
+            </>
+          )}
         <OrderSelector />
       </CardContent>
       <CardContent className={styles.card}>
