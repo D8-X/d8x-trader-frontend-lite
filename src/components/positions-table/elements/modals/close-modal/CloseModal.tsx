@@ -116,7 +116,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         isPredictionMarket && orderInfo.tradingFee ? orderInfo.tradingFee * 1e5 : poolFee
       )
         .then((data) => {
-          // From PerpetualTradeLogic.__getTradeDeltas:
+          // From PerpetualTradeLogic.__getTradeDeltas and _updateMargin:
           const estimPnL =
             ((data.data.ammPrice - selectedPosition.entryPrice) *
               (selectedPosition?.side === OrderSideE.Buy ? 1 : -1) *
