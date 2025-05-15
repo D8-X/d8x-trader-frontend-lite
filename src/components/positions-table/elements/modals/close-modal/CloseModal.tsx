@@ -117,7 +117,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       )
         .then((data) => {
           const estimPnL =
-            (data.data.ammPrice - selectedPosition.markPrice) *
+            (data.data.ammPrice - selectedPosition.entryPrice) *
               (selectedPosition?.side === OrderSideE.Buy ? 1 : -1) *
               selectedPosition.positionNotionalBaseCCY +
             selectedPosition.unrealizedPnlQuoteCCY;
