@@ -96,9 +96,9 @@ export const OrderBlock = memo(() => {
       .then((value) => {
         setPythMetadata(value);
       })
-      .catch((e) => {
+      .catch(() => {
         // nothing wrong, just no data
-        console.log(e);
+        // console.log(e);
         setPythMetadata(undefined);
       });
   }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
@@ -107,7 +107,7 @@ export const OrderBlock = memo(() => {
     setPredictionModalOpen(false);
   }, []);
 
-  console.log(pythMetadata);
+  // console.log(pythMetadata);
 
   return (
     <Card className={styles.root}>
