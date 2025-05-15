@@ -112,16 +112,18 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         traderAPI,
         closeOrderReview,
         address,
-        (selectedPosition?.positionNotionalBaseCCY ?? 0) * (selectedPosition?.side === OrderSideE.Buy ? 1 : -1),
+        (selectedPosition?.positionNotionalBaseCCY ?? 0) * (selectedPosition?.side === OrderSideE.Buy ? -1 : 1),
         isPredictionMarket && orderInfo.tradingFee ? orderInfo.tradingFee * 1e5 : poolFee
       )
         .then((data) => {
+          // From PerpetualTradeLogic.__getTradeDeltas and _updateMargin:
           const estimPnL =
-            (data.data.ammPrice - selectedPosition.markPrice) *
+            ((data.data.ammPrice - selectedPosition.entryPrice) *
               (selectedPosition?.side === OrderSideE.Buy ? 1 : -1) *
-              selectedPosition.positionNotionalBaseCCY +
-            selectedPosition.unrealizedPnlQuoteCCY;
-          setEstimatedPnL(estimPnL / data.data.newPositionRisk.collToQuoteConversion); // in cc
+              selectedPosition.positionNotionalBaseCCY) /
+              data.data.newPositionRisk.collToQuoteConversion +
+            selectedPosition.unrealizedFundingCollateralCCY;
+          setEstimatedPnL(estimPnL); // in cc
         })
         .catch((error) => {
           console.error('Error calculating PnL:', error);
