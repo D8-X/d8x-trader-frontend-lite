@@ -145,6 +145,7 @@ export enum AssetTypeE {
   Crypto = 'crypto',
   Prediction = 'polymarket',
   Fx = 'fx',
+  Commodity = 'commodities',
   Metal = 'metal',
   Equity = 'equity',
 }

@@ -7,7 +7,7 @@ import { Box } from '@mui/material';
 
 import { PERIOD_OF_4_DAYS } from 'appConstants';
 import { Separator } from 'components/separator/Separator';
-import { liquidityTypeAtom, withdrawalsAtom } from 'store/vault-pools.store';
+import { liquidityTypeAtom, withdrawalOnChainAtom, withdrawalsAtom } from 'store/vault-pools.store';
 import { LiquidityTypeE } from 'types/enums';
 
 import { PersonalStats } from '../personal-stats/PersonalStats';
@@ -24,6 +24,7 @@ export const LiquidityBlock = memo(() => {
 
   const liquidityType = useAtomValue(liquidityTypeAtom);
   const withdrawals = useAtomValue(withdrawalsAtom);
+  const requestOnChain = useAtomValue(withdrawalOnChainAtom);
   const chainId = useChainId();
 
   const lpLockPeriod = useMemo(() => {
@@ -31,7 +32,7 @@ export const LiquidityBlock = memo(() => {
   }, [chainId]);
 
   const withdrawOn = useMemo(() => {
-    if (!withdrawals || withdrawals.length === 0) {
+    if (!withdrawals || withdrawals.length === 0 || !requestOnChain) {
       return t('pages.vault.na');
     }
     const currentTime = Date.now();
@@ -44,7 +45,7 @@ export const LiquidityBlock = memo(() => {
     } else {
       return t('pages.vault.now');
     }
-  }, [lpLockPeriod, withdrawals, t]);
+  }, [lpLockPeriod, requestOnChain, withdrawals, t]);
 
   return (
     <Box className={styles.root}>
