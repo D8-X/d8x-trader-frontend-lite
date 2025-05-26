@@ -20,6 +20,7 @@ import {
   triggerUserStatsUpdateAtom,
   triggerWithdrawalsUpdateAtom,
   userAmountAtom,
+  withdrawalOnChainAtom,
   withdrawalsAtom,
 } from 'store/vault-pools.store';
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
@@ -52,6 +53,7 @@ export const Initiate = memo(() => {
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
   const triggerUserStatsUpdate = useAtomValue(triggerUserStatsUpdateAtom);
+  const requestOnChain = useAtomValue(withdrawalOnChainAtom);
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
   const [userAmount, setUserAmount] = useAtom(userAmountAtom);
 
@@ -211,8 +213,7 @@ export const Initiate = memo(() => {
 
   const isButtonDisabled = useMemo(() => {
     if (
-      !withdrawals ||
-      withdrawals.length > 0 ||
+      requestOnChain?.shareTokens ||
       !userAmount ||
       !initiateAmount ||
       requestSent ||
@@ -223,7 +224,7 @@ export const Initiate = memo(() => {
     } else {
       return userAmount < initiateAmount;
     }
-  }, [withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
+  }, [requestOnChain, userAmount, initiateAmount, requestSent, minAmount]);
 
   const validityCheckInitiateType = useMemo(() => {
     if (!address) {
@@ -232,7 +233,7 @@ export const Initiate = memo(() => {
     if (!isEnabledChain(chain?.id)) {
       return ValidityCheckInitiateE.WrongNetwork;
     }
-    if (requestSent || !minAmount || !withdrawals || withdrawals.length > 0) {
+    if (requestSent || !minAmount || ((!withdrawals || withdrawals.length > 0) && requestOnChain?.shareTokens)) {
       return ValidityCheckInitiateE.Empty;
     }
     if (!userAmount || userAmount === 0) {
@@ -250,7 +251,7 @@ export const Initiate = memo(() => {
       return ValidityCheckInitiateE.AmountBelowMinimum;
     }
     return ValidityCheckInitiateE.GoodToGo;
-  }, [address, chain?.id, withdrawals, userAmount, initiateAmount, requestSent, minAmount]);
+  }, [address, chain?.id, withdrawals, requestOnChain, userAmount, initiateAmount, requestSent, minAmount]);
 
   const validityCheckInitiateText = useMemo(() => {
     if (validityCheckInitiateType === ValidityCheckInitiateE.Empty) {
