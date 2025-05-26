@@ -1,4 +1,4 @@
-import { PROXY_ABI } from '@d8x/perpetuals-sdk';
+import { dec18ToFloat, PROXY_ABI } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
@@ -33,6 +33,7 @@ import { Initiate } from './Initiate';
 
 import styles from './Action.module.scss';
 import { getLiquidityLockedPeriod } from 'helpers/getLiquidityLockedPeriod';
+import { WithdrawRequestI } from 'types/types';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -60,7 +61,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   const flatToken = useAtomValue(flatTokenAtom);
   const setTriggerWithdrawalsUpdate = useSetAtom(triggerWithdrawalsUpdateAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
-  const [hasOpenRequestOnChain, setWithrawalOnChain] = useAtom(withdrawalOnChainAtom);
+  const [requestOnChain, setWithrawalOnChain] = useAtom(withdrawalOnChainAtom);
 
   const [requestSent, setRequestSent] = useState(false);
   const [txHash, setTxHash] = useState<Address>();
@@ -116,8 +117,8 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     if (!openRequests || !walletClient) {
       return undefined;
     }
-    const res = (openRequests as unknown[]).some(
-      (req) => (req as { lp: string }).lp.toLowerCase() === walletClient.account.address.toLowerCase()
+    const res = (openRequests as WithdrawRequestI[]).find(
+      (req) => req.lp.toLowerCase() === walletClient.account.address.toLowerCase()
     );
     setWithrawalOnChain(res);
   }, [openRequests, walletClient, setWithrawalOnChain]);
@@ -223,7 +224,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
   }, [chain?.id]);
 
   const shareAmount = useMemo(() => {
-    if (!withdrawals) {
+    if (!requestOnChain || !withdrawals) {
       return;
     }
     if (withdrawals.length === 0) {
@@ -237,24 +238,22 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     if (currentTime < withdrawalTime) {
       return 0;
     } else {
-      return latestWithdrawal.shareAmount;
+      return dec18ToFloat(requestOnChain?.shareTokens);
     }
-  }, [lpLockPeriod, withdrawals]);
+  }, [lpLockPeriod, withdrawals, requestOnChain]);
 
   const predictedAmount = useMemo(() => {
     if (!withdrawals) {
       return;
     }
-    if (withdrawals.length === 0) {
+    if (!requestOnChain) {
       return 0;
     }
-    const latestWithdrawal = withdrawals[withdrawals.length - 1];
-
     if (dCurrencyPrice) {
-      return latestWithdrawal.shareAmount * dCurrencyPrice;
+      return dec18ToFloat(requestOnChain.shareTokens) * dCurrencyPrice;
     }
     return 0;
-  }, [dCurrencyPrice, withdrawals]);
+  }, [dCurrencyPrice, requestOnChain, withdrawals]);
 
   const isButtonDisabled = !userAmount || !shareAmount || requestSent;
 
@@ -301,7 +300,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
         </Typography>
       </Box>
       <Box className={styles.contentBlock}>
-        {!withdrawals.length && !hasOpenRequestOnChain && (
+        {!requestOnChain && (
           <>
             <Initiate />
             <Separator className={styles.separator} />

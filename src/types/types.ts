@@ -626,3 +626,9 @@ export interface PaginationMetadataI {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 }
+
+export interface WithdrawRequestI {
+  lp: string;
+  shareTokens: bigint;
+  withdrawTimestamp: bigint;
+}
