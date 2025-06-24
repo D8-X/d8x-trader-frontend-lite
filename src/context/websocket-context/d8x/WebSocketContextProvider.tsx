@@ -56,10 +56,14 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
     waitForPongRef,
   });
 
+  // Compute effectiveChainId once per render
+  const effectiveChainId = getEnabledChainId(chainId, location.hash);
+  // console.log('[MAIN_WS] effectiveChainId', effectiveChainId);
+
   useEffect(() => {
     wsRef.current?.close();
 
-    const wsUrl = config.wsUrl[getEnabledChainId(chainId, location.hash)] || config.wsUrl.default;
+    const wsUrl = config.wsUrl[effectiveChainId] || config.wsUrl.default;
     wsRef.current = createWebSocketWithReconnect(wsUrl);
     wsRef.current.onStateChange(setIsConnected);
 
@@ -71,7 +75,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
       wsRef.current?.off(handleMessage);
       wsRef.current?.close();
     };
-  }, [chainId, location]);
+  }, [effectiveChainId]);
 
   useEffect(() => {
     if (!isConnected) {

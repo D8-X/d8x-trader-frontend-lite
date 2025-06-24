@@ -56,10 +56,15 @@ export const CandlesWebSocketListener = memo(() => {
     waitForPongRef,
   });
 
+  // Compute effectiveChainId once per render
+  const effectiveChainId = getEnabledChainId(chainId, location.hash);
+  console.log('[CANDLE_WS] effectiveChainId', effectiveChainId);
+
   useEffect(() => {
+    // Only recreate socket when effectiveChainId changes
     wsRef.current?.close();
 
-    const candlesWsUrl = config.candlesWsUrl[getEnabledChainId(chainId, location.hash)] || config.candlesWsUrl.default;
+    const candlesWsUrl = config.candlesWsUrl[effectiveChainId] || config.candlesWsUrl.default;
     wsRef.current = createWebSocketWithReconnect(candlesWsUrl);
     wsRef.current.onStateChange(setIsConnected);
 
@@ -71,7 +76,7 @@ export const CandlesWebSocketListener = memo(() => {
       wsRef.current?.off(handleMessage);
       wsRef.current?.close();
     };
-  }, [chainId, location]);
+  }, [effectiveChainId]);
 
   useCandleMarketsSubscribe({ isConnected, send });
 
