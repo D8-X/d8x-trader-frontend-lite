@@ -1,4 +1,3 @@
-import { useAtomValue } from 'jotai';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation } from 'react-router-dom';
@@ -8,10 +7,8 @@ import { config } from 'config';
 import { createWebSocketWithReconnect } from 'context/websocket-context/createWebSocketWithReconnect';
 import { useHandleMessage } from 'context/websocket-context/hooks/useHandleMessage';
 import { useMessagesToSend } from 'context/websocket-context/hooks/useMessagesToSend';
-import { usePingPong } from 'context/websocket-context/hooks/usePingPong';
 import { useSend } from 'context/websocket-context/hooks/useSend';
 import { WebSocketI } from 'context/websocket-context/types';
-import { candlesLatestMessageTimeAtom } from 'store/tv-chart.store';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import { useCandleMarketsSubscribe } from './useCandleMarketsSubscribe';
@@ -21,22 +18,12 @@ export const CandlesWebSocketListener = memo(() => {
   const { chainId } = useAccount();
   const location = useLocation();
 
-  const latestMessageTime = useAtomValue(candlesLatestMessageTimeAtom);
-
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
   const wsRef = useRef<WebSocketI>();
-  const waitForPongRef = useRef(false);
 
   const handleWsMessage = useCandlesWsMessageHandler();
-
-  usePingPong({
-    client: wsRef.current,
-    isConnected,
-    latestMessageTime,
-    waitForPongRef,
-  });
 
   useHandleMessage({
     messages,
@@ -53,12 +40,10 @@ export const CandlesWebSocketListener = memo(() => {
     client: wsRef.current,
     isConnected,
     setMessagesToSend,
-    waitForPongRef,
   });
 
   // Compute effectiveChainId once per render
   const effectiveChainId = getEnabledChainId(chainId, location.hash);
-  console.log('[CANDLE_WS] effectiveChainId', effectiveChainId);
 
   useEffect(() => {
     // Only recreate socket when effectiveChainId changes
