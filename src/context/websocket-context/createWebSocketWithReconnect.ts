@@ -56,7 +56,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
 
     client.onerror = (e) => console.error('WebSocket error:', e);
 
-    client.onclose = (event) => {
+    client.onclose = () => {
       isConnected = false;
       isDisconnecting = false;
 
