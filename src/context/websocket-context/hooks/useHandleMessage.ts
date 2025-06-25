@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface HandleMessagePropsI {
   messages: string[];
@@ -8,10 +8,14 @@ interface HandleMessagePropsI {
 }
 
 export const useHandleMessage = ({ messages, setMessages, handleWsMessage }: HandleMessagePropsI) => {
+  // Store the latest handleWsMessage function in a ref to avoid dependency issues
+  const handleWsMessageRef = useRef(handleWsMessage);
+  handleWsMessageRef.current = handleWsMessage;
+
   useEffect(() => {
     if (messages.length > 0) {
-      messages.forEach(handleWsMessage);
+      messages.forEach((message) => handleWsMessageRef.current(message));
       setMessages([]);
     }
-  }, [messages, setMessages, handleWsMessage]);
+  }, [messages, setMessages]);
 };

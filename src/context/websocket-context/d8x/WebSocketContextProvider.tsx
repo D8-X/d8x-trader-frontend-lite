@@ -1,16 +1,15 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation } from 'react-router-dom';
 
 import { config } from 'config';
-import { mainWsLatestMessageTimeAtom, webSocketReadyAtom } from 'store/pools.store';
+import { webSocketReadyAtom } from 'store/pools.store';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
 
 import { createWebSocketWithReconnect } from '../createWebSocketWithReconnect';
 import { useHandleMessage } from '../hooks/useHandleMessage';
 import { useMessagesToSend } from '../hooks/useMessagesToSend';
-import { usePingPong } from '../hooks/usePingPong';
 import { useSend } from '../hooks/useSend';
 import { WebSocketI } from '../types';
 import { useWsMessageHandler } from './useWsMessageHandler';
@@ -21,22 +20,13 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const location = useLocation();
 
   const [isWebSocketReady, setWebSocketReady] = useAtom(webSocketReadyAtom);
-  const latestMessageTime = useAtomValue(mainWsLatestMessageTimeAtom);
 
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
   const wsRef = useRef<WebSocketI>();
-  const waitForPongRef = useRef(false);
 
   const handleWsMessage = useWsMessageHandler();
-
-  usePingPong({
-    client: wsRef.current,
-    isConnected,
-    latestMessageTime,
-    waitForPongRef,
-  });
 
   useHandleMessage({
     messages,
@@ -53,13 +43,16 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
     client: wsRef.current,
     isConnected,
     setMessagesToSend,
-    waitForPongRef,
   });
+
+  // Compute effectiveChainId once per render
+  const effectiveChainId = getEnabledChainId(chainId, location.hash);
+  // console.log('[MAIN_WS] effectiveChainId', effectiveChainId);
 
   useEffect(() => {
     wsRef.current?.close();
 
-    const wsUrl = config.wsUrl[getEnabledChainId(chainId, location.hash)] || config.wsUrl.default;
+    const wsUrl = config.wsUrl[effectiveChainId] || config.wsUrl.default;
     wsRef.current = createWebSocketWithReconnect(wsUrl);
     wsRef.current.onStateChange(setIsConnected);
 
@@ -71,7 +64,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
       wsRef.current?.off(handleMessage);
       wsRef.current?.close();
     };
-  }, [chainId, location]);
+  }, [effectiveChainId]);
 
   useEffect(() => {
     if (!isConnected) {

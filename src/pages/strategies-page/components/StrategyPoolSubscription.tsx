@@ -15,7 +15,7 @@ export const StrategyPoolSubscription = () => {
 
       send(
         JSON.stringify({
-          traderAddr: address ?? '',
+          traderAddr: address ?? '0x0000000000000000000000000000000000000000',
           symbol: STRATEGY_SYMBOL,
         })
       );
