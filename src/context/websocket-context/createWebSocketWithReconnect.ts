@@ -11,6 +11,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
   let reconnectOnClose = true;
   let messageListeners: Array<(message: string) => void> = [];
   let stateChangeListeners: ReactDispatchT[] = [];
+  let originalClose: (() => void) | null = null;
 
   const debounceWsReconnect = debounceLeading((callback: () => void) => {
     callback();
@@ -39,7 +40,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
       stateChangeListeners.forEach((fn) => fn(true));
     };
 
-    const close = client.close;
+    originalClose = client.close;
 
     // Close without reconnecting;
     client.close = () => {
@@ -47,7 +48,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
       if (isConnected && !isDisconnecting) {
         isDisconnecting = true;
       }
-      close.call(client);
+      originalClose!.call(client);
     };
 
     client.onmessage = (event) => {
@@ -59,6 +60,7 @@ export function createWebSocketWithReconnect(wsUrl: string): WebSocketI {
     client.onclose = () => {
       isConnected = false;
       isDisconnecting = false;
+      stateChangeListeners.forEach((fn) => fn(false));
 
       if (!reconnectOnClose) {
         return;
