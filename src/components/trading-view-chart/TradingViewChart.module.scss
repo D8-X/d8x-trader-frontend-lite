@@ -46,6 +46,7 @@
  }
 
 .loaderHolder {
+  pointer-events: none;
   position: absolute;
   inset: 0;
   display: flex;
