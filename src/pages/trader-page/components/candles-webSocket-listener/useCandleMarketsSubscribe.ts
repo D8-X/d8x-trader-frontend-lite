@@ -55,9 +55,8 @@ export const useCandleMarketsSubscribe = ({ isConnected, send }: UseCandleMarket
 
   useEffect(() => {
     if (selectedPerpetual && isConnected) {
-      if (!wsConnectedStateRef.current) {
-        send(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
-      }
+      // Always subscribe to markets on every (re)connect
+      send(JSON.stringify({ type: 'subscribe', topic: 'markets' }));
 
       wsConnectedStateRef.current = true;
 
