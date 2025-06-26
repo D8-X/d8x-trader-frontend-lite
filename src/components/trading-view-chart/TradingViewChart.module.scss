@@ -55,6 +55,20 @@
   background-color: var(--d8x-color-background-loader);
 }
 
+.closedBox {
+  background: var(--d8x-color-background);
+  color: var(--d8x-color-text-main);
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 220px;
+  font-size: 16px;
+  opacity: 0.95;
+}
+
 @media screen and ($d8x-breakpoint-max-sm) {
   .heading {
     flex-direction: column;
