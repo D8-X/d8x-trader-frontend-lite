@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { PropsWithChildren, useEffect, useMemo, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { useLocation } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
   const [messages, setMessages] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
-  const wsRef = useRef<WebSocketI>();
+  const wsRef = useRef<WebSocketI | undefined>(undefined);
 
   const handleWsMessage = useWsMessageHandler();
 
@@ -53,18 +53,28 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
     wsRef.current?.close();
 
     const wsUrl = config.wsUrl[effectiveChainId] || config.wsUrl.default;
-    wsRef.current = createWebSocketWithReconnect(wsUrl);
-    wsRef.current.onStateChange(setIsConnected);
+    const ws = createWebSocketWithReconnect(wsUrl);
+    ws.onStateChange((val) => {
+      setIsConnected(val);
+    });
 
     const handleMessage = (message: string) => {
       setMessages((prevState) => [...prevState, message]);
     };
-    wsRef.current.on(handleMessage);
+    ws.on(handleMessage);
+    wsRef.current = ws;
+
     return () => {
-      wsRef.current?.off(handleMessage);
-      wsRef.current?.close();
+      ws.off(handleMessage);
+      ws.close();
     };
   }, [effectiveChainId]);
+
+  useEffect(() => {
+    if (isConnected) {
+      setWebSocketReady(true);
+    }
+  }, [setWebSocketReady, isConnected]);
 
   useEffect(() => {
     if (!isConnected) {
@@ -72,13 +82,12 @@ export const WebSocketContextProvider = ({ children }: PropsWithChildren) => {
     }
   }, [setWebSocketReady, isConnected]);
 
-  const contextValue: WebSocketContextI = useMemo(
-    () => ({
+  const contextValue: WebSocketContextI = useMemo(() => {
+    return {
       isConnected: isWebSocketReady,
       send,
-    }),
-    [isWebSocketReady, send]
-  );
+    };
+  }, [isWebSocketReady, send]);
 
   return <WebSocketContext.Provider value={contextValue}>{children}</WebSocketContext.Provider>;
 };

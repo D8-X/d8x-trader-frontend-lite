@@ -10,6 +10,7 @@ import { MarketSelect } from 'components/market-select/MarketSelect';
 import { candlesAtom, candlesDataReadyAtom, newCandleAtom } from 'store/tv-chart.store';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { selectedPerpetualAtom, selectedPerpetualDataAtom } from 'store/pools.store';
+import { useMarkets } from 'components/market-select-modal/hooks/useMarkets';
 
 import { ONE_MINUTE_SECONDS, ONE_MINUTE_TIME, TIMEZONE_OFFSET } from './constants';
 import { ChartBlock } from './elements/chart-block/ChartBlock';
@@ -46,9 +47,13 @@ export const TradingViewChart = memo(
 
     const isPredictionMarket = selectedPerpetualData?.isPredictionMarket ?? false;
 
-    const isMarketClosed = useMemo(() => {
-      return selectedPerpetual?.isMarketClosed;
-    }, [selectedPerpetual?.isMarketClosed]);
+    const markets = useMarkets();
+    const currencyMarketData = useMemo(() => {
+      if (selectedPerpetual && markets.length > 0) {
+        return markets.find((market) => market.value === `${selectedPerpetual.id}`)?.item.marketData ?? null;
+      }
+      return null;
+    }, [selectedPerpetual, markets]);
 
     const candlesWithLocalTime: CandlestickData[] = useMemo(
       () =>
@@ -182,14 +187,16 @@ export const TradingViewChart = memo(
               <CircularProgress color="primary" />
             </div>
           )}
-          {isMarketClosed && isPredictionMarket && (
+          {currencyMarketData && currencyMarketData.isOpen === false && (
             <div className={styles.loaderHolder}>
-              <div className={styles.textWrapper}>
+              <div className={styles.closedBox}>
                 <Typography variant="bodySmallPopup" className={styles.bold}>
                   {'Market is closed'}
                 </Typography>
                 <Typography variant="bodySmallPopup" className={styles.italic}>
-                  {'Settlement in progress'}
+                  {isPredictionMarket
+                    ? 'Settlement in progress'
+                    : `Opens at: ${new Date(currencyMarketData.nextOpen * 1000).toLocaleString()}`}
                 </Typography>
               </div>
             </div>
