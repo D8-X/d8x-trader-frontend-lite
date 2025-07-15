@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi';
 
 import { Typography } from '@mui/material';
 
-import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderInfoAtom, orderTypeAtom } from 'store/order-block.store';
 import {
   collateralToSettleConversionAtom,
   flatTokenAtom,
@@ -33,7 +33,6 @@ export const InfoBlock = memo(() => {
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const leverage = useAtomValue(leverageAtom);
   const orderType = useAtomValue(orderTypeAtom);
-  const slippage = useAtomValue(slippageSliderAtom);
   const orderBlock = useAtomValue(orderBlockAtom);
   const positions = useAtomValue(positionsAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
@@ -96,7 +95,8 @@ export const InfoBlock = memo(() => {
       orderSizeNet = orderSize - openPosition.positionNotionalBaseCCY;
     }
 
-    const slippagePct = orderType === 'Market' ? slippage / 100 : 0;
+    // set slippage to 2% as an assumption here
+    const slippagePct = orderType === 'Market' ? 1 / 100 : 0;
     const orderFeeBps = orderInfo?.tradingFee || 0;
     const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
     const limitPrice = selectedPerpetual.indexPrice * (1 + (direction * slippagePct) / 100);
@@ -115,7 +115,6 @@ export const InfoBlock = memo(() => {
   }, [
     leverage,
     orderInfo,
-    slippage,
     orderBlock,
     orderType,
     orderSize,

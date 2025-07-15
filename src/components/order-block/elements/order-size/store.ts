@@ -2,7 +2,7 @@ import { BUY_SIDE, pmFindMaxPersonalTradeSizeAtLeverage, roundToLotString, Trade
 import { atom } from 'jotai';
 
 import { calculateProbability } from 'helpers/calculateProbability';
-import { orderBlockAtom, orderInfoAtom, orderTypeAtom, slippageSliderAtom } from 'store/order-block.store';
+import { orderBlockAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralToSettleConversionAtom,
   flatTokenAtom,
@@ -26,7 +26,6 @@ export const maxOrderSizeAtom = atom((get) => {
   const selectedPool = get(selectedPoolAtom);
   const selectedPerpetual = get(selectedPerpetualAtom);
   const maxTraderOrderSize = get(maxTraderOrderSizeAtom);
-  const orderType = get(orderTypeAtom);
   const orderInfo = get(orderInfoAtom);
   const leverage = get(leverageAtom);
   const orderBlock = get(orderBlockAtom);
@@ -39,7 +38,7 @@ export const maxOrderSizeAtom = atom((get) => {
 
   const { collToQuoteIndexPrice, indexPrice, markPrice } = selectedPerpetual;
   const orderBlockSide = orderBlock === OrderBlockE.Long ? OrderSideE.Buy : OrderSideE.Sell;
-  const slippage = orderType === 'Market' ? get(slippageSliderAtom) / 100 : 0.01;
+  const slippage = 0.01;
   const direction = orderBlock === OrderBlockE.Long ? 1 : -1;
   const limitPrice = indexPrice * (1 + direction * slippage);
   const poolTokenBalanceOrDefault =
