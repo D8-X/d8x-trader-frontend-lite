@@ -606,22 +606,6 @@ export const ActionBlock = memo(() => {
     if (isInvalidPrice) {
       return ValidityCheckE.SlippageTooLarge;
     }
-    // slippage check 2 (max/min price)
-    if (
-      orderInfo.orderType === OrderTypeE.Market &&
-      orderInfo.maxMinEntryPrice !== null &&
-      perpetualPrice !== undefined // perpetualPrice is already in prob if prediction market (getPerpetualPricePromise)
-    ) {
-      let isSlippageTooLarge;
-      if (isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long) {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice < perpetualPrice;
-      } else {
-        isSlippageTooLarge = orderInfo.maxMinEntryPrice > perpetualPrice;
-      }
-      if (isSlippageTooLarge && !isPredictionMarket) {
-        return ValidityCheckE.SlippageTooLarge;
-      }
-    }
     return ValidityCheckE.GoodToGo;
   }, [
     maxOrderSize,
@@ -630,7 +614,6 @@ export const ActionBlock = memo(() => {
     orderInfo?.orderBlock,
     orderInfo?.orderType,
     orderInfo?.takeProfitPrice,
-    orderInfo?.maxMinEntryPrice,
     perpetualStaticInfo,
     poolTokenBalance,
     isMarketClosed,
@@ -803,20 +786,6 @@ export const ActionBlock = memo(() => {
                   rightSide={feePct ? formatToCurrency(feePct, '%', false, 3) : '-'}
                   rightSideStyles={styles.rightSide}
                 />
-
-                {orderInfo.maxMinEntryPrice !== null && (
-                  <SidesRow
-                    leftSide={
-                      <Typography variant="bodySmallPopup" className={styles.left}>
-                        {isPredictionMarket || orderInfo.orderBlock === OrderBlockE.Long
-                          ? t('pages.trade.action-block.review.max')
-                          : t('pages.trade.action-block.review.min')}
-                      </Typography>
-                    }
-                    rightSide={formatToCurrency(orderInfo.maxMinEntryPrice, orderInfo.quoteCurrency)}
-                    rightSideStyles={styles.rightSide}
-                  />
-                )}
                 {perpetualPrice !== null && (
                   <SidesRow
                     leftSide={
