@@ -82,6 +82,14 @@
     margin-bottom: $d8x-spacing * 3;
   }
 
+  .leverageSwitchMessage {
+    margin-bottom: $d8x-spacing * 3;
+    padding: $d8x-spacing * 2;
+    background-color: var(--d8x-color-background-secondary);
+    border-radius: $d8x-border-radius;
+    border: 1px solid var(--d8x-block-border-color);
+  }
+
   .learnMore {
     cursor: pointer;
     color: var(--d8x-color-action);
