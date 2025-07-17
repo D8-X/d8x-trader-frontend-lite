@@ -32,6 +32,13 @@ export const oracleFactoryAddrAtom = atom('');
 export const proxyAddrAtom = atom<string | undefined>(undefined);
 export const perpetualStatisticsAtom = atom<PerpetualStatisticsI | null>(null);
 export const perpetualStaticInfoAtom = atom<PerpetualStaticInfoI | null>(null);
+
+export const leverageSwitchAtom = atom<{
+  event: string;
+  ts: number;
+  tsStr: string;
+} | null>(null);
+
 export const newPositionRiskAtom = atom<MarginAccountI | null>(null);
 export const perpetualPriceAtom = atom<number | undefined>(undefined);
 export const collateralDepositAtom = atom(0);
