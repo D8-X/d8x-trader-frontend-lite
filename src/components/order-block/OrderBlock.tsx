@@ -6,13 +6,13 @@ import { useAccount } from 'wagmi';
 import type { PythMetadata } from '@d8x/perpetuals-sdk';
 
 import { ArrowForward } from '@mui/icons-material';
-import { Card, CardContent, Link } from '@mui/material';
+import { Card, CardContent, Link, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
 import { createSymbol } from 'helpers/createSymbol';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { orderTypeAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
+import { selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom, leverageSwitchAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 import { PredictionMarketMetaDataI } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
@@ -41,6 +41,7 @@ export const OrderBlock = memo(() => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
+  const leverageSwitch = useAtomValue(leverageSwitchAtom);
 
   const { chainId, isConnected } = useAccount();
 
@@ -107,6 +108,22 @@ export const OrderBlock = memo(() => {
     setPredictionModalOpen(false);
   }, []);
 
+  // Check if market is open and is equity/commodity
+  const shouldShowLeverageSwitch = useMemo(() => {
+    if (!selectedPerpetual || !pythMetadata) return false;
+
+    const isEquityOrCommodity =
+      pythMetadata.attributes.asset_type === 'Equity' ||
+      pythMetadata.attributes.asset_type === 'Commodities' ||
+      pythMetadata.attributes.asset_type === 'Metal';
+
+    const isMarketOpen = !selectedPerpetual.isMarketClosed;
+
+    const shouldShow = isEquityOrCommodity && isMarketOpen && leverageSwitch;
+
+    return shouldShow;
+  }, [selectedPerpetual, pythMetadata, leverageSwitch]);
+
   // console.log(pythMetadata);
 
   return (
@@ -158,8 +175,15 @@ export const OrderBlock = memo(() => {
             pythMetadata.attributes.asset_type === 'Commodities' ||
             pythMetadata.attributes.asset_type === 'Metal') && (
             <>
-              <div className={styles.predictionQuestion}>
+              <div className={styles.leverageSwitchMessage}>
                 {pythMetadata?.attributes?.description ? pythMetadata.attributes.description.split('/')[0] : ''}
+                {shouldShowLeverageSwitch && leverageSwitch && (
+                  <div>
+                    <Typography variant="bodySmallPopup">
+                      Overnight leverage will start at: {new Date(leverageSwitch.ts * 1000).toLocaleTimeString()}
+                    </Typography>
+                  </div>
+                )}
               </div>
             </>
           )}

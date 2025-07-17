@@ -522,3 +522,31 @@ export async function getLpActionHistory(
   }
   return data.json();
 }
+
+export async function getLeverageSwitch(
+  chainId: number,
+  traderAPI: TraderInterface | null,
+  symbol: string
+): Promise<
+  ValidatedResponseI<{
+    event: string;
+    ts: number;
+    tsStr: string;
+  } | null>
+> {
+  if (traderAPI && Number(traderAPI.chainId) === chainId) {
+    const leverageSwitchData = traderAPI.getMarketDayTradingNextEvent(symbol);
+    return {
+      type: 'leverage-switch',
+      msg: '',
+      data: leverageSwitchData,
+    };
+  } else {
+    // If no traderAPI available, return null data
+    return {
+      type: 'leverage-switch',
+      msg: 'No trader API available',
+      data: null,
+    };
+  }
+}
