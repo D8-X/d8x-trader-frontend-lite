@@ -1,48 +1,51 @@
-import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useAtom } from 'jotai';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount } from 'wagmi';
 
-import { AccountBalanceWallet, CheckCircleOutline } from '@mui/icons-material';
-import { Typography } from '@mui/material';
+import { Button } from '@mui/material';
 
-import { Web3AuthConnectButton } from 'components/web3auth-connect-button/Web3AuthConnectButton';
-import { WalletConnectButtonHolder } from 'components/wallet-connect-button/WalletConnectButtonHolder';
 import { Dialog } from 'components/dialog/Dialog';
-import { SeparatorTypeE } from 'components/separator/enums';
-import { OrSeparator } from 'components/separator/OrSeparator';
 import { connectModalOpenAtom } from 'store/global-modals.store';
-import { Web3SignInMethodE } from 'types/enums';
 
+import { useLogout, usePrivy } from '@privy-io/react-auth';
 import styles from './ConnectModal.module.scss';
 
 export const ConnectModal = () => {
+  console.log('connect modal');
   const { t } = useTranslation();
 
   const [isOpen, setOpen] = useAtom(connectModalOpenAtom);
 
-  const { isConnected } = useAccount();
-  const { connectModalOpen } = useConnectModal();
-
   const onClose = useCallback(() => setOpen(false), [setOpen]);
+
+  const { ready, authenticated, isModalOpen, user } = usePrivy();
+
+  console.log('rendering connect modal', { ready, authenticated, isOpen });
+
+  const { logout } = useLogout({
+    onSuccess: () => {
+      console.log('User successfully logged out');
+      setOpen(false);
+    },
+  });
+
+  // TODO: add funds could go well here
 
   return (
     <Dialog
-      open={isOpen && !connectModalOpen}
+      open={isOpen && !isModalOpen}
       onClose={onClose}
       onCloseClick={onClose}
       className={styles.dialog}
-      dialogTitle={t(!isConnected ? 'common.connect-modal.title' : 'common.connect-modal.connected-title')}
+      dialogTitle={t(!authenticated ? 'common.connect-modal.title' : 'common.connect-modal.connected-title')}
       dialogContentClassName={styles.centered}
     >
-      {!isConnected && (
+      {ready && authenticated && (
         <div>
-          <Typography variant="bodyMedium" className={styles.description}>
-            {t('common.connect-modal.description')}
-          </Typography>
           <div className={styles.actionButtonsContainer}>
-            <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
+            Connected with {user?.linkedAccounts?.map((acc) => acc.type)}
+            <Button onClick={logout}>Logout</Button>
+            {/* <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
             <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
             <OrSeparator separatorType={SeparatorTypeE.Modal} />
             <WalletConnectButtonHolder
@@ -53,16 +56,16 @@ export const ConnectModal = () => {
                 </>
               }
               buttonClassName={styles.connectButton}
-            />
+            /> */}
           </div>
         </div>
       )}
-      {isConnected && (
+      {/* {authenticated && (
         <div>
           <CheckCircleOutline className={styles.successIcon} />
           <Typography variant="bodyMedium">{t('common.connect-modal.connected-description')}</Typography>
         </div>
-      )}
+      )} */}
     </Dialog>
   );
 };

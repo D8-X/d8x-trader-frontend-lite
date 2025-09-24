@@ -1,19 +1,19 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useChainId, useReadContracts } from 'wagmi';
-import { INVALID_PERPETUAL_STATES } from 'appConstants';
 
 import { Menu } from '@mui/icons-material';
 import { Button, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CloseIcon from 'assets/icons/new/close.svg?react';
 import { OneClickTradingButton } from 'components/wallet-connect-button/OneClickTradingButton';
 import { OwltoButton } from 'components/wallet-connect-button/OwltoButton';
-import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
+import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 
 import LogoWithText from 'assets/logoWithText.svg?react';
@@ -32,10 +32,11 @@ import { getExchangeInfo, getPositionRisk } from 'network/network';
 import { authPages, pages } from 'routes/pages';
 import { connectModalOpenAtom } from 'store/global-modals.store';
 import {
+  allPerpetualsAtom,
+  flatTokenAtom,
   gasTokenSymbolAtom,
   oracleFactoryAddrAtom,
   perpetualsAtom,
-  allPerpetualsAtom,
   poolsAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
@@ -45,18 +46,18 @@ import {
   traderAPIAtom,
   triggerBalancesUpdateAtom,
   triggerPositionsUpdateAtom,
-  flatTokenAtom,
 } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
 import type { ExchangeInfoI, PerpetualDataI } from 'types/types';
 import { getEnabledChainId } from 'utils/getEnabledChainId';
-import { isEnabledChain } from 'utils/isEnabledChain';
 import { isDisabledPool } from 'utils/isDisabledPool';
+import { isEnabledChain } from 'utils/isEnabledChain';
 
+import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
+import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
-import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
 
 interface HeaderPropsI {
   /**
@@ -113,6 +114,21 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
   const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
+
+  const { ready, authenticated } = usePrivy();
+
+  const { login } = useLogin({
+    onComplete: ({ user, isNewUser, wasAlreadyAuthenticated, loginMethod, loginAccount }) => {
+      console.log('User logged in successfully', user);
+      console.log('Is new user:', isNewUser);
+      console.log('Was already authenticated:', wasAlreadyAuthenticated);
+      console.log('Login method:', loginMethod);
+      console.log('Login account:', loginAccount);
+    },
+    onError: (error) => {
+      console.error('Login failed', error);
+    },
+  });
 
   // fetch the settle ccy fx -> save to atom
 
@@ -435,16 +451,22 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               </div>
               {(!isUpToMobileScreen || !isConnected) && (
                 <div className={styles.walletConnect}>
-                  {web3AuthConfig.isEnabled && !isConnected && (
-                    <Button onClick={() => setConnectModalOpen(true)} className={styles.modalButton} variant="primary">
+                  {!authenticated && ready && (
+                    <Button onClick={() => login()} className={styles.modalButton} variant="primary">
                       <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
                     </Button>
                   )}
-                  {(!web3AuthConfig.isEnabled || isConnected) && (
-                    <>
-                      <WalletConnectButtonHolder />
-                      <WalletConnectedButtons />
-                    </>
+                  {authenticated && (
+                    <Button
+                      onClick={() => {
+                        console.log('clicked account');
+                        setConnectModalOpen(true);
+                      }}
+                      className={styles.modalButton}
+                      variant="primary"
+                    >
+                      <span className={styles.modalButtonText}>{'Account'}</span>
+                    </Button>
                   )}
                 </div>
               )}

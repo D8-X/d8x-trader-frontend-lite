@@ -93,7 +93,7 @@ export const App = memo(() => {
         <CedeWidgetModal />
         <ChainSwitchHandler />
         {!isSignedInSocially && isConnected && <OneClickTradingModal />}
-        {web3AuthConfig.isEnabled && !isConnected && <ConnectModal />}
+        <ConnectModal />
         <ToastContainerWrapper />
       </div>
     </div>
