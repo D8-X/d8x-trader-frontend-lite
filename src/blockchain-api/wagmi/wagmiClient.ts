@@ -1,5 +1,7 @@
+import { createConfig } from '@privy-io/wagmi';
 import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import {
+  bybitWallet,
   coinbaseWallet,
   metaMaskWallet,
   okxWallet,
@@ -7,18 +9,17 @@ import {
   rabbyWallet,
   rainbowWallet,
   walletConnectWallet,
-  bybitWallet,
 } from '@rainbow-me/rainbowkit/wallets';
-import { polygonZkEvm, arbitrumSepolia, arbitrum, base } from 'wagmi/chains';
-import { createConfig, http } from 'wagmi';
 import { createClient } from 'viem';
+import { http } from 'wagmi';
+import { arbitrum, arbitrumSepolia, base, polygonZkEvm } from 'wagmi/chains';
 
-import polygonIcon from 'assets/networks/polygon.webp';
 import arbitrumIcon from 'assets/networks/arbitrum.png';
-import x1Icon from 'assets/networks/x1.png';
 import berachainIcon from 'assets/networks/berachain.png';
+import polygonIcon from 'assets/networks/polygon.webp';
+import x1Icon from 'assets/networks/x1.png';
 import { config } from 'config';
-import { x1, cardona, bartio, xlayer, berachain } from 'utils/chains';
+import { bartio, berachain, cardona, x1, xlayer } from 'utils/chains';
 
 const chains = [
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
