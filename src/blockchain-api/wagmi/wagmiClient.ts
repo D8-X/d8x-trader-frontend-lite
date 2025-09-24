@@ -1,16 +1,6 @@
 import { createConfig } from '@privy-io/wagmi';
-import { Chain, connectorsForWallets } from '@rainbow-me/rainbowkit';
-import {
-  bybitWallet,
-  coinbaseWallet,
-  metaMaskWallet,
-  okxWallet,
-  phantomWallet,
-  rabbyWallet,
-  rainbowWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import { createClient } from 'viem';
+import { Chain } from '@rainbow-me/rainbowkit';
+import { Transport } from 'viem';
 import { http } from 'wagmi';
 import { arbitrum, arbitrumSepolia, base, polygonZkEvm } from 'wagmi/chains';
 
@@ -80,28 +70,30 @@ const chains = [
     }
   }) as [Chain, ...Chain[]];
 
-const projectId = config.projectId;
+// const projectId = config.projectId;
 
-const connectors = connectorsForWallets(
-  [
-    {
-      groupName: 'Recommended',
-      wallets: [metaMaskWallet, rabbyWallet, walletConnectWallet, bybitWallet],
-    },
-    {
-      groupName: 'Others',
-      wallets: [phantomWallet, coinbaseWallet, okxWallet, rainbowWallet],
-    },
-  ],
-  { projectId, appName: 'D8X App' }
-);
+// const connectors = connectorsForWallets(
+//   [
+//     {
+//       groupName: 'Recommended',
+//       wallets: [metaMaskWallet, rabbyWallet, walletConnectWallet, bybitWallet],
+//     },
+//     {
+//       groupName: 'Others',
+//       wallets: [phantomWallet, coinbaseWallet, okxWallet, rainbowWallet],
+//     },
+//   ],
+//   { projectId, appName: 'D8X App' }
+// );
+
+const transports: Record<(typeof chains)[number]['id'], Transport> = {};
+
+chains.map((chain) => (transports[chain.id] = http()));
+console.log(transports);
 
 const wagmiConfig = createConfig({
   chains,
-  connectors,
-  client({ chain }) {
-    return createClient({ chain, transport: http() });
-  },
+  transports,
 });
 
 export { chains, wagmiConfig };

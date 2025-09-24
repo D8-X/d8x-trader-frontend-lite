@@ -53,7 +53,7 @@ import { getEnabledChainId } from 'utils/getEnabledChainId';
 import { isDisabledPool } from 'utils/isDisabledPool';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-import { useLogin, usePrivy } from '@privy-io/react-auth';
+import { useConnectOrCreateWallet, usePrivy } from '@privy-io/react-auth';
 import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
 import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
 import styles from './Header.module.scss';
@@ -117,18 +117,18 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const { ready, authenticated } = usePrivy();
 
-  const { login } = useLogin({
-    onComplete: ({ user, isNewUser, wasAlreadyAuthenticated, loginMethod, loginAccount }) => {
-      console.log('User logged in successfully', user);
-      console.log('Is new user:', isNewUser);
-      console.log('Was already authenticated:', wasAlreadyAuthenticated);
-      console.log('Login method:', loginMethod);
-      console.log('Login account:', loginAccount);
+  const { connectOrCreateWallet } = useConnectOrCreateWallet({
+    onSuccess: (args) => {
+      console.log('connected:', args.wallet);
     },
     onError: (error) => {
       console.error('Login failed', error);
     },
   });
+
+  const onLogin = () => {
+    connectOrCreateWallet();
+  };
 
   // fetch the settle ccy fx -> save to atom
 
@@ -452,7 +452,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
               {(!isUpToMobileScreen || !isConnected) && (
                 <div className={styles.walletConnect}>
                   {!authenticated && ready && (
-                    <Button onClick={() => login()} className={styles.modalButton} variant="primary">
+                    <Button onClick={onLogin} className={styles.modalButton} variant="primary">
                       <span className={styles.modalButtonText}>{t('common.wallet-connect')}</span>
                     </Button>
                   )}
