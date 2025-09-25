@@ -2,7 +2,9 @@ import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 
 import { Button } from '@mui/material';
 import { useFundWallet, usePrivy } from '@privy-io/react-auth';
-import { zeroAddress } from 'viem';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { MethodE } from 'types/enums';
+import { formatEther, zeroAddress } from 'viem';
 import { berachain } from 'viem/chains';
 import styles from './AssetLine.module.scss';
 
@@ -15,6 +17,7 @@ interface AssetLinePropsI {
 export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
   const { fundWallet } = useFundWallet();
   const { user } = usePrivy();
+  const { calculateGasForFee } = useUserWallet();
 
   const onClick = () => {
     if (tokenAddress === undefined || !user?.wallet?.address) {
@@ -24,7 +27,10 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
 
     console.log('this should trigger a fund popup');
     if (tokenAddress === zeroAddress) {
-      fundWallet({ address: user?.wallet?.address, options: { chain: berachain } })
+      fundWallet({
+        address: user?.wallet?.address,
+        options: { chain: berachain, amount: formatEther(calculateGasForFee(MethodE.Interact, 10n)) },
+      })
         .then(() => {
           console.log('fund gas complete');
         })
@@ -34,7 +40,7 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
     } else {
       fundWallet({
         address: user?.wallet?.address,
-        options: { chain: berachain, asset: { erc20: tokenAddress }, amount: '1' },
+        options: { chain: berachain, asset: { erc20: tokenAddress }, amount: '1000' },
       })
         .then(() => {
           console.log('fund erc20 complete');
