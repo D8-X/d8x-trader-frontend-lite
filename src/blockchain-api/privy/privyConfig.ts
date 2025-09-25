@@ -6,7 +6,7 @@ export const privyConfig: PrivyClientConfig = {
   embeddedWallets: {
     showWalletUIs: false,
     ethereum: {
-      createOnLogin: 'users-without-wallets',
+      createOnLogin: 'all-users',
     },
   },
   loginMethods: ['twitter', 'email', 'sms', 'wallet'],

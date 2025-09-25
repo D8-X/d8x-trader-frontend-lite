@@ -31,7 +31,6 @@ import { MockSwap } from './elements/mock-swap/MockSwap';
 import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 import { OwltoButton } from './elements/owlto-button/OwltoButton';
 
-import { useWallets } from '@privy-io/react-auth';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { MethodE } from 'types/enums';
 import styles from './DepositModal.module.scss';
@@ -40,10 +39,6 @@ export const DepositModal = () => {
   const { t } = useTranslation();
 
   const { address, chain, chainId } = useAccount();
-
-  const { wallets } = useWallets();
-
-  console.log({ wallets, address });
 
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const selectedCurrency = useAtomValue(modalSelectedCurrencyAtom);

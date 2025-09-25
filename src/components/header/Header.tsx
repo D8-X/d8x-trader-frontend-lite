@@ -465,7 +465,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
                       className={styles.modalButton}
                       variant="primary"
                     >
-                      <span className={styles.modalButtonText}>{'Account'}</span>
+                      <span className={styles.modalButtonText}>{t('common.account-button')}</span>
                     </Button>
                   )}
                 </div>
