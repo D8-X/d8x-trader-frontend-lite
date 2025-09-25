@@ -9,7 +9,7 @@ export const privyConfig: PrivyClientConfig = {
       createOnLogin: 'all-users',
     },
   },
-  loginMethods: ['twitter', 'email', 'sms', 'wallet'],
+  loginMethods: ['twitter', 'email', 'sms'],
   supportedChains: chains,
   defaultChain: chains?.[0],
 };
