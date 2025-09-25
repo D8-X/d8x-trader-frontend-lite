@@ -1,14 +1,14 @@
 import { memo, useEffect } from 'react';
-import { useAccount, useConnect, useReadContracts } from 'wagmi';
 import { type Address, erc20Abi, formatUnits } from 'viem';
+import { useAccount, useConnect, useReadContracts } from 'wagmi';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
-import { AssetLine } from 'components/asset-line/AssetLine';
-import { PoolWithIdI } from 'types/types';
-import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
+import { AssetLine } from 'components/asset-line/AssetLine';
 import { useAtomValue } from 'jotai';
 import { flatTokenAtom } from 'store/pools.store';
+import { PoolWithIdI } from 'types/types';
+import { valueToFractionDigits } from 'utils/formatToCurrency';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
@@ -112,6 +112,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         <AssetLine
           key={token.address}
           symbol={token.symbol}
+          tokenAddress={token.address}
           value={(+formatUnits(BigInt(composableBalances[idx]), Number(composableDecimals[idx])) * userPrice).toFixed(
             numberDigits
           )}
@@ -121,6 +122,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   ) : (
     <AssetLine
       symbol={userSymbol}
+      tokenAddress={pool.settleTokenAddr as `0x${string}`}
       value={
         tokenBalance !== undefined && tokenBalanceData?.[1].status === 'success'
           ? (+formatUnits(tokenBalance, tokenBalanceData[1].result) * userPrice).toFixed(numberDigits)

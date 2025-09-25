@@ -53,6 +53,8 @@ export const ConnectModal = () => {
     }
   }, [embeddedWallet, setActiveWallet]);
 
+  // TODO: what to show here?
+
   return (
     <Dialog
       open={isOpen && !isModalOpen}
@@ -67,7 +69,7 @@ export const ConnectModal = () => {
           <Typography variant="bodyMedium">{t('common.connect-modal.connected-description')}</Typography>
           <div className={styles.actionButtonsContainer}>
             <Typography variant="bodyTiny">
-              User wallets: {user?.linkedAccounts?.map((acc) => acc.type)?.join(', ')}
+              User acounts: {user?.linkedAccounts?.map((acc) => acc.type)?.join(', ')}
             </Typography>
             <Typography variant="bodyTiny">Id {user?.id}</Typography>
             <Typography variant="bodyTiny">Created at {user?.createdAt?.toISOString()}</Typography>
@@ -79,19 +81,8 @@ export const ConnectModal = () => {
               Smart wallet: {user?.smartWallet?.address}, {user?.smartWallet?.smartWalletType},{' '}
               {user?.smartWallet?.smartWalletVersion}
             </Typography>
+
             <Button onClick={logout}>Logout</Button>
-            {/* <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.X} />
-            <Web3AuthConnectButton buttonClassName={styles.connectButton} signInMethod={Web3SignInMethodE.Google} />
-            <OrSeparator separatorType={SeparatorTypeE.Modal} />
-            <WalletConnectButtonHolder
-              connectButtonLabel={
-                <>
-                  <AccountBalanceWallet />
-                  {t('common.connect-modal.sign-in-with-wallet-button')}
-                </>
-              }
-              buttonClassName={styles.connectButton}
-            /> */}
           </div>
         </div>
       )}

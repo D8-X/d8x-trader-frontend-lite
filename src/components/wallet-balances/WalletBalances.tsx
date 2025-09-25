@@ -9,22 +9,27 @@ import { poolsAtom } from 'store/pools.store';
 
 import { PoolLine } from './elements/pool-line/PoolLine';
 
-import { useWallets } from '@privy-io/react-auth';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { zeroAddress } from 'viem';
 import styles from './WalletBalances.module.scss';
 
 export const WalletBalances = () => {
   const pools = useAtomValue(poolsAtom);
 
-  const { wallets, ready } = useWallets();
+  const { ready } = useWallets();
+  const { user } = usePrivy();
 
   const { gasTokenBalance, refetchWallet } = useUserWallet();
 
   const isConnected = useMemo(() => {
-    return ready && wallets?.some((w) => w.connectorType === 'embedded' && w.linked);
-  }, [wallets, ready]);
+    // when all wallets are ready and user signs in, the ConnectModal ensures user.wallet is set
+    // to an embedded wallet
+    // --> isConnected is equivalent to this:
+    return ready && user?.wallet?.connectorType === 'embedded';
+  }, [user, ready]);
 
-  console.log({ isConnected, wallets });
+  console.log({ isConnected, userWallet: user?.wallet });
 
   useEffect(() => {
     if (!isConnected) {
@@ -49,6 +54,7 @@ export const WalletBalances = () => {
       <AssetLine
         key={gasTokenBalance?.symbol || 'gas-token'}
         symbol={gasTokenBalance?.symbol || ''}
+        tokenAddress={zeroAddress}
         value={
           gasTokenBalance ? (+formatUnits(gasTokenBalance.value, gasTokenBalance.decimals)).toFixed(numberDigits) : ''
         }
