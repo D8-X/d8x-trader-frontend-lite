@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mui/material';
@@ -7,7 +7,8 @@ import { Button } from '@mui/material';
 import { Dialog } from 'components/dialog/Dialog';
 import { connectModalOpenAtom } from 'store/global-modals.store';
 
-import { useLogout, usePrivy } from '@privy-io/react-auth';
+import { useLogout, usePrivy, useWallets } from '@privy-io/react-auth';
+import { useSetActiveWallet } from '@privy-io/wagmi';
 import styles from './ConnectModal.module.scss';
 
 export const ConnectModal = () => {
@@ -28,6 +29,31 @@ export const ConnectModal = () => {
       setOpen(false);
     },
   });
+
+  const { setActiveWallet } = useSetActiveWallet();
+
+  const { wallets, ready: walletsReady } = useWallets();
+
+  const setWalletRef = useRef(false);
+
+  useEffect(() => {
+    if (walletsReady) {
+      const wallet = wallets.find((w) => w.connectorType === 'embedded');
+      if (wallet && !wallet.linked && !setWalletRef.current) {
+        setWalletRef.current = true;
+        setActiveWallet(wallet)
+          .then(() => {
+            console.log('sucess, setActiveWallet:', { wallet });
+          })
+          .catch((e) => {
+            console.log('error, setActiveWallet', { wallet, e });
+          })
+          .finally(() => {
+            setWalletRef.current = false;
+          });
+      }
+    }
+  }, [wallets, walletsReady, setActiveWallet]);
 
   // TODO: add funds could go well here
 
