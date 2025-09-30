@@ -149,6 +149,18 @@ This package is configured entirely via environment variables. You must specify:
   - Example:
     `VITE_PROJECT_ID=yourProjectId`
 
+- **VITE_PRIVY_ID**: A string with your WalletConnect project ID.
+
+  - Head over to [Privy Dashboard](https://dashboard.privy.io/) to sign up and create an App ID.
+  - Example:
+    `VITE_PRIVY_ID=yourPrivyId`
+
+- **VITE_PILMICO_API_KEY**: A string with your WalletConnect project ID.
+
+  - Head over to [Pilmico Dashboard](https://dashboard.pimlico.io/) to sign up and create an API Key.
+  - Example:
+    `VITE_PILMICO_API_KEY=yourPilmicoApiKey`
+
 - **VITE_WELCOME_MODAL**: This is an optional variable that allows to enable a Welcome modal. You can use it to add a
   Disclaimer.
   Change its content in src/components/welcome-modal.
