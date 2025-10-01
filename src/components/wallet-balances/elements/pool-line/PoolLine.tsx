@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useConnect, useReadContracts } from 'wagmi';
 
@@ -6,6 +6,7 @@ import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { useAtomValue } from 'jotai';
+import { smartAccountClientAtom } from 'store/app.store';
 import { flatTokenAtom } from 'store/pools.store';
 import { PoolWithIdI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
@@ -19,6 +20,11 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
   const { isPending } = useConnect();
   const flatToken = useAtomValue(flatTokenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
+
+  const balanceAddress = useMemo(() => {
+    return smartAccountClient?.account?.address || address;
+  }, [address, smartAccountClient]);
 
   const { data: tokenBalanceData, refetch } = useReadContracts({
     allowFailure: true,
@@ -27,7 +33,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         address: pool.settleTokenAddr as Address,
         abi: erc20Abi,
         functionName: 'balanceOf',
-        args: [address as Address],
+        args: [balanceAddress as Address],
       },
       {
         address: pool.settleTokenAddr as Address,
@@ -38,7 +44,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         address: pool.settleTokenAddr as Address,
         abi: flatTokenAbi,
         functionName: 'effectiveBalanceOf',
-        args: [address as Address],
+        args: [balanceAddress as Address],
       },
       {
         address: pool.settleTokenAddr as Address,
@@ -47,7 +53,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       },
     ],
     query: {
-      enabled: address && pool.settleTokenAddr !== undefined && !isPending && isConnected,
+      enabled: balanceAddress && pool.settleTokenAddr !== undefined && !isPending && isConnected,
     },
   });
 
@@ -57,9 +63,11 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       address: token.address,
       abi: erc20Abi,
       functionName: 'balanceOf',
-      args: [address as Address],
+      args: [balanceAddress as Address],
     })),
-    query: { enabled: pool.poolId === flatToken?.poolId && address && isConnected && !flatToken?.registeredSymbol },
+    query: {
+      enabled: pool.poolId === flatToken?.poolId && balanceAddress && isConnected && !flatToken?.registeredSymbol,
+    },
   });
 
   const { data: composableDecimals } = useReadContracts({
@@ -69,7 +77,9 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       abi: erc20Abi,
       functionName: 'decimals',
     })),
-    query: { enabled: pool.poolId === flatToken?.poolId && address && isConnected && !flatToken?.registeredSymbol },
+    query: {
+      enabled: pool.poolId === flatToken?.poolId && balanceAddress && isConnected && !flatToken?.registeredSymbol,
+    },
   });
 
   useEffect(() => {

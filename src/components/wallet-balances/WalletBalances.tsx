@@ -29,8 +29,6 @@ export const WalletBalances = () => {
     return ready && user?.wallet?.connectorType === 'embedded';
   }, [user, ready]);
 
-  console.log({ isConnected, userWallet: user?.wallet });
-
   useEffect(() => {
     if (!isConnected) {
       return;

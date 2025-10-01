@@ -31,11 +31,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
 
   const [gasPrice, setGasPrice] = useState(0n);
 
-  const tradingAddress = useMemo(() => {
-    console.log({
-      address,
-      smartAddress: smartAccountClient?.account?.address,
-    });
+  const balanceAddress = useMemo(() => {
     return smartAccountClient?.account?.address ?? address;
   }, [smartAccountClient, address]);
 
@@ -44,10 +40,10 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     refetch: gasTokenBalanceRefetch,
     isError: isGasTokenFetchError,
   } = useBalance({
-    address: tradingAddress,
+    address: balanceAddress,
     query: {
       enabled:
-        tradingAddress && Number(traderAPI?.chainId) === chain?.id && isConnected && !isReconnecting && !isConnecting,
+        balanceAddress && Number(traderAPI?.chainId) === chain?.id && isConnected && !isReconnecting && !isConnecting,
     },
   });
 
@@ -65,7 +61,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   }, [gasTokenBalanceRefetch, isConnected]);
 
   useEffect(() => {
-    if (chain?.id && address && isConnected) {
+    if (chain?.id && isConnected) {
       getGasPrice(chain.id).then((proposedGasPrice) => {
         if (!proposedGasPrice) {
           getGasPriceWagmi(wagmiConfig, { chainId: chain.id }).then((gasPriceFromWagmi) => {
@@ -78,7 +74,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     } else {
       setGasPrice(0n);
     }
-  }, [address, chain?.id, isConnected]);
+  }, [chain?.id, isConnected]);
 
   const calculateGasForFee = useCallback(
     (method: MethodE, multiplier: bigint) => {
@@ -94,12 +90,12 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   const hasEnoughGasForFee = useCallback(
     (method: MethodE, multiplier: bigint) => {
       const gasForFee = calculateGasForFee(method, multiplier);
-      if (gasForFee > 0n && gasTokenBalance && gasTokenBalance.value > 0n) {
-        return gasForFee < gasTokenBalance.value;
+      if (gasForFee > 0n && gasTokenBalance) {
+        return smartAccountClient?.account !== undefined || gasForFee < gasTokenBalance.value;
       }
       return false;
     },
-    [calculateGasForFee, gasTokenBalance]
+    [calculateGasForFee, gasTokenBalance, smartAccountClient]
   );
 
   const handleWalletRefetch = useCallback(() => {

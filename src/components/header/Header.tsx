@@ -1,7 +1,7 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { INVALID_PERPETUAL_STATES } from 'appConstants';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation } from 'react-router-dom';
 import { type Address, erc20Abi, formatUnits } from 'viem';
@@ -53,6 +53,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { useConnectOrCreateWallet, usePrivy } from '@privy-io/react-auth';
 import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
 
@@ -77,7 +78,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
 
   const { t } = useTranslation();
 
-  const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const { chain, address: walletAddress, isConnected, isReconnecting, isConnecting } = useAccount();
   const chainId = useChainId();
   const { gasTokenBalance, isGasTokenFetchError } = useUserWallet();
 
@@ -98,6 +99,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const selectedPool = useAtomValue(selectedPoolAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const flatToken = useAtomValue(flatTokenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -124,6 +126,10 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const onLogin = () => {
     connectOrCreateWallet();
   };
+
+  const address = useMemo(() => {
+    return smartAccountClient?.account?.address ?? walletAddress;
+  }, [smartAccountClient, walletAddress]);
 
   // fetch the settle ccy fx -> save to atom
 

@@ -1,8 +1,11 @@
 import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 
 import { Button } from '@mui/material';
-import { useFundWallet, usePrivy } from '@privy-io/react-auth';
+import { useFundWallet, usePrivy, useWallets } from '@privy-io/react-auth';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { useAtomValue } from 'jotai';
+import { useMemo } from 'react';
+import { smartAccountClientAtom } from 'store/app.store';
 import { MethodE } from 'types/enums';
 import { formatEther, zeroAddress } from 'viem';
 import { berachain } from 'viem/chains';
@@ -15,20 +18,34 @@ interface AssetLinePropsI {
 }
 
 export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
+
   const { fundWallet } = useFundWallet();
   const { user } = usePrivy();
   const { calculateGasForFee } = useUserWallet();
+  const { wallets } = useWallets();
+
+  const targetAddress = useMemo(() => {
+    return smartAccountClient?.account?.address || user?.wallet?.address;
+  }, [smartAccountClient, user]);
+
+  console.log({
+    targetAddress,
+    tokenAddress,
+    userAddress: user?.wallet?.address,
+    embeddedAddress: wallets?.find((w) => w.connectorType == 'embedded')?.address,
+  });
 
   const onClick = () => {
-    if (tokenAddress === undefined || !user?.wallet?.address) {
-      console.log('not ready to fund:', { tokenAddress }, user);
+    if (tokenAddress === undefined || !targetAddress) {
+      console.log('not ready to fund:', { tokenAddress, targetAddress });
       return;
     }
 
     console.log('this should trigger a fund popup');
     if (tokenAddress === zeroAddress) {
       fundWallet({
-        address: user?.wallet?.address,
+        address: targetAddress,
         options: { chain: berachain, amount: formatEther(calculateGasForFee(MethodE.Interact, 10n)) },
       })
         .then(() => {
@@ -39,7 +56,7 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
         });
     } else {
       fundWallet({
-        address: user?.wallet?.address,
+        address: targetAddress,
         options: { chain: berachain, asset: { erc20: tokenAddress }, amount: '1000' },
       })
         .then(() => {
