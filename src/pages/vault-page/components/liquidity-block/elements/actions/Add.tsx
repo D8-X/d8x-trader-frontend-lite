@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
-import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 
 import { Button, CircularProgress, InputAdornment, Link, OutlinedInput, Typography } from '@mui/material';
 
@@ -14,17 +14,16 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { InfoLabelBlock } from 'components/info-label-block/InfoLabelBlock';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import {
   collateralToSettleConversionAtom,
+  flatTokenAtom,
   poolTokenBalanceAtom,
   poolTokenDecimalsAtom,
   proxyAddrAtom,
   selectedPoolAtom,
   traderAPIAtom,
-  flatTokenAtom,
 } from 'store/pools.store';
 import {
   dCurrencyPriceAtom,
@@ -35,6 +34,7 @@ import {
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from './Action.module.scss';
 
 const ADD_INPUT_FIELD_ID = 'add-amount-size';
@@ -55,9 +55,6 @@ export const Add = memo(() => {
   const { t } = useTranslation();
 
   const { address, chain, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
-
-  const { isMultisigAddress } = useUserWallet();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
@@ -69,6 +66,8 @@ export const Add = memo(() => {
   const triggerAddInputFocus = useAtomValue(triggerAddInputFocusAtom);
   const flatToken = useAtomValue(flatTokenAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
+
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
   const setDepositModalOpen = useSetAtom(depositModalOpenAtom);
 
@@ -174,7 +173,7 @@ export const Add = memo(() => {
       return;
     }
 
-    if (!address || !walletClient || !proxyAddr) {
+    if (!address || !smartAccountClient || !proxyAddr) {
       return;
     }
 
@@ -182,9 +181,8 @@ export const Add = memo(() => {
     setRequestSent(true);
     setLoading(true);
     approveMarginToken({
-      walletClient,
+      walletClient: smartAccountClient,
       settleTokenAddr: selectedPool.settleTokenAddr,
-      isMultisigAddress,
       proxyAddr,
       minAmount: addAmount / 1.05 / userPrice,
       decimals: poolTokenDecimals,
@@ -222,7 +220,7 @@ export const Add = memo(() => {
       return;
     }
 
-    if (!address || !walletClient || !proxyAddr) {
+    if (!address || !smartAccountClient || !proxyAddr) {
       return;
     }
 
@@ -230,9 +228,8 @@ export const Add = memo(() => {
     setRequestSent(true);
     setLoading(true);
     approveMarginToken({
-      walletClient,
+      walletClient: smartAccountClient,
       settleTokenAddr: selectedPool.settleTokenAddr,
-      isMultisigAddress,
       proxyAddr,
       minAmount: addAmount / 1.05 / userPrice,
       decimals: poolTokenDecimals,
@@ -240,7 +237,7 @@ export const Add = memo(() => {
     })
       .then(() => {
         setApprovalCompleted(false);
-        return addLiquidity(walletClient, liqProvTool, selectedPool.poolSymbol, addAmount / userPrice);
+        return addLiquidity(smartAccountClient, liqProvTool, selectedPool.poolSymbol, addAmount / userPrice);
       })
       .then((tx) => {
         setTxHash(tx.hash);
@@ -340,19 +337,11 @@ export const Add = memo(() => {
     } else if (validityCheckAddType === ValidityCheckAddE.NoAmount) {
       return `${t('pages.vault.add.validity-no-amount')}`;
     }
-    if (isMultisigAddress && !approvalCompleted) {
+    if (!approvalCompleted) {
       return t('pages.vault.add.approve-button');
     }
     return t('pages.vault.add.button');
-  }, [
-    t,
-    isMultisigAddress,
-    validityCheckAddType,
-    selectedPool?.brokerCollateralLotSize,
-    approvalCompleted,
-    userPrice,
-    userSymbol,
-  ]);
+  }, [t, validityCheckAddType, selectedPool?.brokerCollateralLotSize, approvalCompleted, userPrice, userSymbol]);
 
   useEffect(() => {
     if (triggerFocusStateRef.current === triggerAddInputFocus) {
@@ -369,7 +358,7 @@ export const Add = memo(() => {
   }, [triggerAddInputFocus]);
 
   const handleButtonClick = () => {
-    if (isMultisigAddress && !approvalCompleted) {
+    if (!approvalCompleted) {
       handleApprove();
     } else {
       handleAddLiquidity();

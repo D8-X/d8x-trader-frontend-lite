@@ -1,13 +1,14 @@
 import { PROXY_ABI, type TraderInterface, floatToDecN } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
+import type { Address, EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 
 export async function addLiquidity(
-  walletClient: WalletClient,
+  walletClient: SmartAccountClient,
   traderAPI: TraderInterface,
   symbol: string,
   amount: number

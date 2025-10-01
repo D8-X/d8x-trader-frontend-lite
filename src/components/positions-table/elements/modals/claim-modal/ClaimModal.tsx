@@ -12,7 +12,6 @@ import { Dialog } from 'components/dialog/Dialog';
 import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChecker';
 import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import { proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import type { MarginAccountWithAdditionalDataI, PoolWithIdI } from 'types/types';
@@ -20,6 +19,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import modalStyles from '../Modal.module.scss';
 
 interface ClaimModalPropsI {
@@ -33,8 +33,8 @@ export const ClaimModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const { t } = useTranslation();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const { address, chain } = useAccount();
@@ -123,7 +123,7 @@ export const ClaimModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       !poolByPosition ||
       !proxyAddr ||
       !walletClient ||
-      !tradingClient ||
+      !smartAccountClient ||
       !settleTokenDecimals ||
       !chain ||
       !traderAPI ||
@@ -136,7 +136,7 @@ export const ClaimModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     setRequestSent(true);
     setLoading(true);
 
-    settleTrader(walletClient, traderAPI, selectedPosition.symbol, address)
+    settleTrader(smartAccountClient, traderAPI, selectedPosition.symbol, address)
       .then(({ hash }) => {
         setTxHash(hash);
         setSymbolForTx(selectedPosition.symbol);

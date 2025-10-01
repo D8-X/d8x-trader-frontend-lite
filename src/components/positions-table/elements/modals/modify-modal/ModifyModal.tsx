@@ -16,20 +16,18 @@ import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { useDebounce } from 'helpers/useDebounce';
 import { useDebouncedEffect } from 'helpers/useDebouncedEffect';
 import { getAvailableMargin, positionRiskOnCollateralAction } from 'network/network';
-import { tradingClientAtom } from 'store/app.store';
 import {
   collateralToSettleConversionAtom,
+  flatTokenAtom,
   proxyAddrAtom,
   traderAPIAtom,
   traderAPIBusyAtom,
   triggerBalancesUpdateAtom,
-  flatTokenAtom,
 } from 'store/pools.store';
 import type { MarginAccountI, PoolWithIdI } from 'types/types';
 import { formatNumber } from 'utils/formatNumber';
@@ -39,6 +37,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from '../Modal.module.scss';
 
 interface ModifyModalPropsI {
@@ -53,7 +52,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
   const flatToken = useAtomValue(flatTokenAtom);
   const setTriggerBalancesUpdate = useSetAtom(triggerBalancesUpdateAtom);
@@ -61,8 +60,6 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
 
   const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId });
-
-  const { isMultisigAddress } = useUserWallet();
 
   const [requestSent, setRequestSent] = useState(false);
   const [modifyType, setModifyType] = useState(ModifyTypeE.Add);
@@ -427,7 +424,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       !poolByPosition ||
       !proxyAddr ||
       !walletClient ||
-      !tradingClient ||
+      !smartAccountClient ||
       !settleTokenDecimals ||
       !isEnabledChain(chainId)
     ) {
@@ -440,16 +437,15 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       setRequestSent(true);
       setLoading(true);
       approveMarginToken({
-        walletClient,
+        walletClient: smartAccountClient,
         settleTokenAddr: poolByPosition.settleTokenAddr,
-        isMultisigAddress,
         proxyAddr,
         minAmount: +addCollateral / px,
         decimals: settleTokenDecimals,
         registeredToken: flatToken?.registeredToken,
       })
         .then(() => {
-          deposit(tradingClient, traderAPI, {
+          deposit(smartAccountClient, traderAPI, {
             traderAddr: address,
             amount: +addCollateral / px,
             symbol: selectedPosition.symbol,
@@ -495,7 +491,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       requestSentRef.current = true;
       setRequestSent(true);
       setLoading(true);
-      withdraw(tradingClient, traderAPI, {
+      withdraw(smartAccountClient, traderAPI, {
         traderAddr: address,
         amount: +removeCollateral,
         symbol: selectedPosition.symbol,

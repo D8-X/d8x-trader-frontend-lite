@@ -5,7 +5,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
-import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
 
 import { Button, CircularProgress } from '@mui/material';
 
@@ -17,14 +17,12 @@ import { GasDepositChecker } from 'components/gas-deposit-checker/GasDepositChec
 import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { calculatePrice } from 'helpers/calculatePrice';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { getTradingFee, orderDigest, positionRiskOnTrade } from 'network/network';
-import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
-import { proxyAddrAtom, traderAPIAtom, flatTokenAtom } from 'store/pools.store';
+import { flatTokenAtom, proxyAddrAtom, traderAPIAtom } from 'store/pools.store';
 import { OpenOrderTypeE, OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
 import { formatToCurrency } from 'utils/formatToCurrency';
@@ -35,6 +33,7 @@ import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from '../Modal.module.scss';
 
 interface ModifyModalPropsI {
@@ -66,12 +65,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const { t } = useTranslation();
 
   const { address, chain, chainId } = useAccount();
-  const { data: walletClient } = useWalletClient({ chainId });
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
   const flatToken = useAtomValue(flatTokenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
+
   const setLatestOrderSentTimestamp = useSetAtom(latestOrderSentTimestampAtom);
 
   const [collateralDeposit, setCollateralDeposit] = useState<number | null>(null);
@@ -86,7 +85,6 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const requestSentRef = useRef(false);
   const fetchFeeRef = useRef(false);
 
-  const { isMultisigAddress } = useUserWallet();
   const { settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
 
   useEffect(() => {
@@ -213,13 +211,12 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       !poolByPosition ||
       !selectedPosition ||
       requestSentRef.current ||
-      !tradingClient ||
       !address ||
       !proxyAddr ||
-      !walletClient ||
       collateralDeposit === null ||
       !settleTokenDecimals ||
       !chain ||
+      !smartAccountClient ||
       !traderAPI ||
       !isEnabledChain(chainId)
     ) {
@@ -242,8 +239,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       ordersToCancel,
       chain,
       traderAPI,
-      isMultisigAddress,
-      tradingClient,
+      smartAccountClient,
       toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
       nonceShift: 0,
       callback: () => {
@@ -307,9 +303,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
             if (data.data.digests.length > 0) {
               // hide modal now that metamask popup shows up
               approveMarginToken({
-                walletClient,
+                walletClient: smartAccountClient,
                 settleTokenAddr: poolByPosition.settleTokenAddr,
-                isMultisigAddress,
                 proxyAddr,
                 minAmount: collateralDeposit,
                 decimals: settleTokenDecimals,
@@ -318,7 +313,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                  postOrder(tradingClient, traderAPI, {
+                  postOrder(smartAccountClient, traderAPI, {
                     traderAddr: address,
                     orders: parsedOrders,
                     signatures,
