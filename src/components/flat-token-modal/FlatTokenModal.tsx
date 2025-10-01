@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAccount, usePublicClient, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
+import { useAccount, usePublicClient, useWaitForTransactionReceipt } from 'wagmi';
 
 import { Button, Typography } from '@mui/material';
 import { Dialog } from 'components/dialog/Dialog';
@@ -11,21 +11,21 @@ import { MethodE } from 'types/enums';
 
 import { isEnabledChain } from 'utils/isEnabledChain';
 
-import styles from './FlatTokenModal.module.scss';
-import { FlatTokenSelect } from './elements/flat-token-selector/FlatTokenSelect';
-import { flatTokenAtom, poolsAtom, proxyAddrAtom, selectedPoolAtom, selectedStableAtom } from 'store/pools.store';
-import { Address, zeroAddress } from 'viem';
 import { fetchFlatTokenInfo } from 'blockchain-api/contract-interactions/fetchFlatTokenInfo';
 import { registerFlatToken } from 'blockchain-api/contract-interactions/registerFlatToken';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { toast } from 'react-toastify';
-import { ToastContent } from 'components/toast-content/ToastContent';
+import { smartAccountClientAtom } from 'store/app.store';
+import { flatTokenAtom, poolsAtom, proxyAddrAtom, selectedPoolAtom, selectedStableAtom } from 'store/pools.store';
+import { Address, zeroAddress } from 'viem';
+import { FlatTokenSelect } from './elements/flat-token-selector/FlatTokenSelect';
+import styles from './FlatTokenModal.module.scss';
 
 export const FlatTokenModal = () => {
   const { address, chainId } = useAccount();
-  const { gasTokenBalance, hasEnoughGasForFee, isMultisigAddress } = useUserWallet();
+  const { gasTokenBalance, hasEnoughGasForFee } = useUserWallet();
   const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
 
   const [flatTokentModalOpen, setFlatTokentModalOpen] = useAtom(flatTokentModalOpenAtom);
   const [flatToken, setFlatToken] = useAtom(flatTokenAtom);
@@ -35,6 +35,7 @@ export const FlatTokenModal = () => {
   const selectedPool = useAtomValue(selectedPoolAtom);
   const pools = useAtomValue(poolsAtom);
   const isDepositModalOpen = useAtomValue(depositModalOpenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const [title] = useState('');
   const [txHash, setTxHash] = useState<Address | undefined>();
@@ -47,16 +48,22 @@ export const FlatTokenModal = () => {
   }, [setFlatTokentModalOpen]);
 
   const isRegisterEnabled =
-    walletClient && flatToken?.isFlatToken && address && selectedPool && selectedStable && !txHash;
+    smartAccountClient && flatToken?.isFlatToken && address && selectedPool && selectedStable && !txHash;
 
   const handleRegisterToken = () => {
-    if (walletClient && flatToken?.isFlatToken && address && selectedPool && selectedStable && !isBusyRef.current) {
+    if (
+      smartAccountClient &&
+      flatToken?.isFlatToken &&
+      address &&
+      selectedPool &&
+      selectedStable &&
+      !isBusyRef.current
+    ) {
       isBusyRef.current = true;
       registerFlatToken({
-        walletClient: walletClient,
+        walletClient: smartAccountClient,
         flatTokenAddr: selectedPool.settleTokenAddr as Address,
         userTokenAddr: selectedStable,
-        isMultisigAddress: isMultisigAddress,
         confirm: false,
       })
         .then(({ hash }) => {

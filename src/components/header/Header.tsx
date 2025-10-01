@@ -10,11 +10,9 @@ import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import { Menu } from '@mui/icons-material';
 import { Button, Drawer, Toolbar, Typography, useMediaQuery, useTheme } from '@mui/material';
 import CloseIcon from 'assets/icons/new/close.svg?react';
-import { OneClickTradingButton } from 'components/wallet-connect-button/OneClickTradingButton';
 import { OwltoButton } from 'components/wallet-connect-button/OwltoButton';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
-import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 
 import LogoWithText from 'assets/logoWithText.svg?react';
 import { Container } from 'components/container/Container';
@@ -25,7 +23,6 @@ import { Separator } from 'components/separator/Separator';
 import { ThemeSwitcher } from 'components/theme-switcher/ThemeSwitcher';
 import { WalletConnectButtonHolder } from 'components/wallet-connect-button/WalletConnectButtonHolder';
 import { WalletConnectedButtons } from 'components/wallet-connect-button/WalletConnectedButtons';
-import { web3AuthConfig } from 'config';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { createSymbol } from 'helpers/createSymbol';
 import { getExchangeInfo, getPositionRisk } from 'network/network';
@@ -110,10 +107,8 @@ export const Header = memo(({ window }: HeaderPropsI) => {
   const poolTokenBalanceDefinedRef = useRef(false);
   const poolTokenBalanceRetriesCountRef = useRef(0);
 
-  const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
-  const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
   const { ready, authenticated } = usePrivy();
 
@@ -398,7 +393,6 @@ export const Header = memo(({ window }: HeaderPropsI) => {
       {isUpToTabletScreen && (
         <>
           <div className={styles.settingButtonsHolderMobile}>
-            {!isSignedInSocially && <OneClickTradingButton />}
             {isOwltoEnabled && isBridgeShownOnPage && <OwltoButton />}
             <ThemeSwitcher />
             <LanguageSwitcher isMini={true} />

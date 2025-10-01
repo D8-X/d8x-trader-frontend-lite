@@ -18,7 +18,6 @@ import { isCedeWidgetEnabled } from 'helpers/isCedeWidgetEnabled';
 import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom, modalSelectedCurrencyAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
@@ -32,6 +31,7 @@ import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 import { OwltoButton } from './elements/owlto-button/OwltoButton';
 
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { smartAccountClientAtom } from 'store/app.store';
 import { MethodE } from 'types/enums';
 import styles from './DepositModal.module.scss';
 
@@ -43,9 +43,8 @@ export const DepositModal = () => {
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const selectedCurrency = useAtomValue(modalSelectedCurrencyAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
-  const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
@@ -58,11 +57,8 @@ export const DepositModal = () => {
   const [title, setTitle] = useState('');
 
   const targetAddress = useMemo(() => {
-    if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
-      return address;
-    }
-    return tradingClient?.account?.address;
-  }, [tradingClient?.account?.address, address, activatedOneClickTrading, selectedCurrency]);
+    return smartAccountClient?.account?.address || address;
+  }, [smartAccountClient, address]);
 
   const handleOnClose = useCallback(() => {
     setDepositModalOpen(false);
@@ -96,7 +92,7 @@ export const DepositModal = () => {
       className={styles.dialog}
       dialogTitle={title}
     >
-      {isSignedInSocially || activatedOneClickTrading || isMockSwapEnabled(chainId) ? (
+      {isSignedInSocially || isMockSwapEnabled(chainId) ? (
         <>
           <div className={styles.section}>
             <CurrencySelect />
@@ -105,13 +101,6 @@ export const DepositModal = () => {
           <OKXConvertor />
           {!isMockSwapEnabled(chainId) ? (
             <div className={styles.section}>
-              {activatedOneClickTrading ? (
-                <Typography variant="bodyMedium" className={styles.noteText}>
-                  {t('common.deposit-modal.important-notice.0')}
-                </Typography>
-              ) : (
-                <div>{/* empty block */}</div>
-              )}
               <Typography variant="bodySmall" className={styles.noteText}>
                 <Translate
                   i18nKey="common.deposit-modal.important-notice.1"

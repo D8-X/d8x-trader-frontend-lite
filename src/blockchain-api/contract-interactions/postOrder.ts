@@ -1,15 +1,16 @@
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, WalletClient, EstimateContractGasParameters } from 'viem';
+import type { Address, EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { orderSubmitted } from 'network/broker';
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
-import type { OrderI, OrderDigestI } from 'types/types';
+import type { OrderDigestI, OrderI } from 'types/types';
 
 export async function postOrder(
-  walletClient: WalletClient,
+  walletClient: SmartAccountClient,
   traderAPI: TraderInterface,
   {
     traderAddr,

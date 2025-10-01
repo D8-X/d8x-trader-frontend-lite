@@ -1,15 +1,16 @@
 import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
+import type { Address, EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
 
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 import type { CollateralChangePropsI } from 'types/types';
 
 export async function withdraw(
-  walletClient: WalletClient,
+  walletClient: SmartAccountClient,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {

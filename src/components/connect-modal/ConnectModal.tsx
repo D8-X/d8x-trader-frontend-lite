@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Typography } from '@mui/material';
@@ -11,8 +11,9 @@ import { useLogout, usePrivy, useWallets } from '@privy-io/react-auth';
 import { useSetActiveWallet } from '@privy-io/wagmi';
 import { entryPoint06Address } from 'blockchain-api/account-abstraction';
 import { pimlicoPaymaster, pimlicoRpcUrl } from 'blockchain-api/pimlico';
-import { createSmartAccountClient, SmartAccountClient } from 'permissionless';
+import { createSmartAccountClient } from 'permissionless';
 import { toSimpleSmartAccount } from 'permissionless/accounts';
+import { smartAccountClientAtom } from 'store/app.store';
 import { berachain } from 'utils/chains';
 import { http, useAccount, usePublicClient, useWalletClient } from 'wagmi';
 import styles from './ConnectModal.module.scss';
@@ -20,8 +21,9 @@ import styles from './ConnectModal.module.scss';
 export const ConnectModal = () => {
   const { t } = useTranslation();
 
+  const [smartAccountClient, setSmartAccountClient] = useAtom(smartAccountClientAtom);
+
   const { isConnected } = useAccount();
-  const [smartAccountClient, setSmartAccountClient] = useState<SmartAccountClient | null>(null);
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   // const [txHash, setTxHash] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export const ConnectModal = () => {
     };
 
     initSmartAccount();
-  }, [isConnected, walletClient, publicClient]);
+  }, [isConnected, walletClient, publicClient, setSmartAccountClient]);
 
   // TODO: what to show here?
 

@@ -1,12 +1,13 @@
 import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
-import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
-import { estimateContractGas } from 'viem/actions';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
+import type { Address, EstimateContractGasParameters, WriteContractParameters } from 'viem';
+import { estimateContractGas } from 'viem/actions';
 
 export async function settleTrader(
-  walletClient: WalletClient,
+  walletClient: SmartAccountClient,
   traderAPI: TraderInterface,
   symbol: string,
   traderAddr: Address
