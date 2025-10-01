@@ -1,13 +1,16 @@
 import { LOB_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters } from 'viem';
+import { encodeFunctionData, type Address, type EstimateContractGasParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
+import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { orderSubmitted } from 'network/broker';
 import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 import type { OrderDigestI, OrderI } from 'types/types';
+
+const TMP_PAYMENT_TOKEN = '0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce' as const; // honey
 
 export async function postOrder(
   walletClient: SmartAccountClient,
@@ -35,6 +38,7 @@ export async function postOrder(
     : scOrders.map((o) => TraderInterface.fromSmartContratOrderToClientOrder(o));
 
   const chain = walletClient.chain;
+
   const feesPerGas = await getFeesPerGas(chain.id);
 
   // if (brokerData.OrderBookAddr !== traderAPI.getOrderBookAddress(orders[0].symbol)) {
@@ -52,6 +56,7 @@ export async function postOrder(
     args: [clientOrders as never[], signatures],
     ...feesPerGas,
   };
+
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 150n) / 100n)
     .catch(() => getGasLimit({ chainId: chain.id, method: MethodE.Interact }) * BigInt(orders.length));
@@ -61,6 +66,27 @@ export async function postOrder(
     chain,
     gas: gasLimit,
   };
+
+  const calls = [
+    {
+      account: walletClient.account,
+      chain: walletClient.chain,
+      to: traderAPI.getOrderBookAddress(orders[0].symbol) as Address,
+      data: encodeFunctionData({
+        abi: orderBookAbi,
+        functionName: 'postOrders',
+        args: [clientOrders as never[], signatures as `0x${string}`[]],
+      }),
+      value: 0n,
+    },
+  ];
+
+  return walletClient.sendTransaction({ calls, paymasterContext: { token: TMP_PAYMENT_TOKEN } }).then((tx) => {
+    // success submitting order to the node - inform backend
+    orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);
+    return { hash: tx, orderIds: brokerData.orderIds };
+  });
+
   return walletClient.writeContract(baseParams).then((tx) => {
     // success submitting order to the node - inform backend
     orderSubmitted(chain.id, brokerData.orderIds).then().catch(console.error);

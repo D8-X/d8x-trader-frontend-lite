@@ -6,9 +6,9 @@ import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
+import { flatTokenAbi } from '../abi/flatTokenAbi';
 import { NORMAL_ADDRESS_TIMEOUT } from '../constants';
 import { wagmiConfig } from '../wagmi/wagmiClient';
-import { flatTokenAbi } from './flatTokenAbi';
 
 interface RegisterFlatTokenPropsI {
   walletClient: SmartAccountClient;

@@ -8,8 +8,8 @@ import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
+import { flatTokenAbi } from './abi/flatTokenAbi';
 import { NORMAL_ADDRESS_TIMEOUT } from './constants';
-import { flatTokenAbi } from './contract-interactions/flatTokenAbi';
 import { registerFlatToken } from './contract-interactions/registerFlatToken';
 import { wagmiConfig } from './wagmi/wagmiClient';
 

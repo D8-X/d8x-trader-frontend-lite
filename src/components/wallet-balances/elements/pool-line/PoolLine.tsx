@@ -3,7 +3,7 @@ import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useConnect, useReadContracts } from 'wagmi';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { AssetLine } from 'components/asset-line/AssetLine';
 import { useAtomValue } from 'jotai';
 import { flatTokenAtom } from 'store/pools.store';

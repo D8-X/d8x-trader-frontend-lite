@@ -51,7 +51,7 @@ import { isDisabledPool } from 'utils/isDisabledPool';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useConnectOrCreateWallet, usePrivy } from '@privy-io/react-auth';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { FlatTokenModal } from 'components/flat-token-modal/FlatTokenModal';
 import styles from './Header.module.scss';
 import { PageAppBar } from './Header.styles';
