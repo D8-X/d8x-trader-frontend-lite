@@ -1,5 +1,5 @@
 import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
@@ -9,7 +9,7 @@ import { MethodE } from 'types/enums';
 import type { CollateralChangePropsI } from 'types/types';
 
 export async function deposit(
-  walletClient: SmartAccountClient,
+  walletClient: WalletClient | SmartAccountClient,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {

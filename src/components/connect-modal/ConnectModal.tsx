@@ -73,26 +73,30 @@ export const ConnectModal = () => {
       }
 
       try {
-        const safeSmartAccountClient = await toSimpleSmartAccount({
-          client: publicClient,
-          owner: walletClient,
-          entryPoint: {
-            address: entryPoint06Address,
-            version: '0.6',
-          },
-        });
+        if ([42161, 747474].includes(walletClient.chain.id)) {
+          const safeSmartAccountClient = await toSimpleSmartAccount({
+            client: publicClient,
+            owner: walletClient,
+            entryPoint: {
+              address: entryPoint06Address,
+              version: '0.6',
+            },
+          });
 
-        const c = createSmartAccountClient({
-          account: safeSmartAccountClient,
-          chain: berachain,
-          bundlerTransport: http(pimlicoRpcUrl),
-          paymaster: pimlicoPaymaster,
-          userOperation: {
-            estimateFeesPerGas: async () => (await pimlicoPaymaster.getUserOperationGasPrice()).fast,
-          },
-        });
+          const c = createSmartAccountClient({
+            account: safeSmartAccountClient,
+            chain: berachain,
+            bundlerTransport: http(pimlicoRpcUrl),
+            paymaster: pimlicoPaymaster,
+            userOperation: {
+              estimateFeesPerGas: async () => (await pimlicoPaymaster.getUserOperationGasPrice()).fast,
+            },
+          });
 
-        setSmartAccountClient(c);
+          setSmartAccountClient(c);
+        } else {
+          setSmartAccountClient(walletClient);
+        }
       } catch (error) {
         console.error('Failed to initialize smart account:', error);
       }

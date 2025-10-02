@@ -1,7 +1,7 @@
 import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
 
 import { Button } from '@mui/material';
-import { useFundWallet, usePrivy, useWallets } from '@privy-io/react-auth';
+import { useFundWallet, usePrivy } from '@privy-io/react-auth';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
@@ -23,18 +23,10 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
   const { fundWallet } = useFundWallet();
   const { user } = usePrivy();
   const { calculateGasForFee } = useUserWallet();
-  const { wallets } = useWallets();
 
   const targetAddress = useMemo(() => {
     return smartAccountClient?.account?.address || user?.wallet?.address;
   }, [smartAccountClient, user]);
-
-  console.log({
-    targetAddress,
-    tokenAddress,
-    userAddress: user?.wallet?.address,
-    embeddedAddress: wallets?.find((w) => w.connectorType == 'embedded')?.address,
-  });
 
   const onClick = () => {
     if (tokenAddress === undefined || !targetAddress) {

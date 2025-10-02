@@ -28,12 +28,12 @@ export const useFundAccount = () => {
     return smartAccountClient?.account?.address ?? address;
   }, [smartAccountClient, address]);
 
-  const bridgeBaseUsdc = async (targetChainId: string | number | bigint) => {
+  const bridgeBaseUsdc = async () => {
     // TODO: send entire USDC balance to target chain
     // https://docs.biconomy.io/new/integration-guides/bridges-and-solvers/integrate-lifi
   };
 
-  const getBaseUsdc = async (amount: string, chainId: string | number | bigint) => {
+  const getBaseUsdc = async (amount: string) => {
     if (isPending || !targetAddress || isNaN(+amount)) {
       return;
     }
@@ -65,5 +65,5 @@ export const useFundAccount = () => {
       setPending(false);
     }
   };
-  return { getBaseUsdc, isPending, isSuccess, error, data };
+  return { getBaseUsdc, bridgeBaseUsdc, isPending, isSuccess, error, data };
 };

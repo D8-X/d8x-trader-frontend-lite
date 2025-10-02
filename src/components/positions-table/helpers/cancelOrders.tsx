@@ -1,7 +1,7 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
-import type { Address, Chain } from 'viem';
-import { getTransactionCount, waitForTransactionReceipt } from 'viem/actions';
+import type { Chain, WalletClient } from 'viem';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
 import { NORMAL_ADDRESS_TIMEOUT } from 'blockchain-api/constants';
@@ -18,7 +18,7 @@ interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
   chain: Chain;
   traderAPI: TraderInterface | null;
-  smartAccountClient: SmartAccountClient;
+  smartAccountClient: SmartAccountClient | WalletClient;
   toastTitle: string;
   nonceShift: number;
   callback: () => void;
@@ -29,9 +29,7 @@ export async function cancelOrders(props: CancelOrdersPropsI) {
 
   if (ordersToCancel.length) {
     const cancelOrdersPromises: Promise<void>[] = [];
-    const nonce =
-      (await getTransactionCount(smartAccountClient, { address: smartAccountClient.account?.address as Address })) +
-      nonceShift;
+    const nonce = Number(await smartAccountClient?.account?.getNonce?.()) + nonceShift;
     for (let idx = 0; idx < ordersToCancel.length; idx++) {
       const orderToCancel = ordersToCancel[idx];
       cancelOrdersPromises.push(

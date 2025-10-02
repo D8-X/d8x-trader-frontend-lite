@@ -3,11 +3,11 @@ import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
-import type { Address, EstimateContractGasParameters, WriteContractParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient, WriteContractParameters } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 export async function settleTrader(
-  walletClient: SmartAccountClient,
+  walletClient: WalletClient | SmartAccountClient,
   traderAPI: TraderInterface,
   symbol: string,
   traderAddr: Address

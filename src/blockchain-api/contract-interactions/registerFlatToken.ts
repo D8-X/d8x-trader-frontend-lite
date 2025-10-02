@@ -1,5 +1,5 @@
 import { waitForTransactionReceipt } from '@wagmi/core';
-import type { Address, EstimateContractGasParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
@@ -11,7 +11,7 @@ import { NORMAL_ADDRESS_TIMEOUT } from '../constants';
 import { wagmiConfig } from '../wagmi/wagmiClient';
 
 interface RegisterFlatTokenPropsI {
-  walletClient: SmartAccountClient;
+  walletClient: WalletClient | SmartAccountClient;
   flatTokenAddr: Address;
   userTokenAddr: Address;
   feesPerGas?:

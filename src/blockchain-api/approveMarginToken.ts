@@ -1,5 +1,12 @@
 import { readContracts, waitForTransactionReceipt } from '@wagmi/core';
-import { type Address, erc20Abi, type EstimateContractGasParameters, parseUnits, zeroAddress } from 'viem';
+import {
+  type Address,
+  erc20Abi,
+  type EstimateContractGasParameters,
+  parseUnits,
+  WalletClient,
+  zeroAddress,
+} from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { MaxUint256 } from 'appConstants';
@@ -14,7 +21,7 @@ import { registerFlatToken } from './contract-interactions/registerFlatToken';
 import { wagmiConfig } from './wagmi/wagmiClient';
 
 interface ApproveMarginTokenPropsI {
-  walletClient: SmartAccountClient;
+  walletClient: SmartAccountClient | WalletClient;
   settleTokenAddr: string;
   proxyAddr: string;
   minAmount: number;

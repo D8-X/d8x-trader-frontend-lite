@@ -1,5 +1,5 @@
 import { LOB_ABI } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters } from 'viem';
+import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
@@ -9,7 +9,7 @@ import { MethodE } from 'types/enums';
 import { type CancelOrderResponseI } from 'types/types';
 
 export async function cancelOrder(
-  walletClient: SmartAccountClient,
+  walletClient: WalletClient | SmartAccountClient,
   signature: string,
   data: CancelOrderResponseI,
   orderId: string,
