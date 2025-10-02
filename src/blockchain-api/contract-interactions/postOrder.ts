@@ -10,7 +10,7 @@ import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 import type { OrderDigestI, OrderI } from 'types/types';
 
-const TMP_PAYMENT_TOKEN = '0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce' as const; // honey
+const TMP_PAYMENT_TOKEN = '0x779Ded0c9e1022225f8E0630b35a9b54bE713736' as const; // honey
 
 export async function postOrder(
   walletClient: SmartAccountClient,

@@ -31,7 +31,6 @@ export const useFundAccount = () => {
   const bridgeBaseUsdc = async (targetChainId: string | number | bigint) => {
     // TODO: send entire USDC balance to target chain
     // https://docs.biconomy.io/new/integration-guides/bridges-and-solvers/integrate-lifi
-    //
   };
 
   const getBaseUsdc = async (amount: string, chainId: string | number | bigint) => {
