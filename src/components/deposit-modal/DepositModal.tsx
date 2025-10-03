@@ -91,6 +91,8 @@ export const DepositModal = () => {
       onCloseClick={handleOnClose}
       className={styles.dialog}
       dialogTitle={title}
+      disableEnforceFocus
+      disableRestoreFocus
     >
       {isSignedInSocially || isMockSwapEnabled(chainId) ? (
         <>
