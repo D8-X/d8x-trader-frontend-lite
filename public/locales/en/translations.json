@@ -305,7 +305,7 @@
           "none": "NONE"
         },
         "info": {
-          "balance": "Wallet balance",
+          "balance": "Click tokens to fund wallet:",
           "order-size": "Order size",
           "execution-fees": "Execution fees",
           "fees": "Trading fees",
@@ -948,7 +948,7 @@
         "4": "to this address.",
         "5": "Send over <bold>{{chainName}}</bold>."
       },
-      "deposit-note": "Make sure you have sufficient <bold>{{currencyName}}</bold> for gas and sufficient collateral currency.",
+      "deposit-note": "Make sure you have sufficient <bold>{{currencyName}}</bold> for gas and sufficient collateral currency. Click on the tokens below to fund your wallet.",
       "done-button": "Done",
       "convert": {
         "text": "Convert your <bold>{{fromCurrency}}</bold> to <bold>{{toCurrency}}</bold> without slippage:",
@@ -998,7 +998,8 @@
       "or-separator": "or",
       "disconnect": "Disconnect",
       "connected-title": "Welcome!",
-      "connected-description": "You have successfully signed in."
+      "connected-description": "You have successfully signed in.",
+      "view-on-explorer": "View on explorer"
     },
     "refresh": "Refresh",
     "filter": "Filter"

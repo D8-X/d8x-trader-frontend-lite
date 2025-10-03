@@ -161,7 +161,13 @@ export const DepositModal = () => {
       )}
       <div className={styles.section}>
         <Typography variant="bodyMedium">
-          <Translate i18nKey="pages.trade.order-block.info.balance" values={{ currencyName: gasTokenSymbol }} />:
+          <Translate i18nKey="pages.trade.order-block.info.balance" values={{ currencyName: gasTokenSymbol }} />
+        </Typography>
+        <Typography
+          variant="bodySmall"
+          style={{ marginTop: 4, marginBottom: 8, color: 'var(--d8x-color-text-secondary)' }}
+        >
+          Click on any token below to fund your wallet
         </Typography>
         <WalletBalances />
       </div>
