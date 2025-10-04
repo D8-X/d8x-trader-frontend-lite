@@ -22,6 +22,7 @@ import { formatUnits, parseEther, parseUnits } from 'viem/utils';
 import { erc20Abi, zeroAddress } from 'viem';
 import { writeContract } from '@wagmi/core';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { toast } from 'react-toastify';
 import styles from './ConnectModal.module.scss';
 import { CopyLink } from 'components/copy-link/CopyLink';
 import { Separator } from 'components/separator/Separator';
@@ -271,9 +272,14 @@ export const ConnectModal = () => {
             chain: berachain,
             amount: '0.1', // Default amount for BERA
           },
-        }).catch((error) => {
-          console.error('Error funding BERA:', error);
-        });
+        })
+          .then(() => {
+            // Refetch balances after successful deposit
+            refetchWallet();
+          })
+          .catch((error) => {
+            console.error('Error funding BERA:', error);
+          });
       } else {
         // Handle ERC20 tokens
         fundWallet({
@@ -283,12 +289,17 @@ export const ConnectModal = () => {
             asset: { erc20: tokenAddress as `0x${string}` },
             amount: symbol === 'USDT' ? '100' : '10', // Default amounts
           },
-        }).catch((error) => {
-          console.error(`Error funding ${symbol}:`, error);
-        });
+        })
+          .then(() => {
+            // Refetch balances after successful deposit
+            refetchWallet();
+          })
+          .catch((error) => {
+            console.error(`Error funding ${symbol}:`, error);
+          });
       }
     },
-    [fundWallet, activeAddress]
+    [fundWallet, activeAddress, refetchWallet]
   );
 
   // Generic withdraw handler - opens withdraw modal
@@ -336,6 +347,12 @@ export const ConnectModal = () => {
         });
       }
 
+      // Show success toast
+      toast.success('Withdrawal successful');
+
+      // Refetch balances after successful withdrawal
+      refetchWallet();
+
       // Reset form
       setWithdrawAmount('');
       setWithdrawAddress('');
@@ -343,10 +360,11 @@ export const ConnectModal = () => {
       setSelectedToken(null);
     } catch (error) {
       console.error('Withdraw error:', error);
+      toast.error('Withdrawal failed');
     } finally {
       setWithdrawLoading(false);
     }
-  }, [selectedToken, withdrawAmount, withdrawAddress, walletClient, sendTransaction, tokenDecimals]);
+  }, [selectedToken, withdrawAmount, withdrawAddress, walletClient, sendTransaction, tokenDecimals, refetchWallet]);
 
   return (
     <>
