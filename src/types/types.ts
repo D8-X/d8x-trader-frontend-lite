@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TemporaryAnyT = any;
 
+import type { Address, WalletClient } from 'viem';
 import type {
   AlignE,
   FieldTypeE,
@@ -14,7 +15,6 @@ import type {
   StopLossE,
   TakeProfitE,
 } from './enums';
-import type { Address, WalletClient } from 'viem';
 
 export interface LanguageMetaI {
   id: LanguageE;
@@ -237,6 +237,7 @@ export interface CollateralChangePropsI {
 }
 
 export interface PriceUpdatesI {
+  ids: string[];
   updateData: string[];
   publishTimes: number[];
   updateFee: number;

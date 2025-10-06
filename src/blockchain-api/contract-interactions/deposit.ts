@@ -7,13 +7,14 @@ import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 import type { CollateralChangePropsI } from 'types/types';
+import { updatePyth } from './updatePyth';
 
 export async function deposit(
   walletClient: WalletClient | SmartAccountClient,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {
-  if (!walletClient.account) {
+  if (!walletClient.account?.address) {
     throw new Error('account not connected');
   }
   const decimals = traderAPI.getSettlementTokenDecimalsFromSymbol(symbol);
@@ -22,6 +23,17 @@ export async function deposit(
   }
   const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
+
+  await updatePyth({
+    walletClient,
+    priceData: {
+      updateData: pxUpdate.submission.priceFeedVaas,
+      ids: pxUpdate.submission.ids,
+      publishTimes: pxUpdate.submission.timestamps,
+      updateFee: pxUpdate.submission.ids.length,
+    },
+    feesPerGas,
+  });
 
   const estimateParams: EstimateContractGasParameters = {
     address: traderAPI.getProxyAddress() as Address,
@@ -34,10 +46,11 @@ export async function deposit(
       pxUpdate.submission.priceFeedVaas,
       pxUpdate.submission.timestamps,
     ],
-    value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
+    //value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
     account: walletClient.account,
     ...feesPerGas,
   };
+
   const gasLimit = await estimateContractGas(walletClient, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
