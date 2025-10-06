@@ -40,7 +40,11 @@ export async function cancelOrder(
   //   gas: gasLimit,
   //   // };
 
-  await updatePyth({ walletClient, priceData: data.priceUpdate, nonce });
+  try {
+    await updatePyth({ walletClient, priceData: data.priceUpdate, nonce });
+  } catch (e) {
+    console.log('pyth update reverted - ok?');
+  }
 
   const txData2 = encodeFunctionData({
     abi: orderBookAbi,
@@ -48,12 +52,12 @@ export async function cancelOrder(
     args: [
       orderId as `0x${string}`,
       signature as `0x${string}`,
-      data.priceUpdate.updateData as `0x${string}`[],
-      data.priceUpdate.publishTimes.map((x) => BigInt(x)),
+      [], //data.priceUpdate.publishTimes.map(() => '0x') as `0x${string}`[], //data.priceUpdate.updateData as `0x${string}`[],
+      [], // data.priceUpdate.publishTimes.map((x) => BigInt(x - 1)),
     ],
   });
 
-  return sendTransaction(walletClient, {
+  return sendTransaction(walletClient!, {
     account: walletClient.account,
     chain: walletClient.chain,
     to: data.OrderBookAddr as `0x${string}`,

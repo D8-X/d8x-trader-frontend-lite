@@ -22,6 +22,8 @@ export async function deposit(
     throw new Error(`no settlement token information found for symbol ${symbol}`);
   }
   const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
+
+  console.log({ pxUpdate });
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   await updatePyth({
