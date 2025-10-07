@@ -1,17 +1,19 @@
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { pythAbi } from 'blockchain-api/abi/pyth';
+import { getPriceUpdates } from 'network/prices';
 import { SmartAccountClient } from 'permissionless';
-import { PriceUpdatesI } from 'types/types';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { sendTransaction, waitForTransactionReceipt } from 'viem/actions';
 
 export async function updatePyth({
-  priceData,
+  traderApi,
   walletClient,
+  symbol,
   feesPerGas,
-  nonce,
 }: {
+  traderApi: TraderInterface;
   walletClient: WalletClient | SmartAccountClient;
-  priceData: PriceUpdatesI;
+  symbol: string;
   feesPerGas?:
     | {
         gasPrice: undefined;
@@ -23,50 +25,49 @@ export async function updatePyth({
         maxFeePerGas: undefined;
         maxPriorityFeePerGas: undefined;
       };
-  nonce?: number;
 }) {
-  if (!walletClient.account?.address || !walletClient.transport) {
+  if (!walletClient.account?.address || !walletClient.transport || !walletClient.chain) {
     throw new Error('account not connected');
   }
+  let txNonce = await walletClient.account.getNonce?.()?.then((n) => Number(n));
+  let txHash: `0x${string}` | undefined;
 
-  // update one by one
-  // TODO: can do this in one go, but it also has to be queried from the api in one go
-  // (currently price updates are queried one by one from the api)
+  const pxUpdates = await getPriceUpdates(traderApi, symbol);
 
-  const txNonce = nonce ?? Number(await walletClient?.account?.getNonce?.());
-
-  for (let idx = 0; idx < priceData.ids.length; idx++) {
+  for (const pxUpdate of pxUpdates) {
     const txData1 = encodeFunctionData({
       abi: pythAbi,
       functionName: 'updatePriceFeedsIfNecessary',
-      args: [
-        [priceData.updateData[idx]] as `0x${string}`[],
-        [priceData.ids[idx]] as `0x${string}`[],
-        [BigInt(priceData.publishTimes[idx])],
-      ],
+      args: [[pxUpdate.updateData], pxUpdate.ids, pxUpdate.publishTimes],
     });
 
     try {
-      const tx = await sendTransaction(walletClient!, {
+      txHash = await sendTransaction(walletClient!, {
         account: walletClient.account,
         chain: walletClient.chain,
-        to: '0x2880aB155794e7179c9eE2e38200202908C17B43',
+        to: pxUpdate.address,
         from: walletClient.account.address,
         value: 1n, //BigInt(priceData.updateFee),
         data: txData1,
-        nonce: txNonce + idx,
+        nonce: txNonce,
         gas: 500_000n,
         ...feesPerGas,
       });
 
-      await waitForTransactionReceipt(walletClient, { hash: tx })
-        .then()
-        .catch((e) => {
-          console.log('pyth confirmation error', e);
-        });
+      if (txNonce) {
+        txNonce++;
+      }
     } catch (e) {
       console.log('pyth error', e);
       continue;
     }
+  }
+  // txns were submitted in order, wait until last accepted one is mined
+  if (txHash !== undefined) {
+    await waitForTransactionReceipt(walletClient, { hash: txHash })
+      .then()
+      .catch((e) => {
+        console.log('pyth confirmation error', e);
+      });
   }
 }

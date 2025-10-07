@@ -18,17 +18,12 @@ export async function withdraw(
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
-  const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   await updatePyth({
+    traderApi: traderAPI,
     walletClient,
-    priceData: {
-      updateData: pxUpdate.submission.priceFeedVaas,
-      ids: pxUpdate.submission.ids,
-      publishTimes: pxUpdate.submission.timestamps,
-      updateFee: pxUpdate.submission.ids.length,
-    },
+    symbol,
     feesPerGas,
   });
 

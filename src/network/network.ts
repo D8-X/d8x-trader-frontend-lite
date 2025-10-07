@@ -331,23 +331,23 @@ export function getCancelOrder(
     if (Number(traderAPI.chainId) === chainId) {
       const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
       return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
-        return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-          return {
-            type: 'cancel-order',
-            msg: '',
-            data: {
-              OrderBookAddr: digest.OBContractAddr,
-              abi: cancelABI,
-              digest: digest.digest,
-              priceUpdate: {
-                ids: submission.ids,
-                updateData: submission.priceFeedVaas,
-                publishTimes: submission.timestamps,
-                updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
-              },
-            },
-          };
-        });
+        // return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
+        return {
+          type: 'cancel-order',
+          msg: '',
+          data: {
+            OrderBookAddr: digest.OBContractAddr,
+            abi: cancelABI,
+            digest: digest.digest,
+            // priceUpdate: {
+            //   ids: submission.ids,
+            //   updateData: submission.priceFeedVaas,
+            //   publishTimes: submission.timestamps,
+            //   updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
+            // },
+          },
+        };
+        // });
       });
     }
     throw new Error('ChainId is not correct.');

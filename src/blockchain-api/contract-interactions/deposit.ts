@@ -21,18 +21,13 @@ export async function deposit(
   if (!decimals) {
     throw new Error(`no settlement token information found for symbol ${symbol}`);
   }
-  const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
 
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   await updatePyth({
+    traderApi: traderAPI,
     walletClient,
-    priceData: {
-      updateData: pxUpdate.submission.priceFeedVaas,
-      ids: pxUpdate.submission.ids,
-      publishTimes: pxUpdate.submission.timestamps,
-      updateFee: pxUpdate.submission.ids.length,
-    },
+    symbol,
     feesPerGas,
   });
 

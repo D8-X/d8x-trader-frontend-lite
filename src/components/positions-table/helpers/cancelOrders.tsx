@@ -17,7 +17,7 @@ import styles from '../elements/modals/Modal.module.scss';
 interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
   chain: Chain;
-  traderAPI: TraderInterface | null;
+  traderAPI: TraderInterface;
   smartAccountClient: SmartAccountClient | WalletClient;
   toastTitle: string;
   nonceShift: number;
@@ -25,18 +25,17 @@ interface CancelOrdersPropsI {
 }
 
 export async function cancelOrders(props: CancelOrdersPropsI) {
-  const { ordersToCancel, chain, traderAPI, smartAccountClient, toastTitle, nonceShift, callback } = props;
+  const { ordersToCancel, chain, traderAPI, smartAccountClient, toastTitle, callback } = props;
 
   if (ordersToCancel.length) {
     const cancelOrdersPromises: Promise<void>[] = [];
-    const nonce = Number(await smartAccountClient?.account?.getNonce?.()) + nonceShift;
     for (let idx = 0; idx < ordersToCancel.length; idx++) {
       const orderToCancel = ordersToCancel[idx];
       cancelOrdersPromises.push(
         getCancelOrder(chain.id, traderAPI, orderToCancel.symbol, orderToCancel.id)
           .then((data) => {
             if (data.data.digest) {
-              cancelOrder(smartAccountClient, HashZero, data.data, orderToCancel.id, nonce + idx)
+              cancelOrder(traderAPI, smartAccountClient, orderToCancel.symbol, HashZero, data.data, orderToCancel.id) // nonce is managed internally
                 .then((tx) => {
                   toast.success(
                     <ToastContent

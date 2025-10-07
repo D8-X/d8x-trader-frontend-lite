@@ -1,5 +1,6 @@
 import { encodeFunctionData, type Address, type WalletClient } from 'viem';
 
+import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { SmartAccountClient } from 'permissionless';
@@ -8,43 +9,24 @@ import { sendTransaction } from 'viem/actions';
 import { updatePyth } from './updatePyth';
 
 export async function cancelOrder(
+  traderAPI: TraderInterface,
   walletClient: WalletClient | SmartAccountClient,
+  symbol: string,
   signature: string,
   data: CancelOrderResponseI,
-  orderId: string,
-  nonce?: number
+  orderId: string
 ): Promise<{ hash: Address }> {
   if (!walletClient.account?.address) {
     throw new Error('account not connected');
   }
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
-  // const estimateParams: EstimateContractGasParameters = {
-  //   address: data.OrderBookAddr as Address,
-  //   abi: orderBookAbi,
-  //   functionName: 'cancelOrder',
-  //   args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
-  //   value: BigInt(data.priceUpdate.updateFee),
-  //   nonce,
-  //   account: walletClient.account,
-  //   ...feesPerGas,
-  // };
-
-  // const gasLimit = await estimateContractGas(walletClient, estimateParams)
-  //   .then((gas) => (gas * 130n) / 100n)
-  //   .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  // const baseParams = {
-  //   ...estimateParams,
-  //   chain: walletClient.chain,
-  //   account: walletClient.account,
-  //   gas: gasLimit,
-  //   // };
-
-  try {
-    await updatePyth({ walletClient, priceData: data.priceUpdate, nonce });
-  } catch (e) {
-    console.log('pyth update reverted - ok?');
-  }
+  await updatePyth({
+    traderApi: traderAPI,
+    walletClient,
+    symbol,
+    feesPerGas,
+  });
 
   const txData2 = encodeFunctionData({
     abi: orderBookAbi,
