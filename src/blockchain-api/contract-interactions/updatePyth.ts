@@ -29,8 +29,6 @@ export async function updatePyth({
     throw new Error('account not connected');
   }
 
-  console.log(priceData);
-
   // update one by one
   // TODO: can do this in one go, but it also has to be queried from the api in one go
   // (currently price updates are queried one by one from the api)
@@ -46,12 +44,6 @@ export async function updatePyth({
         [priceData.ids[idx]] as `0x${string}`[],
         [BigInt(priceData.publishTimes[idx])],
       ],
-    });
-
-    console.log({
-      txData1,
-      priceData: priceData.updateData,
-      from: walletClient.account.address,
     });
 
     try {

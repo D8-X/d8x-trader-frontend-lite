@@ -23,7 +23,6 @@ export async function deposit(
   }
   const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
 
-  console.log({ pxUpdate });
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   await updatePyth({
@@ -45,8 +44,8 @@ export async function deposit(
       traderAPI.getPerpetualStaticInfo(symbol).id,
       traderAddr,
       floatToABK64x64(amount),
-      pxUpdate.submission.priceFeedVaas,
-      pxUpdate.submission.timestamps,
+      [], //pxUpdate.submission.priceFeedVaas,
+      [], //pxUpdate.submission.timestamps,
     ],
     //value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
     account: walletClient.account,
