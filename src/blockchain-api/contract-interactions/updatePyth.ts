@@ -1,8 +1,10 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { pythAbi } from 'blockchain-api/abi/pyth';
+import { getUpdateFee } from 'blockchain-api/pyth/getUpdateFee';
 import { getPriceUpdates } from 'network/prices';
-import { SmartAccountClient } from 'permissionless';
-import { encodeFunctionData, WalletClient } from 'viem';
+import { type SmartAccountClient } from 'permissionless';
+import { Account, Chain, Client, encodeFunctionData, Transport, type WalletClient } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
 import { sendTransaction, waitForTransactionReceipt } from 'viem/actions';
 
 export async function updatePyth({
@@ -12,7 +14,7 @@ export async function updatePyth({
   feesPerGas,
 }: {
   traderApi: TraderInterface;
-  walletClient: WalletClient | SmartAccountClient;
+  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>;
   symbol: string;
   feesPerGas?:
     | {
@@ -35,20 +37,17 @@ export async function updatePyth({
   const pxUpdates = await getPriceUpdates(traderApi, symbol);
 
   for (const pxUpdate of pxUpdates) {
-    const txData1 = encodeFunctionData({
-      abi: pythAbi,
-      functionName: 'updatePriceFeedsIfNecessary',
-      args: [[pxUpdate.updateData], pxUpdate.ids, pxUpdate.publishTimes],
-    });
-
     try {
-      txHash = await sendTransaction(walletClient!, {
+      txHash = await sendTransaction(walletClient, {
         account: walletClient.account,
         chain: walletClient.chain,
         to: pxUpdate.address,
-        from: walletClient.account.address,
-        value: 1n, //BigInt(priceData.updateFee),
-        data: txData1,
+        value: await getUpdateFee(pxUpdate.address, pxUpdate.updateData),
+        data: encodeFunctionData({
+          abi: pythAbi,
+          functionName: 'updatePriceFeeds',
+          args: [pxUpdate.updateData], // [[pxUpdate.updateData], pxUpdate.ids, pxUpdate.publishTimes],
+        }),
         nonce: txNonce,
         gas: 500_000n,
         ...feesPerGas,

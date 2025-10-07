@@ -5,7 +5,8 @@ import { config } from 'config';
 import { SmartAccountClient } from 'permissionless';
 import { DefaultCurrencyE, OrderBlockPositionE, ThemeE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
-import { WalletClient } from 'viem';
+import { Account, Chain, Client, Transport, WalletClient } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
@@ -53,4 +54,6 @@ export const showWelcomeModalAtom = atom(
   }
 );
 
-export const smartAccountClientAtom = atom<SmartAccountClient | WalletClient | null>(null);
+export const smartAccountClientAtom = atom<
+  SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account> | null
+>(null);

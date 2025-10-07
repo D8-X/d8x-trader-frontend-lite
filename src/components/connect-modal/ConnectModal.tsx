@@ -2,37 +2,38 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Typography, OutlinedInput, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { connectModalOpenAtom } from 'store/global-modals.store';
 import { poolsAtom } from 'store/pools.store';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 
-import { useLogout, usePrivy, useWallets, useFundWallet } from '@privy-io/react-auth';
-import { useSetActiveWallet } from '@privy-io/wagmi';
-import { entryPoint06Address } from 'blockchain-api/account-abstraction';
-import { pimlicoPaymaster, pimlicoRpcUrl } from 'blockchain-api/pimlico';
-import { createSmartAccountClient } from 'permissionless';
-import { toSimpleSmartAccount } from 'permissionless/accounts';
-import { smartAccountClientAtom } from 'store/app.store';
-import { berachain } from 'utils/chains';
-import { http, useAccount, usePublicClient, useWalletClient, useReadContracts, useSendTransaction } from 'wagmi';
-import { formatUnits, parseEther, parseUnits } from 'viem/utils';
-import { erc20Abi, zeroAddress } from 'viem';
-import { writeContract } from '@wagmi/core';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { toast } from 'react-toastify';
-import styles from './ConnectModal.module.scss';
-import { CopyLink } from 'components/copy-link/CopyLink';
-import { Separator } from 'components/separator/Separator';
-import { SeparatorTypeE } from 'components/separator/enums';
-import { cutAddress } from 'utils/cutAddress';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import { useFundWallet, useLogout, usePrivy, useWallets } from '@privy-io/react-auth';
+import { useSetActiveWallet } from '@privy-io/wagmi';
+import { writeContract } from '@wagmi/core';
+import { entryPoint06Address } from 'blockchain-api/account-abstraction';
+import { pimlicoPaymaster, pimlicoRpcUrl } from 'blockchain-api/pimlico';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { CopyLink } from 'components/copy-link/CopyLink';
 import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
+import { Separator } from 'components/separator/Separator';
+import { SeparatorTypeE } from 'components/separator/enums';
+import { createSmartAccountClient } from 'permissionless';
+import { toSimpleSmartAccount } from 'permissionless/accounts';
+import { toast } from 'react-toastify';
+import { smartAccountClientAtom } from 'store/app.store';
+import { berachain } from 'utils/chains';
+import { cutAddress } from 'utils/cutAddress';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { Chain, Client, erc20Abi, HttpTransport, zeroAddress } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
+import { formatUnits, parseEther, parseUnits } from 'viem/utils';
+import { http, useAccount, usePublicClient, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import styles from './ConnectModal.module.scss';
 
 interface TokenRowPropsI {
   symbol: string;
@@ -132,6 +133,8 @@ export const ConnectModal = () => {
   useEffect(() => {
     if (embeddedWallet && !setWalletRef.current) {
       setWalletRef.current = true;
+      console.log(embeddedWallet.meta);
+      embeddedWallet.getEthereumProvider().then((p) => console.log(p));
       setActiveWallet(embeddedWallet)
         .catch(() => {})
         .finally(() => {
@@ -157,7 +160,7 @@ export const ConnectModal = () => {
             },
           });
 
-          const c = createSmartAccountClient({
+          const c = createSmartAccountClient<HttpTransport, Chain, SmartAccount, Client>({
             account: safeSmartAccountClient,
             chain: berachain,
             bundlerTransport: http(pimlicoRpcUrl),

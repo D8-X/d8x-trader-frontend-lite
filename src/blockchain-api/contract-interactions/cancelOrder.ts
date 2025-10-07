@@ -1,16 +1,17 @@
-import { encodeFunctionData, type Address, type WalletClient } from 'viem';
+import { Account, Chain, Client, encodeFunctionData, Transport, type Address, type WalletClient } from 'viem';
 
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
 import { SmartAccountClient } from 'permissionless';
 import { type CancelOrderResponseI } from 'types/types';
+import { SmartAccount } from 'viem/account-abstraction';
 import { sendTransaction } from 'viem/actions';
 import { updatePyth } from './updatePyth';
 
 export async function cancelOrder(
   traderAPI: TraderInterface,
-  walletClient: WalletClient | SmartAccountClient,
+  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>,
   symbol: string,
   signature: string,
   data: CancelOrderResponseI,
@@ -39,7 +40,7 @@ export async function cancelOrder(
     ],
   });
 
-  return sendTransaction(walletClient!, {
+  return sendTransaction(walletClient.account.client!, {
     account: walletClient.account,
     chain: walletClient.chain,
     to: data.OrderBookAddr as `0x${string}`,
