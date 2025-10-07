@@ -5,8 +5,8 @@ import { type Address, erc20Abi } from 'viem';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { collateralToSettleConversionAtom, flatTokenAtom, poolsAtom } from 'store/pools.store';
 
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { poolUsdPriceAtom } from './fetchTotalReferralsRewards';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
 
 export const poolTokensUSDBalanceAtom = atom(0);
 

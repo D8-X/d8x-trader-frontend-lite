@@ -9,15 +9,14 @@ import { AccountBox } from '@mui/icons-material';
 import { Button, useMediaQuery, useTheme } from '@mui/material';
 
 import WalletIcon from 'assets/icons/walletIcon.svg?react';
-import { config, web3AuthConfig } from 'config';
 import { AccountModal } from 'components/account-modal/AccountModal';
+import { config, web3AuthConfig } from 'config';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
 import { accountModalOpenAtom } from 'store/global-modals.store';
 import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { cutAddress } from 'utils/cutAddress';
 
-import { OneClickTradingButton } from './OneClickTradingButton';
 import { OwltoButton } from './OwltoButton';
 
 import styles from './WalletConnectButton.module.scss';
@@ -59,7 +58,6 @@ export const WalletConnectedButtons = memo(({ mobile = false }: WalletConnectedB
               return (
                 <>
                   <div className={styles.buttonsHolder}>
-                    {!isSignedInSocially && !mobile && <OneClickTradingButton />}
                     {isOwltoEnabled && isBridgeShownOnPage && !mobile && <OwltoButton />}
                     <Button onClick={openChainModal} className={styles.chainButton} variant="primary">
                       <img src={chain.iconUrl} alt={chain.name} title={chain.name} />

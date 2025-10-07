@@ -4,7 +4,7 @@ import {
   erc20Abi,
   type EstimateContractGasParameters,
   parseUnits,
-  type WalletClient,
+  WalletClient,
   zeroAddress,
 } from 'viem';
 import { estimateContractGas } from 'viem/actions';
@@ -12,17 +12,17 @@ import { estimateContractGas } from 'viem/actions';
 import { MaxUint256 } from 'appConstants';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-import { wagmiConfig } from './wagmi/wagmiClient';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
-import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from './constants';
+import { flatTokenAbi } from './abi/flatTokenAbi';
+import { NORMAL_ADDRESS_TIMEOUT } from './constants';
 import { registerFlatToken } from './contract-interactions/registerFlatToken';
-import { flatTokenAbi } from './contract-interactions/flatTokenAbi';
+import { wagmiConfig } from './wagmi/wagmiClient';
 
 interface ApproveMarginTokenPropsI {
-  walletClient: WalletClient;
+  walletClient: SmartAccountClient | WalletClient;
   settleTokenAddr: string;
-  isMultisigAddress: boolean | null;
   proxyAddr: string;
   minAmount: number;
   decimals: number;
@@ -32,7 +32,6 @@ interface ApproveMarginTokenPropsI {
 export async function approveMarginToken({
   walletClient,
   settleTokenAddr,
-  isMultisigAddress,
   proxyAddr,
   minAmount,
   decimals,
@@ -90,7 +89,6 @@ export async function approveMarginToken({
           walletClient,
           flatTokenAddr: settleTokenAddr as Address,
           userTokenAddr: tokenAddress,
-          isMultisigAddress,
           feesPerGas,
         });
       } else if (onChainRegisteredToken !== zeroAddress) {
@@ -128,7 +126,7 @@ export async function approveMarginToken({
     return walletClient.writeContract(baseParams).then(async (tx) => {
       await waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
-        timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        timeout: NORMAL_ADDRESS_TIMEOUT,
       });
       return { hash: tx };
     });

@@ -3,8 +3,8 @@ import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 
 export async function getFeesPerGas(chainId?: number) {
   // Apply chain-specific multipliers (similar to your getGasPrice function)
-  const multiplierMaxFeePerGas = chainId === 80094 ? 500_00n : 125n;
-  const multiplierMaxPriorityFeePerGas = chainId === 80094 ? 100_00n : 125n;
+  const multiplierMaxFeePerGas = 125n; // chainId === 80094 ? 500_00n : 125n;
+  const multiplierMaxPriorityFeePerGas = 125n; // chainId === 80094 ? 100_00n : 125n;
   try {
     // Get the fee data using wagmi: eip1559
     const feeData = await estimateFeesPerGasWagmi(wagmiConfig, { chainId, type: 'eip1559' });

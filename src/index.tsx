@@ -1,10 +1,10 @@
+import { WagmiProvider } from '@privy-io/wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Provider as JotaiProvider } from 'jotai';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter } from 'react-router-dom';
-import { WagmiProvider } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 
@@ -22,8 +22,11 @@ import { RainbowKitProviderWrapper } from './RainbowKitProviderWrapper';
 import './i18n';
 import './polyfills';
 
-import '@splidejs/react-splide/css';
+import { PrivyProvider } from '@privy-io/react-auth';
 import '@rainbow-me/rainbowkit/styles.css';
+import '@splidejs/react-splide/css';
+import { privyConfig } from 'blockchain-api/privy/privyConfig';
+import { config } from 'config';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/index.scss';
 
@@ -41,22 +44,24 @@ if (container) {
           <StyledEngineProvider injectFirst>
             <ThemeProvider theme={theme}>
               <GeoBlockingProvider>
-                <WagmiProvider config={wagmiConfig}>
+                <PrivyProvider appId={config.privyAppId} config={privyConfig}>
                   <QueryClientProvider client={queryClient}>
-                    <BrowserRouter>
-                      <RainbowKitProviderWrapper>
-                        <Web3AuthProvider>
-                          <UserWalletProvider>
-                            <WebSocketContextProvider>
-                              <StaticBackground />
-                              <App />
-                            </WebSocketContextProvider>
-                          </UserWalletProvider>
-                        </Web3AuthProvider>
-                      </RainbowKitProviderWrapper>
-                    </BrowserRouter>
+                    <WagmiProvider config={wagmiConfig}>
+                      <BrowserRouter>
+                        <RainbowKitProviderWrapper>
+                          <Web3AuthProvider>
+                            <UserWalletProvider>
+                              <WebSocketContextProvider>
+                                <StaticBackground />
+                                <App />
+                              </WebSocketContextProvider>
+                            </UserWalletProvider>
+                          </Web3AuthProvider>
+                        </RainbowKitProviderWrapper>
+                      </BrowserRouter>
+                    </WagmiProvider>
                   </QueryClientProvider>
-                </WagmiProvider>
+                </PrivyProvider>
               </GeoBlockingProvider>
               <ThemeApplier />
             </ThemeProvider>

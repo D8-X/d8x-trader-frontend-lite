@@ -1,10 +1,11 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { type WalletClient } from 'viem';
 
 import { config } from 'config';
+import { SmartAccountClient } from 'permissionless';
 import { DefaultCurrencyE, OrderBlockPositionE, ThemeE } from 'types/enums';
 import { type AppDimensionsI } from 'types/types';
+import { WalletClient } from 'viem';
 
 const ENABLED_DARK_MODE_LS_KEY = 'd8x_enabledDarkMode';
 const ORDER_BLOCK_POSITION_LS_KEY = 'd8x_orderBlockPosition';
@@ -39,9 +40,7 @@ export const enabledDarkModeAtom = atom(
 export const defaultCurrencyAtom = atomWithStorage<DefaultCurrencyE>(DEFAULT_CURRENCY_LS_KEY, DefaultCurrencyE.Base);
 
 export const appDimensionsAtom = atom<AppDimensionsI>({});
-export const delegateAddressAtom = atom('');
 
-export const activatedOneClickTradingAtom = atom(false);
 export const hideBetaTextAtom = atom(false);
 
 export const showWelcomeModalAtom = atom(
@@ -54,4 +53,4 @@ export const showWelcomeModalAtom = atom(
   }
 );
 
-export const tradingClientAtom = atom<WalletClient | null>(null);
+export const smartAccountClientAtom = atom<SmartAccountClient | WalletClient | null>(null);

@@ -1,7 +1,6 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { memo, Suspense, useEffect, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import { useAccount } from 'wagmi';
 
 import { CircularProgress } from '@mui/material';
 
@@ -14,13 +13,10 @@ import { Header } from 'components/header/Header';
 import { MarketSelectModal } from 'components/market-select-modal/MarketSelectModal';
 import { ReferralConfirmModal } from 'components/referral-confirm-modal/ReferralConfirmModal';
 import { SDKLoader } from 'components/sdk-loader/SDKLoader';
-import { OneClickTradingModal } from 'components/wallet-connect-button/components/one-click-trading-modal/OneClickTradingModal';
 import { WelcomeModal } from 'components/welcome-modal/WelcomeModal';
-import { web3AuthConfig } from 'config';
 import { useTabActive } from 'hooks/useTabActive';
 import { AppRoutes } from 'routes/routes';
 import { appDimensionsAtom } from 'store/app.store';
-import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { ToastContainerWrapper } from 'ToastContainerWrapper';
 
 import 'core-js/es/array';
@@ -38,16 +34,11 @@ const INACTIVE_DELAY = 1_800_000; // 30 minutes
 export const App = memo(() => {
   const { width, height, ref } = useResizeDetector();
 
-  const { isConnected } = useAccount();
-
-  const web3authIdToken = useAtomValue(web3AuthIdTokenAtom);
   const setDimensions = useSetAtom(appDimensionsAtom);
 
   const timerRef = useRef<number | null>(null);
 
   const isTabActive = useTabActive();
-
-  const isSignedInSocially = web3AuthConfig.isEnabled && web3authIdToken != '';
 
   useEffect(() => {
     if (isTabActive) {
@@ -92,8 +83,7 @@ export const App = memo(() => {
         <MarketSelectModal />
         <CedeWidgetModal />
         <ChainSwitchHandler />
-        {!isSignedInSocially && isConnected && <OneClickTradingModal />}
-        {web3AuthConfig.isEnabled && !isConnected && <ConnectModal />}
+        <ConnectModal />
         <ToastContainerWrapper />
       </div>
     </div>

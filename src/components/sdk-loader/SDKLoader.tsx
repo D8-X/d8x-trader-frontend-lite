@@ -1,45 +1,34 @@
 import { PerpetualDataHandler, TraderInterface } from '@d8x/perpetuals-sdk';
+import { FallbackProvider, JsonRpcProvider } from 'ethers';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { Chain, Transport, type Client } from 'viem';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
-import { JsonRpcProvider, FallbackProvider } from 'ethers';
+import { useAccount, usePublicClient } from 'wagmi';
 
 import { config } from 'config';
+import { clientToProvider } from 'hooks/useEthersProvider';
+import { useLocation } from 'react-router-dom';
 import { collateralToSettleConversionAtom, poolsAtom, traderAPIAtom, traderAPIBusyAtom } from 'store/pools.store';
 import { sdkConnectedAtom } from 'store/vault-pools.store';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { isEnabledChain } from 'utils/isEnabledChain';
-import { useLocation } from 'react-router-dom';
-import { clientToProvider } from 'hooks/useEthersProvider';
 
 export const SDKLoader = memo(() => {
   const { isConnected, chainId } = useAccount();
 
   const publicClient = usePublicClient();
-  const { data: walletClient, isSuccess } = useWalletClient();
 
   const [traderAPI, setTraderAPI] = useAtom(traderAPIAtom);
 
-  const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
   const pools = useAtomValue(poolsAtom);
 
   const setSDKConnected = useSetAtom(sdkConnectedAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
-  const setTradingClient = useSetAtom(tradingClientAtom);
   const setCollToSettleConversion = useSetAtom(collateralToSettleConversionAtom);
 
   const loadingAPIRef = useRef(false);
   const location = useLocation();
 
   const chainIdFromUrl = parseInt(location.hash.split('__')[1]?.split('=')[1], 10);
-
-  useEffect(() => {
-    if (walletClient && isSuccess && !activatedOneClickTrading) {
-      setTradingClient(walletClient);
-      return;
-    }
-  }, [isSuccess, walletClient, activatedOneClickTrading, setTradingClient]);
 
   const loadSDK = useCallback(
     async (_publicClient: Client<Transport, Chain>, _chainId: number) => {

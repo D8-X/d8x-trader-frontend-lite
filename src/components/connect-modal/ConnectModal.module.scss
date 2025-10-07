@@ -4,7 +4,7 @@
 .dialog {
   :global(.MuiPaper-root) {
     width: 100%;
-    max-width: 350px;
+    max-width: 400px;
   }
 }
 
@@ -41,6 +41,73 @@
       margin-bottom: $d8x-spacing;
     }
   }
+  
+  :global(.MuiTypography-root) {
+    font-size: 14px !important;
+  }
+  
+  :global(.MuiButton-root) {
+    font-size: 14px !important;
+  }
+}
+
+.copyText {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.card {
+  :global(.asset-line) {
+    margin-bottom: 2px !important;
+    padding: 4px 0 !important;
+  }
+
+  :global(.MuiTypography-root) {
+    font-size: 14px !important;
+  }
+  
+  :global(.MuiButton-root) {
+    font-size: 14px !important;
+  }
+}
+
+.assetContainer {
+  :global(.asset-line) {
+    margin-bottom: 2px !important;
+    padding: 4px 0 !important;
+  }
+}
+
+.tokenList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  
+  > :last-child {
+    border-bottom: none;
+  }
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.depositButton {
+  font-size: 12px;
+  padding: 8px 12px;
+  height: 32px;
+  width: 70px;
+  border: none;
+}
+
+.withdrawButton {
+  font-size: 12px;
+  padding: 8px 12px;
+  height: 32px;
+  width: 70px;
 }
 
 @media screen and ($d8x-breakpoint-max-xs) {

@@ -1,6 +1,6 @@
-import { erc20Abi, zeroAddress, type Address, type PublicClient } from 'viem';
-import { flatTokenAbi } from './flatTokenAbi';
 import { decNToFloat } from '@d8x/perpetuals-sdk';
+import { erc20Abi, zeroAddress, type Address, type PublicClient } from 'viem';
+import { flatTokenAbi } from '../abi/flatTokenAbi';
 
 export async function fetchFlatTokenInfo(
   publicClient: PublicClient,

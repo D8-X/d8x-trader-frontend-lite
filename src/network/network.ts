@@ -3,15 +3,14 @@ import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
 import type {
+  AllTimeLeaderboardResponseI,
   AngleApyResponseI,
   BoostRankResponseI,
-  BoostStationResponseI,
   BoostStationParamResponseI,
+  BoostStationResponseI,
   CancelOrderResponseI,
   EtherFiApyI,
   ExchangeInfoI,
-  WeeklyLeaderboardResponseI,
-  AllTimeLeaderboardResponseI,
   MaintenanceStatusI,
   MarginAccountI,
   MaxOrderSizeResponseI,
@@ -21,6 +20,7 @@ import type {
   PerpetualPriceI,
   PerpetualStaticInfoI,
   ValidatedResponseI,
+  WeeklyLeaderboardResponseI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
@@ -340,6 +340,7 @@ export function getCancelOrder(
               abi: cancelABI,
               digest: digest.digest,
               priceUpdate: {
+                ids: submission.ids,
                 updateData: submission.priceFeedVaas,
                 publishTimes: submission.timestamps,
                 updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,

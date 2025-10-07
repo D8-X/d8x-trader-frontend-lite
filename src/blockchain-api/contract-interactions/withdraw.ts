@@ -2,14 +2,16 @@ import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk
 import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
 
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
 import type { CollateralChangePropsI } from 'types/types';
+import { updatePyth } from './updatePyth';
 
 export async function withdraw(
-  walletClient: WalletClient,
+  walletClient: WalletClient | SmartAccountClient,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {
@@ -19,6 +21,17 @@ export async function withdraw(
   const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
+  await updatePyth({
+    walletClient,
+    priceData: {
+      updateData: pxUpdate.submission.priceFeedVaas,
+      ids: pxUpdate.submission.ids,
+      publishTimes: pxUpdate.submission.timestamps,
+      updateFee: pxUpdate.submission.ids.length,
+    },
+    feesPerGas,
+  });
+
   const estimateParams: EstimateContractGasParameters = {
     address: traderAPI.getProxyAddress() as Address,
     abi: PROXY_ABI,
@@ -27,10 +40,10 @@ export async function withdraw(
       traderAPI.getPerpetualStaticInfo(symbol).id,
       traderAddr,
       floatToABK64x64(amount),
-      pxUpdate.submission.priceFeedVaas,
-      pxUpdate.submission.timestamps,
+      [], //pxUpdate.submission.priceFeedVaas,
+      [], //pxUpdate.submission.timestamps,
     ],
-    value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
+    // value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
     account: walletClient.account,
     ...feesPerGas,
   };

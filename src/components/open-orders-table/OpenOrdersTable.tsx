@@ -31,7 +31,6 @@ import { ToastContent } from 'components/toast-content/ToastContent';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { getComparator, stableSort } from 'helpers/tableSort';
 import { getCancelOrder, getOpenOrders } from 'network/network';
-import { tradingClientAtom } from 'store/app.store';
 import { latestOrderSentTimestampAtom } from 'store/order-block.store';
 import {
   cancelOrderIdAtom,
@@ -49,6 +48,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from './OpenOrdersTable.module.scss';
 
 const MIN_WIDTH_FOR_TABLE = 788;
@@ -64,7 +64,7 @@ export const OpenOrdersTable = memo(() => {
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const isSDKConnected = useAtomValue(sdkConnectedAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
   const clearOpenOrders = useSetAtom(clearOpenOrdersAtom);
   const cancelOrderId = useSetAtom(cancelOrderIdAtom);
   const setAPIBusy = useSetAtom(traderAPIBusyAtom);
@@ -220,7 +220,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !tradingClient || !isEnabledChain(chainId)) {
+    if (isDisconnected || !smartAccountClient || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -229,7 +229,7 @@ export const OpenOrdersTable = memo(() => {
     getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
-          cancelOrder(tradingClient, HashZero, data.data, selectedOrder.id)
+          cancelOrder(smartAccountClient, HashZero, data.data, selectedOrder.id)
             .then(({ hash }) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);

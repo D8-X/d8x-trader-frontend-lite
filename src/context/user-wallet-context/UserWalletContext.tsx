@@ -1,21 +1,20 @@
-import { useAtomValue } from 'jotai';
-import { createContext, memo, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { useAccount, useBalance, useBytecode } from 'wagmi';
 import { GetBalanceReturnType, getGasPrice as getGasPriceWagmi } from '@wagmi/core';
+import { useAtomValue } from 'jotai';
+import { createContext, memo, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useAccount, useBalance } from 'wagmi';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
 import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { getGasPrice } from 'blockchain-api/getGasPrice';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
+import { smartAccountClientAtom } from 'store/app.store';
 import { traderAPIAtom } from 'store/pools.store';
 import { MethodE } from 'types/enums';
-import { getGasPrice } from 'blockchain-api/getGasPrice';
 
 interface UserWalletContextPropsI {
   gasTokenBalance: GetBalanceReturnType | undefined;
   isConnected: boolean;
   isGasTokenFetchError: boolean;
-  isMultisigAddress: boolean | null;
   hasEnoughGasForFee: (method: MethodE, multiplier: bigint) => boolean;
   calculateGasForFee: (method: MethodE, multiplier: bigint) => bigint;
   refetchWallet: () => void;
@@ -27,53 +26,26 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   const { chain, address, isConnected, isReconnecting, isConnecting } = useAccount();
 
   const traderAPI = useAtomValue(traderAPIAtom);
-  const oneClickTradingActivated = useAtomValue(activatedOneClickTradingAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
+
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const [gasPrice, setGasPrice] = useState(0n);
-  const [isMultisigAddress, setMultisigAddress] = useState<boolean | null>(null);
 
-  const isMultisigRefetchRef = useRef(false);
-
-  const tradingAddress = oneClickTradingActivated ? tradingClient?.account?.address : address;
+  const balanceAddress = useMemo(() => {
+    return smartAccountClient?.account?.address ?? address;
+  }, [smartAccountClient, address]);
 
   const {
     data: gasTokenBalance,
     refetch: gasTokenBalanceRefetch,
     isError: isGasTokenFetchError,
   } = useBalance({
-    address: tradingAddress,
+    address: balanceAddress,
     query: {
       enabled:
-        tradingAddress && Number(traderAPI?.chainId) === chain?.id && isConnected && !isReconnecting && !isConnecting,
+        balanceAddress && Number(traderAPI?.chainId) === chain?.id && isConnected && !isReconnecting && !isConnecting,
     },
   });
-
-  const { data: multisigData, refetch } = useBytecode({
-    address: tradingAddress,
-  });
-
-  useEffect(() => {
-    if (isMultisigRefetchRef.current || !address) {
-      return;
-    }
-
-    isMultisigRefetchRef.current = true;
-    refetch().finally(() => {
-      isMultisigRefetchRef.current = false;
-    });
-    return () => {
-      isMultisigRefetchRef.current = false;
-    };
-  }, [address, refetch]);
-
-  useEffect(() => {
-    if (multisigData === undefined) {
-      setMultisigAddress(null);
-      return;
-    }
-    setMultisigAddress(multisigData !== null && multisigData !== '0x');
-  }, [multisigData]);
 
   useEffect(() => {
     if (!isConnected) {
@@ -89,7 +61,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   }, [gasTokenBalanceRefetch, isConnected]);
 
   useEffect(() => {
-    if (chain?.id && address && isConnected) {
+    if (chain?.id && isConnected) {
       getGasPrice(chain.id).then((proposedGasPrice) => {
         if (!proposedGasPrice) {
           getGasPriceWagmi(wagmiConfig, { chainId: chain.id }).then((gasPriceFromWagmi) => {
@@ -102,7 +74,7 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
     } else {
       setGasPrice(0n);
     }
-  }, [address, chain?.id, isConnected]);
+  }, [chain?.id, isConnected]);
 
   const calculateGasForFee = useCallback(
     (method: MethodE, multiplier: bigint) => {
@@ -118,12 +90,12 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
   const hasEnoughGasForFee = useCallback(
     (method: MethodE, multiplier: bigint) => {
       const gasForFee = calculateGasForFee(method, multiplier);
-      if (gasForFee > 0n && gasTokenBalance && gasTokenBalance.value > 0n) {
-        return gasForFee < gasTokenBalance.value;
+      if (gasForFee > 0n && gasTokenBalance) {
+        return smartAccountClient?.account !== undefined || gasForFee < gasTokenBalance.value;
       }
       return false;
     },
-    [calculateGasForFee, gasTokenBalance]
+    [calculateGasForFee, gasTokenBalance, smartAccountClient]
   );
 
   const handleWalletRefetch = useCallback(() => {
@@ -136,7 +108,6 @@ export const UserWalletProvider = memo(({ children }: PropsWithChildren) => {
         gasTokenBalance,
         isConnected,
         isGasTokenFetchError,
-        isMultisigAddress,
         hasEnoughGasForFee,
         calculateGasForFee,
         refetchWallet: handleWalletRefetch,

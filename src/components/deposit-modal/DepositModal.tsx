@@ -15,25 +15,25 @@ import { Separator } from 'components/separator/Separator';
 import { Translate } from 'components/translate/Translate';
 import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { isCedeWidgetEnabled } from 'helpers/isCedeWidgetEnabled';
+import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
 import { isOwltoButtonEnabled } from 'helpers/isOwltoButtonEnabled';
 import { useBridgeShownOnPage } from 'helpers/useBridgeShownOnPage';
-import { isMockSwapEnabled } from 'helpers/isMockSwapEnabled';
-import { activatedOneClickTradingAtom, tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom, modalSelectedCurrencyAtom } from 'store/global-modals.store';
 import { gasTokenSymbolAtom, poolTokenBalanceAtom } from 'store/pools.store';
 import { cutAddress } from 'utils/cutAddress';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
+import { web3AuthConfig } from 'config';
+import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
 import { CedeWidgetButton } from './elements/cede-widget-button/CedeWidgetButton';
+import { MockSwap } from './elements/mock-swap/MockSwap';
 import { OKXConvertor } from './elements/okx-convertor/OKXConvertor';
 import { OwltoButton } from './elements/owlto-button/OwltoButton';
-import { MockSwap } from './elements/mock-swap/MockSwap';
-import { web3AuthIdTokenAtom } from 'store/web3-auth.store';
-import { web3AuthConfig } from 'config';
 
-import styles from './DepositModal.module.scss';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
+import { smartAccountClientAtom } from 'store/app.store';
 import { MethodE } from 'types/enums';
+import styles from './DepositModal.module.scss';
 
 export const DepositModal = () => {
   const { t } = useTranslation();
@@ -43,9 +43,8 @@ export const DepositModal = () => {
   const [isDepositModalOpen, setDepositModalOpen] = useAtom(depositModalOpenAtom);
   const selectedCurrency = useAtomValue(modalSelectedCurrencyAtom);
   const gasTokenSymbol = useAtomValue(gasTokenSymbolAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
-  const activatedOneClickTrading = useAtomValue(activatedOneClickTradingAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const isBridgeShownOnPage = useBridgeShownOnPage();
   const isOwltoEnabled = isOwltoButtonEnabled(chainId);
@@ -58,11 +57,8 @@ export const DepositModal = () => {
   const [title, setTitle] = useState('');
 
   const targetAddress = useMemo(() => {
-    if (activatedOneClickTrading && selectedCurrency?.isGasToken === false) {
-      return address;
-    }
-    return tradingClient?.account?.address;
-  }, [tradingClient?.account?.address, address, activatedOneClickTrading, selectedCurrency]);
+    return smartAccountClient?.account?.address || address;
+  }, [smartAccountClient, address]);
 
   const handleOnClose = useCallback(() => {
     setDepositModalOpen(false);
@@ -95,8 +91,10 @@ export const DepositModal = () => {
       onCloseClick={handleOnClose}
       className={styles.dialog}
       dialogTitle={title}
+      disableEnforceFocus
+      disableRestoreFocus
     >
-      {isSignedInSocially || activatedOneClickTrading || isMockSwapEnabled(chainId) ? (
+      {isSignedInSocially || isMockSwapEnabled(chainId) ? (
         <>
           <div className={styles.section}>
             <CurrencySelect />
@@ -105,13 +103,6 @@ export const DepositModal = () => {
           <OKXConvertor />
           {!isMockSwapEnabled(chainId) ? (
             <div className={styles.section}>
-              {activatedOneClickTrading ? (
-                <Typography variant="bodyMedium" className={styles.noteText}>
-                  {t('common.deposit-modal.important-notice.0')}
-                </Typography>
-              ) : (
-                <div>{/* empty block */}</div>
-              )}
               <Typography variant="bodySmall" className={styles.noteText}>
                 <Translate
                   i18nKey="common.deposit-modal.important-notice.1"
@@ -170,7 +161,13 @@ export const DepositModal = () => {
       )}
       <div className={styles.section}>
         <Typography variant="bodyMedium">
-          <Translate i18nKey="pages.trade.order-block.info.balance" values={{ currencyName: gasTokenSymbol }} />:
+          <Translate i18nKey="pages.trade.order-block.info.balance" values={{ currencyName: gasTokenSymbol }} />
+        </Typography>
+        <Typography
+          variant="bodySmall"
+          style={{ marginTop: 4, marginBottom: 8, color: 'var(--d8x-color-text-secondary)' }}
+        >
+          Click on any token below to fund your wallet
         </Typography>
         <WalletBalances />
       </div>

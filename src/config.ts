@@ -1,5 +1,7 @@
 const {
   VITE_PROJECT_ID: projectId = '',
+  VITE_PRIVY_ID: privyAppId = '',
+  VITE_PIMLICO_API_KEY: pimlicoApiKey = '',
   VITE_WEB3AUTH_CLIENT_ID: web3AuthClientId = '',
   VITE_WEB3AUTH_VERIFIER: web3AuthVerifier = '',
   VITE_WEB3AUTH_ENVIRONMENT: web3AuthNetwork = '',
@@ -71,6 +73,8 @@ function parseNumbers(data: string): Record<string, number[]> {
 
 export const config = {
   projectId,
+  privyAppId,
+  pimlicoApiKey,
   geonamesUsername,
   ipGeolocationApiKey,
   apiUrl: parseUrls(apiUrls),

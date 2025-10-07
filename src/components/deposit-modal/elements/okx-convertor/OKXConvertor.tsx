@@ -8,14 +8,13 @@ import { useAccount, useChainId, useReadContracts, useWaitForTransactionReceipt,
 import { Button, CircularProgress, Link, Typography } from '@mui/material';
 
 import { wrapOKB } from 'blockchain-api/contract-interactions/wrapOKB';
-import { ToastContent } from 'components/toast-content/ToastContent';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { SeparatorTypeE } from 'components/separator/enums';
 import { OrSeparator } from 'components/separator/OrSeparator';
+import { ToastContent } from 'components/toast-content/ToastContent';
 import { Translate } from 'components/translate/Translate';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { activatedOneClickTradingAtom } from 'store/app.store';
 import { modalSelectedCurrencyAtom } from 'store/global-modals.store';
 import { poolsAtom } from 'store/pools.store';
 import { triggerUserStatsUpdateAtom } from 'store/vault-pools.store';
@@ -50,7 +49,6 @@ export const OKXConvertor = () => {
   const { gasTokenBalance, refetchWallet } = useUserWallet();
 
   const pools = useAtomValue(poolsAtom);
-  const oneClickTradingActivated = useAtomValue(activatedOneClickTradingAtom);
   const selectedCurrency = useAtomValue(modalSelectedCurrencyAtom);
   const setTriggerUserStatsUpdate = useSetAtom(triggerUserStatsUpdateAtom);
 
@@ -249,12 +247,7 @@ export const OKXConvertor = () => {
     setAmountValue('0');
   }, [chainId, selectedCurrency]);
 
-  if (
-    oneClickTradingActivated ||
-    chainId !== OKX_LAYER_CHAIN_ID ||
-    !selectedCurrency ||
-    !OKB_WARP_CURRENCIES.includes(selectedCurrency.name)
-  ) {
+  if (chainId !== OKX_LAYER_CHAIN_ID || !selectedCurrency || !OKB_WARP_CURRENCIES.includes(selectedCurrency.name)) {
     return null;
   }
 

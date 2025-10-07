@@ -53,17 +53,6 @@ const TraderPage = lazy(async () => {
   }
 });
 
-const StrategiesPage = lazy(async () => {
-  try {
-    const lazyPage = await import('pages/strategies-page/StrategiesPage');
-    return {
-      default: lazyPage.StrategiesPage,
-    };
-  } catch {
-    return { default: () => <AppReload /> };
-  }
-});
-
 const PortfolioPage = lazy(async () => {
   try {
     const lazyPage = await import('pages/portfolio-page/PortfolioPage');
@@ -99,9 +88,6 @@ export const AppRoutes = () => {
       <Route key="leaderboard-page" path={RoutesE.Leaderboard} element={<LeaderboardPage />} />
       {(pagesConfig.enabledStrategiesPage || pagesConfig.enabledPortfolioPage) && isEnabledChain(chainId) && (
         <Route element={<PrivateRoutes />}>
-          {pagesConfig.enabledStrategiesPage && pagesConfig.enabledStrategiesPageByChains.includes(chainId) && (
-            <Route path={RoutesE.Strategies} element={<StrategiesPage />} />
-          )}
           {pagesConfig.enabledPortfolioPage && <Route path={RoutesE.Portfolio} element={<PortfolioPage />} />}
         </Route>
       )}
