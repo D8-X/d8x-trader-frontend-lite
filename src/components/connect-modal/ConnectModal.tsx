@@ -133,8 +133,6 @@ export const ConnectModal = () => {
   useEffect(() => {
     if (embeddedWallet && !setWalletRef.current) {
       setWalletRef.current = true;
-      console.log(embeddedWallet.meta);
-      embeddedWallet.getEthereumProvider().then((p) => console.log(p));
       setActiveWallet(embeddedWallet)
         .catch(() => {})
         .finally(() => {

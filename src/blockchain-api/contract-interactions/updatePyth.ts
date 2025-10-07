@@ -38,8 +38,8 @@ export async function updatePyth({
 
   for (const pxUpdate of pxUpdates) {
     try {
-      txHash = await sendTransaction(walletClient, {
-        account: walletClient.account,
+      const txParams = {
+        account: walletClient.account.address,
         chain: walletClient.chain,
         to: pxUpdate.address,
         value: await getUpdateFee(pxUpdate.address, pxUpdate.updateData),
@@ -51,7 +51,11 @@ export async function updatePyth({
         nonce: txNonce,
         gas: 500_000n,
         ...feesPerGas,
-      });
+      };
+      txHash =
+        walletClient.key !== 'bundler'
+          ? await sendTransaction(walletClient as WalletClient, txParams)
+          : await (walletClient as SmartAccountClient).sendTransaction(txParams);
 
       if (txNonce) {
         txNonce++;
