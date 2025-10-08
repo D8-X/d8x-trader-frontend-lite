@@ -7,16 +7,15 @@ import {
   Trigger,
 } from '@biconomy/abstractjs';
 import { Address, Chain, erc20Abi } from 'viem';
-import { base } from 'viem/chains';
 import { getLifiQuote } from './lifi-quote-service';
 
-const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-
-export async function bridgeFromBaseAndApprove({
+export async function bridgeAndApprove({
   meeClient,
   account,
-  chain,
-  token,
+  fromChain,
+  toChain,
+  fromToken,
+  toToken,
   amount,
   approvee,
 }: {
@@ -24,24 +23,26 @@ export async function bridgeFromBaseAndApprove({
   account: MultichainSmartAccount;
   to: Address;
   approvee: Address;
-  token: Address;
-  chain: Chain;
+  toToken: Address;
+  fromToken: Address;
+  fromChain: Chain;
+  toChain: Chain;
   amount: bigint;
 }) {
   const { transactionRequest } = await getLifiQuote({
     fromAddress: account.signer.address,
-    toAddress: account.addressOn(chain.id, true),
+    toAddress: account.addressOn(toChain.id, true),
     fromAmount: amount.toString(),
-    fromChain: base.id.toString(),
-    fromToken: BASE_USDC_ADDRESS,
-    toChain: chain.id.toString(),
-    toToken: token,
+    fromChain: fromChain.id.toString(),
+    fromToken,
+    toChain: toChain.id.toString(),
+    toToken,
     order: 'FASTEST', // or 'CHEAPEST' for cost optimization
   });
 
   const trigger: Trigger = {
-    chainId: base.id,
-    tokenAddress: BASE_USDC_ADDRESS,
+    chainId: fromChain.id,
+    tokenAddress: fromToken,
     amount,
   };
 
@@ -49,9 +50,9 @@ export async function bridgeFromBaseAndApprove({
     type: 'approve',
     data: {
       amount,
-      chainId: base.id,
+      chainId: fromChain.id,
       spender: transactionRequest.to,
-      tokenAddress: BASE_USDC_ADDRESS,
+      tokenAddress: fromToken,
     },
   });
 
@@ -70,14 +71,14 @@ export async function bridgeFromBaseAndApprove({
     type: 'default',
     data: {
       abi: erc20Abi,
-      chainId: chain.id,
-      to: token,
+      chainId: toChain.id,
+      to: toToken,
       functionName: 'approve',
       args: [
         approvee,
         runtimeERC20BalanceOf({
-          targetAddress: account.addressOn(chain.id, true),
-          tokenAddress: token,
+          targetAddress: account.addressOn(toChain.id, true),
+          tokenAddress: toToken,
           constraints: [greaterThanOrEqualTo(1n)],
         }),
       ],
@@ -91,19 +92,20 @@ export async function bridgeFromBaseAndApprove({
     instructions: [approveLiFi, callLiFiInstruction, approvePerp],
     cleanUps: [
       {
-        chainId: chain.id,
+        chainId: toChain.id,
         recipientAddress: account.signer.address,
-        tokenAddress: token,
+        tokenAddress: toToken,
       },
     ],
     feeToken: {
-      address: BASE_USDC_ADDRESS,
-      chainId: base.id,
+      address: fromToken,
+      chainId: fromChain.id,
     },
     lowerBoundTimestamp: nowInSeconds,
     upperBoundTimestamp: nowInSeconds + 60,
   });
-
+  console.log({ fusionQuote });
   const { hash } = await meeClient.executeFusionQuote({ fusionQuote });
+
   console.log(getMeeScanLink(hash));
 }
