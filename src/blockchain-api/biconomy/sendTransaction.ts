@@ -1,12 +1,7 @@
 import { MeeClient, MultichainSmartAccount } from '@biconomy/abstractjs';
 import { Address, Hex } from 'viem';
-import { base } from 'viem/chains';
 
-const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-
-// if fee token is not given, it is assumed to be USDC on Base
-// otherwise, this is generic
-
+/// sends transaction on one chain, paying for gas using some token in another chain
 export async function sendTransaction({
   meeClient,
   account,
@@ -22,7 +17,7 @@ export async function sendTransaction({
     gasLimit?: bigint | number | string;
     value?: bigint | number | string;
   };
-  feeToken?: { address: Address; chainId: number; gasRefundAddress?: Address };
+  feeToken: { address: Address; chainId: number; gasRefundAddress?: Address };
 }) {
   const runtimeInstruction = await account.buildComposable({
     type: 'rawCalldata',
@@ -37,7 +32,7 @@ export async function sendTransaction({
 
   const { hash } = await meeClient.execute({
     account,
-    feeToken: feeToken == undefined ? { chainId: base.id, address: BASE_USDC_ADDRESS } : feeToken,
+    feeToken,
     instructions: [runtimeInstruction],
   });
 

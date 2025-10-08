@@ -4,11 +4,12 @@ import {
   MeeClient,
   MultichainSmartAccount,
   runtimeERC20BalanceOf,
-  Trigger,
 } from '@biconomy/abstractjs';
-import { Address, Chain, erc20Abi } from 'viem';
+import { Address, Chain, erc20Abi, SignedAuthorization } from 'viem';
 import { getLifiQuote } from './lifi-quote-service';
 
+/// bridges from one chain/token pair to another, and approves some contract to spend those tokens
+/// source token is used to pay for gas
 export async function bridgeAndApprove({
   meeClient,
   account,
@@ -18,6 +19,7 @@ export async function bridgeAndApprove({
   toToken,
   amount,
   approvee,
+  authorization,
 }: {
   meeClient: MeeClient;
   account: MultichainSmartAccount;
@@ -28,6 +30,7 @@ export async function bridgeAndApprove({
   fromChain: Chain;
   toChain: Chain;
   amount: bigint;
+  authorization: SignedAuthorization;
 }) {
   const { transactionRequest } = await getLifiQuote({
     fromAddress: account.signer.address,
@@ -39,12 +42,6 @@ export async function bridgeAndApprove({
     toToken,
     order: 'FASTEST', // or 'CHEAPEST' for cost optimization
   });
-
-  const trigger: Trigger = {
-    chainId: fromChain.id,
-    tokenAddress: fromToken,
-    amount,
-  };
 
   const approveLiFi = await account.buildComposable({
     type: 'approve',
@@ -87,8 +84,9 @@ export async function bridgeAndApprove({
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
 
-  const fusionQuote = await meeClient.getFusionQuote({
-    trigger,
+  const quote = await meeClient.getQuote({
+    delegate: true,
+    authorizations: [authorization],
     instructions: [approveLiFi, callLiFiInstruction, approvePerp],
     cleanUps: [
       {
@@ -104,8 +102,9 @@ export async function bridgeAndApprove({
     lowerBoundTimestamp: nowInSeconds,
     upperBoundTimestamp: nowInSeconds + 60,
   });
-  console.log({ fusionQuote });
-  const { hash } = await meeClient.executeFusionQuote({ fusionQuote });
+
+  console.log({ quote });
+  const { hash } = await meeClient.executeQuote({ quote });
 
   console.log(getMeeScanLink(hash));
 }
