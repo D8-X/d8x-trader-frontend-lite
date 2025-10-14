@@ -11,7 +11,9 @@ import { PoolLine } from './elements/pool-line/PoolLine';
 
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { hasPaymaster } from 'utils/hasPaymaster';
 import { zeroAddress } from 'viem';
+import { useAccount } from 'wagmi';
 import styles from './WalletBalances.module.scss';
 
 export const WalletBalances = () => {
@@ -19,6 +21,7 @@ export const WalletBalances = () => {
 
   const { ready } = useWallets();
   const { user } = usePrivy();
+  const { chainId } = useAccount();
 
   const { gasTokenBalance, refetchWallet } = useUserWallet();
 
@@ -49,14 +52,16 @@ export const WalletBalances = () => {
 
   return (
     <div className={styles.root}>
-      <AssetLine
-        key={gasTokenBalance?.symbol || 'gas-token'}
-        symbol={gasTokenBalance?.symbol || ''}
-        tokenAddress={zeroAddress}
-        value={
-          gasTokenBalance ? (+formatUnits(gasTokenBalance.value, gasTokenBalance.decimals)).toFixed(numberDigits) : ''
-        }
-      />
+      {hasPaymaster(chainId) && (
+        <AssetLine
+          key={gasTokenBalance?.symbol || 'gas-token'}
+          symbol={gasTokenBalance?.symbol || ''}
+          tokenAddress={zeroAddress}
+          value={
+            gasTokenBalance ? (+formatUnits(gasTokenBalance.value, gasTokenBalance.decimals)).toFixed(numberDigits) : ''
+          }
+        />
+      )}
       {activePools.map((pool) => (
         <PoolLine key={pool.poolSymbol + pool.marginTokenAddr} pool={pool} />
       ))}

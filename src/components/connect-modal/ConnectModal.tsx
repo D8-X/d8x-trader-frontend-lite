@@ -2,37 +2,45 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Typography, OutlinedInput, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, OutlinedInput, Typography } from '@mui/material';
 
 import { Dialog } from 'components/dialog/Dialog';
+import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { connectModalOpenAtom } from 'store/global-modals.store';
 import { poolsAtom } from 'store/pools.store';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 
-import { useLogout, usePrivy, useWallets, useFundWallet } from '@privy-io/react-auth';
-import { useSetActiveWallet } from '@privy-io/wagmi';
-import { entryPoint06Address } from 'blockchain-api/account-abstraction';
-import { pimlicoPaymaster, pimlicoRpcUrl } from 'blockchain-api/pimlico';
-import { createSmartAccountClient } from 'permissionless';
-import { toSimpleSmartAccount } from 'permissionless/accounts';
-import { smartAccountClientAtom } from 'store/app.store';
-import { berachain } from 'utils/chains';
-import { http, useAccount, usePublicClient, useWalletClient, useReadContracts, useSendTransaction } from 'wagmi';
-import { formatUnits, parseEther, parseUnits } from 'viem/utils';
-import { erc20Abi, zeroAddress } from 'viem';
-import { writeContract } from '@wagmi/core';
-import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
-import { toast } from 'react-toastify';
-import styles from './ConnectModal.module.scss';
-import { CopyLink } from 'components/copy-link/CopyLink';
-import { Separator } from 'components/separator/Separator';
-import { SeparatorTypeE } from 'components/separator/enums';
-import { cutAddress } from 'utils/cutAddress';
+import { createMeeClient, getMEEVersion, MEEVersion, toMultichainNexusAccount } from '@biconomy/abstractjs';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import LanguageIcon from '@mui/icons-material/Language';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
-import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import { useFundWallet, useLogout, usePrivy, useSign7702Authorization, useWallets } from '@privy-io/react-auth';
+import { useSetActiveWallet } from '@privy-io/wagmi';
+import { writeContract } from '@wagmi/core';
+import { nexusImplementationAddress } from 'blockchain-api/account-abstraction';
+import { BASE_USDC_ADDRESS, MIN_BASE_USDC_TO_BRIDGE } from 'blockchain-api/constants';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
+import { CopyLink } from 'components/copy-link/CopyLink';
 import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
+import { Separator } from 'components/separator/Separator';
+import { SeparatorTypeE } from 'components/separator/enums';
+import { toast } from 'react-toastify';
+import { smartAccountClientAtom } from 'store/app.store';
+import { berachain } from 'utils/chains';
+import { cutAddress } from 'utils/cutAddress';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
+import { erc20Abi, zeroAddress } from 'viem';
+import { base, katana } from 'viem/chains';
+import { formatUnits, parseEther, parseUnits } from 'viem/utils';
+import {
+  http,
+  useAccount,
+  usePublicClient,
+  useReadContract,
+  useReadContracts,
+  useSendTransaction,
+  useWalletClient,
+} from 'wagmi';
+import styles from './ConnectModal.module.scss';
 
 interface TokenRowPropsI {
   symbol: string;
@@ -95,7 +103,6 @@ export const ConnectModal = () => {
 
   const { isConnected } = useAccount();
   const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
 
   const [isOpen, setOpen] = useAtom(connectModalOpenAtom);
   const pools = useAtomValue(poolsAtom);
@@ -123,6 +130,19 @@ export const ConnectModal = () => {
 
   const { setActiveWallet } = useSetActiveWallet();
 
+  const { data: walletClient } = useWalletClient();
+
+  const { signAuthorization } = useSign7702Authorization();
+
+  const { data: baseUsdcBalance } = useReadContract({
+    chainId: base.id,
+    address: BASE_USDC_ADDRESS,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [walletClient?.account?.address || zeroAddress],
+    query: { enabled: walletClient?.account?.address !== undefined },
+  });
+
   const { wallets } = useWallets();
 
   const embeddedWallet = useMemo(() => wallets.find((w) => w.walletClientType === 'privy'), [wallets]);
@@ -141,33 +161,48 @@ export const ConnectModal = () => {
   }, [embeddedWallet, setActiveWallet]);
 
   useEffect(() => {
+    console.log({ walletClient });
+
     const initSmartAccount = async () => {
-      if (!isConnected || !walletClient || !publicClient) {
+      if (
+        !isConnected ||
+        !walletClient ||
+        !publicClient // || walletClient.type !== 'privy'  // TODO: check this check
+      ) {
         return;
       }
 
       try {
-        if ([42161, 747474].includes(walletClient.chain.id)) {
-          const safeSmartAccountClient = await toSimpleSmartAccount({
-            client: publicClient,
-            owner: walletClient,
-            entryPoint: {
-              address: entryPoint06Address,
-              version: '0.6',
-            },
+        if ([8453, 747474].includes(walletClient.chain.id)) {
+          const authorization = await signAuthorization({
+            contractAddress: nexusImplementationAddress,
+            chainId: 0,
           });
 
-          const c = createSmartAccountClient({
-            account: safeSmartAccountClient,
-            chain: berachain,
-            bundlerTransport: http(pimlicoRpcUrl),
-            paymaster: pimlicoPaymaster,
-            userOperation: {
-              estimateFeesPerGas: async () => (await pimlicoPaymaster.getUserOperationGasPrice()).fast,
-            },
+          console.log({ authorization }); // TODO: save this in atom, will need it to send txns to the meeClient
+
+          const c = await toMultichainNexusAccount({
+            chainConfigurations: [
+              {
+                chain: katana,
+                transport: http(),
+                version: getMEEVersion(MEEVersion.V2_1_0),
+              },
+              {
+                chain: base,
+                transport: http(),
+                version: getMEEVersion(MEEVersion.V2_1_0),
+              },
+            ],
+            signer: walletClient, // has to be the privy embedded wallet/eip7702
+            accountAddress: walletClient.account.address as `0x${string}`,
           });
 
-          setSmartAccountClient(c);
+          const meeClient = await createMeeClient({ account: c }); // TODO: save to atom
+
+          console.log({ c, meeClient });
+
+          // setSmartAccountClient(c); // TODO: handle this type generically
         } else {
           setSmartAccountClient(walletClient);
         }
@@ -177,7 +212,7 @@ export const ConnectModal = () => {
     };
 
     initSmartAccount();
-  }, [isConnected, walletClient, publicClient, setSmartAccountClient]);
+  }, [isConnected, walletClient, publicClient, signAuthorization, setSmartAccountClient]);
 
   // Refetch balances periodically like WalletBalances does
   useEffect(() => {
@@ -193,6 +228,12 @@ export const ConnectModal = () => {
       clearInterval(intervalId);
     };
   }, [refetchWallet, ready, authenticated]);
+
+  useEffect(() => {
+    if (baseUsdcBalance && baseUsdcBalance > MIN_BASE_USDC_TO_BRIDGE) {
+      console.log('should bridge from base');
+    }
+  }, [baseUsdcBalance]);
 
   const activeAddress = user?.wallet?.address || smartAccountClient?.account?.address || '';
 

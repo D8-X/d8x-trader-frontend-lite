@@ -1,5 +1,6 @@
 import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
+import type { Account, Address, Chain, Client, EstimateContractGasParameters, Transport, WalletClient } from 'viem';
+import { SmartAccount } from 'viem/account-abstraction';
 import { estimateContractGas } from 'viem/actions';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
@@ -11,24 +12,19 @@ import type { CollateralChangePropsI } from 'types/types';
 import { updatePyth } from './updatePyth';
 
 export async function withdraw(
-  walletClient: WalletClient | SmartAccountClient,
+  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {
   if (!walletClient.account) {
     throw new Error('account not connected');
   }
-  const pxUpdate = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
   await updatePyth({
+    traderApi: traderAPI,
     walletClient,
-    priceData: {
-      updateData: pxUpdate.submission.priceFeedVaas,
-      ids: pxUpdate.submission.ids,
-      publishTimes: pxUpdate.submission.timestamps,
-      updateFee: pxUpdate.submission.ids.length,
-    },
+    symbol,
     feesPerGas,
   });
 
@@ -47,7 +43,7 @@ export async function withdraw(
     account: walletClient.account,
     ...feesPerGas,
   };
-  const gasLimit = await estimateContractGas(walletClient, estimateParams)
+  const gasLimit = await estimateContractGas(walletClient.account.client!, estimateParams)
     .then((gas) => (gas * 130n) / 100n)
     .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
   const baseParams = {

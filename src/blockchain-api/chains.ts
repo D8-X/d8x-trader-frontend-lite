@@ -1,6 +1,6 @@
 import { Chain } from '@rainbow-me/rainbowkit';
 import { config } from 'config';
-import { arbitrum, arbitrumSepolia, base, polygonZkEvm } from 'wagmi/chains';
+import { arbitrum, arbitrumSepolia, base, baseSepolia, polygonZkEvm } from 'wagmi/chains';
 
 import { bartio, berachain, cardona, x1, xlayer } from 'utils/chains';
 
@@ -10,6 +10,7 @@ import polygonIcon from 'assets/networks/polygon.webp';
 import x1Icon from 'assets/networks/x1.png';
 
 export const chains = [
+  { ...baseSepolia },
   { ...polygonZkEvm, iconUrl: polygonIcon, iconBackground: 'transparent' } as Chain,
   { ...x1, iconUrl: x1Icon, iconBackground: 'transparent' },
   { ...xlayer, iconUrl: x1Icon, iconBackground: 'transparent' },

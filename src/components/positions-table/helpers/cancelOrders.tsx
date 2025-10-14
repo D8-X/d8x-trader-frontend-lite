@@ -1,6 +1,6 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { toast } from 'react-toastify';
-import type { Chain, WalletClient } from 'viem';
+import type { Account, Chain, Client, Transport, WalletClient } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
 
 import { HashZero } from 'appConstants';
@@ -12,31 +12,33 @@ import { getCancelOrder } from 'network/network';
 import { OrderWithIdI } from 'types/types';
 
 import { SmartAccountClient } from 'permissionless';
+import { SmartAccount } from 'viem/account-abstraction';
 import styles from '../elements/modals/Modal.module.scss';
 
 interface CancelOrdersPropsI {
   ordersToCancel: OrderWithIdI[];
   chain: Chain;
-  traderAPI: TraderInterface | null;
-  smartAccountClient: SmartAccountClient | WalletClient;
+  traderAPI: TraderInterface;
+  smartAccountClient:
+    | SmartAccountClient<Transport, Chain, SmartAccount, Client>
+    | WalletClient<Transport, Chain, Account>;
   toastTitle: string;
   nonceShift: number;
   callback: () => void;
 }
 
 export async function cancelOrders(props: CancelOrdersPropsI) {
-  const { ordersToCancel, chain, traderAPI, smartAccountClient, toastTitle, nonceShift, callback } = props;
+  const { ordersToCancel, chain, traderAPI, smartAccountClient, toastTitle, callback } = props;
 
   if (ordersToCancel.length) {
     const cancelOrdersPromises: Promise<void>[] = [];
-    const nonce = Number(await smartAccountClient?.account?.getNonce?.()) + nonceShift;
     for (let idx = 0; idx < ordersToCancel.length; idx++) {
       const orderToCancel = ordersToCancel[idx];
       cancelOrdersPromises.push(
         getCancelOrder(chain.id, traderAPI, orderToCancel.symbol, orderToCancel.id)
           .then((data) => {
             if (data.data.digest) {
-              cancelOrder(smartAccountClient, HashZero, data.data, orderToCancel.id, nonce + idx)
+              cancelOrder(traderAPI, smartAccountClient, orderToCancel.symbol, HashZero, data.data, orderToCancel.id) // nonce is managed internally
                 .then((tx) => {
                   toast.success(
                     <ToastContent

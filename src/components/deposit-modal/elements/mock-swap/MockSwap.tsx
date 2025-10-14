@@ -10,17 +10,19 @@ import {
   useWriteContract,
 } from 'wagmi';
 
-import { Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 
-import styles from './MockSwap.module.scss';
+import { useAtomValue } from 'jotai';
+import { selectedPoolAtom } from 'store/pools.store';
 import { MockSwapConfigI } from 'types/types';
 import { SWAP_ABI, TOKEN_SWAPS } from './constants';
+import styles from './MockSwap.module.scss';
 
 export function MockSwap() {
   // constants: could be made into states
-  const selectedPoolSymbol = 'USDC';
+  const selectedPool = useAtomValue(selectedPoolAtom);
   const nativeTokenAmount = '0.001';
 
   const { data: wallet } = useWalletClient();
@@ -32,19 +34,20 @@ export function MockSwap() {
 
   const marginTokenDecimals = useMemo(() => {
     return TOKEN_SWAPS.find((config: MockSwapConfigI) => config.chainId === wallet?.chain?.id)?.pools.find(
-      ({ marginToken }) => marginToken === selectedPoolSymbol
+      ({ marginToken }) => marginToken === selectedPool?.settleSymbol
     )?.decimals;
-  }, [wallet, selectedPoolSymbol]);
+  }, [wallet, selectedPool?.settleSymbol]);
 
   const swapAddress = useMemo(() => {
     return TOKEN_SWAPS.find((config: MockSwapConfigI) => config.chainId === wallet?.chain?.id)?.pools.find(
-      ({ marginToken }) => marginToken === selectedPoolSymbol
+      ({ marginToken }) => marginToken === selectedPool?.settleSymbol
     )?.marginTokenSwap;
-  }, [wallet, selectedPoolSymbol]);
+  }, [wallet, selectedPool?.settleSymbol]);
 
-  const depositAmountUnits = useMemo(() => {
-    return nativeToken ? parseUnits(nativeTokenAmount, nativeToken.decimals) : undefined;
-  }, [nativeToken, nativeTokenAmount]);
+  const depositAmountUnits = parseUnits(nativeTokenAmount, 18);
+  // useMemo(() => {
+  //   return nativeToken ? parseUnits(nativeTokenAmount, nativeToken.decimals) : undefined;
+  // }, [nativeToken, nativeTokenAmount]);
 
   const { data: tokenAmountUnits } = useReadContract({
     address: swapAddress as `0x${string}` | undefined,
@@ -58,6 +61,8 @@ export function MockSwap() {
     functionName: 'getAmountToReceive',
     args: [wallet?.account?.address as `0x${string}`, depositAmountUnits as bigint],
   });
+
+  console.log({ tokenAmountUnits });
 
   const tokenAmount = useMemo(() => {
     if (tokenAmountUnits !== undefined && marginTokenDecimals !== undefined) {
@@ -109,13 +114,13 @@ export function MockSwap() {
           bodyLines={[
             {
               label: '',
-              value: `You have successfully obtained ${selectedPoolSymbol}!`,
+              value: `You have successfully obtained ${selectedPool?.settleSymbol}!`,
             },
           ]}
         />
       );
     }
-  }, [isSwapSuccess, nativeToken, selectedPoolSymbol]);
+  }, [isSwapSuccess, selectedPool?.settleSymbol]);
 
   useEffect(() => {
     if (isSwapError) {
@@ -137,24 +142,24 @@ export function MockSwap() {
           className={styles.swapButton}
           disabled={
             !swapConfig?.request ||
-            !nativeToken?.value ||
+            // !nativeToken?.value ||
             !depositAmountUnits ||
-            depositAmountUnits > nativeToken?.value ||
+            // depositAmountUnits > nativeToken?.value ||
             isLoading ||
             inAction
           }
         >
-          {`Get test ${selectedPoolSymbol}`}
+          {`Get ${selectedPool?.settleSymbol}`}
         </Button>
       </div>
       {Number(tokenAmount) >= 10_000 && (
         <div className={styles.row}>
           <div className={styles.text}>
-            Swap 0.001 {nativeToken?.symbol} for {tokenAmount} {selectedPoolSymbol}
+            Swap 0.001 {nativeToken?.symbol} for {tokenAmount} {selectedPool?.settleSymbol}
           </div>
         </div>
       )}
-      {wallet &&
+      {/* {wallet &&
         nativeToken &&
         !!depositAmountUnits &&
         depositAmountUnits > 0n &&
@@ -173,7 +178,7 @@ export function MockSwap() {
               </a>
             </Typography>
           </div>
-        )}
+        )} */}
     </div>
   );
 }

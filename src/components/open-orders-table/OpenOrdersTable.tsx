@@ -220,7 +220,7 @@ export const OpenOrdersTable = memo(() => {
       return;
     }
 
-    if (isDisconnected || !smartAccountClient || !isEnabledChain(chainId)) {
+    if (isDisconnected || !smartAccountClient || !traderAPI || !isEnabledChain(chainId)) {
       return;
     }
 
@@ -229,7 +229,7 @@ export const OpenOrdersTable = memo(() => {
     getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
-          cancelOrder(smartAccountClient, HashZero, data.data, selectedOrder.id)
+          cancelOrder(traderAPI, smartAccountClient, selectedOrder.symbol, HashZero, data.data, selectedOrder.id)
             .then(({ hash }) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);
