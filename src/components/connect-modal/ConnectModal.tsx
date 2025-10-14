@@ -25,7 +25,6 @@ import { Separator } from 'components/separator/Separator';
 import { SeparatorTypeE } from 'components/separator/enums';
 import { toast } from 'react-toastify';
 import { smartAccountClientAtom } from 'store/app.store';
-import { berachain } from 'utils/chains';
 import { cutAddress } from 'utils/cutAddress';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { erc20Abi, zeroAddress } from 'viem';
@@ -121,6 +120,8 @@ export const ConnectModal = () => {
   const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   const { sendTransaction } = useSendTransaction();
+
+  const { chain } = useAccount();
 
   const { logout } = useLogout({
     onSuccess: () => {
@@ -310,7 +311,7 @@ export const ConnectModal = () => {
         fundWallet({
           address: activeAddress,
           options: {
-            chain: berachain,
+            chain,
             amount: '0.1', // Default amount for BERA
           },
         })
@@ -326,7 +327,7 @@ export const ConnectModal = () => {
         fundWallet({
           address: activeAddress,
           options: {
-            chain: berachain,
+            chain,
             asset: { erc20: tokenAddress as `0x${string}` },
             amount: symbol === 'USDT' ? '100' : '10', // Default amounts
           },
@@ -340,7 +341,7 @@ export const ConnectModal = () => {
           });
       }
     },
-    [fundWallet, activeAddress, refetchWallet]
+    [fundWallet, chain, activeAddress, refetchWallet]
   );
 
   // Generic withdraw handler - opens withdraw modal
@@ -477,7 +478,7 @@ export const ConnectModal = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <LanguageIcon fontSize="small" />
                 <a
-                  href={`${berachain.blockExplorers.default.url}/address/${activeAddress}`}
+                  href={`${chain?.blockExplorers?.default.url}/address/${activeAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { smartAccountClientAtom } from 'store/app.store';
 import { MethodE } from 'types/enums';
 import { formatEther, zeroAddress } from 'viem';
-import { berachain } from 'viem/chains';
+import { useAccount } from 'wagmi';
 import styles from './AssetLine.module.scss';
 
 interface AssetLinePropsI {
@@ -23,6 +23,7 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
   const { fundWallet } = useFundWallet();
   const { user } = usePrivy();
   const { calculateGasForFee } = useUserWallet();
+  const { chain } = useAccount();
 
   const targetAddress = useMemo(() => {
     return smartAccountClient?.account?.address || user?.wallet?.address;
@@ -38,7 +39,7 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
     if (tokenAddress === zeroAddress) {
       fundWallet({
         address: targetAddress,
-        options: { chain: berachain, amount: formatEther(calculateGasForFee(MethodE.Interact, 10n)) },
+        options: { chain, amount: formatEther(calculateGasForFee(MethodE.Interact, 10n)) },
       })
         .then(() => {
           console.log('fund gas complete');
@@ -49,7 +50,7 @@ export const AssetLine = ({ symbol, value, tokenAddress }: AssetLinePropsI) => {
     } else {
       fundWallet({
         address: targetAddress,
-        options: { chain: berachain, asset: { erc20: tokenAddress }, amount: '1000' },
+        options: { chain, asset: { erc20: tokenAddress }, amount: '1000' },
       })
         .then(() => {
           console.log('fund erc20 complete');
