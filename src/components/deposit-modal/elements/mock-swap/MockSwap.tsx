@@ -70,13 +70,6 @@ export function MockSwap() {
     }
     return '';
   }, [tokenAmountUnits, marginTokenDecimals]);
-  // console.log({
-  //   swapAddress,
-  //   depositAmountUnits,
-  //   tokenAmountUnits,
-  //   marginTokenDecimals,
-  //   enabled: wallet?.chain !== undefined && wallet?.account?.address !== undefined && depositAmountUnits !== undefined,
-  // });
 
   const { data: swapTxn, writeContract: write, isPending: isLoading } = useWriteContract();
 
@@ -88,6 +81,15 @@ export function MockSwap() {
     gas: BigInt(1_000_000),
     value: depositAmountUnits,
     query: { enabled: depositAmountUnits !== undefined && tokenAmountUnits !== undefined && tokenAmountUnits > 0n },
+  });
+
+  console.log({
+    swapConfig,
+    swapAddress,
+    depositAmountUnits,
+    tokenAmount,
+    marginTokenDecimals,
+    enabled: wallet?.chain !== undefined && wallet?.account?.address !== undefined && depositAmountUnits !== undefined,
   });
 
   const {
@@ -141,7 +143,7 @@ export function MockSwap() {
           }}
           className={styles.swapButton}
           disabled={
-            !swapConfig?.request ||
+            // !swapConfig?.request ||
             // !nativeToken?.value ||
             !depositAmountUnits ||
             // depositAmountUnits > nativeToken?.value ||
