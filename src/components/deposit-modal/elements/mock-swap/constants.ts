@@ -63,6 +63,18 @@ export const TOKEN_SWAPS: MockSwapConfigI[] = [
       },
     ],
   },
+  {
+    chainId: 84532,
+    pools: [
+      {
+        id: 1,
+        marginToken: 'PUSD',
+        decimals: 6,
+        marginTokenAddress: '0xD11e6B5E1D637C6044dB145474baCB2e76876d09',
+        marginTokenSwap: '0x698feb9aef7276659f5549d5a5cced5cdd24fef2',
+      },
+    ],
+  },
 ];
 
 export const SWAP_ABI = [

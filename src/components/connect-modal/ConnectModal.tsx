@@ -17,6 +17,7 @@ import { useFundWallet, useLogout, usePrivy, useSign7702Authorization, useWallet
 import { useSetActiveWallet } from '@privy-io/wagmi';
 import { writeContract } from '@wagmi/core';
 import { nexusImplementationAddress } from 'blockchain-api/account-abstraction';
+import { BASE_USDC_ADDRESS, MIN_BASE_USDC_TO_BRIDGE } from 'blockchain-api/constants';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { CopyLink } from 'components/copy-link/CopyLink';
 import { DynamicLogo } from 'components/dynamic-logo/DynamicLogo';
@@ -30,7 +31,15 @@ import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { erc20Abi, zeroAddress } from 'viem';
 import { base, katana } from 'viem/chains';
 import { formatUnits, parseEther, parseUnits } from 'viem/utils';
-import { http, useAccount, usePublicClient, useReadContracts, useSendTransaction, useWalletClient } from 'wagmi';
+import {
+  http,
+  useAccount,
+  usePublicClient,
+  useReadContract,
+  useReadContracts,
+  useSendTransaction,
+  useWalletClient,
+} from 'wagmi';
 import styles from './ConnectModal.module.scss';
 
 interface TokenRowPropsI {
@@ -125,6 +134,15 @@ export const ConnectModal = () => {
 
   const { signAuthorization } = useSign7702Authorization();
 
+  const { data: baseUsdcBalance } = useReadContract({
+    chainId: base.id,
+    address: BASE_USDC_ADDRESS,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [walletClient?.account?.address || zeroAddress],
+    query: { enabled: walletClient?.account?.address !== undefined },
+  });
+
   const { wallets } = useWallets();
 
   const embeddedWallet = useMemo(() => wallets.find((w) => w.walletClientType === 'privy'), [wallets]);
@@ -210,6 +228,12 @@ export const ConnectModal = () => {
       clearInterval(intervalId);
     };
   }, [refetchWallet, ready, authenticated]);
+
+  useEffect(() => {
+    if (baseUsdcBalance && baseUsdcBalance > MIN_BASE_USDC_TO_BRIDGE) {
+      console.log('should bridge from base');
+    }
+  }, [baseUsdcBalance]);
 
   const activeAddress = user?.wallet?.address || smartAccountClient?.account?.address || '';
 

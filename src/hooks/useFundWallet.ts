@@ -1,7 +1,8 @@
 import { useFundWallet } from '@privy-io/react-auth';
+import { BASE_USDC_ADDRESS } from 'blockchain-api/constants';
 import { useAtomValue } from 'jotai';
-import { useMemo, useState } from 'react';
-import { smartAccountClientAtom } from 'store/app.store';
+import { useCallback, useMemo, useState } from 'react';
+import { authorization7702Atom, meeClientAtom, smartAccountClientAtom } from 'store/app.store';
 import { isUserRejectedError } from 'utils/error';
 import { Transaction } from 'viem';
 import { base } from 'viem/chains';
@@ -10,12 +11,12 @@ import { useAccount } from 'wagmi';
 // 1) prompt user to get USDC into Base, with a min threshold
 // 2) watch for USDC funds in Base, and if threshold is crossed, bridge to target chain
 
-const BASE_USDC_ADDR = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' as const;
-
 export const useFundAccount = () => {
   const { fundWallet } = useFundWallet();
 
   const smartAccountClient = useAtomValue(smartAccountClientAtom);
+  const meeClient = useAtomValue(meeClientAtom);
+  const authorization = useAtomValue(authorization7702Atom);
 
   const [isPending, setPending] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
@@ -28,10 +29,12 @@ export const useFundAccount = () => {
     return smartAccountClient?.account?.address ?? address;
   }, [smartAccountClient, address]);
 
-  const bridgeBaseUsdc = async () => {
-    // TODO: send entire USDC balance to target chain
-    // https://docs.biconomy.io/new/integration-guides/bridges-and-solvers/integrate-lifi
-  };
+  const bridgeBaseUsdc = useCallback(async () => {
+    if (!meeClient || !authorization) {
+      // TODO: send entire USDC balance to target chain, only if target !== base
+      // bridgeAndApprove({meeClient, authorization})
+    }
+  }, [meeClient, authorization]);
 
   const getBaseUsdc = async (amount: string) => {
     if (isPending || !targetAddress || isNaN(+amount)) {
@@ -46,7 +49,7 @@ export const useFundAccount = () => {
     try {
       fundWallet({
         address: targetAddress,
-        options: { chain: base, asset: { erc20: BASE_USDC_ADDR }, amount },
+        options: { chain: base, asset: { erc20: BASE_USDC_ADDRESS }, amount },
       })
         .then(() => {
           console.log('fund erc20 complete');
