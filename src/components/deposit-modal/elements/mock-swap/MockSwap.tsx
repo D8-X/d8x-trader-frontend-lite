@@ -62,21 +62,12 @@ export function MockSwap() {
     args: [wallet?.account?.address as `0x${string}`, depositAmountUnits as bigint],
   });
 
-  console.log({ tokenAmountUnits });
-
   const tokenAmount = useMemo(() => {
     if (tokenAmountUnits !== undefined && marginTokenDecimals !== undefined) {
       return formatUnits(tokenAmountUnits, marginTokenDecimals);
     }
     return '';
   }, [tokenAmountUnits, marginTokenDecimals]);
-  // console.log({
-  //   swapAddress,
-  //   depositAmountUnits,
-  //   tokenAmountUnits,
-  //   marginTokenDecimals,
-  //   enabled: wallet?.chain !== undefined && wallet?.account?.address !== undefined && depositAmountUnits !== undefined,
-  // });
 
   const { data: swapTxn, writeContract: write, isPending: isLoading } = useWriteContract();
 
@@ -88,6 +79,15 @@ export function MockSwap() {
     gas: BigInt(1_000_000),
     value: depositAmountUnits,
     query: { enabled: depositAmountUnits !== undefined && tokenAmountUnits !== undefined && tokenAmountUnits > 0n },
+  });
+
+  console.log({
+    swapConfig,
+    swapAddress,
+    depositAmountUnits,
+    tokenAmount,
+    marginTokenDecimals,
+    enabled: wallet?.chain !== undefined && wallet?.account?.address !== undefined && depositAmountUnits !== undefined,
   });
 
   const {
@@ -141,7 +141,7 @@ export function MockSwap() {
           }}
           className={styles.swapButton}
           disabled={
-            !swapConfig?.request ||
+            // !swapConfig?.request ||
             // !nativeToken?.value ||
             !depositAmountUnits ||
             // depositAmountUnits > nativeToken?.value ||
