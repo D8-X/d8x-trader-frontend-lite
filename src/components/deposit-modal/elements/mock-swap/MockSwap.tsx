@@ -62,6 +62,8 @@ export function MockSwap() {
     args: [wallet?.account?.address as `0x${string}`, depositAmountUnits as bigint],
   });
 
+  console.log({ tokenAmountUnits });
+
   const tokenAmount = useMemo(() => {
     if (tokenAmountUnits !== undefined && marginTokenDecimals !== undefined) {
       return formatUnits(tokenAmountUnits, marginTokenDecimals);

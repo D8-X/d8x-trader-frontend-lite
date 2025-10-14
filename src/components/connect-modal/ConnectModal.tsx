@@ -25,6 +25,7 @@ import { Separator } from 'components/separator/Separator';
 import { SeparatorTypeE } from 'components/separator/enums';
 import { toast } from 'react-toastify';
 import { smartAccountClientAtom } from 'store/app.store';
+
 import { cutAddress } from 'utils/cutAddress';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
 import { erc20Abi, zeroAddress } from 'viem';
