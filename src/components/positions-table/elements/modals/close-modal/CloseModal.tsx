@@ -36,6 +36,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { cancelOrders } from '../../../helpers/cancelOrders';
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
@@ -59,6 +60,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
 
   const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chain?.id });
+  const { sendTransaction } = useSendTransaction();
 
   const { settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
   const orderInfo = useAtomValue(orderInfoAtom);
@@ -223,6 +225,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         if (data.data.digests.length > 0) {
           approveMarginToken({
             walletClient: smartAccountClient,
+            sendTransaction,
             settleTokenAddr: poolByPosition.settleTokenAddr,
             proxyAddr,
             minAmount: 0,
@@ -230,7 +233,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
             registeredToken: flatToken?.registeredToken,
           }).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(smartAccountClient, traderAPI, {
+            postOrder(smartAccountClient, sendTransaction, traderAPI, {
               traderAddr: address,
               orders: [closeOrder],
               signatures,

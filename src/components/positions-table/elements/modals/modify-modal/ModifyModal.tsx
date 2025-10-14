@@ -37,6 +37,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 import { ModifyTypeE, ModifyTypeSelector } from '../../modify-type-selector/ModifyTypeSelector';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import styles from '../Modal.module.scss';
 
@@ -60,6 +61,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
 
   const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId });
+  const { sendTransaction } = useSendTransaction();
 
   const [requestSent, setRequestSent] = useState(false);
   const [modifyType, setModifyType] = useState(ModifyTypeE.Add);
@@ -438,6 +440,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       setLoading(true);
       approveMarginToken({
         walletClient: smartAccountClient,
+        sendTransaction,
         settleTokenAddr: poolByPosition.settleTokenAddr,
         proxyAddr,
         minAmount: +addCollateral / px,

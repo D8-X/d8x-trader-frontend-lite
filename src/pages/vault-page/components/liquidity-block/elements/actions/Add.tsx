@@ -34,6 +34,7 @@ import {
 import { formatToCurrency } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import styles from './Action.module.scss';
 
@@ -55,6 +56,8 @@ export const Add = memo(() => {
   const { t } = useTranslation();
 
   const { address, chain, isConnected } = useAccount();
+
+  const { sendTransaction } = useSendTransaction();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
@@ -182,6 +185,7 @@ export const Add = memo(() => {
     setLoading(true);
     approveMarginToken({
       walletClient: smartAccountClient,
+      sendTransaction,
       settleTokenAddr: selectedPool.settleTokenAddr,
       proxyAddr,
       minAmount: addAmount / 1.05 / userPrice,
@@ -229,6 +233,7 @@ export const Add = memo(() => {
     setLoading(true);
     approveMarginToken({
       walletClient: smartAccountClient,
+      sendTransaction,
       settleTokenAddr: selectedPool.settleTokenAddr,
       proxyAddr,
       minAmount: addAmount / 1.05 / userPrice,

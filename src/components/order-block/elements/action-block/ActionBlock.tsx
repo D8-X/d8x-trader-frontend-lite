@@ -56,6 +56,7 @@ import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/store';
 import { hasTpSlOrdersAtom } from './store';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import styles from './ActionBlock.module.scss';
 
@@ -152,6 +153,8 @@ export const ActionBlock = memo(() => {
   const { data: walletClient } = useWalletClient({
     chainId,
   });
+
+  const { sendTransaction } = useSendTransaction();
 
   const { hasEnoughGasForFee } = useUserWallet();
 
@@ -467,6 +470,7 @@ export const ActionBlock = memo(() => {
           // hide modal now that metamask popup shows up
           approveMarginToken({
             walletClient: smartAccountClient,
+            sendTransaction,
             settleTokenAddr: selectedPool.settleTokenAddr,
             proxyAddr,
             minAmount: collateralDeposit * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
@@ -476,7 +480,7 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(smartAccountClient, traderAPI, {
+              postOrder(smartAccountClient, sendTransaction, traderAPI, {
                 traderAddr: address,
                 orders: parsedOrders,
                 signatures,

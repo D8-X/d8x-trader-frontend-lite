@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TemporaryAnyT = any;
 
+import { FundWalletConfig, SendTransactionModalUIOptions, UnsignedTransactionRequest } from '@privy-io/react-auth';
 import type { Address, WalletClient } from 'viem';
 import type {
   AlignE,
@@ -633,3 +634,15 @@ export interface WithdrawRequestI {
   shareTokens: bigint;
   withdrawTimestamp: bigint;
 }
+
+export type SendTransactionCallT = (
+  input: UnsignedTransactionRequest,
+  options?: {
+    sponsor?: boolean;
+    uiOptions?: SendTransactionModalUIOptions;
+    fundWalletConfig?: FundWalletConfig;
+    address?: string;
+  }
+) => Promise<{
+  hash: `0x${string}`;
+}>;

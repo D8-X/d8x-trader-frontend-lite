@@ -1,22 +1,18 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { formatUnits, parseUnits } from 'viem/utils';
-import {
-  useBalance,
-  useReadContract,
-  useSimulateContract,
-  useWaitForTransactionReceipt,
-  useWalletClient,
-  useWriteContract,
-} from 'wagmi';
+import { useBalance, useReadContract, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Button } from '@mui/material';
 
 import { ToastContent } from 'components/toast-content/ToastContent';
 
+import { useSendTransaction } from '@privy-io/react-auth';
+import { mockSwap } from 'blockchain-api/contract-interactions/mockSwap';
 import { useAtomValue } from 'jotai';
 import { selectedPoolAtom } from 'store/pools.store';
 import { MockSwapConfigI } from 'types/types';
+import { Address, Hex } from 'viem';
 import { SWAP_ABI, TOKEN_SWAPS } from './constants';
 import styles from './MockSwap.module.scss';
 
@@ -30,7 +26,13 @@ export function MockSwap() {
     address: wallet?.account?.address,
   });
 
-  const [inAction, setInAction] = useState(false);
+  const chainId = wallet?.chain?.id;
+
+  const { sendTransaction } = useSendTransaction();
+
+  const [swapTxn, setSwapTxn] = useState<Hex | undefined>();
+
+  const inActionRef = useRef(false);
 
   const marginTokenDecimals = useMemo(() => {
     return TOKEN_SWAPS.find((config: MockSwapConfigI) => config.chainId === wallet?.chain?.id)?.pools.find(
@@ -71,20 +73,7 @@ export function MockSwap() {
     return '';
   }, [tokenAmountUnits, marginTokenDecimals]);
 
-  const { data: swapTxn, writeContract: write, isPending: isLoading } = useWriteContract();
-
-  const { data: swapConfig } = useSimulateContract({
-    address: swapAddress as `0x${string}` | undefined,
-    abi: SWAP_ABI,
-    functionName: 'swapToMockToken',
-    chainId: wallet?.chain?.id,
-    gas: BigInt(1_000_000),
-    value: depositAmountUnits,
-    query: { enabled: depositAmountUnits !== undefined && tokenAmountUnits !== undefined && tokenAmountUnits > 0n },
-  });
-
   console.log({
-    swapConfig,
     swapAddress,
     depositAmountUnits,
     tokenAmount,
@@ -99,14 +88,14 @@ export function MockSwap() {
     error: swapError,
   } = useWaitForTransactionReceipt({
     hash: swapTxn,
-    query: { enabled: !!swapTxn || inAction },
+    query: { enabled: !!swapTxn || inActionRef.current },
   });
 
   useEffect(() => {
     if (isSwapFetched) {
-      setInAction(false);
+      setSwapTxn(undefined);
     }
-  }, [isSwapFetched, setInAction]);
+  }, [isSwapFetched]);
 
   useEffect(() => {
     if (isSwapSuccess) {
@@ -130,25 +119,30 @@ export function MockSwap() {
     }
   }, [isSwapError, swapError]);
 
+  const onClick = () => {
+    if (!inActionRef.current && swapAddress !== undefined && chainId !== undefined) {
+      inActionRef.current = true;
+      mockSwap(chainId, sendTransaction, swapAddress as Address)
+        .then(({ hash }) => setSwapTxn(hash))
+        .catch((e) => console.log('mock swap error:', e))
+        .finally(() => (inActionRef.current = false));
+    }
+  };
+
   return (
     <div className={styles.section}>
       <div className={styles.row}>
         <Button
           variant="primary"
-          onClick={() => {
-            if (swapConfig?.request) {
-              write?.(swapConfig.request);
-              setInAction(true);
-            }
-          }}
+          onClick={onClick}
           className={styles.swapButton}
           disabled={
             // !swapConfig?.request ||
             // !nativeToken?.value ||
             !depositAmountUnits ||
             // depositAmountUnits > nativeToken?.value ||
-            isLoading ||
-            inAction
+            // isLoading ||
+            inActionRef.current
           }
         >
           {`Get ${selectedPool?.settleSymbol}`}

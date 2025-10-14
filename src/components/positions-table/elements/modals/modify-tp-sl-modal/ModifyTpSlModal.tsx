@@ -33,6 +33,7 @@ import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 import { StopLossSelector } from './components/StopLossSelector';
 import { TakeProfitSelector } from './components/TakeProfitSelector';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import styles from '../Modal.module.scss';
 
@@ -65,6 +66,8 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
   const { t } = useTranslation();
 
   const { address, chain, chainId } = useAccount();
+
+  const { sendTransaction } = useSendTransaction();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -304,6 +307,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
               // hide modal now that metamask popup shows up
               approveMarginToken({
                 walletClient: smartAccountClient,
+                sendTransaction,
                 settleTokenAddr: poolByPosition.settleTokenAddr,
                 proxyAddr,
                 minAmount: collateralDeposit,
@@ -313,7 +317,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                  postOrder(smartAccountClient, traderAPI, {
+                  postOrder(smartAccountClient, sendTransaction, traderAPI, {
                     traderAddr: address,
                     orders: parsedOrders,
                     signatures,

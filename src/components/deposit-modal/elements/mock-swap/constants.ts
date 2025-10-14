@@ -2,68 +2,6 @@ import { MockSwapConfigI } from 'types/types';
 
 export const TOKEN_SWAPS: MockSwapConfigI[] = [
   {
-    chainId: 195,
-    pools: [
-      {
-        id: 1,
-        marginToken: 'USDC',
-        decimals: 6,
-        marginTokenAddress: '0x2444BdA650cAAe90219aa15FEd3D195a6117579F',
-        marginTokenSwap: '0x90EB9a579b001F49BBbf6B4B5e24CEF8CaF893f0',
-      },
-      // {
-      //   id: 2,
-      //   marginToken: 'OKB',
-      //   decimals: 18,
-      //   marginTokenAddress: '',
-      //   marginTokenSwap: '0xD09DcF5A8e412B9892EbF65BacaEDc9BFEDCc828',
-      // },
-    ],
-  },
-  {
-    chainId: 1442,
-    pools: [
-      {
-        id: 1,
-        marginToken: 'MATIC',
-        decimals: 18,
-        marginTokenAddress: '0xdCCe020d852f81eEc03B7577b636C8a85c6E5eeF',
-        marginTokenSwap: '0xe222E37f87E658a50FC776c60ab036D630808fF9',
-      },
-      {
-        id: 2,
-        marginToken: 'USDC',
-        decimals: 6,
-        marginTokenAddress: '0x37D97d1FFc09587EA9BDF88Ea77ec4aFAA911260',
-        marginTokenSwap: '0x22e0859fAaBd81B833C127237eCFC3a8B8933B3f',
-      },
-    ],
-  },
-  {
-    chainId: 2442,
-    pools: [
-      {
-        id: 1,
-        marginToken: 'USDC',
-        decimals: 6,
-        marginTokenAddress: '0xCE4B7508638848b88a529b4dF85737fadFe6865C',
-        marginTokenSwap: '0x063eE97717683FC9cAA70247c8BB0359EfEdb9A2',
-      },
-    ],
-  },
-  {
-    chainId: 80084,
-    pools: [
-      {
-        id: 1,
-        marginToken: 'USDC',
-        decimals: 6,
-        marginTokenAddress: '0xc3D7F1F91a77618C959f8114422af4b3d70b2B4C',
-        marginTokenSwap: '0x55CdD2AebAb6bb2a8F901500A3eF2E56B5B8964e',
-      },
-    ],
-  },
-  {
     chainId: 84532,
     pools: [
       {
@@ -71,7 +9,7 @@ export const TOKEN_SWAPS: MockSwapConfigI[] = [
         marginToken: 'PUSD',
         decimals: 6,
         marginTokenAddress: '0xD11e6B5E1D637C6044dB145474baCB2e76876d09',
-        marginTokenSwap: '0x698feb9aef7276659f5549d5a5cced5cdd24fef2',
+        marginTokenSwap: '0xd272Ab18909F52c32Fe81eAd43b3B8656a3FA3dc',
       },
     ],
   },
@@ -80,24 +18,53 @@ export const TOKEN_SWAPS: MockSwapConfigI[] = [
 export const SWAP_ABI = [
   {
     inputs: [
-      { internalType: 'address', name: '_mockTokenAddr', type: 'address' },
-      { internalType: 'uint256', name: '_d18MaticToMockConversion', type: 'uint256' },
-      { internalType: 'uint256', name: '_maxDailyMockTokenSwapAmount', type: 'uint256' },
+      {
+        internalType: 'address',
+        name: '_mockTokenAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_d18MaticToMockConversion',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_maxDailyMockTokenSwapAmount',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
   {
     anonymous: false,
-    inputs: [{ indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' }],
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
     name: 'BalanceWithdrawn',
     type: 'event',
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
-      { indexed: false, internalType: 'address', name: 'sender', type: 'address' },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address',
+      },
     ],
     name: 'MockTokensReceived',
     type: 'event',
@@ -105,10 +72,30 @@ export const SWAP_ABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'uint256', name: 'amountIn', type: 'uint256' },
-      { indexed: false, internalType: 'uint256', name: 'amountOut', type: 'uint256' },
-      { indexed: false, internalType: 'uint256', name: 'poolBalance', type: 'uint256' },
-      { indexed: false, internalType: 'address', name: 'sender', type: 'address' },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountIn',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountOut',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'poolBalance',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address',
+      },
     ],
     name: 'MockTokensSwapped',
     type: 'event',
@@ -116,8 +103,18 @@ export const SWAP_ABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'previousOwner', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
     ],
     name: 'OwnershipTransferred',
     type: 'event',
@@ -125,12 +122,24 @@ export const SWAP_ABI = [
   {
     inputs: [],
     name: 'd18MaticToMockConversion',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'uint256', name: '_amount', type: 'uint256' }],
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
+    ],
     name: 'depositMockToken',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -138,34 +147,74 @@ export const SWAP_ABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'receiver', type: 'address' },
-      { internalType: 'uint256', name: 'value', type: 'uint256' },
+      {
+        internalType: 'address',
+        name: 'receiver',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
     ],
     name: 'getAmountToReceive',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'maxDailyMockTokenSwapAmount',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'mockTokenAddr',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'movingBalance',
     outputs: [
-      { internalType: 'uint256', name: 'amountMockTkn', type: 'uint256' },
-      { internalType: 'uint256', name: 'timestamp', type: 'uint256' },
+      {
+        internalType: 'uint256',
+        name: 'amountMockTkn',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'timestamp',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -173,20 +222,50 @@ export const SWAP_ABI = [
   {
     inputs: [],
     name: 'owner',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
-  { inputs: [], name: 'renounceOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-  { inputs: [], name: 'swapToMockToken', outputs: [], stateMutability: 'payable', type: 'function' },
   {
-    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'swapToMockToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
     name: 'transferOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
-  { inputs: [], name: 'withdraw', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  {
+    inputs: [],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
 ] as const;
 
 export const ZK_NATIVE_CONVERTER_ABI = [
