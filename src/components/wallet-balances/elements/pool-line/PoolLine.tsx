@@ -1,14 +1,15 @@
-import { memo, useEffect } from 'react';
-import { useAccount, useConnect, useReadContracts } from 'wagmi';
+import { memo, useEffect, useMemo } from 'react';
 import { type Address, erc20Abi, formatUnits } from 'viem';
+import { useAccount, useConnect, useReadContracts } from 'wagmi';
 
 import { REFETCH_BALANCES_INTERVAL } from 'appConstants';
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { AssetLine } from 'components/asset-line/AssetLine';
+import { useAtomValue } from 'jotai';
+import { smartAccountClientAtom } from 'store/app.store';
+import { flatTokenAtom } from 'store/pools.store';
 import { PoolWithIdI } from 'types/types';
 import { valueToFractionDigits } from 'utils/formatToCurrency';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
-import { useAtomValue } from 'jotai';
-import { flatTokenAtom } from 'store/pools.store';
 
 interface PoolLinePropsI {
   pool: PoolWithIdI;
@@ -19,6 +20,11 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   const { address, isConnected } = useAccount();
   const { isPending } = useConnect();
   const flatToken = useAtomValue(flatTokenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
+
+  const balanceAddress = useMemo(() => {
+    return smartAccountClient?.account?.address || address;
+  }, [address, smartAccountClient]);
 
   const { data: tokenBalanceData, refetch } = useReadContracts({
     allowFailure: true,
@@ -27,7 +33,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         address: pool.settleTokenAddr as Address,
         abi: erc20Abi,
         functionName: 'balanceOf',
-        args: [address as Address],
+        args: [balanceAddress as Address],
       },
       {
         address: pool.settleTokenAddr as Address,
@@ -38,7 +44,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         address: pool.settleTokenAddr as Address,
         abi: flatTokenAbi,
         functionName: 'effectiveBalanceOf',
-        args: [address as Address],
+        args: [balanceAddress as Address],
       },
       {
         address: pool.settleTokenAddr as Address,
@@ -47,7 +53,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       },
     ],
     query: {
-      enabled: address && pool.settleTokenAddr !== undefined && !isPending && isConnected,
+      enabled: balanceAddress && pool.settleTokenAddr !== undefined && !isPending && isConnected,
     },
   });
 
@@ -57,9 +63,11 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       address: token.address,
       abi: erc20Abi,
       functionName: 'balanceOf',
-      args: [address as Address],
+      args: [balanceAddress as Address],
     })),
-    query: { enabled: pool.poolId === flatToken?.poolId && address && isConnected && !flatToken?.registeredSymbol },
+    query: {
+      enabled: pool.poolId === flatToken?.poolId && balanceAddress && isConnected && !flatToken?.registeredSymbol,
+    },
   });
 
   const { data: composableDecimals } = useReadContracts({
@@ -69,7 +77,9 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
       abi: erc20Abi,
       functionName: 'decimals',
     })),
-    query: { enabled: pool.poolId === flatToken?.poolId && address && isConnected && !flatToken?.registeredSymbol },
+    query: {
+      enabled: pool.poolId === flatToken?.poolId && balanceAddress && isConnected && !flatToken?.registeredSymbol,
+    },
   });
 
   useEffect(() => {
@@ -112,6 +122,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
         <AssetLine
           key={token.address}
           symbol={token.symbol}
+          tokenAddress={token.address}
           value={(+formatUnits(BigInt(composableBalances[idx]), Number(composableDecimals[idx])) * userPrice).toFixed(
             numberDigits
           )}
@@ -121,6 +132,7 @@ export const PoolLine = memo(({ pool, showEmpty = true }: PoolLinePropsI) => {
   ) : (
     <AssetLine
       symbol={userSymbol}
+      tokenAddress={pool.settleTokenAddr as `0x${string}`}
       value={
         tokenBalance !== undefined && tokenBalanceData?.[1].status === 'success'
           ? (+formatUnits(tokenBalance, tokenBalanceData[1].result) * userPrice).toFixed(numberDigits)

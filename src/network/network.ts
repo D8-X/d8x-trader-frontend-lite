@@ -3,15 +3,14 @@ import { config } from 'config';
 import { getRequestOptions } from 'helpers/getRequestOptions';
 import { RequestMethodE } from 'types/enums';
 import type {
+  AllTimeLeaderboardResponseI,
   AngleApyResponseI,
   BoostRankResponseI,
-  BoostStationResponseI,
   BoostStationParamResponseI,
+  BoostStationResponseI,
   CancelOrderResponseI,
   EtherFiApyI,
   ExchangeInfoI,
-  WeeklyLeaderboardResponseI,
-  AllTimeLeaderboardResponseI,
   MaintenanceStatusI,
   MarginAccountI,
   MaxOrderSizeResponseI,
@@ -21,6 +20,7 @@ import type {
   PerpetualPriceI,
   PerpetualStaticInfoI,
   ValidatedResponseI,
+  WeeklyLeaderboardResponseI,
 } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
@@ -331,22 +331,23 @@ export function getCancelOrder(
     if (Number(traderAPI.chainId) === chainId) {
       const cancelABI = traderAPI.getOrderBookABI(symbol, 'cancelOrder');
       return traderAPI.cancelOrderDigest(symbol, orderId).then((digest) => {
-        return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
-          return {
-            type: 'cancel-order',
-            msg: '',
-            data: {
-              OrderBookAddr: digest.OBContractAddr,
-              abi: cancelABI,
-              digest: digest.digest,
-              priceUpdate: {
-                updateData: submission.priceFeedVaas,
-                publishTimes: submission.timestamps,
-                updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
-              },
-            },
-          };
-        });
+        // return traderAPI.fetchLatestFeedPriceInfo(symbol).then((submission) => {
+        return {
+          type: 'cancel-order',
+          msg: '',
+          data: {
+            OrderBookAddr: digest.OBContractAddr,
+            abi: cancelABI,
+            digest: digest.digest,
+            // priceUpdate: {
+            //   ids: submission.ids,
+            //   updateData: submission.priceFeedVaas,
+            //   publishTimes: submission.timestamps,
+            //   updateFee: traderAPI.PRICE_UPDATE_FEE_GWEI * submission.timestamps.length,
+            // },
+          },
+        };
+        // });
       });
     }
     throw new Error('ChainId is not correct.');

@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { type Address, erc20Abi, formatUnits } from 'viem';
 import { useAccount, useReadContracts } from 'wagmi';
 
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import { traderAPIAtom } from 'store/pools.store';
 import { PoolWithIdI } from 'types/types';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
 
 interface SettleTokenBalancePropsI {
   poolByPosition?: PoolWithIdI | null;

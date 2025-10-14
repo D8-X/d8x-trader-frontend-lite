@@ -2,18 +2,18 @@ import { waitForTransactionReceipt } from '@wagmi/core';
 import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
 import { estimateContractGas } from 'viem/actions';
 
-import { wagmiConfig } from '../wagmi/wagmiClient';
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
+import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { SmartAccountClient } from 'permissionless';
 import { MethodE } from 'types/enums';
-import { MULTISIG_ADDRESS_TIMEOUT, NORMAL_ADDRESS_TIMEOUT } from '../constants';
-import { flatTokenAbi } from './flatTokenAbi';
+import { flatTokenAbi } from '../abi/flatTokenAbi';
+import { NORMAL_ADDRESS_TIMEOUT } from '../constants';
+import { wagmiConfig } from '../wagmi/wagmiClient';
 
 interface RegisterFlatTokenPropsI {
-  walletClient: WalletClient;
+  walletClient: WalletClient | SmartAccountClient;
   flatTokenAddr: Address;
   userTokenAddr: Address;
-  isMultisigAddress: boolean | null;
   feesPerGas?:
     | {
         maxFeePerGas: bigint;
@@ -32,7 +32,6 @@ export async function registerFlatToken({
   walletClient,
   flatTokenAddr,
   userTokenAddr,
-  isMultisigAddress,
   confirm,
 }: RegisterFlatTokenPropsI) {
   if (!walletClient.account?.address) {
@@ -62,7 +61,7 @@ export async function registerFlatToken({
     if (shouldConfirm) {
       await waitForTransactionReceipt(wagmiConfig, {
         hash: tx,
-        timeout: isMultisigAddress ? MULTISIG_ADDRESS_TIMEOUT : NORMAL_ADDRESS_TIMEOUT,
+        timeout: NORMAL_ADDRESS_TIMEOUT,
       });
     }
     return { hash: tx };

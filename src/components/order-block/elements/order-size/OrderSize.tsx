@@ -13,7 +13,7 @@ import { InputE } from 'components/responsive-input/enums';
 import { ResponsiveInput } from 'components/responsive-input/ResponsiveInput';
 import { TooltipMobile } from 'components/tooltip-mobile/TooltipMobile';
 import { getMaxOrderSizeForTrader } from 'network/network';
-import { defaultCurrencyAtom } from 'store/app.store';
+import { defaultCurrencyAtom, smartAccountClientAtom } from 'store/app.store';
 import { orderBlockAtom } from 'store/order-block.store';
 import {
   flatTokenAtom,
@@ -35,9 +35,9 @@ import { TokenSelect } from './elements/token-select/TokenSelect';
 import {
   currencyMultiplierAtom,
   inputValueAtom,
+  maxOrderSizeAtom,
   maxTraderOrderSizeAtom,
   orderSizeAtom,
-  maxOrderSizeAtom,
   selectedCurrencyAtom,
   setInputFromOrderSizeAtom,
   setOrderSizeAtom,
@@ -57,7 +57,7 @@ const MAX_ORDER_SIZE_RETRIES = 120;
 export const OrderSize = memo(() => {
   const { t } = useTranslation();
 
-  const { address, chainId } = useAccount();
+  const { address: walletAddress, chainId } = useAccount();
 
   const [orderSize, setOrderSizeDirect] = useAtom(orderSizeAtom);
   const [inputValue, setInputValue] = useAtom(inputValueAtom);
@@ -75,6 +75,7 @@ export const OrderSize = memo(() => {
   const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
   const triggerBalancesUpdate = useAtomValue(triggerBalancesUpdateAtom);
   const flatToken = useAtomValue(flatTokenAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
 
@@ -86,6 +87,10 @@ export const OrderSize = memo(() => {
   const perpetualIdRef = useRef(selectedPerpetual?.id);
 
   const { minPositionString } = useMinPositionString(currencyMultiplier, perpetualStaticInfo);
+
+  const address = useMemo(() => {
+    return smartAccountClient?.account?.address ?? walletAddress;
+  }, [smartAccountClient, walletAddress]);
 
   const maxOrderSizeCurrent = useMemo(() => {
     if (maxOrderSize !== undefined) {

@@ -16,19 +16,17 @@ import { SeparatorTypeE } from 'components/separator/enums';
 import { Separator } from 'components/separator/Separator';
 import { SidesRow } from 'components/sides-row/SidesRow';
 import { ToastContent } from 'components/toast-content/ToastContent';
-import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { getTxnLink } from 'helpers/getTxnLink';
-import { orderDigest, positionRiskOnTrade } from 'network/network';
 import { parseSymbol } from 'helpers/parseSymbol';
 import { orderSubmitted } from 'network/broker';
-import { tradingClientAtom } from 'store/app.store';
-import { orderInfoAtom, latestOrderSentTimestampAtom } from 'store/order-block.store';
+import { orderDigest, positionRiskOnTrade } from 'network/network';
+import { latestOrderSentTimestampAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralToSettleConversionAtom,
+  flatTokenAtom,
   poolFeeAtom,
   proxyAddrAtom,
   traderAPIAtom,
-  flatTokenAtom,
 } from 'store/pools.store';
 import { OrderSideE, OrderTypeE } from 'types/enums';
 import type { MarginAccountWithAdditionalDataI, OrderI, OrderWithIdI, PoolWithIdI } from 'types/types';
@@ -38,6 +36,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { cancelOrders } from '../../../helpers/cancelOrders';
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import modalStyles from '../Modal.module.scss';
 import styles from './CloseModal.module.scss';
 
@@ -52,7 +51,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const { t } = useTranslation();
 
   const proxyAddr = useAtomValue(proxyAddrAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
   const c2s = useAtomValue(collateralToSettleConversionAtom);
   const flatToken = useAtomValue(flatTokenAtom);
@@ -61,7 +60,6 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
   const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chain?.id });
 
-  const { isMultisigAddress } = useUserWallet();
   const { settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
   const orderInfo = useAtomValue(orderInfoAtom);
   const poolFee = useAtomValue(poolFeeAtom);
@@ -196,7 +194,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       !poolByPosition ||
       !proxyAddr ||
       !walletClient ||
-      !tradingClient ||
+      !smartAccountClient ||
       !settleTokenDecimals ||
       !chain ||
       !traderAPI ||
@@ -224,16 +222,15 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       .then((data) => {
         if (data.data.digests.length > 0) {
           approveMarginToken({
-            walletClient,
+            walletClient: smartAccountClient,
             settleTokenAddr: poolByPosition.settleTokenAddr,
-            isMultisigAddress,
             proxyAddr,
             minAmount: 0,
             decimals: settleTokenDecimals,
             registeredToken: flatToken?.registeredToken,
           }).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(tradingClient, traderAPI, {
+            postOrder(smartAccountClient, traderAPI, {
               traderAddr: address,
               orders: [closeOrder],
               signatures,
@@ -285,9 +282,9 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
       await cancelOrders({
         ordersToCancel,
         chain,
-        isMultisigAddress,
+
         traderAPI,
-        tradingClient,
+        smartAccountClient,
         toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
         nonceShift: 1,
         callback: () => {

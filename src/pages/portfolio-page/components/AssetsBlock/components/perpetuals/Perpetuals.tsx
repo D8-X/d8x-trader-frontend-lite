@@ -6,8 +6,8 @@ import { realizedPnLListAtom } from 'pages/portfolio-page/store/fetchRealizedPnL
 import { unrealizedPnLListAtom } from 'pages/portfolio-page/store/fetchUnrealizedPnL';
 import { formatCurrency } from 'utils/formatCurrency';
 
-import styles from './Perpetuals.module.scss';
 import { collateralToSettleConversionAtom, flatTokenAtom } from 'store/pools.store';
+import styles from './Perpetuals.module.scss';
 
 export const Perpetuals = () => {
   const { t } = useTranslation();

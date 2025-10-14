@@ -1,0 +1,910 @@
+export const orderBookAbi = [
+  {
+    inputs: [],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'callbackTarget',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bool',
+        name: 'success',
+        type: 'bool',
+      },
+      {
+        indexed: false,
+        internalType: 'uint32',
+        name: 'gasLimit',
+        type: 'uint32',
+      },
+    ],
+    name: 'Callback',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint24',
+        name: 'perpetualId',
+        type: 'uint24',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'trader',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes32',
+        name: 'digest',
+        type: 'bytes32',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'reason',
+        type: 'string',
+      },
+    ],
+    name: 'ExecutionFailed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint8',
+        name: 'version',
+        type: 'uint8',
+      },
+    ],
+    name: 'Initialized',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint24',
+        name: 'perpetualId',
+        type: 'uint24',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'trader',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'brokerAddr',
+        type: 'address',
+      },
+      {
+        components: [
+          {
+            internalType: 'uint16',
+            name: 'leverageTDR',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint16',
+            name: 'brokerFeeTbps',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint24',
+            name: 'iPerpetualId',
+            type: 'uint24',
+          },
+          {
+            internalType: 'address',
+            name: 'traderAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'uint32',
+            name: 'executionTimestamp',
+            type: 'uint32',
+          },
+          {
+            internalType: 'address',
+            name: 'brokerAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'uint32',
+            name: 'submittedTimestamp',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'flags',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'iDeadline',
+            type: 'uint32',
+          },
+          {
+            internalType: 'address',
+            name: 'executorAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'int128',
+            name: 'fAmount',
+            type: 'int128',
+          },
+          {
+            internalType: 'int128',
+            name: 'fLimitPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'int128',
+            name: 'fTriggerPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'bytes',
+            name: 'brokerSignature',
+            type: 'bytes',
+          },
+        ],
+        indexed: false,
+        internalType: 'struct IPerpetualOrder.Order',
+        name: 'order',
+        type: 'tuple',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes32',
+        name: 'digest',
+        type: 'bytes32',
+      },
+    ],
+    name: 'PerpetualLimitOrderCreated',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'CALLBACK_GAS_LIMIT',
+    outputs: [
+      {
+        internalType: 'uint32',
+        name: '',
+        type: 'uint32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    name: 'actvDigestPos',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    name: 'callbackFunctions',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '_digest',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'bytes',
+        name: '_signature',
+        type: 'bytes',
+      },
+      {
+        internalType: 'bytes[]',
+        name: '_updateData',
+        type: 'bytes[]',
+      },
+      {
+        internalType: 'uint64[]',
+        name: '_publishTimes',
+        type: 'uint64[]',
+      },
+    ],
+    name: 'cancelOrder',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'digestsOfTrader',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32[]',
+        name: '_digests',
+        type: 'bytes32[]',
+      },
+      {
+        internalType: 'address',
+        name: '_executorAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'bytes[]',
+        name: '_updateData',
+        type: 'bytes[]',
+      },
+      {
+        internalType: 'uint64[]',
+        name: '_publishTimes',
+        type: 'uint64[]',
+      },
+    ],
+    name: 'executeOrders',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '_digest',
+        type: 'bytes32',
+      },
+    ],
+    name: 'getOrderStatus',
+    outputs: [
+      {
+        internalType: 'enum LimitOrderBook.OrderStatus',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'trader',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'offset',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'limit',
+        type: 'uint256',
+      },
+    ],
+    name: 'getOrders',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint24',
+            name: 'iPerpetualId',
+            type: 'uint24',
+          },
+          {
+            internalType: 'int128',
+            name: 'fLimitPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'uint16',
+            name: 'leverageTDR',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint32',
+            name: 'executionTimestamp',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'flags',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'iDeadline',
+            type: 'uint32',
+          },
+          {
+            internalType: 'address',
+            name: 'brokerAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'int128',
+            name: 'fTriggerPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'int128',
+            name: 'fAmount',
+            type: 'int128',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest1',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'traderAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest2',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'brokerFeeTbps',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes',
+            name: 'brokerSignature',
+            type: 'bytes',
+          },
+          {
+            internalType: 'address',
+            name: 'callbackTarget',
+            type: 'address',
+          },
+        ],
+        internalType: 'struct IClientOrder.ClientOrder[]',
+        name: 'orders',
+        type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'digest',
+        type: 'bytes32',
+      },
+    ],
+    name: 'getTrader',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_perpetualManagerAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'uint24',
+        name: '_perpetualId',
+        type: 'uint24',
+      },
+      {
+        internalType: 'uint8',
+        name: '_iCancelDelaySec',
+        type: 'uint8',
+      },
+    ],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'lastOrderHash',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'trader',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'page',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'limit',
+        type: 'uint256',
+      },
+    ],
+    name: 'limitDigestsOfTrader',
+    outputs: [
+      {
+        internalType: 'bytes32[]',
+        name: '',
+        type: 'bytes32[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'marketCloseSwitchTimestamp',
+    outputs: [
+      {
+        internalType: 'int64',
+        name: '',
+        type: 'int64',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'trader',
+        type: 'address',
+      },
+    ],
+    name: 'numberOfDigestsOfTrader',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'orderCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    name: 'orderDependency',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: 'parentChildDigest1',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'parentChildDigest2',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    name: 'orderOfDigest',
+    outputs: [
+      {
+        internalType: 'uint16',
+        name: 'leverageTDR',
+        type: 'uint16',
+      },
+      {
+        internalType: 'uint16',
+        name: 'brokerFeeTbps',
+        type: 'uint16',
+      },
+      {
+        internalType: 'uint24',
+        name: 'iPerpetualId',
+        type: 'uint24',
+      },
+      {
+        internalType: 'address',
+        name: 'traderAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'uint32',
+        name: 'executionTimestamp',
+        type: 'uint32',
+      },
+      {
+        internalType: 'address',
+        name: 'brokerAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'uint32',
+        name: 'submittedTimestamp',
+        type: 'uint32',
+      },
+      {
+        internalType: 'uint32',
+        name: 'flags',
+        type: 'uint32',
+      },
+      {
+        internalType: 'uint32',
+        name: 'iDeadline',
+        type: 'uint32',
+      },
+      {
+        internalType: 'address',
+        name: 'executorAddr',
+        type: 'address',
+      },
+      {
+        internalType: 'int128',
+        name: 'fAmount',
+        type: 'int128',
+      },
+      {
+        internalType: 'int128',
+        name: 'fLimitPrice',
+        type: 'int128',
+      },
+      {
+        internalType: 'int128',
+        name: 'fTriggerPrice',
+        type: 'int128',
+      },
+      {
+        internalType: 'bytes',
+        name: 'brokerSignature',
+        type: 'bytes',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'perpManager',
+    outputs: [
+      {
+        internalType: 'contract IPerpetualManager',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'perpetualId',
+    outputs: [
+      {
+        internalType: 'uint24',
+        name: '',
+        type: 'uint24',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_from',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_numElements',
+        type: 'uint256',
+      },
+    ],
+    name: 'pollRange',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint24',
+            name: 'iPerpetualId',
+            type: 'uint24',
+          },
+          {
+            internalType: 'int128',
+            name: 'fLimitPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'uint16',
+            name: 'leverageTDR',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint32',
+            name: 'executionTimestamp',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'flags',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'iDeadline',
+            type: 'uint32',
+          },
+          {
+            internalType: 'address',
+            name: 'brokerAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'int128',
+            name: 'fTriggerPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'int128',
+            name: 'fAmount',
+            type: 'int128',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest1',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'traderAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest2',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'brokerFeeTbps',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes',
+            name: 'brokerSignature',
+            type: 'bytes',
+          },
+          {
+            internalType: 'address',
+            name: 'callbackTarget',
+            type: 'address',
+          },
+        ],
+        internalType: 'struct IClientOrder.ClientOrder[]',
+        name: 'orders',
+        type: 'tuple[]',
+      },
+      {
+        internalType: 'bytes32[]',
+        name: 'orderHashes',
+        type: 'bytes32[]',
+      },
+      {
+        internalType: 'uint32[]',
+        name: 'submittedTs',
+        type: 'uint32[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'uint24',
+            name: 'iPerpetualId',
+            type: 'uint24',
+          },
+          {
+            internalType: 'int128',
+            name: 'fLimitPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'uint16',
+            name: 'leverageTDR',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint32',
+            name: 'executionTimestamp',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'flags',
+            type: 'uint32',
+          },
+          {
+            internalType: 'uint32',
+            name: 'iDeadline',
+            type: 'uint32',
+          },
+          {
+            internalType: 'address',
+            name: 'brokerAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'int128',
+            name: 'fTriggerPrice',
+            type: 'int128',
+          },
+          {
+            internalType: 'int128',
+            name: 'fAmount',
+            type: 'int128',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest1',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'address',
+            name: 'traderAddr',
+            type: 'address',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'parentChildDigest2',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'brokerFeeTbps',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes',
+            name: 'brokerSignature',
+            type: 'bytes',
+          },
+          {
+            internalType: 'address',
+            name: 'callbackTarget',
+            type: 'address',
+          },
+        ],
+        internalType: 'struct IClientOrder.ClientOrder[]',
+        name: '_orders',
+        type: 'tuple[]',
+      },
+      {
+        internalType: 'bytes[]',
+        name: '_signatures',
+        type: 'bytes[]',
+      },
+    ],
+    name: 'postOrders',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const;

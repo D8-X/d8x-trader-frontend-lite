@@ -9,10 +9,10 @@ import { useAccount, useWaitForTransactionReceipt, useWalletClient } from 'wagmi
 
 import { Button, CircularProgress, Typography } from '@mui/material';
 
+import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import ActionErrorIcon from 'assets/icons/new/actionError.svg?react';
 import ActionSuccessIcon from 'assets/icons/new/actionSuccess.svg?react';
 import WalletContentIcon from 'assets/icons/new/walletContent.svg?react';
-import { HashZero, SECONDARY_DEADLINE_MULTIPLIER } from 'appConstants';
 import { approveMarginToken } from 'blockchain-api/approveMarginToken';
 import { postOrder } from 'blockchain-api/contract-interactions/postOrder';
 import { Dialog } from 'components/dialog/Dialog';
@@ -27,12 +27,12 @@ import { calculateProbability } from 'helpers/calculateProbability';
 import { getTxnLink } from 'helpers/getTxnLink';
 import { useDebounce } from 'helpers/useDebounce';
 import { orderDigest, positionRiskOnTrade } from 'network/network';
-import { tradingClientAtom } from 'store/app.store';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { clearInputsDataAtom, latestOrderSentTimestampAtom, orderInfoAtom } from 'store/order-block.store';
 import {
   collateralDepositAtom,
   collateralToSettleConversionAtom,
+  flatTokenAtom,
   newPositionRiskAtom,
   perpetualPriceAtom,
   perpetualStaticInfoAtom,
@@ -45,7 +45,6 @@ import {
   selectedPerpetualDataAtom,
   selectedPoolAtom,
   traderAPIAtom,
-  flatTokenAtom,
 } from 'store/pools.store';
 import { MethodE, OrderBlockE, OrderSideE, OrderTypeE, StopLossE, TakeProfitE } from 'types/enums';
 import type { OrderI, OrderInfoI } from 'types/types';
@@ -57,6 +56,7 @@ import { useMinPositionString } from '../../hooks/useMinPositionString';
 import { currencyMultiplierAtom, selectedCurrencyAtom } from '../order-size/store';
 import { hasTpSlOrdersAtom } from './store';
 
+import { smartAccountClientAtom } from 'store/app.store';
 import styles from './ActionBlock.module.scss';
 
 function createMainOrder(orderInfo: OrderInfoI) {
@@ -153,7 +153,7 @@ export const ActionBlock = memo(() => {
     chainId,
   });
 
-  const { hasEnoughGasForFee, isMultisigAddress } = useUserWallet();
+  const { hasEnoughGasForFee } = useUserWallet();
 
   const orderInfo = useAtomValue(orderInfoAtom);
   const proxyAddr = useAtomValue(proxyAddrAtom);
@@ -166,7 +166,6 @@ export const ActionBlock = memo(() => {
   const traderAPI = useAtomValue(traderAPIAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
   const poolTokenDecimals = useAtomValue(poolTokenDecimalsAtom);
-  const tradingClient = useAtomValue(tradingClientAtom);
   const hasTpSlOrders = useAtomValue(hasTpSlOrdersAtom);
   const poolFee = useAtomValue(poolFeeAtom);
   const currencyMultiplier = useAtomValue(currencyMultiplierAtom);
@@ -178,6 +177,7 @@ export const ActionBlock = memo(() => {
   const [perpetualPrice, setPerpetualPrice] = useAtom(perpetualPriceAtom);
   const [collateralDeposit, setCollateralDeposit] = useAtom(collateralDepositAtom);
   const selectedPerpetualData = useAtomValue(selectedPerpetualDataAtom);
+  const smartAccountClient = useAtomValue(smartAccountClientAtom);
 
   const [isValidityCheckDone, setIsValidityCheckDone] = useState(false);
   const [showReviewOrderModal, setShowReviewOrderModal] = useState(false);
@@ -446,7 +446,7 @@ export const ActionBlock = memo(() => {
     if (
       !address ||
       !walletClient ||
-      !tradingClient ||
+      !smartAccountClient ||
       !parsedOrders ||
       !selectedPool ||
       !proxyAddr ||
@@ -466,9 +466,8 @@ export const ActionBlock = memo(() => {
         if (data.data.digests.length > 0) {
           // hide modal now that metamask popup shows up
           approveMarginToken({
-            walletClient,
+            walletClient: smartAccountClient,
             settleTokenAddr: selectedPool.settleTokenAddr,
-            isMultisigAddress,
             proxyAddr,
             minAmount: collateralDeposit * (c2s.get(selectedPool.poolSymbol)?.value ?? 1),
             decimals: poolTokenDecimals,
@@ -477,7 +476,7 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(tradingClient, traderAPI, {
+              postOrder(smartAccountClient, traderAPI, {
                 traderAddr: address,
                 orders: parsedOrders,
                 signatures,

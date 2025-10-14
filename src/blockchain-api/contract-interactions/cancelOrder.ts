@@ -1,41 +1,56 @@
-import { LOB_ABI } from '@d8x/perpetuals-sdk';
-import type { Address, EstimateContractGasParameters, WalletClient } from 'viem';
-import { estimateContractGas } from 'viem/actions';
+import { Account, Chain, Client, encodeFunctionData, Transport, type Address, type WalletClient } from 'viem';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
+import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-import { MethodE } from 'types/enums';
+import { SmartAccountClient } from 'permissionless';
 import { type CancelOrderResponseI } from 'types/types';
+import { SmartAccount } from 'viem/account-abstraction';
+import { sendTransaction } from 'viem/actions';
+import { updatePyth } from './updatePyth';
 
 export async function cancelOrder(
-  walletClient: WalletClient,
+  traderAPI: TraderInterface,
+  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>,
+  symbol: string,
   signature: string,
   data: CancelOrderResponseI,
-  orderId: string,
-  nonce?: number
+  orderId: string
 ): Promise<{ hash: Address }> {
-  if (!walletClient.account) {
+  if (!walletClient.account?.address) {
     throw new Error('account not connected');
   }
   const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
-  const estimateParams: EstimateContractGasParameters = {
-    address: data.OrderBookAddr as Address,
-    abi: LOB_ABI,
+
+  await updatePyth({
+    traderApi: traderAPI,
+    walletClient,
+    symbol,
+    feesPerGas,
+  });
+
+  const txData2 = encodeFunctionData({
+    abi: orderBookAbi,
     functionName: 'cancelOrder',
-    args: [orderId, signature, data.priceUpdate.updateData, data.priceUpdate.publishTimes],
-    value: BigInt(data.priceUpdate.updateFee),
-    nonce,
+    args: [
+      orderId as `0x${string}`,
+      signature as `0x${string}`,
+      [], //data.priceUpdate.publishTimes.map(() => '0x') as `0x${string}`[], //data.priceUpdate.updateData as `0x${string}`[],
+      [], // data.priceUpdate.publishTimes.map((x) => BigInt(x - 1)),
+    ],
+  });
+
+  return sendTransaction(walletClient.account.client!, {
     account: walletClient.account,
-    ...feesPerGas,
-  };
-  const gasLimit = await estimateContractGas(walletClient, estimateParams)
-    .then((gas) => (gas * 130n) / 100n)
-    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  const baseParams = {
-    ...estimateParams,
     chain: walletClient.chain,
-    account: walletClient.account,
-    gas: gasLimit,
-  };
-  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
+    to: data.OrderBookAddr as `0x${string}`,
+    from: walletClient.account.address,
+    // value: BigInt(data.priceUpdate.updateFee),
+    data: txData2,
+    // nonce,
+    gas: 2_000_000n,
+    ...feesPerGas,
+  }).then((tx) => ({ hash: tx }));
+
+  // return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
 }

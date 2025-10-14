@@ -19,14 +19,14 @@ import { WalletBalances } from 'components/wallet-balances/WalletBalances';
 import { useUserWallet } from 'context/user-wallet-context/UserWalletContext';
 import { modalSelectedCurrencyAtom, withdrawModalOpenAtom } from 'store/global-modals.store';
 import { MethodE } from 'types/enums';
-import { isValidAddress } from 'utils/isValidAddress';
 import { formatToCurrency } from 'utils/formatToCurrency';
+import { isValidAddress } from 'utils/isValidAddress';
 
 import { useTransferGasToken } from './hooks/useTransferGasToken';
 import { useTransferTokens } from './hooks/useTransferTokens';
 
+import { flatTokenAbi } from 'blockchain-api/abi/flatTokenAbi';
 import styles from './WithdrawModal.module.scss';
-import { flatTokenAbi } from 'blockchain-api/contract-interactions/flatTokenAbi';
 
 export const WithdrawModal = () => {
   const { t } = useTranslation();
