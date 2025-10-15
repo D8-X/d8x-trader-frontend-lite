@@ -242,7 +242,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
       ordersToCancel,
       chain,
       traderAPI,
-      smartAccountClient,
+      sendTransaction,
       toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
       nonceShift: 0,
       callback: () => {
@@ -317,7 +317,7 @@ export const ModifyTpSlModal = memo(({ isOpen, selectedPosition, poolByPosition,
                 .then(() => {
                   // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
                   const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-                  postOrder(smartAccountClient, sendTransaction, traderAPI, {
+                  postOrder(Number(traderAPI.chainId), sendTransaction, traderAPI, {
                     traderAddr: address,
                     orders: parsedOrders,
                     signatures,

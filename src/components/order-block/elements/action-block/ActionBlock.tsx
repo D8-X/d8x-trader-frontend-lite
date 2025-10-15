@@ -480,7 +480,7 @@ export const ActionBlock = memo(() => {
             .then(() => {
               // trader doesn't need to sign if sending his own orders: signatures are dummy zero hashes
               const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-              postOrder(smartAccountClient, sendTransaction, traderAPI, {
+              postOrder(chainId, sendTransaction, traderAPI, {
                 traderAddr: address,
                 orders: parsedOrders,
                 signatures,

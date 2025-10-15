@@ -233,7 +233,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
             registeredToken: flatToken?.registeredToken,
           }).then(() => {
             const signatures = new Array<string>(data.data.digests.length).fill(HashZero);
-            postOrder(smartAccountClient, sendTransaction, traderAPI, {
+            postOrder(Number(traderAPI.chainId), sendTransaction, traderAPI, {
               traderAddr: address,
               orders: [closeOrder],
               signatures,
@@ -287,7 +287,7 @@ export const CloseModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
         chain,
 
         traderAPI,
-        smartAccountClient,
+        sendTransaction,
         toastTitle: t('pages.trade.orders-table.toasts.cancel-order.title'),
         nonceShift: 1,
         callback: () => {

@@ -448,7 +448,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
         registeredToken: flatToken?.registeredToken,
       })
         .then(() => {
-          deposit(smartAccountClient, traderAPI, {
+          deposit(sendTransaction, traderAPI, {
             traderAddr: address,
             amount: +addCollateral / px,
             symbol: selectedPosition.symbol,
@@ -494,7 +494,7 @@ export const ModifyModal = memo(({ isOpen, selectedPosition, poolByPosition, clo
       requestSentRef.current = true;
       setRequestSent(true);
       setLoading(true);
-      withdraw(smartAccountClient, traderAPI, {
+      withdraw(sendTransaction, traderAPI, {
         traderAddr: address,
         amount: +removeCollateral,
         symbol: selectedPosition.symbol,

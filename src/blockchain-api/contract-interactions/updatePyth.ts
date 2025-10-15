@@ -1,20 +1,20 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
+import { waitForTransactionReceipt } from '@wagmi/core';
 import { pythAbi } from 'blockchain-api/abi/pyth';
 import { getUpdateFee } from 'blockchain-api/pyth/getUpdateFee';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { getPriceUpdates } from 'network/prices';
-import { type SmartAccountClient } from 'permissionless';
-import { Account, Chain, Client, encodeFunctionData, Transport, type WalletClient } from 'viem';
-import { SmartAccount } from 'viem/account-abstraction';
-import { sendTransaction, waitForTransactionReceipt } from 'viem/actions';
+import { SendTransactionCallT } from 'types/types';
+import { encodeFunctionData } from 'viem';
 
 export async function updatePyth({
   traderApi,
-  walletClient,
+  sendTransaction,
   symbol,
   feesPerGas,
 }: {
   traderApi: TraderInterface;
-  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>;
+  sendTransaction: SendTransactionCallT;
   symbol: string;
   feesPerGas?:
     | {
@@ -28,10 +28,7 @@ export async function updatePyth({
         maxPriorityFeePerGas: undefined;
       };
 }) {
-  if (!walletClient.account?.address || !walletClient.transport || !walletClient.chain) {
-    throw new Error('account not connected');
-  }
-  let txNonce = await walletClient.account.getNonce?.()?.then((n) => Number(n));
+  // let txNonce = await walletClient.account.getNonce?.()?.then((n) => Number(n));
   let txHash: `0x${string}` | undefined;
 
   const pxUpdates = await getPriceUpdates(traderApi, symbol);
@@ -39,8 +36,7 @@ export async function updatePyth({
   for (const pxUpdate of pxUpdates) {
     try {
       const txParams = {
-        account: walletClient.account.address,
-        chain: walletClient.chain,
+        chainId: Number(traderApi.chainId),
         to: pxUpdate.address,
         value: await getUpdateFee(pxUpdate.address, pxUpdate.updateData),
         data: encodeFunctionData({
@@ -48,18 +44,10 @@ export async function updatePyth({
           functionName: 'updatePriceFeeds',
           args: [pxUpdate.updateData], // [[pxUpdate.updateData], pxUpdate.ids, pxUpdate.publishTimes],
         }),
-        nonce: txNonce,
         gas: 500_000n,
         ...feesPerGas,
       };
-      txHash =
-        walletClient.key !== 'bundler'
-          ? await sendTransaction(walletClient as WalletClient, txParams)
-          : await (walletClient as SmartAccountClient).sendTransaction(txParams);
-
-      if (txNonce) {
-        txNonce++;
-      }
+      txHash = await sendTransaction(txParams, { sponsor: true }).then(({ hash }) => hash);
     } catch (e) {
       console.log('pyth error', e);
       continue;
@@ -67,7 +55,7 @@ export async function updatePyth({
   }
   // txns were submitted in order, wait until last accepted one is mined
   if (txHash !== undefined) {
-    await waitForTransactionReceipt(walletClient, { hash: txHash })
+    await waitForTransactionReceipt(wagmiConfig, { hash: txHash })
       .then()
       .catch((e) => {
         console.log('pyth confirmation error', e);
