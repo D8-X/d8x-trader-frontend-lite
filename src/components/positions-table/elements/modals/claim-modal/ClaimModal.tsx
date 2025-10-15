@@ -19,6 +19,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { useSettleTokenBalance } from '../../../hooks/useSettleTokenBalance';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import modalStyles from '../Modal.module.scss';
 
@@ -39,6 +40,7 @@ export const ClaimModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
 
   const { address, chain } = useAccount();
   const { data: walletClient } = useWalletClient({ chainId: chain?.id });
+  const { sendTransaction } = useSendTransaction();
 
   const { settleTokenDecimals } = useSettleTokenBalance({ poolByPosition });
 
@@ -136,7 +138,7 @@ export const ClaimModal = memo(({ isOpen, selectedPosition, poolByPosition, clos
     setRequestSent(true);
     setLoading(true);
 
-    settleTrader(smartAccountClient, traderAPI, selectedPosition.symbol, address)
+    settleTrader(sendTransaction, traderAPI, selectedPosition.symbol, address)
       .then(({ hash }) => {
         setTxHash(hash);
         setSymbolForTx(selectedPosition.symbol);
