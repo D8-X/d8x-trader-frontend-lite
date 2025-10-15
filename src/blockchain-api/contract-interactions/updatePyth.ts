@@ -1,7 +1,6 @@
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { waitForTransactionReceipt } from '@wagmi/core';
 import { pythAbi } from 'blockchain-api/abi/pyth';
-import { getUpdateFee } from 'blockchain-api/pyth/getUpdateFee';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { getPriceUpdates } from 'network/prices';
 import { SendTransactionCallT } from 'types/types';
@@ -38,7 +37,7 @@ export async function updatePyth({
       const txParams = {
         chainId: Number(traderApi.chainId),
         to: pxUpdate.address,
-        value: await getUpdateFee(pxUpdate.address, pxUpdate.updateData),
+        // value: await getUpdateFee(pxUpdate.address, pxUpdate.updateData),
         data: encodeFunctionData({
           abi: pythAbi,
           functionName: 'updatePriceFeeds',
