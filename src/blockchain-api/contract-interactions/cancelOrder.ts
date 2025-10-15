@@ -3,7 +3,8 @@ import { encodeFunctionData, type Address } from 'viem';
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { SendTransactionCallT, type CancelOrderResponseI } from 'types/types';
-import { updatePyth } from './updatePyth';
+import { hasPaymaster } from 'utils/hasPaymaster';
+import { updatePriceFeeds } from './updatePriceFeeds';
 
 export async function cancelOrder(
   sendTransaction: SendTransactionCallT,
@@ -13,7 +14,7 @@ export async function cancelOrder(
   data: CancelOrderResponseI,
   orderId: string
 ): Promise<{ hash: Address }> {
-  await updatePyth({
+  await updatePriceFeeds({
     traderApi: traderAPI,
     sendTransaction,
     symbol,
@@ -30,9 +31,13 @@ export async function cancelOrder(
     ],
   });
 
-  return sendTransaction({
-    chainId: Number(traderAPI.chainId),
-    to: data.OrderBookAddr as `0x${string}`,
-    data: txData2,
-  });
+  return sendTransaction(
+    {
+      chainId: Number(traderAPI.chainId),
+      to: data.OrderBookAddr as `0x${string}`,
+      data: txData2,
+      gasLimit: 1_000_000n,
+    },
+    { sponsor: hasPaymaster(Number(traderAPI.chainId)) }
+  );
 }

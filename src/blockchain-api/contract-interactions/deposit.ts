@@ -2,7 +2,7 @@ import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk
 import { encodeFunctionData, type Address } from 'viem';
 
 import type { CollateralChangePropsI, SendTransactionCallT } from 'types/types';
-import { updatePyth } from './updatePyth';
+import { updatePriceFeeds } from './updatePriceFeeds';
 
 export async function deposit(
   sendTransaction: SendTransactionCallT,
@@ -14,7 +14,7 @@ export async function deposit(
     throw new Error(`no settlement token information found for symbol ${symbol}`);
   }
 
-  await updatePyth({
+  await updatePriceFeeds({
     traderApi: traderAPI,
     sendTransaction,
     symbol,

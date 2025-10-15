@@ -1,9 +1,9 @@
+import type { PythMetadata } from '@d8x/perpetuals-sdk';
 import classnames from 'classnames';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
-import type { PythMetadata } from '@d8x/perpetuals-sdk';
 
 import { ArrowForward } from '@mui/icons-material';
 import { Card, CardContent, Link, Typography } from '@mui/material';
@@ -12,7 +12,7 @@ import { Dialog } from 'components/dialog/Dialog';
 import { createSymbol } from 'helpers/createSymbol';
 import { depositModalOpenAtom } from 'store/global-modals.store';
 import { orderTypeAtom } from 'store/order-block.store';
-import { selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom, leverageSwitchAtom } from 'store/pools.store';
+import { leverageSwitchAtom, selectedPerpetualAtom, selectedPoolAtom, traderAPIAtom } from 'store/pools.store';
 import { OrderTypeE } from 'types/enums';
 import { PredictionMarketMetaDataI } from 'types/types';
 import { isEnabledChain } from 'utils/isEnabledChain';
@@ -76,11 +76,11 @@ export const OrderBlock = memo(() => {
       setPredictionQuestion(undefined);
       return;
     }
-    traderAPI
-      .fetchPrdMktMetaData(`${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`)
-      .then((value) => {
-        setPredictionQuestion(value as never as PredictionMarketMetaDataI);
-      });
+    // traderAPI
+    //   .fetchPrdMktMetaData(`${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}`)
+    //   .then((value) => {
+    //     setPredictionQuestion(value as never as PredictionMarketMetaDataI);
+    //   });
   }, [isPredictionMarket, traderAPI, selectedPerpetual, selectedPool]);
 
   useEffect(() => {

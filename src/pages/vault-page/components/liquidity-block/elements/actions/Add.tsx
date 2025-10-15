@@ -242,7 +242,7 @@ export const Add = memo(() => {
     })
       .then(() => {
         setApprovalCompleted(false);
-        return addLiquidity(smartAccountClient, liqProvTool, selectedPool.poolSymbol, addAmount / userPrice);
+        return addLiquidity(sendTransaction, liqProvTool, selectedPool.poolSymbol, addAmount / userPrice);
       })
       .then((tx) => {
         setTxHash(tx.hash);

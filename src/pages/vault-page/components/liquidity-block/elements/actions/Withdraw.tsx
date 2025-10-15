@@ -5,7 +5,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { type Address } from 'viem';
-import { useAccount, useWaitForTransactionReceipt, useWalletClient, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
 
@@ -31,9 +31,10 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 
 import { Initiate } from './Initiate';
 
-import styles from './Action.module.scss';
+import { useSendTransaction } from '@privy-io/react-auth';
 import { getLiquidityLockedPeriod } from 'helpers/getLiquidityLockedPeriod';
 import { WithdrawRequestI } from 'types/types';
+import styles from './Action.module.scss';
 
 interface WithdrawPropsI {
   withdrawOn: string;
@@ -52,6 +53,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
 
   const { data: walletClient } = useWalletClient();
   const { address, chain, chainId } = useAccount();
+  const { sendTransaction } = useSendTransaction();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const liqProvTool = useAtomValue(traderAPIAtom);
@@ -194,7 +196,7 @@ export const Withdraw = memo(({ withdrawOn }: WithdrawPropsI) => {
     setRequestSent(true);
     setLoading(true);
 
-    executeLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol)
+    executeLiquidityWithdrawal(walletClient.account.address, sendTransaction, liqProvTool, selectedPool.poolSymbol)
       .then((tx) => {
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.withdrawing')} bodyLines={[]} />);
