@@ -2,6 +2,7 @@ import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk
 import { encodeFunctionData, type Address } from 'viem';
 
 import type { CollateralChangePropsI, SendTransactionCallT } from 'types/types';
+import { hasPaymaster } from 'utils/hasPaymaster';
 import { updatePriceFeeds } from './updatePriceFeeds';
 
 export async function deposit(
@@ -32,9 +33,15 @@ export async function deposit(
     ],
   });
 
-  return sendTransaction({
-    chainId: Number(traderAPI.chainId),
-    to: traderAPI.getProxyAddress() as Address,
-    data: txData2,
-  });
+  const chainId = Number(traderAPI.chainId);
+
+  return sendTransaction(
+    {
+      chainId,
+      to: traderAPI.getProxyAddress() as Address,
+      data: txData2,
+      gasLimit: 1_000_000n,
+    },
+    { sponsor: hasPaymaster(chainId) }
+  );
 }

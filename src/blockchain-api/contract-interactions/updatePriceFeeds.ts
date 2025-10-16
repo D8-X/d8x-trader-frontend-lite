@@ -42,11 +42,12 @@ export async function updatePriceFeeds({
       ],
     }),
     ...feesPerGas,
+    gasLimit: 500_000n,
   };
 
   const txHash = await sendTransaction(txParams, { sponsor: hasPaymaster(Number(traderApi.chainId)) })
     .then(({ hash }) => hash)
-    .catch();
+    .catch(() => undefined);
 
   if (txHash !== undefined) {
     await waitForTransactionReceipt(wagmiConfig, { hash: txHash })
