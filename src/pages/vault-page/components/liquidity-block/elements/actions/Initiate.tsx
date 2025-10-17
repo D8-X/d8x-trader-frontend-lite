@@ -26,6 +26,7 @@ import {
 import { formatToCurrency, valueToFractionDigits } from 'utils/formatToCurrency';
 import { isEnabledChain } from 'utils/isEnabledChain';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import styles from './Action.module.scss';
 
 enum ValidityCheckInitiateE {
@@ -44,6 +45,7 @@ export const Initiate = memo(() => {
 
   const { address, chain, chainId } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { sendTransaction } = useSendTransaction();
 
   const selectedPool = useAtomValue(selectedPoolAtom);
   const liqProvTool = useAtomValue(traderAPIAtom);
@@ -172,7 +174,7 @@ export const Initiate = memo(() => {
     setRequestSent(true);
     setLoading(true);
 
-    initiateLiquidityWithdrawal(walletClient, liqProvTool, selectedPool.poolSymbol, initiateAmount)
+    initiateLiquidityWithdrawal(sendTransaction, liqProvTool, selectedPool.poolSymbol, initiateAmount)
       .then((tx) => {
         setTxHash(tx.hash);
         toast.success(<ToastContent title={t('pages.vault.toast.initiating')} bodyLines={[]} />);
@@ -200,6 +202,7 @@ export const Initiate = memo(() => {
     liqProvTool,
     walletClient,
     selectedPool,
+    sendTransaction,
     setTriggerUserStatsUpdate,
     setTriggerWithdrawalsUpdate,
     t,

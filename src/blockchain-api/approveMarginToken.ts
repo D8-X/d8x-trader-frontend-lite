@@ -1,20 +1,12 @@
 import { readContracts, waitForTransactionReceipt } from '@wagmi/core';
-import {
-  type Address,
-  erc20Abi,
-  type EstimateContractGasParameters,
-  parseUnits,
-  WalletClient,
-  zeroAddress,
-} from 'viem';
-import { estimateContractGas } from 'viem/actions';
+import { type Address, encodeFunctionData, erc20Abi, parseUnits, WalletClient, zeroAddress } from 'viem';
 
 import { MaxUint256 } from 'appConstants';
 
 import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-import { getGasLimit } from 'blockchain-api/getGasLimit';
 import { SmartAccountClient } from 'permissionless';
-import { MethodE } from 'types/enums';
+import { SendTransactionCallT } from 'types/types';
+import { hasPaymaster } from 'utils/hasPaymaster';
 import { flatTokenAbi } from './abi/flatTokenAbi';
 import { NORMAL_ADDRESS_TIMEOUT } from './constants';
 import { registerFlatToken } from './contract-interactions/registerFlatToken';
@@ -22,6 +14,7 @@ import { wagmiConfig } from './wagmi/wagmiClient';
 
 interface ApproveMarginTokenPropsI {
   walletClient: SmartAccountClient | WalletClient;
+  sendTransaction: SendTransactionCallT;
   settleTokenAddr: string;
   proxyAddr: string;
   minAmount: number;
@@ -31,6 +24,7 @@ interface ApproveMarginTokenPropsI {
 
 export async function approveMarginToken({
   walletClient,
+  sendTransaction,
   settleTokenAddr,
   proxyAddr,
   minAmount,
@@ -104,31 +98,23 @@ export async function approveMarginToken({
       }
     }
 
-    const estimateParams: EstimateContractGasParameters = {
-      address: tokenAddress,
-      abi: erc20Abi,
-      functionName: 'approve',
-      args: [spender, BigInt(MaxUint256)],
-      account: account,
-      ...feesPerGas,
-    };
-    const gasLimit = await estimateContractGas(walletClient, estimateParams).catch(() =>
-      getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Approve })
-    );
-
-    // Create base params (shared between legacy and EIP-1559)
-    const baseParams = {
-      ...estimateParams,
+    const call = {
       chain: walletClient.chain,
-      account: account,
-      gas: gasLimit,
+      to: tokenAddress,
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [spender, BigInt(MaxUint256)],
+      }),
+      value: 0n,
     };
-    return walletClient.writeContract(baseParams).then(async (tx) => {
+
+    return sendTransaction(call, { sponsor: hasPaymaster(walletClient.chain?.id) }).then(async ({ hash }) => {
       await waitForTransactionReceipt(wagmiConfig, {
-        hash: tx,
+        hash,
         timeout: NORMAL_ADDRESS_TIMEOUT,
       });
-      return { hash: tx };
+      return { hash };
     });
   }
 }

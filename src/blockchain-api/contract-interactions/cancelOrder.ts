@@ -1,32 +1,23 @@
-import { Account, Chain, Client, encodeFunctionData, Transport, type Address, type WalletClient } from 'viem';
+import { encodeFunctionData, type Address } from 'viem';
 
 import { TraderInterface } from '@d8x/perpetuals-sdk';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
-import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-import { SmartAccountClient } from 'permissionless';
-import { type CancelOrderResponseI } from 'types/types';
-import { SmartAccount } from 'viem/account-abstraction';
-import { sendTransaction } from 'viem/actions';
-import { updatePyth } from './updatePyth';
+import { SendTransactionCallT, type CancelOrderResponseI } from 'types/types';
+import { hasPaymaster } from 'utils/hasPaymaster';
+import { updatePriceFeeds } from './updatePriceFeeds';
 
 export async function cancelOrder(
+  sendTransaction: SendTransactionCallT,
   traderAPI: TraderInterface,
-  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>,
   symbol: string,
   signature: string,
   data: CancelOrderResponseI,
   orderId: string
 ): Promise<{ hash: Address }> {
-  if (!walletClient.account?.address) {
-    throw new Error('account not connected');
-  }
-  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
-
-  await updatePyth({
+  await updatePriceFeeds({
     traderApi: traderAPI,
-    walletClient,
+    sendTransaction,
     symbol,
-    feesPerGas,
   });
 
   const txData2 = encodeFunctionData({
@@ -40,17 +31,13 @@ export async function cancelOrder(
     ],
   });
 
-  return sendTransaction(walletClient.account.client!, {
-    account: walletClient.account,
-    chain: walletClient.chain,
-    to: data.OrderBookAddr as `0x${string}`,
-    from: walletClient.account.address,
-    // value: BigInt(data.priceUpdate.updateFee),
-    data: txData2,
-    // nonce,
-    gas: 2_000_000n,
-    ...feesPerGas,
-  }).then((tx) => ({ hash: tx }));
-
-  // return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
+  return sendTransaction(
+    {
+      chainId: Number(traderAPI.chainId),
+      to: data.OrderBookAddr as `0x${string}`,
+      data: txData2,
+      gasLimit: 1_000_000n,
+    },
+    { sponsor: hasPaymaster(Number(traderAPI.chainId)) }
+  );
 }

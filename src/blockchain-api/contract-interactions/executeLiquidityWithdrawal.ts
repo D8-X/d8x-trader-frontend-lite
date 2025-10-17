@@ -1,41 +1,34 @@
 import { PROXY_ABI, type TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Chain, EstimateContractGasParameters, Transport, WalletClient } from 'viem';
-import { estimateContractGas } from 'viem/actions';
+import { encodeFunctionData, type Address } from 'viem';
 
-import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-
-import { MethodE } from 'types/enums';
+import { SendTransactionCallT } from 'types/types';
+import { hasPaymaster } from 'utils/hasPaymaster';
 
 export async function executeLiquidityWithdrawal(
-  walletClient: WalletClient<Transport, Chain, Account>,
+  to: Address,
+  sendTransaction: SendTransactionCallT,
   traderAPI: TraderInterface,
   symbol: string
 ): Promise<{ hash: Address }> {
+  const chainId = Number(traderAPI.chainId);
   const decimals = traderAPI.getMarginTokenDecimalsFromSymbol(symbol);
   const poolId = traderAPI.getPoolIdFromSymbol(symbol);
-  const account = walletClient.account?.address;
-  if (!decimals || !poolId || !account) {
+  if (!decimals || !poolId) {
     throw new Error('undefined call parameters');
   }
-  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
 
-  const estimateParams: EstimateContractGasParameters = {
-    address: traderAPI.getProxyAddress() as Address,
+  const txData2 = encodeFunctionData({
     abi: PROXY_ABI,
     functionName: 'executeLiquidityWithdrawal',
-    args: [poolId, walletClient.account?.address],
-    account,
-    ...feesPerGas,
-  };
-  const gasLimit = await estimateContractGas(walletClient, estimateParams)
-    .then((gas) => (gas * 130n) / 100n)
-    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  const baseParams = {
-    ...estimateParams,
-    chain: walletClient.chain,
-    account,
-    gas: gasLimit,
-  };
-  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
+    args: [poolId, to],
+  });
+
+  return sendTransaction(
+    {
+      chainId,
+      to: traderAPI.getProxyAddress() as Address,
+      data: txData2,
+    },
+    { sponsor: hasPaymaster(chainId) }
+  );
 }

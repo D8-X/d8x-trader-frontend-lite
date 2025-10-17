@@ -48,6 +48,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { OpenOrderRow } from './elements/OpenOrderRow';
 import { OpenOrderBlock } from './elements/open-order-block/OpenOrderBlock';
 
+import { useSendTransaction } from '@privy-io/react-auth';
 import { smartAccountClientAtom } from 'store/app.store';
 import styles from './OpenOrdersTable.module.scss';
 
@@ -59,6 +60,8 @@ export const OpenOrdersTable = memo(() => {
   const { t } = useTranslation();
 
   const { chain, chainId, address, isDisconnected, isConnected } = useAccount();
+  const { sendTransaction } = useSendTransaction();
+
   const { width, ref } = useResizeDetector();
 
   const [openOrders, setOpenOrders] = useAtom(openOrdersAtom);
@@ -229,7 +232,7 @@ export const OpenOrdersTable = memo(() => {
     getCancelOrder(chainId, traderAPI, selectedOrder.symbol, selectedOrder.id)
       .then((data) => {
         if (data.data.digest) {
-          cancelOrder(traderAPI, smartAccountClient, selectedOrder.symbol, HashZero, data.data, selectedOrder.id)
+          cancelOrder(sendTransaction, traderAPI, selectedOrder.symbol, HashZero, data.data, selectedOrder.id)
             .then(({ hash }) => {
               setCancelModalOpen(false);
               setSelectedOrder(null);

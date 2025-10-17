@@ -1,39 +1,27 @@
 import { floatToABK64x64, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
-import type { Account, Address, Chain, Client, EstimateContractGasParameters, Transport, WalletClient } from 'viem';
-import { SmartAccount } from 'viem/account-abstraction';
-import { estimateContractGas } from 'viem/actions';
+import { encodeFunctionData, type Address } from 'viem';
 
-import { getFeesPerGas } from 'blockchain-api/getFeesPerGas';
-import { getGasLimit } from 'blockchain-api/getGasLimit';
-import { SmartAccountClient } from 'permissionless';
-import { MethodE } from 'types/enums';
-import type { CollateralChangePropsI } from 'types/types';
-import { updatePyth } from './updatePyth';
+import type { CollateralChangePropsI, SendTransactionCallT } from 'types/types';
+import { hasPaymaster } from 'utils/hasPaymaster';
+import { updatePriceFeeds } from './updatePriceFeeds';
 
 export async function deposit(
-  walletClient: SmartAccountClient<Transport, Chain, SmartAccount, Client> | WalletClient<Transport, Chain, Account>,
+  sendTransaction: SendTransactionCallT,
   traderAPI: TraderInterface,
   { traderAddr, symbol, amount }: CollateralChangePropsI
 ): Promise<{ hash: Address }> {
-  if (!walletClient.account?.address) {
-    throw new Error('account not connected');
-  }
   const decimals = traderAPI.getSettlementTokenDecimalsFromSymbol(symbol);
   if (!decimals) {
     throw new Error(`no settlement token information found for symbol ${symbol}`);
   }
 
-  const feesPerGas = await getFeesPerGas(walletClient.chain?.id);
-
-  await updatePyth({
+  await updatePriceFeeds({
     traderApi: traderAPI,
-    walletClient,
+    sendTransaction,
     symbol,
-    feesPerGas,
   });
 
-  const estimateParams: EstimateContractGasParameters = {
-    address: traderAPI.getProxyAddress() as Address,
+  const txData2 = encodeFunctionData({
     abi: PROXY_ABI,
     functionName: 'deposit',
     args: [
@@ -43,19 +31,17 @@ export async function deposit(
       [], //pxUpdate.submission.priceFeedVaas,
       [], //pxUpdate.submission.timestamps,
     ],
-    //value: BigInt(pxUpdate.submission.timestamps.length * traderAPI.PRICE_UPDATE_FEE_GWEI),
-    account: walletClient.account,
-    ...feesPerGas,
-  };
+  });
 
-  const gasLimit = await estimateContractGas(walletClient.account.client!, estimateParams)
-    .then((gas) => (gas * 130n) / 100n)
-    .catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
-  const baseParams = {
-    ...estimateParams,
-    chain: walletClient.chain,
-    account: walletClient.account,
-    gas: gasLimit,
-  };
-  return walletClient.writeContract(baseParams).then((tx) => ({ hash: tx }));
+  const chainId = Number(traderAPI.chainId);
+
+  return sendTransaction(
+    {
+      chainId,
+      to: traderAPI.getProxyAddress() as Address,
+      data: txData2,
+      gasLimit: 1_000_000n,
+    },
+    { sponsor: hasPaymaster(chainId) }
+  );
 }
