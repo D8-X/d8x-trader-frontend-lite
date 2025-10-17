@@ -142,41 +142,81 @@ export const OrderSize = memo(() => {
     }
   }, [selectedPerpetual, selectedPool, defaultCurrency, setSelectedCurrency]);
 
+  const lotStep = useMemo(() => {
+    if (!perpetualStaticInfo) {
+      return '0.1';
+    }
+    if (currencyMultiplier === 1) {
+      return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
+    }
+    const baseStep = Number(roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC));
+    const roundedValueBase = baseStep * currencyMultiplier;
+    const numberDigits = valueToFractionDigits(roundedValueBase);
+    return roundedValueBase.toFixed(numberDigits);
+  }, [perpetualStaticInfo, currencyMultiplier]);
+
   const handleInputBlur = useCallback(() => {
-    setInputFromOrderSize(orderSize);
-  }, [orderSize, setInputFromOrderSize]);
+    // If no open position: clamp to min position size
+    // If has open position: clamp tiny positives to one lot step
+    if (perpetualStaticInfo && selectedPerpetual && selectedPool) {
+      const sym = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+      const pos = positions.find((p) => p.symbol === sym);
+      const hasOpen = !!pos && pos.positionNotionalBaseCCY !== 0;
+      const numeric = Number(inputValue) || 0;
 
-  const orderSizeStep = useMemo(() => {
-    if (perpetualStaticInfo) {
-      // Check if user has an open position in the selected perpetual
-      const selectedPerpetualSymbol = `${selectedPerpetual?.baseCurrency}-${selectedPerpetual?.quoteCurrency}-${selectedPool?.poolSymbol}`;
-      const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
-      const hasOpenPosition = openPosition && openPosition.positionNotionalBaseCCY !== 0;
-
-      // If user has open position, use regular lot size
-      if (hasOpenPosition) {
-        if (currencyMultiplier === 1) {
-          return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
-        } else {
-          const baseStep = Number(roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC));
-          const roundedValueBase = baseStep * currencyMultiplier;
-          const numberDigits = valueToFractionDigits(roundedValueBase);
-          return roundedValueBase.toFixed(numberDigits);
+      if (!hasOpen) {
+        const base = 10 * perpetualStaticInfo.lotSizeBC * currencyMultiplier;
+        const digits = valueToFractionDigits(base);
+        const minVal = Number(base.toFixed(digits));
+        if (numeric > 0 && numeric < minVal) {
+          setInputValue(`${minVal}`);
+          setOrderSize(minVal / currencyMultiplier);
+          setInputFromOrderSize(minVal / currencyMultiplier);
+          return;
         }
       } else {
-        // If no open position, use min position size as step (so first click goes to min position)
-        if (currencyMultiplier === 1) {
-          return roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
-        } else {
-          const baseStep = Number(roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC));
-          const roundedValueBase = baseStep * currencyMultiplier;
-          const numberDigits = valueToFractionDigits(roundedValueBase);
-          return roundedValueBase.toFixed(numberDigits);
+        const stepNum = Number(lotStep) || 0;
+        if (stepNum > 0 && numeric > 0 && numeric < stepNum) {
+          const stepDigits = valueToFractionDigits(stepNum);
+          const fixed = Number(stepNum.toFixed(stepDigits));
+          setInputValue(`${fixed}`);
+          setOrderSize(fixed / currencyMultiplier);
+          setInputFromOrderSize(fixed / currencyMultiplier);
+          return;
         }
       }
     }
-    return '0.1';
-  }, [perpetualStaticInfo, currencyMultiplier, positions, selectedPerpetual, selectedPool]);
+    setInputFromOrderSize(orderSize);
+  }, [
+    orderSize,
+    setInputFromOrderSize,
+    positions,
+    selectedPerpetual,
+    selectedPool,
+    perpetualStaticInfo,
+    inputValue,
+    setInputValue,
+    setOrderSize,
+    currencyMultiplier,
+    lotStep,
+  ]);
+
+  // Dynamic: if no position and value is 0, first arrow click uses min position size; else lot size
+  const orderSizeStep = useMemo(() => {
+    if (!perpetualStaticInfo || !selectedPerpetual || !selectedPool) {
+      return lotStep;
+    }
+    const sym = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+    const pos = positions.find((p) => p.symbol === sym);
+    const hasOpen = !!pos && pos.positionNotionalBaseCCY !== 0;
+    const currentNumeric = Number(inputValue) || 0;
+    if (!hasOpen && currentNumeric === 0) {
+      const base = 10 * perpetualStaticInfo.lotSizeBC * currencyMultiplier;
+      const digits = valueToFractionDigits(base);
+      return String(Number(base.toFixed(digits)));
+    }
+    return lotStep;
+  }, [positions, selectedPerpetual, selectedPool, inputValue, perpetualStaticInfo, currencyMultiplier, lotStep]);
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
@@ -376,7 +416,7 @@ export const OrderSize = memo(() => {
               height={24}
             />
           }
-          step={`${10 * Number(orderSizeStep)}`}
+          step={orderSizeStep}
           min={0}
           max={maxOrderSizeCurrent !== undefined ? roundMaxOrderSize(maxOrderSizeCurrent) : undefined}
           className={styles.inputHolder}

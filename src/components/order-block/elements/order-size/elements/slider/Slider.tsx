@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { Slider as MuiSlider } from '@mui/material';
 
@@ -10,6 +10,7 @@ import {
   setInputFromOrderSizeAtom,
   setOrderSizeAtom,
 } from '../../store';
+import { perpetualStaticInfoAtom, positionsAtom, selectedPerpetualAtom, selectedPoolAtom } from 'store/pools.store';
 
 import styles from './Slider.module.scss';
 
@@ -27,6 +28,17 @@ export const Slider = () => {
   const orderSize = useAtomValue(orderSizeAtom);
   const setOrderSize = useSetAtom(setOrderSizeAtom);
   const setInputFromOrderSize = useSetAtom(setInputFromOrderSizeAtom);
+  const positions = useAtomValue(positionsAtom);
+  const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
+  const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
+  const selectedPool = useAtomValue(selectedPoolAtom);
+
+  const hasOpenPosition = useMemo(() => {
+    if (!selectedPerpetual || !selectedPool) return false;
+    const sym = `${selectedPerpetual.baseCurrency}-${selectedPerpetual.quoteCurrency}-${selectedPool.poolSymbol}`;
+    const pos = positions.find((p) => p.symbol === sym);
+    return !!pos && pos.positionNotionalBaseCCY !== 0;
+  }, [positions, selectedPerpetual, selectedPool]);
 
   useEffect(() => {
     if (maxOrderSize && maxOrderSize < orderSize) {
@@ -50,7 +62,17 @@ export const Slider = () => {
         marks={marks}
         onChange={(_event, newValue) => {
           if (typeof newValue === 'number') {
-            setSizeFromSlider(newValue);
+            const clamped = Math.max(0, Math.min(100, newValue));
+            // If no open position, enforce that any positive percent is at least the percent for min position size
+            if (!hasOpenPosition && maxOrderSize && perpetualStaticInfo) {
+              const minPosBase = 10 * perpetualStaticInfo.lotSizeBC; // base units
+              const minPercent = Math.min(100, Math.max(1, Math.ceil((minPosBase / maxOrderSize) * 100)));
+              if (clamped > 0 && clamped < minPercent) {
+                setSizeFromSlider(minPercent);
+                return;
+              }
+            }
+            setSizeFromSlider(clamped);
           }
         }}
       />
