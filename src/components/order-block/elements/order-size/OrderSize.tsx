@@ -19,6 +19,7 @@ import {
   flatTokenAtom,
   perpetualStaticInfoAtom,
   poolTokenBalanceAtom,
+  positionsAtom,
   selectedPerpetualAtom,
   selectedPoolAtom,
   traderAPIAtom,
@@ -66,6 +67,7 @@ export const OrderSize = memo(() => {
   const maxPersonalOrderSize = useAtomValue(maxOrderSizeAtom);
   const perpetualStaticInfo = useAtomValue(perpetualStaticInfoAtom);
   const poolTokenBalance = useAtomValue(poolTokenBalanceAtom);
+  const positions = useAtomValue(positionsAtom);
   const selectedPool = useAtomValue(selectedPoolAtom);
   const selectedPerpetual = useAtomValue(selectedPerpetualAtom);
   const traderAPI = useAtomValue(traderAPIAtom);
@@ -146,17 +148,35 @@ export const OrderSize = memo(() => {
 
   const orderSizeStep = useMemo(() => {
     if (perpetualStaticInfo) {
-      if (currencyMultiplier === 1) {
-        return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
+      // Check if user has an open position in the selected perpetual
+      const selectedPerpetualSymbol = `${selectedPerpetual?.baseCurrency}-${selectedPerpetual?.quoteCurrency}-${selectedPool?.poolSymbol}`;
+      const openPosition = positions.find((position) => position.symbol === selectedPerpetualSymbol);
+      const hasOpenPosition = openPosition && openPosition.positionNotionalBaseCCY !== 0;
+
+      // If user has open position, use regular lot size
+      if (hasOpenPosition) {
+        if (currencyMultiplier === 1) {
+          return roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
+        } else {
+          const baseStep = Number(roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC));
+          const roundedValueBase = baseStep * currencyMultiplier;
+          const numberDigits = valueToFractionDigits(roundedValueBase);
+          return roundedValueBase.toFixed(numberDigits);
+        }
       } else {
-        const roundedValueBase =
-          Number(roundToLotString(perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC)) * currencyMultiplier;
-        const numberDigits = valueToFractionDigits(roundedValueBase);
-        return roundedValueBase.toFixed(numberDigits);
+        // If no open position, use min position size as step (so first click goes to min position)
+        if (currencyMultiplier === 1) {
+          return roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC);
+        } else {
+          const baseStep = Number(roundToLotString(10 * perpetualStaticInfo.lotSizeBC, perpetualStaticInfo.lotSizeBC));
+          const roundedValueBase = baseStep * currencyMultiplier;
+          const numberDigits = valueToFractionDigits(roundedValueBase);
+          return roundedValueBase.toFixed(numberDigits);
+        }
       }
     }
     return '0.1';
-  }, [perpetualStaticInfo, currencyMultiplier]);
+  }, [perpetualStaticInfo, currencyMultiplier, positions, selectedPerpetual, selectedPool]);
 
   const fetchMaxOrderSize = useCallback(
     async (_chainId: number, _address: string, _lotSizeBC: number, _perpId: number, _isLong: boolean) => {
@@ -356,7 +376,7 @@ export const OrderSize = memo(() => {
               height={24}
             />
           }
-          step={orderSizeStep}
+          step={`${10 * Number(orderSizeStep)}`}
           min={0}
           max={maxOrderSizeCurrent !== undefined ? roundMaxOrderSize(maxOrderSizeCurrent) : undefined}
           className={styles.inputHolder}
