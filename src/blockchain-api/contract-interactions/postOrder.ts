@@ -61,20 +61,22 @@ export async function postOrder(
       .filter((_id, idx) => orders[idx].type === ORDER_TYPE_MARKET)
       .map((id) => (id.startsWith('0x') ? id : `0x${id}`) as `0x${string}`);
 
-    waitForTransactionReceipt(wagmiConfig, { hash, confirmations: 2 }) // TODO: seems like a regular problem with base?
-      .then(() => {
-        console.log('self executing order(s)', marketOrders);
-        executeOrders(sendTransaction, traderAPI, orders[0].symbol, marketOrders)
-          .then((execTx) => {
-            console.log(`self-execution: ${execTx.hash}`);
-          })
-          .catch((e) => {
-            console.log('self execution failed:', e);
-          });
-      })
-      .catch((e) => {
-        console.log('could not verify order on-chain, self execution skipped', e);
-      });
+    if (marketOrders.length > 0) {
+      waitForTransactionReceipt(wagmiConfig, { hash, confirmations: 2 }) // TODO: seems like a regular problem with base?
+        .then(() => {
+          console.log('self executing order(s)', marketOrders);
+          executeOrders(sendTransaction, traderAPI, orders[0].symbol, marketOrders)
+            .then((execTx) => {
+              console.log(`self-execution: ${execTx.hash}`);
+            })
+            .catch((e) => {
+              console.log('self execution failed:', e);
+            });
+        })
+        .catch((e) => {
+          console.log('could not verify order on-chain, self execution skipped', e);
+        });
+    }
 
     return { hash, orderIds: brokerData.orderIds };
   });
