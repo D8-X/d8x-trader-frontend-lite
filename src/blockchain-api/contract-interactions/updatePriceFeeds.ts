@@ -10,10 +10,12 @@ export async function updatePriceFeeds({
   sendTransaction,
   symbol,
   feesPerGas,
+  confirmations,
 }: {
   traderApi: TraderInterface;
   sendTransaction: SendTransactionCallT;
   symbol: string;
+  confirmations?: number;
   feesPerGas?:
     | {
         gasPrice: undefined;
@@ -26,7 +28,11 @@ export async function updatePriceFeeds({
         maxPriorityFeePerGas: undefined;
       };
 }) {
-  const pxUpdates = await traderApi.fetchPriceSubmissionInfoForPerpetual(symbol);
+  const pxUpdates = await traderApi.fetchPriceSubmissionInfoForPerpetual(symbol).catch(() => undefined);
+
+  if (!pxUpdates) {
+    return;
+  }
 
   const txParams = {
     chainId: Number(traderApi.chainId),
@@ -50,7 +56,7 @@ export async function updatePriceFeeds({
     .catch(() => undefined);
 
   if (txHash !== undefined) {
-    await waitForTransactionReceipt(wagmiConfig, { hash: txHash })
+    await waitForTransactionReceipt(wagmiConfig, { hash: txHash, confirmations })
       .then()
       .catch((e) => {
         console.log('pyth confirmation error', e);
