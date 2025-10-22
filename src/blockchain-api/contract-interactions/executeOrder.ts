@@ -10,12 +10,14 @@ export async function executeOrders(
   sendTransaction: SendTransactionCallT,
   traderAPI: TraderInterface,
   symbol: string,
-  orderIds: `0x${string}`[]
+  orderIds: `0x${string}`[],
+  submittedTimestamp: bigint
 ) {
   await updatePriceFeeds({
     traderApi: traderAPI,
     sendTransaction,
     symbol,
+    submittedTimestamp,
   });
 
   const txData2 = encodeFunctionData({

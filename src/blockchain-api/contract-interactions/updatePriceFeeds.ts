@@ -1,9 +1,11 @@
-import { PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
+import { PriceFeedSubmission, PROXY_ABI, TraderInterface } from '@d8x/perpetuals-sdk';
 import { waitForTransactionReceipt } from '@wagmi/core';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { SendTransactionCallT } from 'types/types';
 import { hasPaymaster } from 'utils/hasPaymaster';
 import { encodeFunctionData } from 'viem';
+
+const MAX_RETRY_COUNT = 10;
 
 export async function updatePriceFeeds({
   traderApi,
@@ -11,6 +13,7 @@ export async function updatePriceFeeds({
   symbol,
   feesPerGas,
   confirmations,
+  submittedTimestamp,
 }: {
   traderApi: TraderInterface;
   sendTransaction: SendTransactionCallT;
@@ -27,12 +30,34 @@ export async function updatePriceFeeds({
         maxFeePerGas: undefined;
         maxPriorityFeePerGas: undefined;
       };
+  submittedTimestamp?: bigint;
 }) {
-  const pxUpdates = await traderApi.fetchPriceSubmissionInfoForPerpetual(symbol).catch(() => undefined);
+  const minTimestamp = submittedTimestamp || 0n;
+  let oracleTimestamp = -1n;
+
+  let pxUpdates:
+    | {
+        submission: PriceFeedSubmission;
+        pxS2S3: [number, number];
+      }
+    | undefined;
+
+  let count = 0;
+
+  while (oracleTimestamp <= minTimestamp && count < MAX_RETRY_COUNT) {
+    console.log('outdated oracles:', oracleTimestamp, '<=', minTimestamp, minTimestamp - oracleTimestamp);
+    count++;
+    pxUpdates = await traderApi.fetchPriceSubmissionInfoForPerpetual(symbol).catch(() => undefined);
+    if (pxUpdates && pxUpdates.submission.timestamps.length > 0) {
+      oracleTimestamp = BigInt(Math.min(...pxUpdates.submission.timestamps));
+    }
+  }
 
   if (!pxUpdates) {
     return;
   }
+
+  console.log({ oracleTimestamp });
 
   const txParams = {
     chainId: Number(traderApi.chainId),

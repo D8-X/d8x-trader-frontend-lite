@@ -1,7 +1,7 @@
 import { ORDER_TYPE_MARKET, TraderInterface } from '@d8x/perpetuals-sdk';
 import { encodeFunctionData, type Address } from 'viem';
 
-import { waitForTransactionReceipt } from '@wagmi/core';
+import { getBlock, waitForTransactionReceipt } from '@wagmi/core';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
 import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { orderSubmitted } from 'network/broker';
@@ -54,18 +54,18 @@ export async function postOrder(
   };
 
   return sendTransaction(call, { sponsor: hasPaymaster(chainId) }).then(({ hash }) => {
+    // success submitting order to the node - it may still revert but inform backend
+    orderSubmitted(chainId, brokerData.orderIds).then().catch(console.error);
     const marketOrders = brokerData.orderIds
       .filter((_id, idx) => orders[idx].type === ORDER_TYPE_MARKET)
       .map((id) => (id.startsWith('0x') ? id : `0x${id}`) as `0x${string}`);
 
     if (marketOrders.length > 0) {
-      waitForTransactionReceipt(wagmiConfig, { hash, confirmations: 2 })
-        .then(() => {
-          // success submitting order to the node - inform backend
-          orderSubmitted(chainId, brokerData.orderIds).then().catch(console.error);
-
+      waitForTransactionReceipt(wagmiConfig, { hash, confirmations: 1 })
+        .then(async ({ blockNumber }) => {
+          const timestamp = await getBlock(wagmiConfig, { blockNumber }).then((b) => b.timestamp);
           console.log('self executing order(s)', marketOrders);
-          executeOrders(sendTransaction, traderAPI, orders[0].symbol, marketOrders)
+          executeOrders(sendTransaction, traderAPI, orders[0].symbol, marketOrders, timestamp)
             .then((execTx) => {
               console.log(`self-execution: ${execTx.hash}`);
             })
