@@ -64,22 +64,12 @@ export function MockSwap() {
     args: [wallet?.account?.address as `0x${string}`, depositAmountUnits as bigint],
   });
 
-  console.log({ tokenAmountUnits });
-
   const tokenAmount = useMemo(() => {
     if (tokenAmountUnits !== undefined && marginTokenDecimals !== undefined) {
       return formatUnits(tokenAmountUnits, marginTokenDecimals);
     }
     return '';
   }, [tokenAmountUnits, marginTokenDecimals]);
-
-  console.log({
-    swapAddress,
-    depositAmountUnits,
-    tokenAmount,
-    marginTokenDecimals,
-    enabled: wallet?.chain !== undefined && wallet?.account?.address !== undefined && depositAmountUnits !== undefined,
-  });
 
   const {
     isSuccess: isSwapSuccess,
@@ -124,7 +114,13 @@ export function MockSwap() {
       inActionRef.current = true;
       mockSwap(chainId, sendTransaction, swapAddress as Address)
         .then(({ hash }) => setSwapTxn(hash))
-        .catch((e) => console.log('mock swap error:', e))
+        .catch((e) => {
+          console.log(e);
+          if (`${e}`.includes('0x97a6a343')) {
+            // hack: Timelocked error code is constant, could also parse seconds left?
+            toast.error(<ToastContent title="Timelocked" bodyLines={[{ label: 'Daily Limit', value: '' }]} />);
+          }
+        })
         .finally(() => (inActionRef.current = false));
     }
   };
