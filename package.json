@@ -51,7 +51,7 @@
   "dependencies": {
     "@biconomy/abstractjs": "^1.1.9",
     "@cedelabs/widgets-universal": "1.6.0",
-    "@d8x/perpetuals-sdk": "2.6.20",
+    "@d8x/perpetuals-sdk": "git@github.com:D8-X/d8x-futures-node-sdk.git#contract-changes",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
     "@ethersproject/providers": "5.8.0",
