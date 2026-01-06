@@ -33,8 +33,15 @@ export const takeProfitAtom = atom<TakeProfitE | null>(TakeProfitE.None);
 export const takeProfitPriceAtom = atom<number | null>(null);
 export const takeProfitInputPriceAtom = atom<number | null>(null);
 export const storageKeyAtom = atom<string | null>(null);
-
 export const latestOrderSentTimestampAtom = atom(0);
+
+// TODO
+export const sigtAtom = atom(0);
+export const jumpSizeAtom = atom(0);
+// every once in a while, if selected perp is pred market
+// - set atoms to 0
+// - call fetchPriceSubmissionInfoForPerpetual, decode sigt and jump
+// - set atoms to value
 
 const limitPriceValueAtom = atom(-1);
 const triggerPriceValueAtom = atom(0);
@@ -167,6 +174,9 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const takeProfitCustomPrice = get(takeProfitPriceAtom); // in probability if prediction market
   const positions = get(positionsAtom);
 
+  const sigt = get(sigtAtom);
+  const jump = get(jumpSizeAtom);
+
   const symbol = createSymbol({
     baseCurrency: perpetualStatistics.baseCurrency,
     quoteCurrency: perpetualStatistics.quoteCurrency,
@@ -189,6 +199,21 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   let baseFee = null;
   if (isPredictionMarket) {
     if (perpetualStaticInfo?.maintenanceMarginRate) {
+      console.log({ sigt, jump });
+
+      // TODO tentative new signature:
+      // tradingFee = TraderInterface.exchangeFeePrdMkts(
+      //   perpetualStatistics.markPrice,
+      //   size * (OrderBlockE.Short === orderBlock ? -1 : 1),
+      //   (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
+      //   (openPosition?.entryPrice ?? 0) * (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
+      //   perpetualStaticInfo.maintenanceMarginRate,
+      //   1 / leverage,
+      //   perpetualStaticInfo.initialMarginRate,
+      //   sigt,
+      //   jump
+      // )
+
       tradingFee = TraderInterface.exchangeFeePrdMkts(
         perpetualStaticInfo.maintenanceMarginRate,
         perpetualStatistics.markPrice,
