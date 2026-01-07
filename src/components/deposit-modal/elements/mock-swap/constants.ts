@@ -8,8 +8,8 @@ export const TOKEN_SWAPS: MockSwapConfigI[] = [
         id: 1,
         marginToken: 'PUSD',
         decimals: 6,
-        marginTokenAddress: '0xD11e6B5E1D637C6044dB145474baCB2e76876d09',
-        marginTokenSwap: '0xd272Ab18909F52c32Fe81eAd43b3B8656a3FA3dc',
+        marginTokenAddress: '0xBA904917a1A7e68263F564FaE157aA283F6857e4',
+        marginTokenSwap: '0x9525DDe3DFd0CA75A567bdC9A6CEA3F145FD7F8a',
       },
     ],
   },
@@ -36,6 +36,17 @@ export const SWAP_ABI = [
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'timeLeftSeconds',
+        type: 'uint256',
+      },
+    ],
+    name: 'Timelocked',
+    type: 'error',
   },
   {
     anonymous: false,
@@ -243,7 +254,7 @@ export const SWAP_ABI = [
     inputs: [],
     name: 'swapToMockToken',
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function',
   },
   {

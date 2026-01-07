@@ -224,7 +224,12 @@ export const ActionBlock = memo(() => {
         setCollateralDeposit(data.data.orderCost);
         let [maxLong, maxShort] = [data.data.maxLongTrade, data.data.maxShortTrade];
         const initialMarginRate = orderInfo.isPredictionMarket
-          ? pmInitialMarginRate(orderInfo.orderBlock === OrderBlockE.Long ? 1 : -1, data.data.newPositionRisk.markPrice)
+          ? pmInitialMarginRate(
+              orderInfo.orderBlock === OrderBlockE.Long ? 1 : -1,
+              data.data.ammPrice,
+              data.data.newPositionRisk.markPrice,
+              perpetualStaticInfo?.initialMarginRate ?? 0.05
+            )
           : perpetualStaticInfo?.initialMarginRate;
         if (initialMarginRate && data.data.newPositionRisk.leverage > 1 / initialMarginRate) {
           if (orderInfo.orderBlock === OrderBlockE.Long) {

@@ -1,10 +1,13 @@
-import { TraderInterface } from '@d8x/perpetuals-sdk';
-import { encodeFunctionData, type Address } from 'viem';
+import { ORDER_TYPE_MARKET, TraderInterface } from '@d8x/perpetuals-sdk';
+import { encodeFunctionData, parseEventLogs, type Address } from 'viem';
 
+import { getBlock, waitForTransactionReceipt } from '@wagmi/core';
 import { orderBookAbi } from 'blockchain-api/abi/orderBookAbi';
+import { wagmiConfig } from 'blockchain-api/wagmi/wagmiClient';
 import { orderSubmitted } from 'network/broker';
 import type { OrderDigestI, OrderI, SendTransactionCallT } from 'types/types';
 import { hasPaymaster } from 'utils/hasPaymaster';
+import { executeOrders } from './executeOrder';
 
 // const TMP_PAYMENT_TOKEN = '0x779Ded0c9e1022225f8E0630b35a9b54bE713736' as const;
 
@@ -51,8 +54,34 @@ export async function postOrder(
   };
 
   return sendTransaction(call, { sponsor: hasPaymaster(chainId) }).then(({ hash }) => {
-    // success submitting order to the node - inform backend
+    // success submitting order to the node - it may still revert but inform backend
     orderSubmitted(chainId, brokerData.orderIds).then().catch(console.error);
+
+    waitForTransactionReceipt(wagmiConfig, { hash, confirmations: 1 })
+      .then(async ({ blockNumber, logs }) => {
+        const events = parseEventLogs({ logs, abi: orderBookAbi });
+        const orderIds = events
+          .map((e) =>
+            e.eventName === 'PerpetualLimitOrderCreated' &&
+            traderAPI.smartContractOrderToOrder(e.args.order).type === ORDER_TYPE_MARKET
+              ? e.args.digest
+              : null
+          )
+          .filter((id) => id != null);
+        const timestamp = await getBlock(wagmiConfig, { blockNumber }).then((b) => b.timestamp);
+        console.log('self executing order(s)', orderIds);
+        executeOrders(sendTransaction, traderAPI, orders[0].symbol, orderIds, timestamp)
+          .then((execTx) => {
+            console.log(`self-execution: ${execTx.hash}`);
+          })
+          .catch((e) => {
+            console.log('self execution failed:', e);
+          });
+      })
+      .catch((e) => {
+        console.log('could not verify order on-chain, self execution skipped', e);
+      });
+
     return { hash, orderIds: brokerData.orderIds };
   });
 }

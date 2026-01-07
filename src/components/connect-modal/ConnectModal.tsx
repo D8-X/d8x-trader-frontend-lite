@@ -197,7 +197,6 @@ export const ConnectModal = () => {
               },
             ],
             signer: walletClient, // has to be the privy embedded wallet/eip7702
-            accountAddress: walletClient.account.address as `0x${string}`,
           });
 
           const meeClient = await createMeeClient({ account: c }); // TODO: save to atom
