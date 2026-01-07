@@ -36,8 +36,7 @@ export const takeProfitInputPriceAtom = atom<number | null>(null);
 export const storageKeyAtom = atom<string | null>(null);
 export const latestOrderSentTimestampAtom = atom(0);
 
-export const sigtAtom = atom(0);
-export const jumpSizeAtom = atom(0);
+export const predMarketConfAtom = atom(0n);
 
 // Async atom for fetching price submission info (sigt and jump) for prediction markets
 export const fetchPriceSubmissionInfoAtom = atom(null, async (get, set, symbol: string) => {
@@ -45,32 +44,21 @@ export const fetchPriceSubmissionInfoAtom = atom(null, async (get, set, symbol: 
   const perpetualStaticInfo = get(perpetualStaticInfoAtom);
 
   if (!traderAPI || !perpetualStaticInfo) {
-    set(sigtAtom, 0);
-    set(jumpSizeAtom, 0);
+    set(predMarketConfAtom, 0n);
     return;
   }
 
   try {
     const isPredictionMarket = TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
     if (!isPredictionMarket) {
-      set(sigtAtom, 0);
-      set(jumpSizeAtom, 0);
+      set(predMarketConfAtom, 0n);
       return;
     }
-
-    const pxUpdates = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
-    if (pxUpdates && pxUpdates.pxS2S3 && Array.isArray(pxUpdates.pxS2S3) && pxUpdates.pxS2S3.length >= 2) {
-      const [sigt, jump] = pxUpdates.pxS2S3;
-      set(sigtAtom, sigt);
-      set(jumpSizeAtom, jump);
-    } else {
-      set(sigtAtom, 0);
-      set(jumpSizeAtom, 0);
-    }
+    const { conf } = await traderAPI.fetchPricesForPerpetual(symbol);
+    set(predMarketConfAtom, conf);
   } catch (error) {
     console.error('Error fetching price submission info:', error);
-    set(sigtAtom, 0);
-    set(jumpSizeAtom, 0);
+    set(predMarketConfAtom, 0n);
   }
 });
 
@@ -204,9 +192,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   const takeProfit = get(takeProfitAtom);
   const takeProfitCustomPrice = get(takeProfitPriceAtom); // in probability if prediction market
   const positions = get(positionsAtom);
-
-  const sigt = get(sigtAtom);
-  const jump = get(jumpSizeAtom);
+  const conf = get(predMarketConfAtom);
 
   const symbol = createSymbol({
     baseCurrency: perpetualStatistics.baseCurrency,
@@ -230,21 +216,6 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
   let baseFee = null;
   if (isPredictionMarket) {
     if (perpetualStaticInfo?.maintenanceMarginRate) {
-      console.log({ sigt, jump });
-
-      // TODO tentative new signature:
-      // tradingFee = TraderInterface.exchangeFeePrdMkts(
-      //   perpetualStatistics.markPrice,
-      //   size * (OrderBlockE.Short === orderBlock ? -1 : 1),
-      //   (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
-      //   (openPosition?.entryPrice ?? 0) * (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
-      //   perpetualStaticInfo.maintenanceMarginRate,
-      //   1 / leverage,
-      //   perpetualStaticInfo.initialMarginRate,
-      //   sigt,
-      //   jump
-      // )
-
       const currentPositionNotional =
         (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1);
       const currentLockedInValue =
@@ -260,8 +231,7 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
         perpetualStaticInfo.maintenanceMarginRate,
         1 / leverage,
         perpetualStaticInfo.initialMarginRate,
-        sigt,
-        jump
+        conf
       );
     }
     // baseFee stays null
