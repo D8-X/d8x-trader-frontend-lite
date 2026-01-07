@@ -251,7 +251,7 @@ export const Header = memo(({ window }: HeaderPropsI) => {
         try {
           let currentTraderAPI = null;
           const enabledChainId = getEnabledChainId(chainId, location.hash);
-          if (retries > 0 && traderAPIRef.current && Number(traderAPIRef.current?.chainId) === enabledChainId) {
+          if (traderAPIRef.current && Number(traderAPIRef.current?.chainId) === enabledChainId) {
             currentTraderAPI = traderAPIRef.current;
           }
           const data = await getExchangeInfo(enabledChainId, currentTraderAPI);

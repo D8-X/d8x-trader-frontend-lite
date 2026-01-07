@@ -47,6 +47,7 @@ import { isEnabledChain } from 'utils/isEnabledChain';
 import { CandlesWebSocketListener } from './components/candles-webSocket-listener/CandlesWebSocketListener';
 import { MobileMarketSelect } from './components/mobile-market-select/MobileMarketSelect';
 import { PerpetualInfoFetcher } from './components/PerpetualInfoFetcher';
+import { PriceSubmissionInfoFetcher } from './components/PriceSubmissionInfoFetcher';
 import { PoolSubscription } from './components/PoolSubscription';
 import { TableDataFetcher } from './components/table-data-refetcher/TableDataFetcher';
 
@@ -103,7 +104,7 @@ export const TraderPage = () => {
         functionName: 'decimals',
       },
     ],
-    query: { enabled: address && chainId === 1101 && isConnected },
+    query: { enabled: !!address && chainId === 1101 && isConnected },
   });
 
   const { data: newTokenData } = useReadContracts({
@@ -121,7 +122,7 @@ export const TraderPage = () => {
         functionName: 'decimals',
       },
     ],
-    query: { enabled: address && chainId === 1101 && isConnected },
+    query: { enabled: !!address && chainId === 1101 && isConnected },
   });
 
   useEffect(() => {
@@ -383,6 +384,7 @@ export const TraderPage = () => {
       <UsdcSwapModal isOpen={dialogOpen} onClose={closeDialog} />
       <TableDataFetcher />
       <PerpetualInfoFetcher />
+      <PriceSubmissionInfoFetcher />
       <PoolSubscription />
       <CandlesWebSocketListener />
     </>

@@ -37,9 +37,15 @@ export const LeverageSelector = memo(() => {
       perpetualStatistics?.markPrice
     ) {
       const initialMarginRate = orderInfo.isPredictionMarket
-        ? pmInitialMarginRate(orderBlock === OrderBlockE.Long ? 1 : -1, perpetualStatistics.markPrice)
+        ? pmInitialMarginRate(
+            orderBlock === OrderBlockE.Long ? 1 : -1,
+            perpetualStatistics.markPrice * (1 + 0.01), // 1 percent price impact buffer
+            perpetualStatistics.markPrice,
+            perpetualStaticInfo.initialMarginRate
+          )
         : perpetualStaticInfo.initialMarginRate;
-      return Math.floor(5 / initialMarginRate) / 5;
+
+      return Math.floor(1 / initialMarginRate / 0.5) * 0.5;
     }
     return 10;
   }, [
@@ -63,7 +69,7 @@ export const LeverageSelector = memo(() => {
     } else {
       const step = maxLeverage / markCount;
       for (let i = 1; i <= markCount; i++) {
-        const value = Math.round(i * step);
+        const value = Math.floor(i * step);
         newMarks.push({
           value: value,
         });

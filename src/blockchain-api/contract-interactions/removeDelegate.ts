@@ -61,7 +61,7 @@ export async function removeDelegate(
       ...feesPerGas,
     }).catch(() => getGasLimit({ chainId: walletClient?.chain?.id, method: MethodE.Interact }));
     const gasPrice =
-      feesPerGas?.gasPrice ?? 0n + feesPerGas?.maxFeePerGas ?? 0n + feesPerGas?.maxPriorityFeePerGas ?? 0;
+      (feesPerGas?.gasPrice ?? 0n) + (feesPerGas?.maxFeePerGas ?? 0n) + (feesPerGas?.maxPriorityFeePerGas ?? 0n);
     if (gasLimit && 2n * gasLimit * gasPrice < balance) {
       await sendTransactionAsync({
         account: delegateAccount,
