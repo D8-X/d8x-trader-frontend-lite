@@ -19,6 +19,7 @@ import {
   perpetualStatisticsAtom,
   poolFeeAtom,
   positionsAtom,
+  traderAPIAtom,
 } from './pools.store';
 
 export const orderBlockAtom = atom<OrderBlockE>(OrderBlockE.Long);
@@ -35,13 +36,43 @@ export const takeProfitInputPriceAtom = atom<number | null>(null);
 export const storageKeyAtom = atom<string | null>(null);
 export const latestOrderSentTimestampAtom = atom(0);
 
-// TODO
 export const sigtAtom = atom(0);
 export const jumpSizeAtom = atom(0);
-// every once in a while, if selected perp is pred market
-// - set atoms to 0
-// - call fetchPriceSubmissionInfoForPerpetual, decode sigt and jump
-// - set atoms to value
+
+// Async atom for fetching price submission info (sigt and jump) for prediction markets
+export const fetchPriceSubmissionInfoAtom = atom(null, async (get, set, symbol: string) => {
+  const traderAPI = get(traderAPIAtom);
+  const perpetualStaticInfo = get(perpetualStaticInfoAtom);
+
+  if (!traderAPI || !perpetualStaticInfo) {
+    set(sigtAtom, 0);
+    set(jumpSizeAtom, 0);
+    return;
+  }
+
+  try {
+    const isPredictionMarket = TraderInterface.isPredictionMarketStatic(perpetualStaticInfo);
+    if (!isPredictionMarket) {
+      set(sigtAtom, 0);
+      set(jumpSizeAtom, 0);
+      return;
+    }
+
+    const pxUpdates = await traderAPI.fetchPriceSubmissionInfoForPerpetual(symbol);
+    if (pxUpdates && pxUpdates.pxS2S3 && Array.isArray(pxUpdates.pxS2S3) && pxUpdates.pxS2S3.length >= 2) {
+      const [sigt, jump] = pxUpdates.pxS2S3;
+      set(sigtAtom, sigt);
+      set(jumpSizeAtom, jump);
+    } else {
+      set(sigtAtom, 0);
+      set(jumpSizeAtom, 0);
+    }
+  } catch (error) {
+    console.error('Error fetching price submission info:', error);
+    set(sigtAtom, 0);
+    set(jumpSizeAtom, 0);
+  }
+});
 
 const limitPriceValueAtom = atom(-1);
 const triggerPriceValueAtom = atom(0);
@@ -214,12 +245,23 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
       //   jump
       // )
 
+      const currentPositionNotional =
+        (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1);
+      const currentLockedInValue =
+        (openPosition?.entryPrice ?? 0) *
+        (openPosition?.positionNotionalBaseCCY ?? 0) *
+        (openPosition?.side === BUY_SIDE ? 1 : -1);
+
       tradingFee = TraderInterface.exchangeFeePrdMkts(
-        perpetualStaticInfo.maintenanceMarginRate,
         perpetualStatistics.markPrice,
         size * (OrderBlockE.Short === orderBlock ? -1 : 1),
-        (openPosition?.positionNotionalBaseCCY ?? 0) * (openPosition?.side === BUY_SIDE ? 1 : -1),
-        1 / leverage
+        currentPositionNotional,
+        currentLockedInValue,
+        perpetualStaticInfo.maintenanceMarginRate,
+        1 / leverage,
+        perpetualStaticInfo.initialMarginRate,
+        sigt,
+        jump
       );
     }
     // baseFee stays null
