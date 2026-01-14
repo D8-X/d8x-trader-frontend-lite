@@ -228,8 +228,8 @@ export const orderInfoAtom = atom<OrderInfoI | null>((get) => {
         size * (OrderBlockE.Short === orderBlock ? -1 : 1),
         currentPositionNotional,
         currentLockedInValue,
+        leverage,
         perpetualStaticInfo.maintenanceMarginRate,
-        1 / leverage,
         perpetualStaticInfo.initialMarginRate,
         conf
       );
